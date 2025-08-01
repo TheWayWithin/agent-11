@@ -1,0 +1,21 @@
+name: Validate AGENT-11
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Check structure
+      run: |
+        echo "🎯 Validating AGENT-11 structure..."
+        [ -f "README.md" ] || exit 1
+        [ -f "QUICKSTART.md" ] || exit 1
+        [ -d "agents" ] || exit 1
+        [ -d "missions" ] || exit 1
+        echo "✅ Structure valid!"
