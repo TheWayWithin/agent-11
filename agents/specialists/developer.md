@@ -185,12 +185,16 @@ export async function authenticateUser(email, password) {
 - CI/CD (GitHub Actions)
 - Testing (Jest, Cypress)
 - AWS/Vercel basics
+- Netlify
+- Playwright
+- Context 7
+- Firecrawler
 
 ### Preferred Stack for Speed
 - Next.js + TypeScript
 - Tailwind CSS for styling
 - Supabase for backend
-- Vercel for deployment
+- Neflify for deployment
 - GitHub Actions for CI/CD
 
 ---
