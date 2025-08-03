@@ -1,0 +1,127 @@
+name: ✨ Feature Request
+description: Suggest a new feature for AGENT-11
+title: "[FEATURE] "
+labels: ["enhancement", "needs-review"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Help us understand what you'd like to see added to AGENT-11.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      options:
+        - label: I've searched existing issues to avoid duplicates
+          required: true
+        - label: I've reviewed the [roadmap](https://github.com/TheWayWithin/agent-11/discussions) for similar requests
+          required: true
+
+  - type: dropdown
+    id: feature-category
+    attributes:
+      label: Feature Category
+      description: What area does this feature relate to?
+      options:
+        - Agent capabilities
+        - Deployment system
+        - Documentation
+        - User experience
+        - Enterprise features
+        - Community features
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: user-type
+    attributes:
+      label: User Type
+      description: Who would benefit from this feature?
+      options:
+        - Solo founders (all levels)
+        - Non-technical founders
+        - Technical founders
+        - Development teams
+        - Enterprise users
+        - Community contributors
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve?
+      placeholder: "As a [user type], I need [functionality] because [reason]..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: Describe your ideal solution
+      placeholder: "I would like to see..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Solutions
+      description: What other approaches have you considered?
+      placeholder: "Alternative approaches could be..."
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority Level
+      description: How important is this feature to you?
+      options:
+        - Critical - blocking my use of AGENT-11
+        - High - would significantly improve my workflow
+        - Medium - nice to have improvement
+        - Low - minor enhancement
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use Case Example
+      description: Provide a specific example of how you'd use this feature
+      placeholder: "For example, when building [project type], I would use this feature to..."
+
+  - type: textarea
+    id: success-criteria
+    attributes:
+      label: Success Criteria
+      description: How would you know this feature is working well?
+      placeholder: "This feature would be successful if..."
+
+  - type: checkboxes
+    id: implementation-help
+    attributes:
+      label: Implementation
+      description: Are you interested in helping implement this feature?
+      options:
+        - label: I'm willing to help with design/planning
+          required: false
+        - label: I could contribute code/documentation
+          required: false
+        - label: I can help with testing
+          required: false
+        - label: I prefer to just use it when ready
+          required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Anything else we should know?
+      placeholder: "Screenshots, mockups, links to similar features, etc."

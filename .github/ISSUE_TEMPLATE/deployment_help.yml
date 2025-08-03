@@ -1,0 +1,126 @@
+name: 🚀 Deployment Help
+description: Get help with installing or configuring AGENT-11
+title: "[HELP] "
+labels: ["help-wanted", "support"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Need help getting AGENT-11 deployed? We're here to help! Please provide details so we can assist you quickly.
+        
+        **Quick Resources:**
+        - [📖 Quick Start Guide](https://github.com/TheWayWithin/agent-11/blob/main/QUICK-START.md)
+        - [🔧 Troubleshooting Guide](https://github.com/TheWayWithin/agent-11/blob/main/TROUBLESHOOTING.md)
+        - [📚 Full Documentation](https://github.com/TheWayWithin/agent-11/blob/main/DOCUMENTATION-INDEX.md)
+
+  - type: checkboxes
+    id: tried-resources
+    attributes:
+      label: Resources Checked
+      description: Please confirm you've tried these first
+      options:
+        - label: I've read the Quick Start guide
+          required: false
+        - label: I've checked the Troubleshooting guide
+          required: false
+        - label: I've searched existing issues
+          required: false
+
+  - type: dropdown
+    id: help-type
+    attributes:
+      label: Type of Help Needed
+      description: What do you need help with?
+      options:
+        - Installation not working
+        - Choosing the right squad
+        - Agent not responding
+        - Configuration issues
+        - Understanding how to use agents
+        - Performance issues
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: experience-level
+    attributes:
+      label: Experience Level
+      description: How would you describe your technical experience?
+      options:
+        - Non-technical founder
+        - Some technical experience
+        - Experienced developer
+        - DevOps/Systems background
+    validations:
+      required: true
+
+  - type: input
+    id: system-info
+    attributes:
+      label: System Information
+      description: Your operating system and version
+      placeholder: "e.g., macOS 14.5, Ubuntu 22.04, Windows 11 + WSL2"
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-tried
+    attributes:
+      label: What You've Tried
+      description: What installation method or commands did you try?
+      placeholder: |
+        e.g.,
+        1. Ran: curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+        2. Got error: ...
+        3. Tried: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-issue
+    attributes:
+      label: Current Issue
+      description: What's happening vs. what you expected?
+      placeholder: "Describe what's not working and what you expected to happen..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: Your Goal
+      description: What are you trying to accomplish with AGENT-11?
+      placeholder: "I want to use AGENT-11 to..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: error-messages
+    attributes:
+      label: Error Messages
+      description: Copy and paste any error messages you're seeing
+      render: shell
+      placeholder: "Paste error messages here..."
+
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: Urgency
+      description: How urgently do you need this resolved?
+      options:
+        - Just exploring AGENT-11
+        - Trying to start a project this week
+        - Actively blocked on a current project
+        - Demo/presentation coming up
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: Additional Information
+      description: Anything else that might help us assist you?
+      placeholder: "Screenshots, additional context, specific deadlines, etc."

@@ -1,0 +1,26 @@
+title: "Need help deploying AGENT-11"
+body: |
+  **What I'm trying to do:**
+  <!-- Describe what you want to accomplish with AGENT-11 -->
+  
+  **What I've tried:**
+  <!-- List the commands or steps you've attempted -->
+  
+  **System information:**
+  <!-- Your OS, Claude Code version, etc. -->
+  
+  **Error messages or unexpected behavior:**
+  <!-- Copy/paste any error messages -->
+  
+  **Experience level:**
+  <!-- Non-technical founder / Some coding experience / Experienced developer -->
+  
+  ---
+  
+  **Quick resources that might help:**
+  - [📖 Quick Start Guide](../QUICK-START.md) - Deploy in under 5 minutes
+  - [🔧 Troubleshooting Guide](../TROUBLESHOOTING.md) - Fix common issues
+  - [📚 Full Documentation](../DOCUMENTATION-INDEX.md) - Complete guides
+  
+  The community is here to help! 🚀
+labels: deployment-help

@@ -1,0 +1,115 @@
+name: 🐛 Bug Report
+description: Report a bug with AGENT-11 deployment or agents
+title: "[BUG] "
+labels: ["bug", "needs-triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! Please provide as much detail as possible to help us fix it quickly.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-flight Checklist
+      description: Please confirm you've done these steps first
+      options:
+        - label: I've read the [TROUBLESHOOTING.md](https://github.com/TheWayWithin/agent-11/blob/main/TROUBLESHOOTING.md) guide
+          required: true
+        - label: I've checked existing issues to avoid duplicates
+          required: true
+        - label: I'm using the latest version from the main branch
+          required: true
+
+  - type: dropdown
+    id: squad-type
+    attributes:
+      label: Squad Type
+      description: Which squad were you trying to deploy?
+      options:
+        - Core Squad (4 agents)
+        - Full Squad (11 agents)  
+        - Minimal Squad (2 agents)
+        - Custom configuration
+        - Not applicable
+    validations:
+      required: true
+
+  - type: dropdown
+    id: installation-method
+    attributes:
+      label: Installation Method
+      description: How did you install AGENT-11?
+      options:
+        - One-line remote installer (curl command)
+        - Local git clone + install script
+        - Manual installation
+        - Other (please specify)
+    validations:
+      required: true
+
+  - type: input
+    id: system-info
+    attributes:
+      label: System Information
+      description: Your operating system and version
+      placeholder: "e.g., macOS 14.5, Ubuntu 22.04, Windows 11 + WSL2"
+    validations:
+      required: true
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Bug Description
+      description: Clear description of what happened
+      placeholder: "Describe the bug in detail..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: What should have happened instead?
+      placeholder: "Describe what you expected to happen..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Steps to Reproduce
+      description: Step-by-step instructions to reproduce the bug
+      placeholder: |
+        1. Run command: ...
+        2. See error: ...
+        3. Expected: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: error-output
+    attributes:
+      label: Error Output
+      description: Copy and paste the full error message
+      render: shell
+      placeholder: "Paste error messages here..."
+
+  - type: textarea
+    id: diagnostic-info
+    attributes:
+      label: Diagnostic Information
+      description: Run this command and paste the output
+      render: shell
+      placeholder: |
+        Run: ./deployment/scripts/validate-environment.sh --verbose
+        Paste output here...
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Anything else that might help us debug this issue
+      placeholder: "Screenshots, logs, related issues, etc."
