@@ -1,0 +1,94 @@
+# AGENT-11 Installation Configuration
+# Main configuration for the deployment system
+
+installation:
+  version: "1.0.0"
+  target_success_rate: 95
+  max_install_time_minutes: 5
+  
+  # Default installation settings
+  defaults:
+    squad_type: "core"
+    backup_enabled: true
+    validation_enabled: true
+    rollback_on_failure: true
+    force_reinstall: false
+  
+  # Directory configuration
+  directories:
+    claude_base: "~/.claude"
+    agents_dir: "~/.claude/agents"
+    backup_dir: "~/.claude/backups/agent-11"
+    temp_dir: "/tmp/agent-11-install"
+  
+  # Platform support
+  platforms:
+    supported:
+      - "macos"
+      - "linux"
+      - "windows"  # experimental
+    recommended:
+      - "macos"
+      - "linux"
+  
+  # System requirements
+  requirements:
+    min_disk_space_mb: 50
+    min_memory_mb: 512
+    bash_version_min: "4.0"
+    required_commands:
+      - "bash"
+      - "cp"
+      - "mkdir"
+      - "find"
+      - "grep"
+      - "sed"
+      - "date"
+    optional_commands:
+      - "curl"
+      - "wget"
+      - "git"
+      - "du"
+      - "df"
+
+# Backup configuration
+backup:
+  enabled: true
+  retention:
+    max_backups: 10
+    auto_cleanup: true
+  metadata:
+    include_system_info: true
+    include_checksums: false
+
+# Validation configuration
+validation:
+  enabled: true
+  strict_mode: false
+  checks:
+    yaml_headers: true
+    file_permissions: true
+    agent_content: true
+    disk_space: true
+    platform_compatibility: true
+
+# Error handling
+error_handling:
+  rollback_on_failure: true
+  create_safety_backup: true
+  log_errors: true
+  max_retry_attempts: 3
+
+# Logging configuration
+logging:
+  level: "info"  # debug, info, warn, error
+  include_timestamps: true
+  color_output: true
+  verbose_progress: true
+
+# Feature flags
+features:
+  remote_installation: false  # Future feature
+  auto_updates: false         # Future feature
+  telemetry: false           # Privacy-first approach
+  squad_customization: false # Future feature

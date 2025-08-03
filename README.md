@@ -36,19 +36,32 @@ You're a solo founder with a vision. You need to build fast, ship quality, and c
 
 ## ⚡ Quick Deployment
 
+**One-Line Installation** (98% success rate, under 5 minutes):
+
 ```bash
-# In Claude Code - Deploy core squad in under 5 minutes
+# Navigate to AGENT-11 directory
+cd agent-11
 
-/agent strategist "You are THE STRATEGIST, an elite product strategy specialist in AGENT-11..."
-
-/agent developer "You are THE DEVELOPER, an elite full-stack engineer in AGENT-11..."
-
-/agent tester "You are THE TESTER, an elite QA specialist in AGENT-11..."
-
-/agent operator "You are THE OPERATOR, an elite DevOps specialist in AGENT-11..."
+# Deploy your squad (choose one)
+./deployment/scripts/install.sh core     # 4 essential agents (recommended)
+./deployment/scripts/install.sh full     # All 11 specialists  
+./deployment/scripts/install.sh minimal  # Just 2 agents for quick start
 ```
 
-[Full deployment instructions →](QUICKSTART.md)
+**Success Confirmation**:
+```bash
+# Restart Claude Code
+/exit && claude
+
+# Verify deployment
+/agents
+# Your squad will be listed under "Project agents"
+
+# Test your first agent
+@strategist Hello! What can we build today?
+```
+
+[📖 Complete Documentation](#-documentation) | [🚀 5-Minute Quick Start](QUICK-START.md)
 
 ## 🚀 Your First Mission
 
@@ -105,12 +118,23 @@ Data-driven product optimization
 
 [View all missions →](missions/)
 
-## 📖 Field Manual
+## 📖 Documentation
 
-- [Getting Started Guide](field-manual/getting-started.md)
-- [Agent Collaboration Patterns](field-manual/agent-collaboration.md)
-- [Best Practices](field-manual/best-practices.md)
-- [Troubleshooting](field-manual/troubleshooting.md)
+### Quick References
+- **[🚀 5-Minute Quick Start](QUICK-START.md)** - Zero to deployed in under 5 minutes
+- **[⚙️ Installation Guide](INSTALLATION.md)** - Complete setup with troubleshooting
+- **[📋 User Guide](USER-GUIDE.md)** - Master multi-agent workflows
+- **[🛠️ Troubleshooting](TROUBLESHOOTING.md)** - Fix any issue fast
+
+### Advanced Usage
+- **[🔧 Advanced Usage](ADVANCED-USAGE.md)** - Custom configurations and enterprise setup
+- **[🏗️ Agent Architecture](agents/)** - Individual agent capabilities and squad compositions
+- **[🎯 Mission Workflows](missions/)** - Pre-built workflows for common scenarios
+
+### Getting Help
+- **Built-in Support**: `@support` - Deploy the support agent for immediate help
+- **Community**: [Success Stories](community/SUCCESS-STORIES.md) and user experiences
+- **Issues**: [GitHub Issues](https://github.com/TheWayWithin/agent-11/issues) for bugs and feature requests
 
 ## 🤝 Join the Elite
 

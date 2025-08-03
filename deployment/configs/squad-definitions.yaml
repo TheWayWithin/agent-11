@@ -1,0 +1,215 @@
+# AGENT-11 Squad Definitions
+# Defines different agent squad compositions and their purposes
+
+squads:
+  # Core Squad - Essential 4 agents for immediate productivity
+  core:
+    name: "Core Squad"
+    description: "Essential 4 agents for MVP development and basic operations"
+    purpose: "Get started quickly with fundamental development capabilities"
+    agents:
+      - strategist
+      - developer
+      - tester
+      - operator
+    estimated_install_time: "2-3 minutes"
+    use_cases:
+      - "MVP development"
+      - "Small project prototyping" 
+      - "Learning AGENT-11 system"
+      - "Basic development workflow"
+    
+  # Full Squad - All 11 specialized agents
+  full:
+    name: "Full Squad"
+    description: "Complete AGENT-11 deployment with all 11 specialized agents"
+    purpose: "Maximum capability for complex projects and full product development"
+    agents:
+      - strategist
+      - developer
+      - tester
+      - operator
+      - architect
+      - designer
+      - documenter
+      - support
+      - analyst
+      - marketer
+      - coordinator
+    estimated_install_time: "4-5 minutes"
+    use_cases:
+      - "Production applications"
+      - "Complex multi-feature projects"
+      - "Team-based development"
+      - "Full product lifecycle management"
+      
+  # Minimal Squad - Just strategy and development
+  minimal:
+    name: "Minimal Squad"
+    description: "Bare minimum for strategic development - just strategist and developer"
+    purpose: "Lightweight setup for focused development work"
+    agents:
+      - strategist
+      - developer
+    estimated_install_time: "1-2 minutes"
+    use_cases:
+      - "Quick prototyping"
+      - "Learning programming concepts"
+      - "Resource-constrained environments"
+      - "Focused development sessions"
+
+# Agent Categories - Grouping agents by function
+categories:
+  foundation:
+    name: "Foundation Agents"
+    description: "Core agents that form the base of any development workflow"
+    agents:
+      - strategist
+      - developer
+      
+  quality:
+    name: "Quality Assurance"
+    description: "Agents focused on testing, validation, and quality control"
+    agents:
+      - tester
+      - operator
+      
+  architecture:
+    name: "System Architecture"
+    description: "Agents for system design and technical architecture"
+    agents:
+      - architect
+      
+  experience:
+    name: "User Experience"
+    description: "Agents focused on user interface and experience design"
+    agents:
+      - designer
+      
+  communication:
+    name: "Communication & Documentation"
+    description: "Agents for documentation, support, and user communication"
+    agents:
+      - documenter
+      - support
+      
+  intelligence:
+    name: "Business Intelligence"
+    description: "Agents for data analysis and business insights"
+    agents:
+      - analyst
+      
+  growth:
+    name: "Marketing & Growth"
+    description: "Agents focused on marketing and business growth"
+    agents:
+      - marketer
+      
+  coordination:
+    name: "Project Coordination"
+    description: "Agents for project management and workflow orchestration"
+    agents:
+      - coordinator
+
+# Custom Squad Templates (for future expansion)
+custom_templates:
+  frontend_focused:
+    name: "Frontend Focus"
+    description: "Specialized squad for frontend development projects"
+    agents:
+      - strategist
+      - developer
+      - designer
+      - tester
+    use_cases:
+      - "UI/UX heavy projects"
+      - "Frontend application development"
+      - "Design system creation"
+      
+  backend_focused:
+    name: "Backend Focus" 
+    description: "Specialized squad for backend and API development"
+    agents:
+      - strategist
+      - developer
+      - architect
+      - tester
+      - operator
+    use_cases:
+      - "API development"
+      - "Microservices architecture"
+      - "Database design"
+      
+  business_focused:
+    name: "Business Focus"
+    description: "Squad optimized for business and product development"
+    agents:
+      - strategist
+      - analyst
+      - marketer
+      - support
+      - coordinator
+    use_cases:
+      - "Business strategy"
+      - "Market research"
+      - "Product planning"
+
+# Squad Progression - Recommended upgrade paths
+progression:
+  entry_path:
+    - minimal
+    - core
+    - full
+    
+  specialist_paths:
+    frontend_developer:
+      - minimal
+      - frontend_focused
+      - core
+      - full
+      
+    backend_developer:
+      - minimal
+      - backend_focused
+      - core
+      - full
+      
+    product_manager:
+      - business_focused
+      - core
+      - full
+      
+    solo_founder:
+      - core
+      - full
+
+# Installation order optimization
+installation_order:
+  # Core agents should be installed first for immediate productivity
+  priority_order:
+    1: [strategist, developer]
+    2: [tester, operator] 
+    3: [architect, designer]
+    4: [documenter, support]
+    5: [analyst, marketer, coordinator]
+    
+  # Dependencies between agents (if any)
+  dependencies:
+    coordinator:
+      recommends: [strategist, developer, tester]
+    architect:
+      recommends: [strategist]
+    designer:
+      recommends: [strategist]
+      
+# Validation rules for squads
+validation:
+  min_agents_per_squad: 1
+  max_agents_per_squad: 11
+  required_for_core: [strategist, developer, tester, operator]
+  recommended_combinations:
+    - [strategist, developer]
+    - [developer, tester]
+    - [tester, operator]
+    - [strategist, analyst]
+    - [designer, developer]

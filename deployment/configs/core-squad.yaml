@@ -1,0 +1,163 @@
+# AGENT-11 Core Squad Configuration
+# Specific configuration for the Core Squad deployment
+
+squad:
+  name: "core"
+  display_name: "Core Squad"
+  version: "1.0.0"
+  description: "Essential 4-agent squad for immediate development productivity"
+  
+# Agent composition
+agents:
+  strategist:
+    priority: 1
+    category: "foundation"
+    description: "Product strategy and requirements definition"
+    essential: true
+    dependencies: []
+    post_install_message: "Ready to define product strategy and user stories"
+    
+  developer:
+    priority: 2
+    category: "foundation" 
+    description: "Full-stack development and implementation"
+    essential: true
+    dependencies: []
+    post_install_message: "Ready to build features and ship code"
+    
+  tester:
+    priority: 3
+    category: "quality"
+    description: "Quality assurance and test automation"
+    essential: true
+    dependencies: [developer]
+    post_install_message: "Ready to ensure quality and catch bugs"
+    
+  operator:
+    priority: 4
+    category: "quality"
+    description: "DevOps, deployment, and operations"
+    essential: true
+    dependencies: [developer]
+    post_install_message: "Ready to deploy and monitor your applications"
+
+# Installation configuration
+installation:
+  total_agents: 4
+  estimated_time_minutes: 3
+  disk_space_mb: 20
+  parallel_install: false
+  
+  # Installation sequence
+  sequence:
+    1:
+      agents: [strategist]
+      reason: "Foundation agent for all planning"
+    2:
+      agents: [developer]
+      reason: "Core implementation capability"
+    3:
+      agents: [tester, operator]
+      reason: "Quality and deployment in parallel"
+      
+# Validation rules specific to core squad
+validation:
+  required_agents: [strategist, developer, tester, operator]
+  minimum_viable_subset: [strategist, developer]
+  
+  # File validation
+  file_checks:
+    yaml_header_required: true
+    min_file_size_bytes: 1000
+    max_file_size_bytes: 50000
+    required_sections:
+      - "Core Capabilities"
+      - "You are THE"
+      
+# Post-installation configuration
+post_install:
+  show_quick_start: true
+  show_agent_summaries: true
+  create_readme: false
+  
+  # Quick start workflow example
+  workflow_example:
+    title: "Core Squad Quick Start"
+    steps:
+      - command: "@strategist Create user stories for a user authentication feature"
+        description: "Define what to build"
+      - command: "@developer Implement the authentication based on the requirements above"  
+        description: "Build the feature"
+      - command: "@tester Validate the implementation and create test cases"
+        description: "Ensure quality"
+      - command: "@operator Deploy to production when tests pass"
+        description: "Ship to users"
+        
+# Success metrics
+metrics:
+  target_install_success_rate: 98
+  target_install_time_seconds: 180
+  target_user_satisfaction: 95
+  
+# Troubleshooting
+troubleshooting:
+  common_issues:
+    - issue: "Permission denied errors"
+      solution: "Run validation script to check file permissions"
+      command: "./deployment/scripts/validate-environment.sh"
+      
+    - issue: "Agent files not found"
+      solution: "Verify source directory structure"
+      command: "ls -la agents/specialists/"
+      
+    - issue: "Installation fails mid-process"
+      solution: "System will auto-rollback. Check disk space and try again"
+      command: "./deployment/scripts/validate-environment.sh"
+
+# Upgrade paths
+upgrade:
+  to_full_squad:
+    description: "Add 7 more specialists for complete capability"
+    command: "./deployment/scripts/install.sh full"
+    additional_agents: [architect, designer, documenter, support, analyst, marketer, coordinator]
+    estimated_time_minutes: 2
+    
+  to_custom:
+    description: "Add specific agents based on project needs"
+    options:
+      frontend_focus: [designer]
+      backend_focus: [architect]
+      business_focus: [analyst, marketer]
+      documentation: [documenter]
+      support: [support]
+      coordination: [coordinator]
+
+# Integration with other tools
+integrations:
+  claude_code:
+    deployment_command: "/agent {agent_name}"
+    config_location: "~/.claude/agents/"
+    supported_formats: [".md"]
+    
+  version_control:
+    recommended: true
+    exclude_patterns:
+      - "*.backup"
+      - ".backup-info"
+      
+# Quality gates
+quality_gates:
+  pre_install:
+    - "Environment validation passes"
+    - "Sufficient disk space available"
+    - "Required permissions granted"
+    
+  post_install:
+    - "All 4 agents installed successfully"
+    - "Agent files pass validation"
+    - "Quick start guide displayed"
+    
+  rollback_triggers:
+    - "Any agent installation fails"
+    - "File validation errors"
+    - "Disk space exhausted during install"
