@@ -7,13 +7,19 @@
 set -euo pipefail
 
 # Configuration
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 CLAUDE_DIR="$HOME/.claude"
 AGENTS_DIR="$CLAUDE_DIR/agents"
 BACKUP_DIR="$CLAUDE_DIR/backups/agent-11"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 BACKUP_PATH="$BACKUP_DIR/$TIMESTAMP"
+
+# GitHub repository configuration
+GITHUB_REPO="TheWayWithin/agent-11"
+GITHUB_BRANCH="main"
+GITHUB_AGENTS_PATH=".claude/agents"
+GITHUB_RAW_BASE="https://raw.githubusercontent.com/$GITHUB_REPO/$GITHUB_BRANCH/$GITHUB_AGENTS_PATH"
 
 # Colors for output
 RED='\033[0;31m'
@@ -68,6 +74,47 @@ detect_platform() {
     esac
 }
 
+# Download agent file from GitHub
+download_agent_from_github() {
+    local agent_name="$1"
+    local dest_file="$2"
+    local url="$GITHUB_RAW_BASE/$agent_name.md"
+    
+    log "Downloading $agent_name from GitHub..."
+    
+    if command -v curl >/dev/null 2>&1; then
+        if curl -fsSL "$url" -o "$dest_file"; then
+            log "Downloaded: $agent_name"
+            return 0
+        else
+            error "Failed to download $agent_name from $url"
+            return 1
+        fi
+    elif command -v wget >/dev/null 2>&1; then
+        if wget -q "$url" -O "$dest_file"; then
+            log "Downloaded: $agent_name"
+            return 0
+        else
+            error "Failed to download $agent_name from $url"
+            return 1
+        fi
+    else
+        error "Neither curl nor wget available for downloading agents"
+        return 1
+    fi
+}
+
+# Check if we're running from a local repository or remote execution
+detect_execution_mode() {
+    if [[ -d "$PROJECT_ROOT/.claude/agents" ]]; then
+        echo "local"
+    elif [[ -d "$PROJECT_ROOT/agents/specialists" ]]; then
+        echo "local"
+    else
+        echo "remote"
+    fi
+}
+
 # Validate environment before installation
 validate_environment() {
     log "Validating installation environment..."
@@ -77,9 +124,26 @@ validate_environment() {
         fatal "Cannot write to home directory: $HOME"
     fi
     
-    # Check if source agents exist
-    if [[ ! -d "$PROJECT_ROOT/agents/specialists" ]]; then
-        fatal "Agent source directory not found: $PROJECT_ROOT/agents/specialists"
+    # Detect execution mode
+    local execution_mode
+    execution_mode=$(detect_execution_mode)
+    log "Execution mode: $execution_mode"
+    
+    if [[ "$execution_mode" == "local" ]]; then
+        # Check if source agents exist in new .claude/agents location first
+        if [[ -d "$PROJECT_ROOT/.claude/agents" ]]; then
+            log "Using agents from: $PROJECT_ROOT/.claude/agents"
+        elif [[ -d "$PROJECT_ROOT/agents/specialists" ]]; then
+            log "Using agents from: $PROJECT_ROOT/agents/specialists"
+        else
+            fatal "Local agent source directories not found"
+        fi
+    else
+        # Remote execution - check network tools availability
+        if ! command -v curl >/dev/null 2>&1 && ! command -v wget >/dev/null 2>&1; then
+            fatal "Remote installation requires curl or wget to download agents"
+        fi
+        log "Remote installation mode - will download agents from GitHub"
     fi
     
     # Check platform compatibility
@@ -160,24 +224,53 @@ validate_agent_file() {
 # Install individual agent
 install_agent() {
     local agent_name="$1"
-    local source_file="$PROJECT_ROOT/agents/specialists/$agent_name.md"
     local dest_file="$AGENTS_DIR/$agent_name.md"
-    
-    # Validate source file
-    if ! validate_agent_file "$source_file"; then
-        return 1
-    fi
+    local execution_mode
+    execution_mode=$(detect_execution_mode)
     
     # Create destination directory if it doesn't exist
     mkdir -p "$AGENTS_DIR"
     
-    # Copy agent file
-    if cp "$source_file" "$dest_file"; then
-        log "Installed: $agent_name"
-        return 0
+    if [[ "$execution_mode" == "local" ]]; then
+        # Try new .claude/agents location first, then fall back to old location
+        local source_file
+        if [[ -f "$PROJECT_ROOT/.claude/agents/$agent_name.md" ]]; then
+            source_file="$PROJECT_ROOT/.claude/agents/$agent_name.md"
+        elif [[ -f "$PROJECT_ROOT/agents/specialists/$agent_name.md" ]]; then
+            source_file="$PROJECT_ROOT/agents/specialists/$agent_name.md"
+        else
+            error "Agent source file not found: $agent_name"
+            return 1
+        fi
+        
+        # Validate source file
+        if ! validate_agent_file "$source_file"; then
+            return 1
+        fi
+        
+        # Copy agent file
+        if cp "$source_file" "$dest_file"; then
+            log "Installed: $agent_name"
+            return 0
+        else
+            error "Failed to install: $agent_name"
+            return 1
+        fi
     else
-        error "Failed to install: $agent_name"
-        return 1
+        # Remote execution - download from GitHub
+        if download_agent_from_github "$agent_name" "$dest_file"; then
+            # Validate downloaded file
+            if validate_agent_file "$dest_file"; then
+                log "Installed: $agent_name"
+                return 0
+            else
+                error "Downloaded agent file is invalid: $agent_name"
+                rm -f "$dest_file"
+                return 1
+            fi
+        else
+            return 1
+        fi
     fi
 }
 
