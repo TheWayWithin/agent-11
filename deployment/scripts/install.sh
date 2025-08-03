@@ -30,7 +30,7 @@ NC='\033[0m' # No Color
 
 # Available squads
 SQUAD_CORE=("strategist" "developer" "tester" "operator")
-SQUAD_FULL=("strategist" "developer" "tester" "operator" "architect" "designer" "documenter" "support" "analyst" "marketer" "coordinator")
+SQUAD_FULL=("strategist" "developer" "tester" "operator" "architect" "designer" "documenter" "support" "analyst" "marketer" "coordinator" "agent-optimizer")
 SQUAD_MINIMAL=("strategist" "developer")
 
 # Logging functions
@@ -106,11 +106,16 @@ download_agent_from_github() {
 
 # Check if we're running from a local repository or remote execution
 detect_execution_mode() {
-    if [[ -d "$PROJECT_ROOT/.claude/agents" ]]; then
+    # Check if we're running from within the actual git repository
+    # This is the most reliable way to detect local vs remote execution
+    if [[ -d "$PROJECT_ROOT/.git" && -f "$PROJECT_ROOT/README.md" && -d "$PROJECT_ROOT/.claude/agents" ]]; then
+        # We're in the actual AGENT-11 repository
         echo "local"
-    elif [[ -d "$PROJECT_ROOT/agents/specialists" ]]; then
+    elif [[ -d "$PROJECT_ROOT/.git" && -f "$PROJECT_ROOT/README.md" && -d "$PROJECT_ROOT/agents/specialists" ]]; then
+        # We're in the repository but using old structure
         echo "local"
     else
+        # We're running via curl download or not in repository
         echo "remote"
     fi
 }
@@ -144,6 +149,15 @@ validate_environment() {
             fatal "Remote installation requires curl or wget to download agents"
         fi
         log "Remote installation mode - will download agents from GitHub"
+        
+        # Check if some agents already exist locally and warn user
+        if [[ -d "$AGENTS_DIR" ]]; then
+            local existing_count=$(find "$AGENTS_DIR" -name "*.md" -type f | wc -l)
+            if [[ $existing_count -gt 0 ]]; then
+                warn "Found $existing_count existing agents in $AGENTS_DIR"
+                warn "These will be backed up and replaced with latest versions from GitHub"
+            fi
+        fi
     fi
     
     # Check platform compatibility
@@ -246,6 +260,12 @@ install_agent() {
         # Validate source file
         if ! validate_agent_file "$source_file"; then
             return 1
+        fi
+        
+        # Check if source and destination are the same (prevent copy to self)
+        if [[ "$(realpath "$source_file" 2>/dev/null || echo "$source_file")" == "$(realpath "$dest_file" 2>/dev/null || echo "$dest_file")" ]]; then
+            log "Agent already in correct location: $agent_name"
+            return 0
         fi
         
         # Copy agent file
