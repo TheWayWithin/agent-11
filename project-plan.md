@@ -93,6 +93,14 @@
 - [x] **@developer**: Added all 12 agents to deployment system ✅
 - [x] **User Testing**: Successful deployment of full squad (12 agents) ✅
 
+#### Project-Only Installation System [COMPLETED] ✅
+- [x] **@strategist**: Strategic analysis of installation location preferences ✅
+- [x] **@developer**: Enhanced installer for project-only deployment with intelligent detection ✅
+- [x] **@documenter**: Updated all documentation to reflect project-focused approach ✅
+- [x] **@documenter**: Created comprehensive multi-project workflow guide ✅
+- [x] **System Impact**: Eliminated "overridden by project" conflicts completely ✅
+- [x] **User Experience**: Clean, predictable project-local installations ✅
+
 #### Community Infrastructure [PRIORITY 2 - Week 2]
 - [ ] **@support**: Set up Discord server with automated welcome flow
 - [ ] **@marketer**: Recruit 10 beta users for early feedback
