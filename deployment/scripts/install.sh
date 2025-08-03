@@ -9,9 +9,28 @@ set -euo pipefail
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-CLAUDE_DIR="$HOME/.claude"
-AGENTS_DIR="$CLAUDE_DIR/agents"
-BACKUP_DIR="$CLAUDE_DIR/backups/agent-11"
+
+# Detect if we're in a project directory and set appropriate installation location
+detect_installation_location() {
+    # Check if we're in a project directory (look for .git or existing .claude)
+    if [[ -d ".git" ]] || [[ -d ".claude" ]]; then
+        # Project directory detected - install locally
+        CLAUDE_DIR="$(pwd)/.claude"
+        AGENTS_DIR="$CLAUDE_DIR/agents"
+        BACKUP_DIR="$CLAUDE_DIR/backups/agent-11"
+        return 0
+    else
+        # No project detected - install globally
+        CLAUDE_DIR="$HOME/.claude"
+        AGENTS_DIR="$CLAUDE_DIR/agents"
+        BACKUP_DIR="$CLAUDE_DIR/backups/agent-11"
+        return 1
+    fi
+}
+
+# Set installation location based on project detection
+detect_installation_location
+PROJECT_INSTALL=$?
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 BACKUP_PATH="$BACKUP_DIR/$TIMESTAMP"
 
@@ -124,9 +143,25 @@ detect_execution_mode() {
 validate_environment() {
     log "Validating installation environment..."
     
-    # Check if we can write to home directory
-    if [[ ! -w "$HOME" ]]; then
-        fatal "Cannot write to home directory: $HOME"
+    # Show installation location
+    if [[ $PROJECT_INSTALL -eq 0 ]]; then
+        log "Installing AGENT-11 to current project: $AGENTS_DIR"
+    else
+        log "No project detected. Installing globally: $AGENTS_DIR"
+    fi
+    
+    # Check if we can write to the target directory
+    local target_parent
+    if [[ $PROJECT_INSTALL -eq 0 ]]; then
+        target_parent="$(pwd)"
+        if [[ ! -w "$target_parent" ]]; then
+            fatal "Cannot write to current directory: $target_parent"
+        fi
+    else
+        target_parent="$HOME"
+        if [[ ! -w "$target_parent" ]]; then
+            fatal "Cannot write to home directory: $target_parent"
+        fi
     fi
     
     # Detect execution mode
@@ -426,7 +461,11 @@ show_post_install_instructions() {
     echo
     echo "🎉 AGENT-11 $squad_type Squad Deployed Successfully!"
     echo
-    echo "📁 Agents installed in: $AGENTS_DIR"
+    if [[ $PROJECT_INSTALL -eq 0 ]]; then
+        echo "📁 Agents installed in: $AGENTS_DIR (project-local)"
+    else
+        echo "📁 Agents installed in: $AGENTS_DIR (global)"
+    fi
     echo
     echo "🚀 Quick Start Commands:"
     echo
