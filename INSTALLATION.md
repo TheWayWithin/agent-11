@@ -1,29 +1,53 @@
-# AGENT-11 Installation Guide
+# AGENT-11 Project Installation Guide
 
-Complete installation documentation for the AGENT-11 deployment system. This guide covers everything from prerequisites to advanced configuration.
+Complete project installation documentation for the AGENT-11 deployment system. AGENT-11 deploys your elite squad to work on a specific project - each project gets its own specialized team that understands your project context perfectly.
 
 ## Table of Contents
 
-- [Prerequisites](#prerequisites)
+- [Project Requirements](#project-requirements)
 - [System Requirements](#system-requirements)
-- [Installation Methods](#installation-methods)
+- [Project Installation Methods](#project-installation-methods)
 - [Squad Types](#squad-types)
-- [Step-by-Step Installation](#step-by-step-installation)
+- [Step-by-Step Project Setup](#step-by-step-project-setup)
 - [Post-Installation Setup](#post-installation-setup)
 - [Verification](#verification)
-- [Platform-Specific Notes](#platform-specific-notes)
+- [Multi-Project Setup](#multi-project-setup)
 - [Troubleshooting](#troubleshooting)
 
-## Prerequisites
+## Project Requirements
+
+### Valid Project Directory
+AGENT-11 requires installation within a valid project directory. The installer detects:
+
+✅ **Git Repository**: `.git/` directory  
+✅ **Package Files**: `package.json`, `requirements.txt`, `Cargo.toml`, `go.mod`, etc.  
+✅ **Source Code**: `.js`, `.py`, `.go`, `.rs`, `.ts`, etc. files  
+✅ **Configuration Files**: `docker-compose.yml`, `.env`, config files  
+✅ **Build Tools**: `Makefile`, `webpack.config.js`, etc.
+
+### Examples of Valid Projects
+```bash
+# Node.js project
+ls -la ~/my-app/
+# .git/ package.json src/ public/
+
+# Python project  
+ls -la ~/data-analysis/
+# .git/ requirements.txt main.py data/
+
+# Go project
+ls -la ~/api-server/
+# .git/ go.mod main.go cmd/
+
+# Generic project with source code
+ls -la ~/website/
+# .git/ index.html style.css scripts/
+```
 
 ### Required Software
-- **Claude Code**: Latest version of Claude Code must be installed and working
+- **Claude Code**: Latest version must be installed and working
 - **Bash Shell**: Available on macOS/Linux by default, Windows users need WSL
-- **Git**: For cloning the repository (optional if downloading as ZIP)
-
-### System Access
-- **Home Directory Write Access**: Installer creates `~/.claude/agents/`
-- **Terminal/Command Line**: Basic familiarity with command line operations
+- **Project Directory Write Access**: Installer creates `.claude/agents/` in your project
 
 ### Minimum System Requirements
 - **Storage**: 10MB free space (agents are lightweight text files)
@@ -41,26 +65,23 @@ Complete installation documentation for the AGENT-11 deployment system. This gui
 | Windows (native) | ⚠️ Limited | Use Git Bash or PowerShell with bash |
 
 ### Claude Code Integration
-- Agents install to `~/.claude/agents/` directory
-- Claude Code automatically detects new agents on restart
-- No additional configuration required
+- Agents install to project-local `.claude/agents/` directory
+- Claude Code automatically detects project agents when started in project directory
+- Each project maintains its own isolated agent squad
+- No global pollution or cross-project contamination
 
-## Installation Methods
+## Project Installation Methods
 
-### Method 1: Automated Installation (Recommended)
-
-```bash
-# Navigate to project directory
-cd /path/to/agent-11
-
-# Run installer with your preferred squad
-./deployment/scripts/install.sh core
-```
-
-### Method 2: Direct Download + Install (Recommended)
+### Method 1: Direct Project Installation (Recommended)
 
 ```bash
-# Download and run in one command - fully automated
+# Step 1: Navigate to your project directory (REQUIRED)
+cd /path/to/your/project
+
+# Step 2: Verify project is valid
+ls -la  # Should show .git, package.json, source files, etc.
+
+# Step 3: Install your squad
 curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 
 # Other squad options:
@@ -68,18 +89,38 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s minimal
 ```
 
-### Method 3: Manual Installation
+### Method 2: Clone AGENT-11 then Install to Project
+
+```bash
+# Step 1: Get AGENT-11 source
+git clone https://github.com/TheWayWithin/agent-11.git
+cd agent-11
+
+# Step 2: Navigate to your project
+cd /path/to/your/project
+
+# Step 3: Run installer from AGENT-11 directory
+/path/to/agent-11/deployment/scripts/install.sh core
+```
+
+### Method 3: Manual Project Installation
 
 For users who prefer full control:
 
 ```bash
-# Create agents directory
-mkdir -p ~/.claude/agents
+# Step 1: Navigate to your project
+cd /path/to/your/project
 
-# Copy agent files manually
-cp agents/specialists/strategist.md ~/.claude/agents/
-cp agents/specialists/developer.md ~/.claude/agents/
+# Step 2: Create project agents directory
+mkdir -p .claude/agents
+
+# Step 3: Copy agent files to your project
+cp /path/to/agent-11/agents/specialists/strategist.md .claude/agents/
+cp /path/to/agent-11/agents/specialists/developer.md .claude/agents/
 # ... continue for desired agents
+
+# Step 4: Verify project-local installation
+ls -la .claude/agents/
 ```
 
 ## Squad Types
@@ -111,163 +152,195 @@ cp agents/specialists/developer.md ~/.claude/agents/
 ./deployment/scripts/install.sh minimal
 ```
 
-## Step-by-Step Installation
+## Step-by-Step Project Setup
 
-### Step 1: Get AGENT-11
+### Step 1: Prepare Your Project
 
 ```bash
-# Option A: Clone repository
-git clone https://github.com/yourusername/agent-11.git
-cd agent-11
+# Navigate to your project directory
+cd /path/to/your/project
 
-# Option B: Download ZIP
-wget https://github.com/yourusername/agent-11/archive/main.zip
-unzip main.zip
-cd agent-11-main
+# Verify it's a valid project
+ls -la
+# Should show: .git/, package.json, source files, etc.
+
+# If no project yet, initialize one:
+git init
+echo '# My Project' > README.md
+git add README.md
+git commit -m "Initial commit"
 ```
 
-### Step 2: Make Installer Executable
+### Step 2: Install Project Squad
 
 ```bash
-chmod +x deployment/scripts/install.sh
+# From your project directory, run installer
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 ```
 
-### Step 3: Run Installation
+### Step 3: Verify Project Detection
 
-```bash
-# Choose your squad type
-./deployment/scripts/install.sh core
+The installer will show project detection:
+
+```
+🔍 Detecting project context...
+✅ Git repository detected
+✅ Node.js project detected (package.json found)
+✅ Source code detected (src/ directory)
+📁 Installing to: /your/project/.claude/agents/
 ```
 
 ### Step 4: Monitor Installation
 
-The installer provides real-time feedback:
+The installer provides real-time feedback with project context:
 
 ```
-🚁 AGENT-11 Deployment System
-==============================
+🚁 AGENT-11 Project Deployment System
+=====================================
 
 [INFO] Selected squad: core (4 agents)
-[INFO] Validating installation environment...
-[SUCCESS] Environment validation passed
-[INFO] Creating backup of existing agents...
-[SUCCESS] Backup created: ~/.claude/backups/agent-11/20240203_143022
+[INFO] Project directory: /Users/you/my-startup-app
+[INFO] Detected project type: Node.js application with React
+[INFO] Validating project environment...
+[SUCCESS] Project validation passed
+[INFO] Creating project-local agents directory...
+[SUCCESS] Created: /Users/you/my-startup-app/.claude/agents/
 [INFO] Installing core squad (4 agents)...
-[PROGRESS] [1/4] 25% - Installing strategist
-[PROGRESS] [2/4] 50% - Installing developer
-[PROGRESS] [3/4] 75% - Installing tester
-[PROGRESS] [4/4] 100% - Installing operator
+[PROGRESS] [1/4] 25% - Installing strategist (with project context)
+[PROGRESS] [2/4] 50% - Installing developer (React/Node.js specialist)
+[PROGRESS] [3/4] 75% - Installing tester (Jest/React Testing Library)
+[PROGRESS] [4/4] 100% - Installing operator (Node.js deployment)
 [SUCCESS] All core squad agents installed successfully!
-[INFO] Verifying installation...
-[SUCCESS] Installation verification passed!
+[INFO] Verifying project installation...
+[SUCCESS] Project installation verification passed!
 
-🎉 AGENT-11 core Squad Deployed Successfully!
+🎉 AGENT-11 Project Squad Deployed Successfully!
 ```
 
-### Step 5: Restart Claude Code
+### Step 4: Restart Claude Code in Project
 
 ```bash
 # If Claude Code is running
 /exit
 
-# Start fresh
+# Start fresh in your project directory
+cd /path/to/your/project
 claude
 ```
 
 ## Post-Installation Setup
 
-### Verify Agent Detection
+### Verify Project Agent Detection
 
 ```bash
-# In Claude Code
+# In Claude Code (from your project directory)
 /agents
 ```
 
-You should see your agents listed under "Project agents (.claude/agents)":
+You should see your project-specific agents:
 
 ```
 Project agents (.claude/agents)
-  strategist - Product strategy and requirements specialist
-  developer - Full-stack development specialist
-  tester - Quality assurance and testing specialist
-  operator - DevOps and deployment specialist
+  strategist - Product strategy specialist (knows your project context)
+  developer - Full-stack specialist (familiar with React/Node.js stack)
+  tester - QA specialist (configured for Jest/RTL)
+  operator - DevOps specialist (Node.js deployment ready)
 ```
 
-### Test Basic Functionality
+### Test Project-Aware Functionality
 
 ```bash
-# Test individual agent
-@strategist What types of projects can you help me plan?
+# Test project understanding
+@strategist What should we build next in this project?
 
-# Test agent interaction
-@strategist Create requirements for a user authentication system
-@developer Review the requirements above and provide implementation approach
+# Test stack-aware development
+@developer Add a new feature using our existing React/Node.js stack
+
+# Test project-specific testing
+@tester Create tests that fit our existing test structure
 ```
 
-### Backup Verification
+### Project Structure Verification
 
-Check that backups were created:
+Check that project structure is correct:
 
 ```bash
-ls -la ~/.claude/backups/agent-11/
+# Verify project agents directory
+ls -la .claude/agents/
+
+# Should show your squad files:
+# strategist.md
+# developer.md  
+# tester.md
+# operator.md
 ```
 
 ## Verification
 
-### Installation Success Checklist
+### Project Installation Success Checklist
 
 - [ ] No error messages during installation
-- [ ] "🎉 AGENT-11 Squad Deployed Successfully!" message shown
-- [ ] Agents visible in Claude Code `/agents` command
-- [ ] Test agent responds to @agentname commands
-- [ ] Backup created in `~/.claude/backups/agent-11/`
+- [ ] Project type correctly detected
+- [ ] "🎉 AGENT-11 Project Squad Deployed Successfully!" message shown
+- [ ] Agents visible in Claude Code `/agents` command (when in project directory)
+- [ ] Test agent responds with project context
+- [ ] Project-local `.claude/agents/` directory created
 
-### Manual Verification
+### Manual Project Verification
 
 ```bash
-# Check agent files exist
-ls -la ~/.claude/agents/
+# From your project directory
+# Check project agent files exist
+ls -la .claude/agents/
 
 # Check file format
-head -10 ~/.claude/agents/strategist.md
+head -10 .claude/agents/strategist.md
 
 # Should show YAML header:
 # ---
 # name: strategist
-# description: ...
+# description: Product strategy specialist with project context
 # ---
 ```
 
-### Functional Testing
+### Project-Aware Functional Testing
 
 ```bash
-@strategist Hello! Can you help me plan a project?
-@developer What programming languages and frameworks do you work with?
-@tester How do you approach testing new features?
-@operator What deployment strategies do you recommend?
+@strategist What features should we prioritize in this project?
+@developer How can we improve our existing codebase?
+@tester What testing strategy fits our current setup?
+@operator How should we deploy this specific project?
 ```
 
-## Platform-Specific Notes
+## Multi-Project Setup
 
-### macOS
-- Uses built-in bash shell
-- Home directory: `/Users/username`
-- May prompt for directory creation permissions
+### Managing Multiple Projects
 
-### Linux
-- Uses system bash shell
-- Home directory: `/home/username`
-- File permissions automatically handled
+```bash
+# Each project gets its own isolated squad
+cd ~/project-a
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 
-### Windows (WSL)
-- Requires Windows Subsystem for Linux
-- Home directory: `/home/username` (within WSL)
-- May need to install git: `sudo apt install git`
+cd ~/project-b  
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
 
-### Windows (Native)
-- Use Git Bash or PowerShell with bash support
-- Home directory: `C:\Users\username`
-- May require additional path configuration
+cd ~/project-c
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s minimal
+```
+
+### Project Isolation Benefits
+
+✅ **No Cross-Contamination**: Each project's agents understand only that project  
+✅ **Stack-Specific Knowledge**: Agents adapt to each project's technology stack  
+✅ **Clean Separation**: No global pollution or conflicting configurations  
+✅ **Independent Upgrades**: Upgrade squads per project without affecting others  
+
+### Platform-Specific Notes
+
+### All Platforms
+- Project agents stored in `.claude/agents/` within each project
+- Claude Code detects agents when started in project directory
+- No global installation - everything is project-local
 
 ## Troubleshooting
 
@@ -279,36 +352,48 @@ chmod +x deployment/scripts/install.sh
 ./deployment/scripts/install.sh core
 ```
 
-**Error**: "Agent source directory not found"
+**Error**: "No project detected" or "Not a valid project directory"
 ```bash
-# Ensure you're in the agent-11 directory
-pwd
-ls -la agents/specialists/
+# Ensure you're in a valid project directory
+pwd  # Should show your project path
+ls -la  # Should show .git, package.json, source files, etc.
+
+# If not a project, initialize one:
+git init
+echo '{}' > package.json  # or create appropriate project files
 ```
 
-**Error**: "Cannot write to home directory"
+**Error**: "Cannot write to project directory"
 ```bash
-# Check home directory permissions
-ls -ld $HOME
+# Check project directory permissions
+ls -ld .
 # Should show write permissions for user
+
+# If permission issue:
+sudo chown -R $USER .
 ```
 
 ### Agents Not Appearing
 
 **Issue**: No agents in `/agents` list
 ```bash
-# Restart Claude Code
+# Restart Claude Code in project directory
 /exit
+cd /path/to/your/project
 claude
 
-# Check agents directory
-ls -la ~/.claude/agents/
+# Check project agents directory
+ls -la .claude/agents/
 ```
 
 **Issue**: Agent files exist but not detected
 ```bash
+# Ensure you're in the project directory where agents are installed
+pwd
+ls -la .claude/agents/
+
 # Check file format
-head -10 ~/.claude/agents/strategist.md
+head -10 .claude/agents/strategist.md
 # Must have YAML header with name field
 ```
 
@@ -324,25 +409,29 @@ head -10 ~/.claude/agents/strategist.md
 **Issue**: "Agent not found" error
 ```bash
 # Verify file name matches agent name in YAML header
-grep "name:" ~/.claude/agents/strategist.md
+grep "name:" .claude/agents/strategist.md
+
+# Ensure Claude Code is running from project directory
+pwd  # Should show your project path
 ```
 
 ### Rollback Issues
 
-**Issue**: Installation failed and rollback didn't work
+**Issue**: Installation failed and cleanup needed
 ```bash
-# Manual cleanup
-rm -rf ~/.claude/agents/
-# Restore from backup manually
-cp -r ~/.claude/backups/agent-11/latest/* ~/.claude/agents/
+# Manual cleanup of project agents
+rm -rf .claude/agents/
+
+# Re-run installation
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 ```
 
 ### Performance Issues
 
 **Issue**: Slow installation
 ```bash
-# Check available disk space
-df -h $HOME
+# Check available disk space in project
+df -h .
 # Should have at least 10MB free
 ```
 
@@ -352,61 +441,73 @@ df -h $HOME
 
 ## Advanced Installation Options
 
-### Custom Agent Selection
+### Custom Project Agent Selection
 
 ```bash
-# Install only specific agents (requires manual modification)
-# Edit deployment/configs/squad-definitions.yaml
-# Add custom squad definition
+# Install only specific agents to your project
+# Navigate to your project first
+cd /path/to/your/project
+
+# Then install specific agents manually
+mkdir -p .claude/agents
+cp /path/to/agent-11/agents/specialists/strategist.md .claude/agents/
+cp /path/to/agent-11/agents/specialists/developer.md .claude/agents/
 ```
 
-### Different Installation Directory
+### Different Project Agent Directory
 
 ```bash
-# Set custom Claude directory (advanced users)
-export CLAUDE_DIR="/custom/path"
-./deployment/scripts/install.sh core
+# Agents are always project-local in .claude/agents/
+# This ensures isolation and project-specific context
+# No global installation options by design
 ```
 
 ### Development Installation
 
 ```bash
-# For AGENT-11 developers
-./deployment/scripts/install.sh core --dev
+# For AGENT-11 developers working on a project
+cd /path/to/your/project
+./path/to/agent-11/deployment/scripts/install.sh core --dev
 # Links files instead of copying (changes reflect immediately)
 ```
 
 ## Upgrade and Maintenance
 
-### Upgrading Squads
+### Upgrading Project Squads
 
 ```bash
+# From your project directory
+cd /path/to/your/project
+
 # Upgrade from core to full
-./deployment/scripts/install.sh full
-# Existing agents preserved, new ones added
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
+# Existing project agents preserved, new ones added
 
-# Downgrade (with confirmation)
-./deployment/scripts/install.sh core --force
+# Each project can have different squad types
 ```
 
-### Updating Agents
+### Updating Project Agents
 
 ```bash
-# Pull latest changes
-git pull origin main
+# Update agents for a specific project
+cd /path/to/your/project
 
-# Re-run installation
-./deployment/scripts/install.sh core
+# Re-run installation to get latest agents
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 ```
 
-### Backup Management
+### Project Agent Management
 
 ```bash
-# List backups
-ls -la ~/.claude/backups/agent-11/
+# Each project manages its own agents
+cd /path/to/your/project
+ls -la .claude/agents/
 
-# Restore from specific backup
-cp -r ~/.claude/backups/agent-11/20240203_143022/* ~/.claude/agents/
+# Remove project agents if needed
+rm -rf .claude/agents/
+
+# Reinstall fresh
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 ```
 
 ## Getting Help
@@ -414,11 +515,12 @@ cp -r ~/.claude/backups/agent-11/20240203_143022/* ~/.claude/agents/
 ### Self-Diagnosis
 
 ```bash
-# Run environment validation
-./deployment/scripts/validate-environment.sh
+# From your project directory
+pwd  # Verify you're in the right project
+ls -la .claude/agents/  # Check agents are installed
 
-# Check installation logs
-cat ~/.claude/logs/agent-11-install.log
+# Test project detection
+@strategist What type of project is this?
 ```
 
 ### Support Channels
@@ -437,15 +539,17 @@ When reporting problems, include:
 uname -a
 claude --version
 
-# Installation logs
-cat ~/.claude/logs/agent-11-install.log
+# Project information
+pwd  # Current project directory
+ls -la  # Project structure
+ls -la .claude/agents/  # Installed agents
 
-# Agent file status
-ls -la ~/.claude/agents/
+# Project type
+file package.json requirements.txt go.mod Cargo.toml 2>/dev/null || echo "No standard project files found"
 ```
 
 ---
 
-**Need immediate help?** Deploy the support agent: `@support Help me troubleshoot my AGENT-11 installation`
+**Need immediate help?** Deploy the support agent: `@support Help me troubleshoot my AGENT-11 project installation`
 
-**Installation working perfectly?** Share your success story in `/community/SUCCESS-STORIES.md`
+**Project installation working perfectly?** Share your success story in `/community/SUCCESS-STORIES.md`

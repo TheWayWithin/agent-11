@@ -5,9 +5,27 @@
 
 set -euo pipefail
 
-# Configuration
-CLAUDE_DIR="$HOME/.claude"
-AGENTS_DIR="$CLAUDE_DIR/agents"
+# Configuration - Project-local installation only
+detect_project_context() {
+    if [[ -d ".git" ]] || [[ -d ".claude" ]] || [[ -f "package.json" ]] || \
+       [[ -f "requirements.txt" ]] || [[ -f "README.md" ]] || [[ -f "Cargo.toml" ]] || \
+       [[ -f "go.mod" ]] || [[ -f "pom.xml" ]] || [[ -f "composer.json" ]]; then
+        CLAUDE_DIR="$(pwd)/.claude"
+        AGENTS_DIR="$CLAUDE_DIR/agents"
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Set installation paths based on project detection
+if detect_project_context; then
+    PROJECT_DETECTED=true
+else
+    PROJECT_DETECTED=false
+    CLAUDE_DIR=""
+    AGENTS_DIR=""
+fi
 MIN_DISK_SPACE_MB=50
 MIN_MEMORY_MB=512
 
@@ -134,59 +152,72 @@ validate_tools() {
 validate_permissions() {
     log "Checking file system permissions..."
     
-    # Check home directory write access
-    if [[ -w "$HOME" ]]; then
-        add_info "Home directory is writable: $HOME"
+    if [[ "$PROJECT_DETECTED" == "false" ]]; then
+        add_error "No project context detected in current directory"
+        add_info "AGENT-11 requires project-local installation"
+        add_info "Navigate to a project directory or initialize one with 'git init'"
+        return
+    fi
+    
+    # Check current directory write access (for project-local installation)
+    local current_dir="$(pwd)"
+    if [[ -w "$current_dir" ]]; then
+        add_info "Current directory is writable: $current_dir"
     else
-        add_error "Cannot write to home directory: $HOME"
+        add_error "Cannot write to current directory: $current_dir"
     fi
     
     # Check if .claude directory exists and permissions
     if [[ -d "$CLAUDE_DIR" ]]; then
         if [[ -w "$CLAUDE_DIR" ]]; then
-            add_info "Claude directory is writable: $CLAUDE_DIR"
+            add_info "Project Claude directory is writable: $CLAUDE_DIR"
         else
-            add_error "Cannot write to Claude directory: $CLAUDE_DIR"
+            add_error "Cannot write to project Claude directory: $CLAUDE_DIR"
         fi
     else
-        # Try to create .claude directory
+        # Try to create .claude directory in project
         if mkdir -p "$CLAUDE_DIR" 2>/dev/null; then
-            add_info "Created Claude directory: $CLAUDE_DIR"
+            add_info "Created project Claude directory: $CLAUDE_DIR"
         else
-            add_error "Cannot create Claude directory: $CLAUDE_DIR"
+            add_error "Cannot create project Claude directory: $CLAUDE_DIR"
         fi
     fi
     
     # Check agents directory
     if [[ -d "$AGENTS_DIR" ]]; then
         if [[ -w "$AGENTS_DIR" ]]; then
-            add_info "Agents directory is writable: $AGENTS_DIR"
+            add_info "Project agents directory is writable: $AGENTS_DIR"
             
             # Count existing agents
             local existing_agents
             existing_agents=$(find "$AGENTS_DIR" -name "*.md" 2>/dev/null | wc -l)
             if [[ "$existing_agents" -gt 0 ]]; then
-                add_info "Existing agents found: $existing_agents"
+                add_info "Existing project agents found: $existing_agents"
                 add_warning "Installation will backup existing agents before proceeding"
             fi
         else
-            add_error "Cannot write to agents directory: $AGENTS_DIR"
+            add_error "Cannot write to project agents directory: $AGENTS_DIR"
         fi
     else
-        add_info "Agents directory will be created during installation"
+        add_info "Project agents directory will be created during installation"
     fi
 }
 
-# Check available disk space
+# Check available disk space  
 validate_disk_space() {
     log "Checking available disk space..."
     
+    if [[ "$PROJECT_DETECTED" == "false" ]]; then
+        add_warning "Cannot check disk space - no project context"
+        return
+    fi
+    
     if command -v df >/dev/null 2>&1; then
         local available_kb
-        available_kb=$(df "$HOME" | awk 'NR==2 {print $4}')
+        available_kb=$(df "$(pwd)" | awk 'NR==2 {print $4}')
         local available_mb=$((available_kb / 1024))
         
-        add_info "Available disk space: ${available_mb}MB"
+        add_info "Available disk space in project: ${available_mb}MB"
         
         if [[ "$available_mb" -lt "$MIN_DISK_SPACE_MB" ]]; then
             add_error "Insufficient disk space. Required: ${MIN_DISK_SPACE_MB}MB, Available: ${available_mb}MB"
@@ -362,8 +393,16 @@ display_results() {
             echo -e "${YELLOW}⚠ ENVIRONMENT READY WITH WARNINGS${NC} - Installation can proceed"
         fi
         echo
-        echo "You can now run the AGENT-11 installation:"
-        echo "  ./deployment/scripts/install.sh core"
+        if [[ "$PROJECT_DETECTED" == "true" ]]; then
+            echo "You can now run the AGENT-11 installation in this project:"
+            echo "  ./deployment/scripts/install.sh core"
+            echo
+            echo "Project context: $(pwd)"
+        else
+            echo "To install AGENT-11:"
+            echo "1. Navigate to your project directory"
+            echo "2. Then run: ./deployment/scripts/install.sh core"
+        fi
         return 0
     else
         echo -e "${RED}✗ ENVIRONMENT NOT READY${NC} - Please resolve errors before installation"
@@ -398,25 +437,35 @@ full_validate() {
 auto_fix() {
     log "Attempting to fix common issues..."
     
+    if [[ "$PROJECT_DETECTED" == "false" ]]; then
+        error "Cannot auto-fix: No project context detected"
+        echo
+        echo "To fix this:"
+        echo "1. Navigate to your project directory"
+        echo "2. Or initialize a new project: git init"
+        echo "3. Then run validation again"
+        return 1
+    fi
+    
     local fixes_applied=()
     
-    # Create missing directories
+    # Create missing directories in project
     if [[ ! -d "$CLAUDE_DIR" ]]; then
         if mkdir -p "$CLAUDE_DIR" 2>/dev/null; then
-            fixes_applied+=("Created Claude directory: $CLAUDE_DIR")
+            fixes_applied+=("Created project Claude directory: $CLAUDE_DIR")
         fi
     fi
     
     if [[ ! -d "$AGENTS_DIR" ]]; then
         if mkdir -p "$AGENTS_DIR" 2>/dev/null; then
-            fixes_applied+=("Created agents directory: $AGENTS_DIR")
+            fixes_applied+=("Created project agents directory: $AGENTS_DIR")
         fi
     fi
     
     # Fix directory permissions if possible
     if [[ -d "$CLAUDE_DIR" && ! -w "$CLAUDE_DIR" ]]; then
         if chmod u+w "$CLAUDE_DIR" 2>/dev/null; then
-            fixes_applied+=("Fixed Claude directory permissions")
+            fixes_applied+=("Fixed project Claude directory permissions")
         fi
     fi
     

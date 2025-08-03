@@ -1,6 +1,6 @@
-# AGENT-11 Troubleshooting Guide
+# AGENT-11 Project Troubleshooting Guide
 
-Complete problem-solving guide for AGENT-11 deployment and usage issues. This guide provides solutions for common problems, error messages, and system recovery procedures.
+Complete problem-solving guide for AGENT-11 project deployment and usage issues. This guide provides solutions for common problems, error messages, and project-specific recovery procedures.
 
 ## Table of Contents
 
@@ -16,24 +16,24 @@ Complete problem-solving guide for AGENT-11 deployment and usage issues. This gu
 
 ## Quick Diagnostic Commands
 
-Start troubleshooting with these commands:
+Start troubleshooting with these project-focused commands:
 
 ```bash
-# Check if agents are installed
-ls -la ~/.claude/agents/
+# Ensure you're in your project directory
+pwd  # Should show your project path
 
-# Verify Claude Code can see agents
+# Check if project agents are installed
+ls -la .claude/agents/
+
+# Verify Claude Code can see project agents
 claude
 /agents
 
-# Test basic agent functionality
-@strategist Hello, are you working?
+# Test project-aware agent functionality
+@strategist What type of project is this?
 
-# Check installation logs
-cat ~/.claude/logs/agent-11-install.log
-
-# Run system validation
-./deployment/scripts/validate-environment.sh
+# Check project structure
+ls -la  # Should show .git, package.json, source files, etc.
 ```
 
 ## Installation Issues
@@ -60,62 +60,66 @@ chmod +x deployment/scripts/install.sh
 bash deployment/scripts/install.sh core
 ```
 
-### Problem: "Agent source directory not found"
+### Problem: "No project detected" or "Not a valid project directory"
 
 **Error Message**:
 ```
-[ERROR] Agent source directory not found: /path/to/agent-11/agents/specialists
+[ERROR] No project detected in current directory
+[ERROR] Not a valid project directory
 ```
 
 **Diagnosis**:
 ```bash
 # Check current directory
-pwd
-# Should be in agent-11 root directory
+pwd  # Should show your project path
 
-# Check if agents directory exists
-ls -la agents/specialists/
+# Check for project indicators
+ls -la  # Should show .git, package.json, source files, etc.
 ```
 
 **Solution**:
 ```bash
-# Navigate to correct directory
-cd /path/to/agent-11
+# Navigate to your project directory
+cd /path/to/your/project
 
-# Verify agents exist
-ls -la agents/specialists/
+# Verify it's a valid project
+ls -la  # Should show project files
+
+# If not a project, initialize one:
+git init
+echo '{}' > package.json  # or create appropriate project files
 
 # Re-run installation
-./deployment/scripts/install.sh core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 ```
 
-### Problem: "Cannot write to home directory"
+### Problem: "Cannot write to project directory"
 
 **Error Message**:
 ```
-[ERROR] Cannot write to home directory: /home/username
+[ERROR] Cannot write to project directory: /path/to/project
 ```
 
 **Diagnosis**:
 ```bash
-# Check home directory permissions
-ls -ld $HOME
+# Check project directory permissions
+ls -ld .  # Should show write permissions for your user
 
 # Check available disk space
-df -h $HOME
+df -h .  # Should have at least 10MB free
 ```
 
 **Solution**:
 ```bash
-# Fix permissions (if owned by you)
-sudo chown $USER:$USER $HOME
+# Fix permissions (if you own the project)
+sudo chown -R $USER:$USER .
 
-# Or create agents directory manually
-mkdir -p ~/.claude/agents
-chmod 755 ~/.claude/agents
+# Or create project agents directory manually
+mkdir -p .claude/agents
+chmod 755 .claude/agents
 
-# Re-run installation
-./deployment/scripts/install.sh core
+# Re-run installation from project directory
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 ```
 
 ### Problem: Installation Hangs or Freezes
@@ -138,13 +142,13 @@ df -h
 pkill -f install.sh
 
 # Clean partial installation
-rm -rf ~/.claude/agents/
+rm -rf .claude/agents/
 
-# Restart with verbose logging
-./deployment/scripts/install.sh core --debug
+# Ensure you're in project directory
+pwd  # Should show your project path
 
-# Check logs for specific error
-tail -f ~/.claude/logs/agent-11-install.log
+# Restart installation
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 ```
 
 ### Problem: "Invalid agent file format"
@@ -181,34 +185,38 @@ git checkout HEAD -- agents/specialists/
 
 **Diagnosis**:
 ```bash
-# Check if agent files exist
-ls -la ~/.claude/agents/
+# Ensure you're in the project directory
+pwd  # Should show your project path
+
+# Check if project agent files exist
+ls -la .claude/agents/
 
 # Check file permissions
-ls -la ~/.claude/agents/*.md
+ls -la .claude/agents/*.md
 
 # Check file format
-head -5 ~/.claude/agents/strategist.md
+head -5 .claude/agents/strategist.md
 ```
 
 **Solution**:
 ```bash
-# Restart Claude Code completely
+# Restart Claude Code in project directory
 /exit
+cd /path/to/your/project
 claude
 
-# Check agents again
+# Check project agents again
 /agents
 
 # If still not working, verify file format
-grep -n "^name:" ~/.claude/agents/*.md
+grep -n "^name:" .claude/agents/*.md
 # Each file should have a name field
 ```
 
 **Advanced Solution**:
 ```bash
-# Manually verify YAML headers
-for file in ~/.claude/agents/*.md; do
+# Manually verify YAML headers in project agents
+for file in .claude/agents/*.md; do
   echo "Checking $file:"
   head -10 "$file" | grep -E "^(---|name:|description:)"
 done
@@ -220,6 +228,9 @@ done
 
 **Diagnosis**:
 ```bash
+# Ensure Claude Code is running in project directory
+pwd  # Should show your project path
+
 # Check exact agent names
 /agents
 # Note the exact spelling
@@ -227,8 +238,8 @@ done
 # Test with exact name
 @strategist test
 
-# Check for hidden characters
-cat -A ~/.claude/agents/strategist.md | head -10
+# Check for hidden characters in project agents
+cat -A .claude/agents/strategist.md | head -10
 ```
 
 **Solution**:
@@ -239,8 +250,8 @@ cat -A ~/.claude/agents/strategist.md | head -10
 # If name has spaces, use quotes
 @"agent name" test message
 
-# Verify YAML name matches filename
-grep "name:" ~/.claude/agents/strategist.md
+# Verify YAML name matches filename in project
+grep "name:" .claude/agents/strategist.md
 # Should output: name: strategist
 ```
 
@@ -250,26 +261,24 @@ grep "name:" ~/.claude/agents/strategist.md
 
 **Diagnosis**:
 ```bash
-# Check which agents were requested
-./deployment/scripts/install.sh core --dry-run
+# Check which files exist in project
+ls -la .claude/agents/
 
-# Check which files exist
-ls -la ~/.claude/agents/
+# Verify you're in the right project directory
+pwd  # Should show your project path
 
-# Check installation logs
-grep "Installing" ~/.claude/logs/agent-11-install.log
+# Check what squad was requested
+echo "Expected agents for core squad: strategist, developer, tester, operator"
 ```
 
 **Solution**:
 ```bash
-# Re-run installation for missing agents
-./deployment/scripts/install.sh core --force
+# Re-run installation for missing agents from project directory
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 
-# Or install specific agents manually
-cp agents/specialists/tester.md ~/.claude/agents/
-
-# Restart Claude Code
+# Restart Claude Code in project directory
 /exit
+cd /path/to/your/project
 claude
 ```
 
@@ -281,20 +290,19 @@ claude
 
 **Diagnosis**:
 ```bash
-# Check agent file content
-cat ~/.claude/agents/strategist.md
+# Check project agent file content
+cat .claude/agents/strategist.md
 
 # Verify it contains specialized prompt
-grep -i "strategist" ~/.claude/agents/strategist.md
+grep -i "strategist" .claude/agents/strategist.md
 ```
 
 **Solution**:
 ```bash
-# Re-install agents to get latest versions
-./deployment/scripts/install.sh core --update
+# Re-install project agents to get latest versions
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 
-# Or restore from backup
-./deployment/scripts/backup-manager.sh restore latest
+# This will update your project's agents
 ```
 
 ### Problem: Agent "Not Found" Error
@@ -428,17 +436,15 @@ sudo swapon /swapfile
 
 **Solution**:
 ```bash
-# Check if backup exists
-ls -la ~/.claude/backups/agent-11/
+# Clean project agents and reinstall
+rm -rf .claude/agents/
 
-# Restore from latest backup
-./deployment/scripts/backup-manager.sh restore latest
+# Reinstall project squad
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 
-# Or restore manually
-cp -r ~/.claude/backups/agent-11/latest/* ~/.claude/agents/
-
-# Restart Claude Code
+# Restart Claude Code in project directory
 /exit
+cd /path/to/your/project
 claude
 ```
 
@@ -451,40 +457,37 @@ claude
 
 **Diagnosis**:
 ```bash
-# Check backup directory
-ls -la ~/.claude/backups/agent-11/
+# Check if project has any existing agents
+ls -la .claude/agents/
 
-# Check backup contents
-ls -la ~/.claude/backups/agent-11/*/
+# Verify you're in the correct project
+pwd  # Should show your project path
 ```
 
 **Solution**:
 ```bash
-# Manual restoration
-mkdir -p ~/.claude/agents/
+# Manual project agent setup
+mkdir -p .claude/agents/
 
-# Find valid backup
-for backup in ~/.claude/backups/agent-11/*/; do
-  echo "Backup: $backup"
-  ls "$backup"
-done
-
-# Copy from valid backup
-cp -r ~/.claude/backups/agent-11/20240203_143022/* ~/.claude/agents/
+# Reinstall fresh project agents
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 ```
 
 ### Problem: No Backups Available
 
-**If you have no backups and lost agents**:
+**If you have no project agents**:
 
 ```bash
-# Clean reinstall
-rm -rf ~/.claude/agents/
+# Clean project reinstall
+rm -rf .claude/agents/
+
+# Ensure you're in project directory
+pwd  # Should show your project path
 
 # Fresh installation
-./deployment/scripts/install.sh core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 
-# This will create new agents and new backup
+# This will create new project-specific agents
 ```
 
 ## Platform-Specific Issues
@@ -537,9 +540,9 @@ bash
 
 **Problem**: Path format issues
 ```bash
-# Use Linux paths in WSL
-cd /mnt/c/Users/username/agent-11/
-./deployment/scripts/install.sh core
+# Use Linux paths in WSL and navigate to your project
+cd /mnt/c/Users/username/my-project/
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 ```
 
 **Problem**: File permissions in WSL
@@ -556,9 +559,9 @@ sudo mount -t drvfs C: /mnt/c -o metadata
 | Error | Meaning | Solution |
 |-------|---------|----------|
 | `Permission denied` | Script not executable | `chmod +x script.sh` |
-| `No such file or directory` | Wrong directory | `cd agent-11` first |
-| `Cannot write to home` | Permission issue | Check `$HOME` permissions |
-| `Agent source not found` | Missing agent files | Verify git clone worked |
+| `No project detected` | Not in project directory | `cd /path/to/your/project` first |
+| `Cannot write to project` | Permission issue | Check project permissions |
+| `Not valid project` | Missing project files | Add `.git`, `package.json`, etc. |
 | `Invalid agent format` | Corrupted agent file | Re-download agents |
 
 ### Runtime Errors
@@ -574,9 +577,9 @@ sudo mount -t drvfs C: /mnt/c -o metadata
 
 | Error | Meaning | Solution |
 |-------|---------|----------|
-| `Backup directory not found` | No backups exist | Run installation to create backup |
-| `Restore failed` | Corrupted backup | Try different backup |
-| `Cannot create backup` | Permission issue | Check write permissions |
+| `Project agents not found` | No project agents | Install agents to project |
+| `Project installation failed` | Project setup issue | Check project validity |
+| `Cannot create project agents` | Permission issue | Check project write permissions |
 
 ## System Recovery
 
@@ -585,64 +588,64 @@ sudo mount -t drvfs C: /mnt/c -o metadata
 If everything is broken, start fresh:
 
 ```bash
-# 1. Remove all agent files
-rm -rf ~/.claude/agents/
-rm -rf ~/.claude/backups/agent-11/
+# 1. Remove project agent files
+rm -rf .claude/agents/
 
-# 2. Clean logs
-rm -f ~/.claude/logs/agent-11*.log
+# 2. Verify you're in your project directory
+pwd  # Should show your project path
+ls -la  # Should show project files (.git, package.json, etc.)
 
-# 3. Fresh installation
-cd /path/to/agent-11
-git checkout HEAD -- .
-./deployment/scripts/install.sh core
+# 3. Fresh project installation
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 
-# 4. Verify installation
+# 4. Verify project installation
 /exit
+cd /path/to/your/project
 claude
 /agents
-@strategist Hello!
+@strategist What type of project is this?
 ```
 
 ### Partial Recovery
 
-If some agents work but others don't:
+If some project agents work but others don't:
 
 ```bash
-# 1. Identify working agents
+# 1. Identify working agents in your project
 /agents
 
-# 2. Backup working agents
-mkdir -p ~/temp-agent-backup/
-cp ~/.claude/agents/* ~/temp-agent-backup/
+# 2. Clean project reinstall
+rm -rf .claude/agents/
 
-# 3. Clean reinstall
-rm -rf ~/.claude/agents/
-./deployment/scripts/install.sh core
+# 3. Reinstall project squad
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 
-# 4. Test all agents
-@strategist test
-@developer test  
-@tester test
-@operator test
+# 4. Test all project agents
+@strategist What can we build in this project?
+@developer What's our current tech stack?
+@tester How should we test this project?
+@operator How should we deploy this project?
 ```
 
 ### Emergency Rollback
 
-If new installation breaks everything:
+If new project installation breaks everything:
 
 ```bash
 # 1. Stop Claude Code
 /exit
 
-# 2. Emergency restore
-rm -rf ~/.claude/agents/
-cp -r ~/.claude/backups/agent-11/latest/* ~/.claude/agents/
+# 2. Clean project agents
+rm -rf .claude/agents/
 
-# 3. Start Claude Code
+# 3. Start Claude Code in project directory
+cd /path/to/your/project
 claude
 
-# 4. Verify recovery
+# 4. Try installation again
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+
+# 5. Verify recovery
 /agents
 ```
 
@@ -651,24 +654,28 @@ claude
 ### Self-Diagnosis Tools
 
 ```bash
-# Run comprehensive check
-./deployment/scripts/health-check.sh --full
+# Check project agent status
+ls -la .claude/agents/
 
-# Generate diagnostic report
-./deployment/scripts/diagnostics.sh > my-diagnostic-report.txt
+# Verify project directory
+pwd  # Should show your project path
+ls -la  # Should show project files
+
+# Test project agents
+@strategist What type of project is this?
 ```
 
 ### Log Analysis
 
 ```bash
-# View installation logs
-less ~/.claude/logs/agent-11-install.log
+# Check recent installation output
+# Installation output is shown directly in terminal
 
-# Search for errors
-grep -i error ~/.claude/logs/agent-11-install.log
+# Verify project agent files
+ls -la .claude/agents/
 
-# Check recent activity
-tail -50 ~/.claude/logs/agent-11-install.log
+# Check agent file content
+head -10 .claude/agents/strategist.md
 ```
 
 ### Community Support
@@ -687,9 +694,13 @@ When reporting problems, include:
 uname -a
 claude --version
 
-# AGENT-11 status
-ls -la ~/.claude/agents/
-cat ~/.claude/logs/agent-11-install.log
+# Project information
+pwd  # Current project directory
+ls -la  # Project structure
+ls -la .claude/agents/  # Project agents
+
+# Project type indicators
+file package.json requirements.txt go.mod Cargo.toml 2>/dev/null || echo "No standard project files found"
 
 # Error messages
 # Copy exact error messages you're seeing

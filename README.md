@@ -20,7 +20,7 @@
 
 ## 🎯 Mission Briefing
 
-You're a solo founder with a vision. You need to build fast, ship quality, and compete with funded teams. **AGENT-11** gives you an instant squad of AI specialists that work together seamlessly in Claude Code.
+You're a solo founder with a vision. You need to build fast, ship quality, and compete with funded teams. **AGENT-11** deploys your elite squad to work on a specific project - each project gets its own specialized team that understands your project context perfectly.
 
 ### Your Squad Includes:
 - 🎯 **The Strategist** - Product vision and roadmaps
@@ -35,11 +35,15 @@ You're a solo founder with a vision. You need to build fast, ship quality, and c
 - 📈 **The Marketer** - Growth on autopilot
 - 🎖️ **The Coordinator** - Mission commander
 
-## 🚀 One-Line Deployment
+## 🚀 Project-Only Deployment
 
-**98% Success Rate · Sub-Second Installation · Zero Configuration**
+**Project-Local Agents · No Global Pollution · Clean Isolation**
 
 ```bash
+# Step 1: Navigate to your project (required)
+cd /path/to/your/project
+
+# Step 2: Deploy your squad
 # Core Squad (4 agents) - Recommended for most projects
 curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 
@@ -50,26 +54,26 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s minimal
 ```
 
-**That's it!** The installer automatically:
-- ✅ Validates your Claude Code environment
-- ✅ Backs up existing agents safely  
-- ✅ Installs your selected squad
-- ✅ Verifies everything works perfectly
+**Project-focused by design!** The installer automatically:
+- ✅ Detects your project type and context
+- ✅ Creates project-local `.claude/agents/` directory
+- ✅ Installs your selected squad with project understanding
+- ✅ Verifies project compatibility
 - ✅ Shows you exactly what to do next
 
-**[📖 See Complete Quick Start Guide →](QUICK-START.md)**
+**[📖 See Complete Project Setup Guide →](QUICK-START.md)**
 
-## ✅ Verify Your Deployment
+## ✅ Verify Your Project Deployment
 
 ```bash
-# Restart Claude Code to load your new agents
+# Restart Claude Code in your project directory
 /exit && claude
 
-# List your deployed agents
+# List your project-local agents
 /agents
 
-# Test your first specialist
-@strategist What should we build first?
+# Test your first specialist (knows your project context)
+@strategist What should we build first in this project?
 ```
 
 ---
@@ -99,20 +103,21 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 | Time to MVP | 3-6 months | 2-4 weeks |
 | Team Size | 5-10 people | 1 founder |
 | Cost per Feature | $10-50k | <$500 |
-| Deployment Frequency | Weekly | Daily |
+| Project Setup | Hours | Under 5 minutes |
+| Team Context | Manual briefings | Automatic project understanding |
 
 </div>
 
 ## 🎖️ Battle-Tested Results
 
-> "Launched my SaaS MVP in 2 weeks instead of 6 months. AGENT-11 is my unfair advantage."  
+> "Each project gets its own elite team that understands the codebase perfectly. Game changer."  
 > — *Alex Chen, Solo Founder ($15k MRR)*
 
-> "It's like having a CTO, senior dev, designer, and DevOps engineer available 24/7."  
+> "Project-local agents mean no confusion, no context switching. They just get it."  
 > — *Sarah Martinez, Technical Founder*
 
-> "From idea to paying customers in 30 days. This changes everything for solopreneurs."  
-> — *David Kim, Non-Technical Founder*
+> "Clean deployments, isolated teams per project. Finally, AI that scales with my workflow."  
+> — *David Kim, Multi-Project Founder*
 
 [Read more success stories →](community/SUCCESS-STORIES.md)
 
@@ -132,10 +137,10 @@ Data-driven product optimization
 ## 📖 Documentation
 
 ### Quick References
-- **[🚀 5-Minute Quick Start](QUICK-START.md)** - Zero to deployed in under 5 minutes
-- **[⚙️ Installation Guide](INSTALLATION.md)** - Complete setup with troubleshooting
-- **[📋 User Guide](USER-GUIDE.md)** - Master multi-agent workflows
-- **[🛠️ Troubleshooting](TROUBLESHOOTING.md)** - Fix any issue fast
+- **[🚀 5-Minute Project Setup](QUICK-START.md)** - Zero to deployed in under 5 minutes
+- **[⚙️ Project Installation Guide](INSTALLATION.md)** - Complete project setup with troubleshooting
+- **[📋 User Guide](USER-GUIDE.md)** - Master project-based multi-agent workflows
+- **[🛠️ Troubleshooting](TROUBLESHOOTING.md)** - Fix project setup issues fast
 
 ### Advanced Usage
 - **[🔧 Advanced Usage](ADVANCED-USAGE.md)** - Custom configurations and enterprise setup
@@ -164,10 +169,10 @@ MIT - Use AGENT-11 to build your empire.
 
 <div align="center">
 
-**Ready to deploy your squad?**
+**Ready to deploy your project squad?**
 
-[🚀 One-Line Deploy](#-one-line-deployment) · [📖 Quick Start](QUICK-START.md) · [📚 Full Documentation](DOCUMENTATION-INDEX.md)
+[🚀 Project Setup](#-project-only-deployment) · [📖 Quick Start](QUICK-START.md) · [📚 Full Documentation](DOCUMENTATION-INDEX.md)
 
-*"One founder. Eleven specialists. Unlimited potential."*
+*"One project. One founder. Eleven specialists. Unlimited potential."*
 
 </div>

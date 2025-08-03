@@ -10,49 +10,14 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-# Detect if we're in a project directory and set appropriate installation location
-detect_installation_location() {
-    # Check if we're in a project directory (look for .git or existing .claude)
-    if [[ -d ".git" ]] || [[ -d ".claude" ]]; then
-        # Project directory detected - install locally
-        CLAUDE_DIR="$(pwd)/.claude"
-        AGENTS_DIR="$CLAUDE_DIR/agents"
-        BACKUP_DIR="$CLAUDE_DIR/backups/agent-11"
-        return 0
-    else
-        # No project detected - install globally
-        CLAUDE_DIR="$HOME/.claude"
-        AGENTS_DIR="$CLAUDE_DIR/agents"
-        BACKUP_DIR="$CLAUDE_DIR/backups/agent-11"
-        return 1
-    fi
-}
-
-# Set installation location based on project detection
-detect_installation_location
-PROJECT_INSTALL=$?
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-BACKUP_PATH="$BACKUP_DIR/$TIMESTAMP"
-
-# GitHub repository configuration
-GITHUB_REPO="TheWayWithin/agent-11"
-GITHUB_BRANCH="main"
-GITHUB_AGENTS_PATH=".claude/agents"
-GITHUB_RAW_BASE="https://raw.githubusercontent.com/$GITHUB_REPO/$GITHUB_BRANCH/$GITHUB_AGENTS_PATH"
-
-# Colors for output
+# Colors for output (defined early for use in functions)
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Available squads
-SQUAD_CORE=("strategist" "developer" "tester" "operator")
-SQUAD_FULL=("strategist" "developer" "tester" "operator" "architect" "designer" "documenter" "support" "analyst" "marketer" "coordinator" "agent-optimizer")
-SQUAD_MINIMAL=("strategist" "developer")
-
-# Logging functions
+# Logging functions (defined early for use in project detection)
 log() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
@@ -73,6 +38,137 @@ fatal() {
     error "$1"
     exit 1
 }
+
+# Enhanced project detection with helpful guidance
+detect_project_context() {
+    local current_dir="$(pwd)"
+    local project_indicators=()
+    local suggestions=()
+    
+    # Check for various project indicators
+    if [[ -d ".git" ]]; then
+        project_indicators+=("Git repository")
+    fi
+    
+    if [[ -d ".claude" ]]; then
+        project_indicators+=("Existing Claude agents")
+    fi
+    
+    if [[ -f "package.json" ]]; then
+        project_indicators+=("Node.js project")
+    fi
+    
+    if [[ -f "requirements.txt" ]] || [[ -f "pyproject.toml" ]] || [[ -f "setup.py" ]]; then
+        project_indicators+=("Python project")
+    fi
+    
+    if [[ -f "Cargo.toml" ]]; then
+        project_indicators+=("Rust project")
+    fi
+    
+    if [[ -f "go.mod" ]]; then
+        project_indicators+=("Go project")
+    fi
+    
+    if [[ -f "pom.xml" ]] || [[ -f "build.gradle" ]]; then
+        project_indicators+=("Java project")
+    fi
+    
+    if [[ -f "composer.json" ]]; then
+        project_indicators+=("PHP project")
+    fi
+    
+    if [[ -f "Gemfile" ]]; then
+        project_indicators+=("Ruby project")
+    fi
+    
+    if [[ -f "README.md" ]] || [[ -f "README.txt" ]] || [[ -f "readme.md" ]]; then
+        project_indicators+=("README file")
+    fi
+    
+    # If we found project indicators, set up project-local installation
+    if [[ ${#project_indicators[@]} -gt 0 ]]; then
+        CLAUDE_DIR="$(pwd)/.claude"
+        AGENTS_DIR="$CLAUDE_DIR/agents"
+        BACKUP_DIR="$CLAUDE_DIR/backups/agent-11"
+        PROJECT_DETECTED=true
+        DETECTED_INDICATORS=("${project_indicators[@]}")
+        return 0
+    else
+        PROJECT_DETECTED=false
+        return 1
+    fi
+}
+
+# Display helpful guidance when no project is detected
+show_no_project_guidance() {
+    echo
+    echo -e "${RED}❌ No project detected in current directory${NC}"
+    echo
+    echo "AGENT-11 deploys your elite squad to work on a specific project."
+    echo
+    echo -e "${BLUE}📁 To get started:${NC}"
+    echo "1. Navigate to your project directory: cd /path/to/your-project"
+    echo "2. Or create a new project: mkdir my-project && cd my-project && git init"
+    echo "3. Then run the installer again"
+    echo
+    echo -e "${BLUE}💡 Looking for existing projects?${NC}"
+    echo "Try finding Git repositories: find ~ -name '.git' -type d -maxdepth 3 2>/dev/null | head -10"
+    echo
+    echo -e "${BLUE}🚀 Quick project setup examples:${NC}"
+    echo "# New Node.js project"
+    echo "mkdir my-app && cd my-app && npm init -y && git init"
+    echo
+    echo "# New Python project"
+    echo "mkdir my-app && cd my-app && touch requirements.txt && git init"
+    echo
+    echo "# Existing directory"
+    echo "cd my-existing-project && git init"
+    echo
+    echo "Current directory: $(pwd)"
+    echo
+    
+    # Look for potential projects in nearby directories
+    local nearby_projects=()
+    if command -v find >/dev/null 2>&1; then
+        log "Scanning for nearby projects..."
+        while IFS= read -r -d '' project_dir; do
+            local project_parent="$(dirname "$project_dir")"
+            local relative_path="$(realpath --relative-to="$(pwd)" "$project_parent" 2>/dev/null || echo "$project_parent")"
+            nearby_projects+=("$relative_path")
+        done < <(find "$(pwd)/.." -maxdepth 2 -name ".git" -type d -print0 2>/dev/null | head -c 1000)
+        
+        if [[ ${#nearby_projects[@]} -gt 0 ]]; then
+            echo -e "${YELLOW}📂 Found nearby projects:${NC}"
+            for project in "${nearby_projects[@]}"; do
+                echo "  cd $project"
+            done
+            echo
+        fi
+    fi
+}
+
+# Detect project context and require project-local installation
+if ! detect_project_context; then
+    show_no_project_guidance
+    fatal "Installation requires a project context. Please navigate to a project directory first."
+fi
+
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+BACKUP_PATH="$BACKUP_DIR/$TIMESTAMP"
+
+# GitHub repository configuration
+GITHUB_REPO="TheWayWithin/agent-11"
+GITHUB_BRANCH="main"
+GITHUB_AGENTS_PATH=".claude/agents"
+GITHUB_RAW_BASE="https://raw.githubusercontent.com/$GITHUB_REPO/$GITHUB_BRANCH/$GITHUB_AGENTS_PATH"
+
+
+# Available squads
+SQUAD_CORE=("strategist" "developer" "tester" "operator")
+SQUAD_FULL=("strategist" "developer" "tester" "operator" "architect" "designer" "documenter" "support" "analyst" "marketer" "coordinator" "agent-optimizer")
+SQUAD_MINIMAL=("strategist" "developer")
+
 
 # Progress tracking
 show_progress() {
@@ -143,25 +239,18 @@ detect_execution_mode() {
 validate_environment() {
     log "Validating installation environment..."
     
-    # Show installation location
-    if [[ $PROJECT_INSTALL -eq 0 ]]; then
-        log "Installing AGENT-11 to current project: $AGENTS_DIR"
-    else
-        log "No project detected. Installing globally: $AGENTS_DIR"
-    fi
+    # Show project context and installation location
+    echo
+    echo -e "${GREEN}✓ Project Context Detected${NC}"
+    echo "  Directory: $(pwd)"
+    echo "  Indicators: ${DETECTED_INDICATORS[*]}"
+    echo "  Installation: $AGENTS_DIR"
+    echo
     
-    # Check if we can write to the target directory
-    local target_parent
-    if [[ $PROJECT_INSTALL -eq 0 ]]; then
-        target_parent="$(pwd)"
-        if [[ ! -w "$target_parent" ]]; then
-            fatal "Cannot write to current directory: $target_parent"
-        fi
-    else
-        target_parent="$HOME"
-        if [[ ! -w "$target_parent" ]]; then
-            fatal "Cannot write to home directory: $target_parent"
-        fi
+    # Check if we can write to the current directory
+    local current_dir="$(pwd)"
+    if [[ ! -w "$current_dir" ]]; then
+        fatal "Cannot write to current directory: $current_dir"
     fi
     
     # Detect execution mode
@@ -185,11 +274,11 @@ validate_environment() {
         fi
         log "Remote installation mode - will download agents from GitHub"
         
-        # Check if some agents already exist locally and warn user
+        # Check if agents already exist in project and warn user
         if [[ -d "$AGENTS_DIR" ]]; then
             local existing_count=$(find "$AGENTS_DIR" -name "*.md" -type f | wc -l)
             if [[ $existing_count -gt 0 ]]; then
-                warn "Found $existing_count existing agents in $AGENTS_DIR"
+                warn "Found $existing_count existing agents in project: $AGENTS_DIR"
                 warn "These will be backed up and replaced with latest versions from GitHub"
             fi
         fi
@@ -461,11 +550,15 @@ show_post_install_instructions() {
     echo
     echo "🎉 AGENT-11 $squad_type Squad Deployed Successfully!"
     echo
-    if [[ $PROJECT_INSTALL -eq 0 ]]; then
-        echo "📁 Agents installed in: $AGENTS_DIR (project-local)"
-    else
-        echo "📁 Agents installed in: $AGENTS_DIR (global)"
-    fi
+    echo -e "${GREEN}📁 Project-Local Installation${NC}"
+    echo "  Location: $AGENTS_DIR"
+    echo "  Project: $(pwd)"
+    echo "  Indicators: ${DETECTED_INDICATORS[*]}"
+    echo
+    echo -e "${BLUE}🎯 Your squad is deployed to THIS project only${NC}"
+    echo "  • Agents will only work when you're in this directory"
+    echo "  • Each project gets its own specialized squad"
+    echo "  • No global installation means clean, isolated deployments"
     echo
     echo "🚀 Quick Start Commands:"
     echo
@@ -497,17 +590,20 @@ show_post_install_instructions() {
             ;;
     esac
     
-    echo
-    echo "📚 Documentation: $PROJECT_ROOT/README.md"
-    echo "🔧 Troubleshooting: $PROJECT_ROOT/field-manual/"
+    echo -e "${BLUE}📚 Next Steps${NC}"
+    echo "  • Your agents are ready to use in this project"
+    echo "  • Try the quick start commands above"
+    echo "  • Documentation: https://github.com/TheWayWithin/agent-11"
     echo
     
     if [[ -d "$BACKUP_PATH" ]]; then
-        echo "💾 Backup created: $BACKUP_PATH"
+        echo -e "${YELLOW}💾 Backup Information${NC}"
+        echo "  Previous agents backed up to: $BACKUP_PATH"
         echo
     fi
     
-    echo "Need help? Check the field manual or deploy @support for customer success!"
+    echo -e "${GREEN}✨ Your elite squad is deployed and ready for action!${NC}"
+    echo "Need help? Deploy @support for customer success assistance!"
 }
 
 # Main installation function

@@ -355,25 +355,32 @@ Keep documentation current:
 @tester Validate documentation accuracy with real tests
 ```
 
-## Troubleshooting Agent Usage
+## Troubleshooting Project Agent Usage
 
 ### Agent Not Responding
 
 ```bash
-# Check agent name
+# Check project agents from your project directory
 /agents
+
+# Ensure Claude Code is running in your project directory
+pwd  # Should show your project path
 
 # Use exact name from list
 @strategist (not @strategy or @strategic)
 ```
 
-### Poor Agent Performance
+### Improving Project Agent Performance
 
 ```bash
-# Provide more context
+# Less effective (agents miss project context)
 @developer Create user auth
-# Better:
-@developer Create user authentication system with email/password, JWT tokens, session management, and password reset functionality for a Node.js Express application
+
+# Better (leverages project understanding)
+@developer Add user authentication to our existing system using the patterns we've established
+
+# Best (specific and project-aware)
+@developer Implement user authentication that integrates with our current React/Node.js stack and follows our existing API patterns
 ```
 
 ### Agent Confusion
@@ -405,18 +412,23 @@ Identify and optimize your most common patterns:
 @coordinator Create a standard workflow template for adding new features to our web application
 ```
 
-### Team Scaling
+### Project Team Scaling
 
-Expand your virtual team as projects grow:
+Expand your project squad as needs grow:
 
 ```bash
-# Start with Core Squad
+# Start with Core Squad for your project
 @strategist, @developer, @tester, @operator
 
-# Add specialists as needed
-@designer for UI/UX heavy features
-@analyst for data-driven decisions
-@marketer for user acquisition features
+# Add specialists as your project needs them
+@designer for UI/UX improvements in your project
+@analyst for data insights specific to your user base
+@marketer for growth strategies tailored to your product
+
+# Each project can have different squad compositions
+cd ~/project-a && claude  # Core squad
+cd ~/project-b && claude  # Full squad
+cd ~/project-c && claude  # Minimal squad
 ```
 
 ---
