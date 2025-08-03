@@ -268,7 +268,7 @@ Launch preparation must include community announcement strategies, support chann
 The one-line installer must provide the simplest possible deployment experience while maintaining reliability and security. The installer should default to deploying the Core Squad (strategist, developer, tester, operator) as this provides the most value for new users while minimizing complexity.
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 ```
 
 The installer must include dependency checking to verify that required system tools (curl, mkdir, etc.) are available before attempting deployment. Error messages must be specific and include guidance for installing missing dependencies on common platforms.

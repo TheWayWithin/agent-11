@@ -43,7 +43,7 @@ You're a solo founder with a vision. You need to build fast, ship quality, and c
 # Core Squad (4 agents) - Recommended for most projects
 curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 
-# Full Squad (11 agents) - For complex projects
+# Full Squad (11 agents) - For complex projects  
 curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
 
 # Minimal Squad (2 agents) - For quick prototyping

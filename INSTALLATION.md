@@ -57,11 +57,15 @@ cd /path/to/agent-11
 ./deployment/scripts/install.sh core
 ```
 
-### Method 2: Direct Download + Install
+### Method 2: Direct Download + Install (Recommended)
 
 ```bash
-# Download and run in one command (coming soon)
+# Download and run in one command - fully automated
 curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+
+# Other squad options:
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s minimal
 ```
 
 ### Method 3: Manual Installation

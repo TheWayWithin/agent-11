@@ -6,7 +6,7 @@ Welcome to AGENT-11! This guide gets you from curious to deployed to productive 
 
 ## One-Line Installation
 
-### Option 1: Remote Installation (Recommended)
+**98% Success Rate · Sub-Second Installation · Zero Configuration**
 
 ```bash
 # Core Squad (4 agents) - Recommended for most users
@@ -17,16 +17,6 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 
 # Minimal Squad (2 agents) - For quick prototyping
 curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s minimal
-```
-
-### Option 2: Local Installation
-
-```bash
-# Clone the repository first
-git clone https://github.com/TheWayWithin/agent-11.git && cd agent-11
-
-# Then run the installer
-./deployment/scripts/install.sh core
 ```
 
 **That's it!** The installer handles everything automatically:
@@ -46,9 +36,45 @@ git clone https://github.com/TheWayWithin/agent-11.git && cd agent-11
 
 ### Installation Time: 2-3 minutes
 
-## First Commands
+## After Installation
 
-After installation, you'll see success confirmation and your first commands:
+You'll see a success message like this:
+
+```
+🎉 AGENT-11 Squad Deployed Successfully!
+
+✅ Core Squad agents installed:
+   - strategist (Product strategy specialist)  
+   - developer (Full-stack development specialist)
+   - tester (Quality assurance specialist)
+   - operator (DevOps and deployment specialist)
+
+🚁 Next Steps:
+   1. Restart Claude Code: /exit then claude
+   2. Verify agents: /agents  
+   3. Start building: @strategist What should we build first?
+```
+
+## Restart Claude Code
+
+```bash
+# Exit current session
+/exit
+
+# Start fresh session
+claude
+```
+
+## Verify Installation
+
+```bash
+# Check your deployed agents
+/agents
+
+# You should see your squad listed under "Project agents"
+```
+
+## Your First Commands
 
 ```bash
 # 1. Define what to build
@@ -62,22 +88,6 @@ After installation, you'll see success confirmation and your first commands:
 
 # 4. Ship it
 @operator Deploy to production when tests pass
-```
-
-## Verification
-
-Confirm your agents are working:
-
-```bash
-# In Claude Code, check your agents
-/agents
-
-# You should see your squad listed under "Project agents"
-```
-
-Test an agent:
-```bash
-@strategist Hello! What can you help me build today?
 ```
 
 ## Success Indicators
