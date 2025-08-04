@@ -21,14 +21,19 @@ This is a documentation-based project with the following structure:
 
 ## Agent Deployment System
 
-The core functionality involves using Claude Code's `/agent` command to deploy specialized agents:
+The core functionality involves deploying agents to Claude Code's `.claude/agents/` directory. The agents are then available via the `@` command:
 
 ```bash
-# Example core squad deployment
-/agent strategist "You are THE STRATEGIST, an elite product strategy specialist..."
-/agent developer "You are THE DEVELOPER, an elite full-stack engineer..."
-/agent tester "You are THE TESTER, an elite QA specialist..."
-/agent operator "You are THE OPERATOR, an elite DevOps specialist..."
+# After installation, agents are available as:
+@strategist Create user stories for our feature
+@developer Implement the authentication system
+@tester Validate the implementation
+@operator Prepare for deployment
+
+# NEW: Mission-based orchestration
+/coord build requirements.md    # Orchestrate full build mission
+/coord fix bug-report.md       # Quick bug fix mission
+/coord mvp vision.md          # MVP development mission
 ```
 
 ## Key Components

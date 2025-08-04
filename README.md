@@ -80,6 +80,7 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 
 ## 🚀 Your First Mission
 
+### Option 1: Manual Coordination
 ```bash
 # 1. Define requirements
 @strategist Create user stories for a user authentication feature
@@ -93,6 +94,17 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 # 4. Ship it
 @operator Deploy to production when tests pass
 ```
+
+### Option 2: Mission Command (NEW!) 🎖️
+```bash
+# Execute predefined missions with a single command
+/coord build requirements.md
+
+# Or start interactively
+/coord
+```
+
+The `/coord` command activates THE COORDINATOR to orchestrate complex multi-agent missions automatically. Choose from predefined missions like BUILD, FIX, MVP, or create your own. [Learn more →](field-manual/coordinator-commands.md)
 
 ## 📊 Mission Success Metrics
 

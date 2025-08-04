@@ -124,6 +124,7 @@ claude
 
 ## Your First Commands
 
+### Option 1: Direct Agent Commands
 ```bash
 # 1. Define what to build (with project context)
 @strategist Create user stories for authentication in this project
@@ -137,6 +138,20 @@ claude
 # 4. Ship it (configured for your deployment)
 @operator Deploy using our existing CI/CD pipeline
 ```
+
+### Option 2: Mission Commands (NEW!) 🎖️
+```bash
+# Use predefined missions for common workflows
+/coord build requirements.md           # Build feature from requirements
+/coord fix bug-report.md              # Fix a bug quickly
+/coord mvp product-vision.md          # Create an MVP from concept
+/coord refactor target-module.md      # Improve code quality
+
+# Or let the coordinator guide you
+/coord                                # Interactive mission selection
+```
+
+The `/coord` command orchestrates multi-agent missions automatically. Your entire squad works together following proven patterns. [Learn more about missions →](field-manual/coordinator-commands.md)
 
 ## Success Indicators
 
