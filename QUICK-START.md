@@ -214,18 +214,37 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 - **Issues**: Run `@support` for customer success help
 - **Community**: Share your experience in `/community/`
 
-## Upgrade Your Project Squad
+## Update Your Project Squad
 
-Start with Core, upgrade anytime:
+### Get Latest Features (Including Mission System)
+
+If you have an existing AGENT-11 installation, update to get the `/coord` command and mission system:
 
 ```bash
-# From your project directory
+# From your project directory  
 cd /path/to/your/project
 
-# Upgrade to Full Squad (adds 7 more specialists)
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
+# Update to latest version with mission system
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 
 # Your existing project work is preserved - backups are automatic
+```
+
+**What you'll get:**
+- ✅ `/coord` command for systematic workflows
+- ✅ Mission files (BUILD, FIX, MVP, REFACTOR)
+- ✅ Mission templates for custom workflows  
+- ✅ Latest agent improvements
+
+**[📋 Complete Update Guide →](UPDATING.md)**
+
+### Upgrade Squad Size
+
+Add more specialists to your existing squad:
+
+```bash
+# Upgrade from Core to Full Squad (adds 7 more specialists)
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
 ```
 
 ## Multi-Project Workflow

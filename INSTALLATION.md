@@ -11,6 +11,7 @@ Complete project installation documentation for the AGENT-11 deployment system. 
 - [Step-by-Step Project Setup](#step-by-step-project-setup)
 - [Post-Installation Setup](#post-installation-setup)
 - [Verification](#verification)
+- [Updating Existing Installation](#updating-existing-installation)
 - [Multi-Project Setup](#multi-project-setup)
 - [Troubleshooting](#troubleshooting)
 
@@ -311,6 +312,61 @@ head -10 .claude/agents/strategist.md
 @tester What testing strategy fits our current setup?
 @operator How should we deploy this specific project?
 ```
+
+## Updating Existing Installation
+
+### Quick Update Process
+
+If you already have AGENT-11 installed and want to get the latest features (including the mission system):
+
+```bash
+# Navigate to your project
+cd /path/to/your/project
+
+# Update to latest version  
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+```
+
+**This update will:**
+- ✅ Automatically backup existing agents
+- ✅ Update agents to latest versions
+- ✅ Add mission system (`/coord` command)
+- ✅ Install mission files and templates
+- ✅ Preserve all your project work
+
+### What's New in Latest Version
+
+**Mission System:**
+- `/coord` command for systematic workflows
+- Pre-built missions: BUILD, FIX, MVP, REFACTOR
+- Mission templates for custom workflows
+
+**Enhanced Agents:**
+- Improved coordination protocols
+- Better project context understanding
+- Enhanced collaboration capabilities
+
+### Update Verification
+
+After updating, verify everything is working:
+
+```bash
+# Check mission system is installed
+ls -la missions/           # Mission files
+ls -la .claude/commands/   # coord.md command  
+ls -la templates/          # Mission templates
+
+# Test new features
+claude
+/coord                     # Test mission command
+@coordinator "Verify all systems are working"
+```
+
+### Detailed Update Guide
+
+For comprehensive update instructions, troubleshooting, and advanced options:
+
+**[📋 Complete Update Guide →](UPDATING.md)**
 
 ## Multi-Project Setup
 

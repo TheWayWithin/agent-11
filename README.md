@@ -146,10 +146,23 @@ Data-driven product optimization
 
 [View all missions →](missions/)
 
+## 🔄 Updating Existing Installation
+
+**Already have AGENT-11?** Get the latest features including the `/coord` mission system:
+
+```bash
+# Single command to update your project
+cd /path/to/your/project
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+```
+
+**[📋 Complete Update Guide →](UPDATING.md)** - Everything you need to know about updating
+
 ## 📖 Documentation
 
 ### Quick References
-- **[🚀 5-Minute Project Setup](QUICK-START.md)** - Zero to deployed in under 5 minutes
+- **[🚀 5-Minute Project Setup](QUICK-START.md)** - Zero to deployed in under 5 minutes  
+- **[🔄 Update Existing Installation](UPDATING.md)** - Get latest features in your current project
 - **[⚙️ Project Installation Guide](INSTALLATION.md)** - Complete project setup with troubleshooting
 - **[📋 User Guide](USER-GUIDE.md)** - Master project-based multi-agent workflows
 - **[🛠️ Troubleshooting](TROUBLESHOOTING.md)** - Fix project setup issues fast
