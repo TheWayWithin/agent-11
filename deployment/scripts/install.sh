@@ -90,6 +90,9 @@ detect_project_context() {
     if [[ ${#project_indicators[@]} -gt 0 ]]; then
         CLAUDE_DIR="$(pwd)/.claude"
         AGENTS_DIR="$CLAUDE_DIR/agents"
+        COMMANDS_DIR="$CLAUDE_DIR/commands"
+        MISSIONS_DIR="$(pwd)/missions"
+        TEMPLATES_DIR="$(pwd)/templates"
         BACKUP_DIR="$CLAUDE_DIR/backups/agent-11"
         PROJECT_DETECTED=true
         DETECTED_INDICATORS=("${project_indicators[@]}")
@@ -162,6 +165,7 @@ GITHUB_REPO="TheWayWithin/agent-11"
 GITHUB_BRANCH="main"
 GITHUB_AGENTS_PATH=".claude/agents"
 GITHUB_RAW_BASE="https://raw.githubusercontent.com/$GITHUB_REPO/$GITHUB_BRANCH/$GITHUB_AGENTS_PATH"
+GITHUB_REPO_BASE="https://raw.githubusercontent.com/$GITHUB_REPO/$GITHUB_BRANCH"
 
 
 # Available squads
@@ -215,6 +219,39 @@ download_agent_from_github() {
         fi
     else
         error "Neither curl nor wget available for downloading agents"
+        return 1
+    fi
+}
+
+# Download file from GitHub repository
+download_file_from_github() {
+    local relative_path="$1"
+    local dest_file="$2"
+    local url="$GITHUB_REPO_BASE/$relative_path"
+    
+    log "Downloading $relative_path from GitHub..."
+    
+    # Create destination directory if it doesn't exist
+    mkdir -p "$(dirname "$dest_file")"
+    
+    if command -v curl >/dev/null 2>&1; then
+        if curl -fsSL "$url" -o "$dest_file"; then
+            log "Downloaded: $relative_path"
+            return 0
+        else
+            error "Failed to download $relative_path from $url"
+            return 1
+        fi
+    elif command -v wget >/dev/null 2>&1; then
+        if wget -q "$url" -O "$dest_file"; then
+            log "Downloaded: $relative_path"
+            return 0
+        else
+            error "Failed to download $relative_path from $url"
+            return 1
+        fi
+    else
+        error "Neither curl nor wget available for downloading files"
         return 1
     fi
 }
@@ -305,24 +342,58 @@ validate_environment() {
     success "Environment validation passed"
 }
 
-# Create backup of existing agents
+# Create backup of existing agents and mission system
 create_backup() {
-    if [[ ! -d "$AGENTS_DIR" ]]; then
-        log "No existing agents directory found. Skipping backup."
-        return 0
-    fi
+    local has_content=false
     
-    log "Creating backup of existing agents..."
+    log "Creating backup of existing installation..."
     
     # Create backup directory
     mkdir -p "$BACKUP_PATH"
     
-    # Copy existing agents with error handling
-    if cp -r "$AGENTS_DIR"/* "$BACKUP_PATH/" 2>/dev/null; then
+    # Backup agents if they exist
+    if [[ -d "$AGENTS_DIR" ]]; then
+        mkdir -p "$BACKUP_PATH/agents"
+        if cp -r "$AGENTS_DIR"/* "$BACKUP_PATH/agents/" 2>/dev/null; then
+            log "Backed up existing agents"
+            has_content=true
+        fi
+    fi
+    
+    # Backup commands if they exist
+    if [[ -d "$COMMANDS_DIR" ]]; then
+        mkdir -p "$BACKUP_PATH/commands"
+        if cp -r "$COMMANDS_DIR"/* "$BACKUP_PATH/commands/" 2>/dev/null; then
+            log "Backed up existing commands"
+            has_content=true
+        fi
+    fi
+    
+    # Backup missions if they exist
+    if [[ -d "$MISSIONS_DIR" ]]; then
+        mkdir -p "$BACKUP_PATH/missions"
+        if cp -r "$MISSIONS_DIR"/* "$BACKUP_PATH/missions/" 2>/dev/null; then
+            log "Backed up existing missions"
+            has_content=true
+        fi
+    fi
+    
+    # Backup templates if they exist
+    if [[ -d "$TEMPLATES_DIR" ]]; then
+        mkdir -p "$BACKUP_PATH/templates"
+        if cp -r "$TEMPLATES_DIR"/* "$BACKUP_PATH/templates/" 2>/dev/null; then
+            log "Backed up existing templates"
+            has_content=true
+        fi
+    fi
+    
+    if [[ "$has_content" == "true" ]]; then
         success "Backup created: $BACKUP_PATH"
         echo "$BACKUP_PATH" > "$BACKUP_DIR/latest"
     else
-        warn "No existing agents to backup or backup failed"
+        log "No existing installation found. Skipping backup."
+        # Remove empty backup directory
+        rmdir "$BACKUP_PATH" 2>/dev/null || true
     fi
 }
 
@@ -418,6 +489,141 @@ install_agent() {
     fi
 }
 
+# Install mission system files (missions, commands, templates)
+install_mission_system() {
+    local execution_mode
+    execution_mode=$(detect_execution_mode)
+    
+    log "Installing mission system files..."
+    
+    # Define mission files to install
+    local mission_files=(
+        "missions/library.md"
+        "missions/mission-build.md"
+        "missions/mission-fix.md"
+        "missions/mission-mvp.md"
+        "missions/mission-refactor.md"
+        "missions/operation-genesis.md"
+        "missions/README.md"
+    )
+    
+    # Define command files to install
+    local command_files=(
+        ".claude/commands/coord.md"
+    )
+    
+    # Define template files to install
+    local template_files=(
+        "templates/mission-template.md"
+        "templates/agent-creation-mastery.md"
+    )
+    
+    local total_files=$((${#mission_files[@]} + ${#command_files[@]} + ${#template_files[@]}))
+    local current=0
+    local failed_files=()
+    
+    # Install mission files
+    for mission_file in "${mission_files[@]}"; do
+        ((current++))
+        show_progress "$current" "$total_files" "Installing $(basename "$mission_file")"
+        
+        local dest_file="$MISSIONS_DIR/$(basename "$mission_file")"
+        
+        if [[ "$execution_mode" == "local" ]]; then
+            local source_file="$PROJECT_ROOT/$mission_file"
+            if [[ -f "$source_file" ]]; then
+                mkdir -p "$MISSIONS_DIR"
+                if cp "$source_file" "$dest_file"; then
+                    log "Installed: $(basename "$mission_file")"
+                else
+                    failed_files+=("$mission_file")
+                fi
+            else
+                failed_files+=("$mission_file")
+            fi
+        else
+            # Remote installation
+            if download_file_from_github "$mission_file" "$dest_file"; then
+                log "Installed: $(basename "$mission_file")"
+            else
+                failed_files+=("$mission_file")
+            fi
+        fi
+        
+        sleep 0.1
+    done
+    
+    # Install command files
+    for command_file in "${command_files[@]}"; do
+        ((current++))
+        show_progress "$current" "$total_files" "Installing $(basename "$command_file")"
+        
+        local dest_file="$COMMANDS_DIR/$(basename "$command_file")"
+        
+        if [[ "$execution_mode" == "local" ]]; then
+            local source_file="$PROJECT_ROOT/$command_file"
+            if [[ -f "$source_file" ]]; then
+                mkdir -p "$COMMANDS_DIR"
+                if cp "$source_file" "$dest_file"; then
+                    log "Installed: $(basename "$command_file")"
+                else
+                    failed_files+=("$command_file")
+                fi
+            else
+                failed_files+=("$command_file")
+            fi
+        else
+            # Remote installation
+            if download_file_from_github "$command_file" "$dest_file"; then
+                log "Installed: $(basename "$command_file")"
+            else
+                failed_files+=("$command_file")
+            fi
+        fi
+        
+        sleep 0.1
+    done
+    
+    # Install template files
+    for template_file in "${template_files[@]}"; do
+        ((current++))
+        show_progress "$current" "$total_files" "Installing $(basename "$template_file")"
+        
+        local dest_file="$TEMPLATES_DIR/$(basename "$template_file")"
+        
+        if [[ "$execution_mode" == "local" ]]; then
+            local source_file="$PROJECT_ROOT/$template_file"
+            if [[ -f "$source_file" ]]; then
+                mkdir -p "$TEMPLATES_DIR"
+                if cp "$source_file" "$dest_file"; then
+                    log "Installed: $(basename "$template_file")"
+                else
+                    failed_files+=("$template_file")
+                fi
+            else
+                failed_files+=("$template_file")
+            fi
+        else
+            # Remote installation
+            if download_file_from_github "$template_file" "$dest_file"; then
+                log "Installed: $(basename "$template_file")"
+            else
+                failed_files+=("$template_file")
+            fi
+        fi
+        
+        sleep 0.1
+    done
+    
+    if [[ ${#failed_files[@]} -eq 0 ]]; then
+        success "Mission system installed successfully!"
+        return 0
+    else
+        error "Failed to install mission system files: ${failed_files[*]}"
+        return 1
+    fi
+}
+
 # Install squad of agents
 install_squad() {
     local squad_type="$1"
@@ -483,21 +689,48 @@ verify_installation() {
     
     log "Verifying installation..."
     
-    local missing_agents=()
+    local missing_items=()
+    
+    # Verify agents
     for agent in "${squad_agents[@]}"; do
         local agent_file="$AGENTS_DIR/$agent.md"
         if [[ ! -f "$agent_file" ]]; then
-            missing_agents+=("$agent")
+            missing_items+=("agent:$agent")
         elif ! validate_agent_file "$agent_file"; then
-            missing_agents+=("$agent")
+            missing_items+=("agent:$agent")
         fi
     done
     
-    if [[ ${#missing_agents[@]} -eq 0 ]]; then
+    # Verify mission system files
+    local mission_files=("library.md" "mission-build.md" "mission-fix.md" "mission-mvp.md" "mission-refactor.md")
+    for mission_file in "${mission_files[@]}"; do
+        if [[ ! -f "$MISSIONS_DIR/$mission_file" ]]; then
+            missing_items+=("mission:$mission_file")
+        fi
+    done
+    
+    # Verify command files
+    if [[ ! -f "$COMMANDS_DIR/coord.md" ]]; then
+        missing_items+=("command:coord.md")
+    fi
+    
+    # Verify template files
+    local template_files=("mission-template.md" "agent-creation-mastery.md")
+    for template_file in "${template_files[@]}"; do
+        if [[ ! -f "$TEMPLATES_DIR/$template_file" ]]; then
+            missing_items+=("template:$template_file")
+        fi
+    done
+    
+    if [[ ${#missing_items[@]} -eq 0 ]]; then
         success "Installation verification passed!"
+        log "✓ Agents: ${#squad_agents[@]} installed"
+        log "✓ Mission system: Complete"
+        log "✓ Commands: /coord available"
+        log "✓ Templates: Available"
         return 0
     else
-        error "Verification failed. Missing or invalid agents: ${missing_agents[*]}"
+        error "Verification failed. Missing items: ${missing_items[*]}"
         return 1
     fi
 }
@@ -511,12 +744,33 @@ rollback_installation() {
         latest_backup=$(cat "$BACKUP_DIR/latest")
         
         if [[ -d "$latest_backup" ]]; then
-            # Remove current agents directory
-            rm -rf "$AGENTS_DIR"
+            # Remove current installation
+            rm -rf "$AGENTS_DIR" "$COMMANDS_DIR" "$MISSIONS_DIR" "$TEMPLATES_DIR"
             
             # Restore from backup
-            mkdir -p "$AGENTS_DIR"
-            cp -r "$latest_backup"/* "$AGENTS_DIR/" 2>/dev/null || true
+            if [[ -d "$latest_backup/agents" ]]; then
+                mkdir -p "$AGENTS_DIR"
+                cp -r "$latest_backup/agents"/* "$AGENTS_DIR/" 2>/dev/null || true
+                log "Restored agents from backup"
+            fi
+            
+            if [[ -d "$latest_backup/commands" ]]; then
+                mkdir -p "$COMMANDS_DIR"
+                cp -r "$latest_backup/commands"/* "$COMMANDS_DIR/" 2>/dev/null || true
+                log "Restored commands from backup"
+            fi
+            
+            if [[ -d "$latest_backup/missions" ]]; then
+                mkdir -p "$MISSIONS_DIR"
+                cp -r "$latest_backup/missions"/* "$MISSIONS_DIR/" 2>/dev/null || true
+                log "Restored missions from backup"
+            fi
+            
+            if [[ -d "$latest_backup/templates" ]]; then
+                mkdir -p "$TEMPLATES_DIR"
+                cp -r "$latest_backup/templates"/* "$TEMPLATES_DIR/" 2>/dev/null || true
+                log "Restored templates from backup"
+            fi
             
             success "Rollback completed. Restored from: $latest_backup"
         else
@@ -524,8 +778,8 @@ rollback_installation() {
         fi
     else
         # No backup exists, just clean up
-        rm -rf "$AGENTS_DIR"
-        success "Clean rollback completed (no previous agents to restore)"
+        rm -rf "$AGENTS_DIR" "$COMMANDS_DIR" "$MISSIONS_DIR" "$TEMPLATES_DIR"
+        success "Clean rollback completed (no previous installation to restore)"
     fi
 }
 
@@ -562,37 +816,38 @@ show_post_install_instructions() {
     echo
     echo "🚀 Quick Start Commands:"
     echo
+    echo "   # Option 1: Mission Command (Recommended)"
+    echo "   /coord build requirements.md           # Build feature from requirements"
+    echo "   /coord fix bug-report.md              # Fix a bug quickly"
+    echo "   /coord mvp product-vision.md          # Create an MVP from concept"
+    echo "   /coord                                # Interactive mission selection"
+    echo
+    echo "   # Option 2: Direct Agent Commands"
     
     case "$squad_type" in
         "core")
-            echo "   # 1. Define what to build"
             echo "   @strategist Create user stories for a user authentication feature"
-            echo
-            echo "   # 2. Build it"
             echo "   @developer Implement the authentication based on the requirements above"
-            echo
-            echo "   # 3. Test it"
             echo "   @tester Validate the implementation and create test cases"
-            echo
-            echo "   # 4. Ship it"
             echo "   @operator Deploy to production when tests pass"
             ;;
         "minimal")
-            echo "   # Start with strategy"
             echo "   @strategist Define requirements for [your feature]"
-            echo
-            echo "   # Build it"
             echo "   @developer Implement based on the requirements"
             ;;
         *)
-            echo "   # Your full squad is ready for complex missions!"
             echo "   @coordinator Plan and orchestrate multi-agent workflows"
+            echo "   @strategist Create user stories for complex features"
+            echo "   @architect Design system architecture"
+            echo "   @developer Implement features with full-stack expertise"
             ;;
     esac
     
     echo -e "${BLUE}📚 Next Steps${NC}"
-    echo "  • Your agents are ready to use in this project"
-    echo "  • Try the quick start commands above"
+    echo "  • Your agents and mission system are ready to use"
+    echo "  • Try the /coord command for systematic workflows"
+    echo "  • Explore missions in the /missions directory"
+    echo "  • Create custom missions using /templates"
     echo "  • Documentation: https://github.com/TheWayWithin/agent-11"
     echo
     
@@ -602,7 +857,8 @@ show_post_install_instructions() {
         echo
     fi
     
-    echo -e "${GREEN}✨ Your elite squad is deployed and ready for action!${NC}"
+    echo -e "${GREEN}✨ Your elite squad and mission system deployed successfully!${NC}"
+    echo "🎖️ Mission Command: Use /coord for systematic multi-agent workflows"
     echo "Need help? Deploy @support for customer success assistance!"
 }
 
@@ -660,6 +916,7 @@ main() {
         validate_environment &&
         create_backup &&
         install_squad "$squad_type" &&
+        install_mission_system &&
         verify_installation "$squad_type"
     } || {
         error "Installation failed. Initiating rollback..."

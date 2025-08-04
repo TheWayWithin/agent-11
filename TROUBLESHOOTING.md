@@ -8,6 +8,7 @@ Complete problem-solving guide for AGENT-11 project deployment and usage issues.
 - [Installation Issues](#installation-issues)
 - [Agent Detection Problems](#agent-detection-problems)
 - [Agent Response Issues](#agent-response-issues)
+- [Mission System Issues](#mission-system-issues)
 - [Performance Problems](#performance-problems)
 - [Backup and Recovery](#backup-and-recovery)
 - [Platform-Specific Issues](#platform-specific-issues)
@@ -25,12 +26,20 @@ pwd  # Should show your project path
 # Check if project agents are installed
 ls -la .claude/agents/
 
+# Check if mission system is installed
+ls -la missions/
+ls -la .claude/commands/
+ls -la templates/
+
 # Verify Claude Code can see project agents
 claude
 /agents
 
 # Test project-aware agent functionality
 @strategist What type of project is this?
+
+# Test mission system
+/coord
 
 # Check project structure
 ls -la  # Should show .git, package.json, source files, etc.
@@ -349,6 +358,110 @@ ping claude.ai
 
 # Optimize agent prompts (reduce length)
 # Large agent files can slow responses
+```
+
+## Mission System Issues
+
+### Problem: `/coord` Command Not Found
+
+**Symptoms**: Claude Code shows "Command not found" when using `/coord`
+
+**Diagnosis**:
+```bash
+# Check if command file exists
+ls -la .claude/commands/coord.md
+
+# Check if you're in the correct project directory
+pwd
+```
+
+**Solutions**:
+```bash
+# If commands directory is missing
+mkdir -p .claude/commands
+
+# If coord.md is missing, reinstall mission system
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/.claude/commands/coord.md -o .claude/commands/coord.md
+
+# Or copy from AGENT-11 source if available locally
+cp /path/to/agent-11/.claude/commands/coord.md .claude/commands/
+
+# Restart Claude Code to reload commands
+/exit
+claude
+```
+
+### Problem: Mission Files Not Found
+
+**Symptoms**: `/coord` works but can't find mission files like `mission-build.md`
+
+**Diagnosis**:
+```bash
+# Check mission files exist
+ls -la missions/
+
+# Should show: library.md, mission-build.md, mission-fix.md, etc.
+```
+
+**Solutions**:
+```bash
+# Create missions directory
+mkdir -p missions
+
+# Download missing mission files
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/missions/library.md -o missions/library.md
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/missions/mission-build.md -o missions/mission-build.md
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/missions/mission-fix.md -o missions/mission-fix.md
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/missions/mission-mvp.md -o missions/mission-mvp.md
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/missions/mission-refactor.md -o missions/mission-refactor.md
+
+# Or copy from AGENT-11 source if available locally
+cp -r /path/to/agent-11/missions/* missions/
+```
+
+### Problem: Incomplete AGENT-11 Installation
+
+**Symptoms**: Agents work but mission system is missing
+
+**Diagnosis**: Check if installation only includes agents but not mission files
+
+**Solutions**:
+```bash
+# Reinstall with updated installer to get full mission system
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+
+# Or manually install mission system components
+mkdir -p missions .claude/commands templates
+
+# Copy all mission system files
+cp -r /path/to/agent-11/missions/* missions/
+cp -r /path/to/agent-11/.claude/commands/* .claude/commands/
+cp -r /path/to/agent-11/templates/* templates/
+```
+
+### Problem: Mission System Works But Missing Custom Templates
+
+**Symptoms**: Basic missions work but template creation fails
+
+**Diagnosis**:
+```bash
+# Check template directory
+ls -la templates/
+
+# Should show: mission-template.md, agent-creation-mastery.md
+```
+
+**Solutions**:
+```bash
+# Create templates directory
+mkdir -p templates
+
+# Download template files
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/templates/mission-template.md -o templates/mission-template.md
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/templates/agent-creation-mastery.md -o templates/agent-creation-mastery.md
+
+# Or copy from source
+cp -r /path/to/agent-11/templates/* templates/
 ```
 
 ## Performance Problems
