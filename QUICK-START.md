@@ -139,9 +139,9 @@ claude
 @operator Deploy using our existing CI/CD pipeline
 ```
 
-### Option 2: Mission Commands (NEW!) 🎖️
+### Option 2: Command System (NEW!) 🎖️
 ```bash
-# Use predefined missions for common workflows
+# Use predefined missions for systematic development
 /coord build requirements.md           # Build feature from requirements
 /coord fix bug-report.md              # Fix a bug quickly
 /coord mvp product-vision.md          # Create an MVP from concept
@@ -149,9 +149,14 @@ claude
 
 # Or let the coordinator guide you
 /coord                                # Interactive mission selection
+
+# Have strategic conversations with specialists
+/meeting @strategist "product roadmap planning"
+/meeting @architect "system scalability concerns"
+/meeting @developer "performance optimization strategies"
 ```
 
-The `/coord` command orchestrates multi-agent missions automatically. Your entire squad works together following proven patterns. [Learn more about missions →](field-manual/coordinator-commands.md)
+The `/coord` command orchestrates multi-agent missions automatically. The `/meeting` command enables natural conversations with specialists for brainstorming and strategic planning. Your entire squad works together following proven patterns.
 
 ## Success Indicators
 
@@ -232,7 +237,8 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 
 **What you'll get:**
 - ✅ `/coord` command for systematic workflows
-- ✅ Mission files (BUILD, FIX, MVP, REFACTOR)
+- ✅ Mission files (BUILD, FIX, MVP, REFACTOR, and 7 more)
+- ✅ Command system (/coord and /meeting)
 - ✅ Mission templates for custom workflows  
 - ✅ Latest agent improvements
 

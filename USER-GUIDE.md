@@ -40,8 +40,18 @@ Master your elite AI development squad. This guide teaches you how to use deploy
 @tester Review the implementation above and create comprehensive tests
 ```
 
-**Collaborative Problem Solving**
+**Command System for Advanced Workflows**
 ```bash
+# Mission orchestration for systematic development
+/coord build requirements.md
+/coord fix bug-report.md
+/coord mvp product-vision.md
+
+# Strategic conversations with specialists
+/meeting @strategist "product roadmap planning"
+/meeting @architect "system scalability approach"
+
+# Traditional coordination (still supported)
 @coordinator Plan the development of a new feature
 # Coordinator will orchestrate other agents as needed
 ```

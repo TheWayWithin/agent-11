@@ -517,6 +517,7 @@ install_mission_system() {
     # Define command files to install
     local command_files=(
         ".claude/commands/coord.md"
+        ".claude/commands/meeting.md"
     )
     
     # Define template files to install
@@ -720,6 +721,9 @@ verify_installation() {
     if [[ ! -f "$COMMANDS_DIR/coord.md" ]]; then
         missing_items+=("command:coord.md")
     fi
+    if [[ ! -f "$COMMANDS_DIR/meeting.md" ]]; then
+        missing_items+=("command:meeting.md")
+    fi
     
     # Verify template files
     local template_files=("mission-template.md" "agent-creation-mastery.md")
@@ -733,7 +737,7 @@ verify_installation() {
         success "Installation verification passed!"
         log "✓ Agents: ${#squad_agents[@]} installed"
         log "✓ Mission system: Complete"
-        log "✓ Commands: /coord available"
+        log "✓ Commands: /coord and /meeting available"
         log "✓ Templates: Available"
         return 0
     else

@@ -95,16 +95,20 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 @operator Deploy to production when tests pass
 ```
 
-### Option 2: Mission Command (NEW!) 🎖️
+### Option 2: Command System (NEW!) 🎖️
 ```bash
 # Execute predefined missions with a single command
 /coord build requirements.md
 
 # Or start interactively
 /coord
+
+# Have strategic conversations with specialists
+/meeting @strategist "product roadmap planning"
+/meeting @architect "system scalability concerns"
 ```
 
-The `/coord` command activates THE COORDINATOR to orchestrate complex multi-agent missions automatically. Choose from predefined missions like BUILD, FIX, MVP, or create your own. [Learn more →](field-manual/coordinator-commands.md)
+The `/coord` command activates THE COORDINATOR to orchestrate complex multi-agent missions automatically. The `/meeting` command enables natural conversations with specialists for brainstorming and strategic planning. Choose from predefined missions like BUILD, FIX, MVP, or create your own.
 
 ## 📊 Mission Success Metrics
 
