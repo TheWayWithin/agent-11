@@ -78,6 +78,13 @@ This library contains standardized mission protocols for common development scen
 **Required**: API documentation  
 **Squad**: Architect, Developer, Tester
 
+#### 🎯 RELEASE - Version Release Management
+**File**: `mission-release.md`  
+**Purpose**: Coordinate complete product release process  
+**Duration**: 2-4 hours  
+**Required**: Release scope and timeline  
+**Squad**: Coordinator, Developer, Operator, Marketer
+
 ## Mission Execution Guide
 
 ### Starting a Mission

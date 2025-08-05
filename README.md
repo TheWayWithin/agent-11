@@ -133,18 +133,24 @@ The `/coord` command activates THE COORDINATOR to orchestrate complex multi-agen
 
 [Read more success stories →](community/SUCCESS-STORIES.md)
 
-## 🔥 Featured Missions
+## 🔥 Mission Library (11 Core Missions)
 
-### [Operation: GENESIS](missions/operation-genesis.md)
-Build a complete feature from idea to production
+### Development Missions
+- **[🏗️ BUILD](missions/mission-build.md)** - New feature development (4-8 hours)
+- **[🐛 FIX](missions/mission-fix.md)** - Emergency bug resolution (1-3 hours)  
+- **[♻️ REFACTOR](missions/mission-refactor.md)** - Code quality improvement (2-4 hours)
+- **[🚀 DEPLOY](missions/mission-deploy.md)** - Production deployment (1-2 hours)
+- **[📚 DOCUMENT](missions/mission-document.md)** - Documentation creation (2-4 hours)
 
-### [Operation: HOTFIX](missions/operation-hotfix.md)  
-Rapid response for critical bugs
+### Strategic Missions  
+- **[💡 MVP](missions/mission-mvp.md)** - Minimum viable product (1-3 days)
+- **[🔄 MIGRATE](missions/mission-migrate.md)** - System migration (4-8 hours)
+- **[⚡ OPTIMIZE](missions/mission-optimize.md)** - Performance optimization (3-6 hours)
+- **[🔒 SECURITY](missions/mission-security.md)** - Security audit & fixes (4-6 hours)
+- **[🔌 INTEGRATE](missions/mission-integrate.md)** - Third-party integration (3-6 hours)
+- **[🎯 RELEASE](missions/mission-release.md)** - Release management (2-4 hours)
 
-### [Operation: INSIGHT](missions/operation-insight.md)
-Data-driven product optimization
-
-[View all missions →](missions/)
+[📋 Complete Mission Library →](missions/library.md)
 
 ## 🔄 Updating Existing Installation
 

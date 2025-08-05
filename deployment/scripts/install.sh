@@ -503,6 +503,13 @@ install_mission_system() {
         "missions/mission-fix.md"
         "missions/mission-mvp.md"
         "missions/mission-refactor.md"
+        "missions/mission-deploy.md"
+        "missions/mission-document.md"
+        "missions/mission-optimize.md"
+        "missions/mission-integrate.md"
+        "missions/mission-migrate.md"
+        "missions/mission-security.md"
+        "missions/mission-release.md"
         "missions/operation-genesis.md"
         "missions/README.md"
     )
@@ -702,7 +709,7 @@ verify_installation() {
     done
     
     # Verify mission system files
-    local mission_files=("library.md" "mission-build.md" "mission-fix.md" "mission-mvp.md" "mission-refactor.md")
+    local mission_files=("library.md" "mission-build.md" "mission-fix.md" "mission-mvp.md" "mission-refactor.md" "mission-deploy.md" "mission-document.md" "mission-optimize.md" "mission-integrate.md" "mission-migrate.md" "mission-security.md" "mission-release.md")
     for mission_file in "${mission_files[@]}"; do
         if [[ ! -f "$MISSIONS_DIR/$mission_file" ]]; then
             missing_items+=("mission:$mission_file")
