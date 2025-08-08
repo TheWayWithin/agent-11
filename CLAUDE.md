@@ -166,6 +166,78 @@ When updating CLAUDE.md, include:
 - Include specific commands and examples
 - Maintain the "elite squad" branding throughout
 
+## MCP (Model Context Protocol) Integration
+
+### MCP-First Principle
+Agents should prioritize using available MCP servers before implementing functionality manually. This ensures efficiency, consistency, and leverages proven implementations.
+
+### MCP Discovery Protocol
+1. **Check Available MCPs**: Use `grep "mcp__"` or look for tools starting with `mcp__` prefix
+2. **Prioritize MCP Usage**: Always check if an MCP can handle the task before manual implementation
+3. **Document MCP Usage**: Track which MCPs are used in project-plan.md and CLAUDE.md
+4. **Fallback Strategy**: Have manual approach ready when specific MCPs aren't available
+
+### Common MCPs by Function
+
+#### Development Stack
+- **mcp__github**: PRs, issues, releases, repository management
+- **mcp__context7**: Library documentation, code patterns, best practices
+- **mcp__supabase**: Database operations, authentication, real-time features
+- **mcp__firecrawl**: Web scraping, API research, documentation extraction
+- **mcp__playwright**: Browser automation, E2E testing
+- **mcp__netlify**: Deployment, hosting configuration
+- **mcp__railway**: Backend services, infrastructure
+
+#### Testing & Quality
+- **mcp__playwright**: Cross-browser testing, visual regression, user flows
+- **mcp__context7**: Test framework documentation, coverage analysis
+- **Memory MCPs**: Test result persistence, pattern tracking
+
+#### Research & Documentation
+- **mcp__firecrawl**: Competitor analysis, market research, documentation extraction
+- **mcp__context7__resolve-library-id**: Find correct library identifiers
+- **mcp__context7__get-library-docs**: Retrieve up-to-date documentation
+- **WebSearch**: Current events, recent updates
+
+#### Infrastructure & Operations
+- **mcp__supabase**: Database and authentication infrastructure
+- **mcp__netlify**: Frontend deployment and hosting
+- **mcp__railway**: Backend service deployment
+- **mcp__stripe**: Payment processing (when applicable)
+
+### MCP Usage Examples
+
+#### For Developers
+```bash
+# Before implementing Supabase integration manually:
+# 1. Check for Supabase MCP
+# 2. Use mcp__supabase for database operations
+# 3. Use mcp__context7 for Supabase documentation
+```
+
+#### For Architects
+```bash
+# Before designing new patterns:
+# 1. Use mcp__context7 to research proven patterns
+# 2. Use mcp__firecrawl for competitor analysis
+# 3. Document MCP availability in architecture decisions
+```
+
+#### For Testers
+```bash
+# For E2E testing:
+# 1. Prioritize mcp__playwright for browser automation
+# 2. Use mcp__context7 for Playwright documentation
+# 3. Only write custom scripts if MCP unavailable
+```
+
+### MCP Integration in Missions
+All missions should include an MCP discovery phase:
+1. Identify available MCPs at mission start
+2. Map MCPs to mission tasks
+3. Include MCP usage in execution plans
+4. Document MCPs used for future reference
+
 ## No Build/Test Commands
 
 This project has no build system, package management, or automated testing since it's purely documentation-based. Changes can be verified by:

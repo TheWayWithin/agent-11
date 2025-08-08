@@ -33,6 +33,20 @@ This mission aligns AGENT-11 with an existing project by:
 
 ## Execution Protocol
 
+### Phase 0: MCP Assessment (3 min)
+```bash
+/coord "Discovering available MCPs in the project..."
+```
+
+**Agent Actions:**
+- @coordinator checks for available MCPs with grep "mcp__"
+- Identifies which MCPs are configured
+- Maps MCPs to current architecture:
+  - If Supabase used: Check for mcp__supabase
+  - If tests exist: Check for mcp__playwright
+  - For any libraries: Note mcp__context7 availability
+- Documents MCP availability in analysis
+
 ### Phase 1: Codebase Analysis (15 min)
 ```bash
 /coord "Starting project alignment. Let me analyze your existing codebase..."
@@ -275,6 +289,13 @@ _To be updated as we progress_
 ## Project Overview
 [From ideation/discovery]
 
+## Available MCPs
+[From MCP assessment phase]
+- mcp__[service]: [Usage in project]
+- Example: mcp__supabase: Database operations
+- Example: mcp__playwright: E2E testing
+- Example: mcp__context7: Library documentation
+
 ## Codebase Structure
 [From analysis]
 
@@ -284,9 +305,11 @@ _To be updated as we progress_
 
 ### Testing Approach
 [Current testing strategy]
+[Note if mcp__playwright available for testing]
 
 ### Build & Deploy
 [Current processes]
+[Note if mcp__netlify or mcp__railway available]
 
 ## Ideation Context
 Location: `./ideation.md`
@@ -299,10 +322,10 @@ Last Updated: [date]
 
 ## Progress Tracking Protocol
 After each work session:
-1. Update `project-plan.md` with completed tasks
+1. Update `project-plan.md` with completed tasks and MCPs used
 2. Log issues and resolutions in `progress.md`
 3. Document lessons learned
-4. Record performance insights
+4. Record performance insights and MCP patterns
 5. Update this file with any new patterns or decisions
 
 ## Performance Insights
@@ -311,9 +334,11 @@ After each work session:
 
 ### Optimization Opportunities
 [From analysis]
+[MCPs that could help]
 
 ## Technical Decisions Log
 [Important decisions that affect development]
+[MCPs chosen for specific tasks]
 
 ## Common Commands
 ```bash
@@ -325,10 +350,14 @@ After each work session:
 
 # Run
 [project-specific run command]
+
+# MCP Discovery
+grep "mcp__"
 ```
 
 ## Known Issues
 [Any identified issues]
+[MCPs that might help resolve]
 
 ## Update Checklist
 - [ ] Task completed → Update project-plan.md
@@ -336,6 +365,7 @@ After each work session:
 - [ ] Lesson learned → Add to progress.md
 - [ ] Performance insight → Update CLAUDE.md
 - [ ] Pattern discovered → Document in CLAUDE.md
+- [ ] MCP usage → Track successful patterns
 ```
 
 ---

@@ -49,14 +49,30 @@ COORDINATION PROTOCOLS
 - For user feedback on bugs: collaborate with @support
 - For testing metrics and insights: coordinate with @analyst
 
+TEST AUTOMATION MCP PROTOCOL:
+Before writing any test automation:
+1. Check for mcp__playwright availability - ALWAYS prioritize this MCP
+2. Use mcp__context7 for test framework documentation
+3. Use Memory MCPs when available for test result persistence
+4. Only write custom test scripts if MCPs are unavailable
+
+MCP Usage Patterns:
+- **E2E Testing**: Always use mcp__playwright for browser automation
+- **Documentation**: Use mcp__context7__get-library-docs for Playwright/Jest docs
+- **Test Generation**: Use mcp__playwright to generate comprehensive test suites from user stories
+- **Cross-browser**: Use mcp__playwright for Chrome, Firefox, Safari testing
+- **Visual Testing**: Use mcp__playwright for screenshot comparison
+
 PLAYWRIGHT FOCUS
-When creating e2e tests, always use Playwright for superior capabilities:
+When creating e2e tests, prioritize mcp__playwright MCP:
+- Generate tests from user stories automatically
 - Cross-browser testing (Chromium, Firefox, WebKit)
 - Auto-wait for elements (no flaky timeouts)
 - Network interception and mocking capabilities
 - Mobile device emulation and testing
 - Parallel test execution for speed
 - Built-in test reporting and debugging
+- Visual regression with screenshot comparison
 
 STAY IN LANE: Focus on quality assurance and testing excellence. Let specialists handle feature development and design decisions.
 

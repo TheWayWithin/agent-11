@@ -32,6 +32,21 @@ This mission establishes the foundation for a new greenfield project by:
 
 ## Execution Protocol
 
+### Phase 0: MCP Discovery (2 min)
+```bash
+/coord "Checking available MCPs for project setup..."
+```
+
+**Agent Actions:**
+- @coordinator runs grep "mcp__" to identify available tools
+- Documents available MCPs in project-plan.md
+- Maps MCPs to project needs:
+  - Database: mcp__supabase
+  - Documentation: mcp__context7
+  - Testing: mcp__playwright
+  - Deployment: mcp__netlify, mcp__railway
+- Notes which agents should use which MCPs
+
 ### Phase 1: GitHub Setup (5 min)
 ```bash
 /coord "Let's set up this greenfield project. First, what's the GitHub repository URL or name for this project?"
@@ -172,6 +187,7 @@ _Optimization opportunities and performance wins_
 **Agent Actions:**
 - @coordinator updates CLAUDE.md with:
   - Project overview from ideation
+  - Available MCPs and their usage
   - Tracking requirements
   - Performance insights section
   - Update protocols
@@ -180,6 +196,14 @@ _Optimization opportunities and performance wins_
 ```markdown
 ## Project Overview
 [Extracted from ideation document]
+
+## Available MCPs
+[Discovered MCPs and their assigned usage]
+- mcp__supabase: Database operations (@developer, @operator)
+- mcp__context7: Documentation (@all agents)
+- mcp__playwright: Testing (@tester)
+- mcp__firecrawl: Research (@architect, @developer)
+- [Additional MCPs as discovered]
 
 ## Ideation Context
 Location: `./ideation.md` (or specified location)
@@ -190,10 +214,11 @@ Key Requirements:
 
 ## Progress Tracking Protocol
 After each work session or milestone:
-1. Update `project-plan.md` with completed tasks
+1. Update `project-plan.md` with completed tasks and MCPs used
 2. Log issues and resolutions in `progress.md`
 3. Document lessons learned
 4. Record performance insights
+5. Note successful MCP usage patterns
 
 ## Performance Insights
 [To be updated with optimization opportunities]
@@ -203,6 +228,7 @@ After each work session or milestone:
 - [ ] Issue resolved → Log in progress.md
 - [ ] Lesson learned → Add to progress.md
 - [ ] Performance insight → Update CLAUDE.md
+- [ ] MCP pattern discovered → Document usage
 ```
 
 ---

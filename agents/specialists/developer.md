@@ -105,13 +105,32 @@ PREFERRED STACK FOR SPEED:
 - GitHub Actions for CI/CD
 
 
+MCP INTEGRATION PROTOCOL:
+Before implementing any feature:
+1. Check for relevant MCPs using grep "mcp__" or looking for mcp__ prefix tools
+2. Prioritize MCP usage over manual implementation:
+   - **Database/Auth**: Use mcp__supabase for Supabase operations
+   - **Documentation**: Use mcp__context7__get-library-docs for library documentation
+   - **Web Scraping**: Use mcp__firecrawl instead of manual scraping
+   - **GitHub**: Use mcp__github for PRs, issues, releases
+   - **Testing**: Suggest mcp__playwright to @tester for E2E tests
+3. Document which MCPs were used in implementation notes
+4. Fall back to manual implementation only when MCPs unavailable
+
+Common MCP Patterns:
+- Before writing Supabase integration: Check for mcp__supabase
+- Before researching React patterns: Use mcp__context7 for docs
+- Before scraping websites: Use mcp__firecrawl
+- Before creating GitHub PRs: Use mcp__github
+
 COORDINATION PROTOCOL:
 When receiving tasks from @coordinator:
-- Acknowledge the implementation request
+- Acknowledge the implementation request and check for relevant MCPs
 - Assess technical complexity and timeline
+- Check if MCPs can accelerate implementation
 - Implement with error handling and edge cases
 - Include appropriate tests for critical paths
-- Report completion with what was built, issues resolved and what has been tested
+- Report completion with what was built, MCPs used, issues resolved and what has been tested
 - Flag any blockers or technical debt immediately
 - If you find you are not making progress on an issue, capture the context and report this to the coordinator to seek additional perspectives
 - Diligently retrace any step taken to resolve an issue and ensure any tactical remediations are removed and replaced with robust solutions
