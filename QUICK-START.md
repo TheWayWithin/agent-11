@@ -41,13 +41,37 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 - Verifies project compatibility
 - Shows you exactly what to do next
 
+## Step 3: Connect MCPs (NEW! Recommended)
+
+After deploying your squad, connect powerful MCP tools:
+
+```bash
+# Automatically discover and connect MCPs based on your project
+/coord connect-mcp
+
+# This will:
+# - Analyze your project needs
+# - Install required MCPs (Supabase, GitHub, Playwright, etc.)
+# - Configure authentication
+# - Test all connections
+# - Map MCPs to your agents
+```
+
+**Common MCPs that will be connected:**
+- 🗄️ **Supabase** - If you need database/auth
+- 🐙 **GitHub** - For version control operations
+- 🎭 **Playwright** - For testing automation
+- 📚 **Context7** - For library documentation
+- 🔥 **Firecrawl** - For web scraping
+- 🚀 **Netlify/Railway** - For deployments
+
 ## What You Get
 
 ### Core Squad (Recommended)
 - **The Strategist** - Defines requirements and user stories
-- **The Developer** - Implements features and fixes bugs
-- **The Tester** - Creates tests and validates quality
-- **The Operator** - Handles deployment and infrastructure
+- **The Developer** - Implements features and fixes bugs (uses Supabase, GitHub, Context7 MCPs)
+- **The Tester** - Creates tests and validates quality (uses Playwright MCP)
+- **The Operator** - Handles deployment and infrastructure (uses Netlify, Railway MCPs)
 
 ### Project Setup Time: 2-3 minutes
 
@@ -141,7 +165,12 @@ claude
 
 ### Option 2: Command System (NEW!) 🎖️
 ```bash
-# Use predefined missions for systematic development
+# Setup missions for new projects
+/coord dev-setup ideation.md          # Initialize greenfield project (30-45 min)
+/coord dev-alignment                  # Understand existing codebase (45-60 min)
+/coord connect-mcp                    # Connect required MCPs (45-90 min)
+
+# Development missions
 /coord build requirements.md           # Build feature from requirements
 /coord fix bug-report.md              # Fix a bug quickly
 /coord mvp product-vision.md          # Create an MVP from concept

@@ -66,16 +66,35 @@ Complete navigation guide for all AGENT-11 documentation. Find exactly what you 
 
 **Best for**: Organizations and advanced individual users
 
+## 🔌 MCP Integration (NEW!)
+
+### [MCP Integration Guide](field-manual/mcp-integration.md)
+**Perfect for**: Understanding and leveraging MCP tools
+- What are MCPs and why they matter
+- Discovery and connection protocols
+- Agent-specific MCP usage patterns
+- Security and troubleshooting
+
+### Setup Missions with MCP
+- **[DEV-SETUP Mission](missions/dev-setup.md)** - Greenfield project initialization with MCP discovery
+- **[DEV-ALIGNMENT Mission](missions/dev-alignment.md)** - Existing project understanding with MCP assessment
+- **[CONNECT-MCP Mission](missions/connect-mcp.md)** - Systematic MCP discovery and connection
+
+**Time to Complete**: 45-90 minutes for full MCP setup  
+**Benefit**: 60-80% efficiency gains through tool integration
+
 ## 📚 Reference Documentation
 
 ### Agent Architecture
-- **[Core Squad Overview](agents/core-squad.md)** - Essential 4-agent setup
-- **[Full Squad Overview](agents/full-squad.md)** - Complete 11-agent deployment
-- **[Individual Agent Specs](agents/specialists/)** - Detailed capabilities per agent
+- **[Core Squad Overview](agents/core-squad.md)** - Essential 4-agent setup with MCP mappings
+- **[Full Squad Overview](agents/full-squad.md)** - Complete 11-agent deployment with MCP integration
+- **[Individual Agent Specs](agents/specialists/)** - Detailed capabilities per agent including MCP usage
 
-### Mission Workflows
+### Mission Workflows (12 Total)
+- **[Mission Library](missions/library.md)** - Complete list of all 12 missions
 - **[Operation Genesis](missions/operation-genesis.md)** - Complete feature development
-- **[Mission Templates](missions/)** - Pre-built workflows for common scenarios
+- **[Setup Missions](missions/)** - Project initialization with MCP integration
+- **[Development Missions](missions/)** - Pre-built workflows for common scenarios
 
 ### Community Resources
 - **[Success Stories](community/SUCCESS-STORIES.md)** - Real user experiences
@@ -107,6 +126,21 @@ Complete navigation guide for all AGENT-11 documentation. Find exactly what you 
 1. [Advanced Usage Guide](ADVANCED-USAGE.md) - Enterprise patterns
 2. [Installation Guide](INSTALLATION.md) - Multiple deployment strategies
 3. [Troubleshooting Guide](TROUBLESHOOTING.md) - Team support procedures
+
+### "I want to connect MCPs to my project" (NEW!)
+1. [CONNECT-MCP Mission](missions/connect-mcp.md) - Automatic MCP setup
+2. [MCP Integration Guide](field-manual/mcp-integration.md) - Complete MCP reference
+3. [Quick Start](QUICK-START.md) - Step 3: Connect MCPs
+
+### "I'm starting a new project" (NEW!)
+1. [DEV-SETUP Mission](missions/dev-setup.md) - Greenfield project initialization
+2. [CONNECT-MCP Mission](missions/connect-mcp.md) - Connect required tools
+3. [Mission Library](missions/library.md) - All 12 available workflows
+
+### "I'm joining an existing project" (NEW!)
+1. [DEV-ALIGNMENT Mission](missions/dev-alignment.md) - Understand existing codebase
+2. [CONNECT-MCP Mission](missions/connect-mcp.md) - Connect project tools
+3. [User Guide](USER-GUIDE.md) - Effective agent usage
 
 ## 📱 Quick Reference Cards
 

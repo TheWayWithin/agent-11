@@ -8,6 +8,8 @@
 [![Deploy Time](https://img.shields.io/badge/Deploy%20Time-Under%201%20Second-green?style=for-the-badge)](QUICK-START.md)
 [![Success Rate](https://img.shields.io/badge/Success%20Rate-98%25-brightgreen?style=for-the-badge)](INSTALLATION.md)
 [![Agents](https://img.shields.io/badge/Agents-11%20Specialists-red?style=for-the-badge)](agents/)
+[![Missions](https://img.shields.io/badge/Missions-12%20Workflows-purple?style=for-the-badge)](missions/)
+[![MCP Integration](https://img.shields.io/badge/MCP-Enabled-orange?style=for-the-badge)](field-manual/mcp-integration.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
 **One Founder. Eleven Specialists. Unlimited Potential.**
@@ -137,7 +139,40 @@ The `/coord` command activates THE COORDINATOR to orchestrate complex multi-agen
 
 [Read more success stories →](community/SUCCESS-STORIES.md)
 
-## 🔥 Mission Library (11 Core Missions)
+## 🔌 MCP Integration (NEW!)
+
+**Your agents now leverage powerful MCP (Model Context Protocol) tools for maximum efficiency:**
+
+### Automatic MCP Discovery & Setup
+```bash
+# After deploying your squad, connect required MCPs
+/coord connect-mcp
+
+# The mission will:
+# 1. Analyze your project requirements
+# 2. Identify needed MCPs (Supabase, GitHub, Playwright, etc.)
+# 3. Install and configure them automatically
+# 4. Test all connections
+# 5. Map MCPs to your agents
+```
+
+### Available MCPs Your Agents Can Use
+- **🗄️ Supabase** - Database operations and authentication
+- **🐙 GitHub** - PRs, issues, and version control
+- **🎭 Playwright** - Browser automation and E2E testing
+- **📚 Context7** - Real-time library documentation
+- **🔥 Firecrawl** - Web scraping and research
+- **🚀 Netlify/Railway** - Deployment automation
+- **💳 Stripe** - Payment processing
+
+**[📖 Complete MCP Integration Guide →](field-manual/mcp-integration.md)**
+
+## 🔥 Mission Library (12 Core Missions)
+
+### Setup Missions (NEW!)
+- **[🚀 DEV-SETUP](missions/dev-setup.md)** - Greenfield project initialization (30-45 min)
+- **[🎯 DEV-ALIGNMENT](missions/dev-alignment.md)** - Existing project understanding (45-60 min)
+- **[🔌 CONNECT-MCP](missions/connect-mcp.md)** - MCP discovery and connection (45-90 min)
 
 ### Development Missions
 - **[🏗️ BUILD](missions/mission-build.md)** - New feature development (4-8 hours)
