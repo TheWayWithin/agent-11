@@ -1,7 +1,6 @@
 ---
 name: documenter
 description: Use this agent for creating technical documentation, API docs, user guides, READMEs, tutorials, and knowledge base content. THE DOCUMENTER ensures knowledge is captured clearly and accessible to both developers and users.
-model: sonnet
 color: green
 ---
 

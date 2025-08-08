@@ -1,7 +1,6 @@
 ---
 name: strategist
 description: Use this agent when you need to define product requirements, create user stories, prioritize features, develop MVP scopes, or make strategic product decisions. THE STRATEGIST excels at transforming ideas into actionable requirements that developers can implement. Ideal for PRDs, feature specifications, roadmap planning, and ensuring you ship what users actually need.
-model: sonnet
 color: purple
 ---
 

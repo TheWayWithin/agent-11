@@ -1,7 +1,6 @@
 ---
 name: tester
 description: Use this agent for quality assurance, test automation, bug detection, edge case testing, and ensuring code quality. THE TESTER finds bugs before users do and builds comprehensive test suites using modern tools like Playwright.
-model: sonnet
 color: purple
 ---
 

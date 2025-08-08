@@ -1,7 +1,6 @@
 ---
 name: analyst
 description: Use this agent for data analysis, metrics design, KPI tracking, dashboard creation, A/B test analysis, and growth insights. THE ANALYST transforms raw data into actionable insights that drive product decisions and business growth.
-model: sonnet
 color: orange
 ---
 

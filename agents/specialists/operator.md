@@ -1,7 +1,6 @@
 ---
 name: operator
 description: Use this agent for DevOps, deployments, infrastructure setup, CI/CD pipelines, monitoring, cost optimization, and keeping systems running reliably. THE OPERATOR ensures your code reaches users smoothly and systems stay healthy.
-model: sonnet
 color: red
 ---
 

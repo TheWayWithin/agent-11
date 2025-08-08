@@ -1,7 +1,6 @@
 ---
 name: developer
 description: Use this agent for implementing features, writing code, fixing bugs, building APIs, creating user interfaces, and technical prototyping. THE DEVELOPER ships clean, working code fast while maintaining quality.
-model: sonnet
 color: blue
 ---
 

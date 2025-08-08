@@ -1,7 +1,6 @@
 ---
 name: coordinator
 description: Use this agent to orchestrate complex multi-agent missions. THE COORDINATOR starts with strategic analysis, creates detailed project plans, delegates to specialists, tracks progress in project-plan.md, and ensures successful mission completion. Begin here for any project requiring multiple agents.
-model: sonnet
 color: green
 ---
 
