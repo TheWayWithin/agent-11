@@ -70,7 +70,83 @@ Includes the core squad plus:
 - Keep deployment commands as single-line strings for easy copy/paste
 - Include practical examples and workflows in documentation
 
+## Ideation File Concept
+
+The ideation file is a centralized document containing all requirements, context, and vision for a development project. This can include:
+- Product Requirements Documents (PRDs)
+- Brand guidelines
+- Architecture specifications
+- Vision documents
+- User research
+- Market analysis
+- Technical constraints
+
+### Standard Location
+- Primary: `./ideation.md`
+- Alternative: `./docs/ideation/`
+- Can be multiple files referenced in CLAUDE.md
+
+## Progress Tracking System
+
+### Core Tracking Files
+
+1. **project-plan.md** - Strategic roadmap and milestones
+   - Executive summary
+   - Objectives and goals
+   - Technical architecture
+   - Milestone timeline
+   - Success metrics
+   - Risk assessment
+
+2. **progress.md** - Operational log and learnings
+   - Completed milestones
+   - Current sprint status
+   - Issues and resolutions
+   - Lessons learned
+   - Technical decisions
+   - Performance insights
+
+### Update Protocol
+
+After each work session or milestone:
+1. ✅ Mark completed tasks in `project-plan.md`
+2. 📝 Log issues and resolutions in `progress.md`
+3. 💡 Document lessons learned in `progress.md`
+4. ⚡ Record performance insights in both `progress.md` and `CLAUDE.md`
+5. 🔧 Update `CLAUDE.md` with any new patterns, decisions, or optimizations
+
+### Performance-Driving Insights
+
+When updating CLAUDE.md, include:
+- Discovered optimization opportunities
+- Successful patterns and approaches
+- Performance bottlenecks and solutions
+- Architecture decisions and rationale
+- Testing strategies that work
+- Deployment optimizations
+
 ## Common Tasks
+
+### Project Initialization
+
+#### Greenfield Projects (New)
+```bash
+/coord dev-setup ideation.md
+```
+- Sets up GitHub repository
+- Analyzes ideation documents
+- Creates project-plan.md
+- Initializes progress.md
+- Configures CLAUDE.md
+
+#### Existing Projects (Brownfield)
+```bash
+/coord dev-alignment
+```
+- Analyzes existing codebase
+- Understands project context
+- Creates/updates tracking files
+- Optimizes CLAUDE.md for project
 
 ### Adding New Agent Profiles
 1. Create new file in `/agents/specialists/`
