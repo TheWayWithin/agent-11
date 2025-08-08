@@ -20,6 +20,13 @@ This library contains standardized mission protocols for common development scen
 **Required**: Existing codebase, ideation docs (optional)  
 **Squad**: Coordinator, Architect, Developer, Strategist
 
+#### 🔌 CONNECT-MCP - MCP Discovery & Connection
+**File**: `connect-mcp.md`  
+**Purpose**: Identify, install, and configure required MCP servers based on project needs  
+**Duration**: 45-90 minutes  
+**Required**: Project requirements, API keys for services  
+**Squad**: Coordinator, Strategist, Developer, Tester, Documenter
+
 ### Core Development Missions
 
 #### 🏗️ BUILD - New Feature Development
