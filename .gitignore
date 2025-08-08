@@ -14,3 +14,6 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+# MCP Configuration
+.env.mcp
+.env.mcp.local
