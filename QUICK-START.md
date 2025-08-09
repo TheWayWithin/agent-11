@@ -4,6 +4,34 @@
 
 Welcome to AGENT-11! This guide gets you from curious to deployed to productive in under 5 minutes. AGENT-11 deploys your elite squad to work on a specific project - each project gets its own specialized team that understands your project context perfectly.
 
+## Prerequisites Check ✅
+
+**AGENT-11 requires a project context.** Your directory needs at least ONE of:
+- Git repository (`git init`)
+- README file
+- Package file (package.json, requirements.txt, etc.)
+- Any project indicator
+
+### Quick Setup for Different Scenarios
+
+```bash
+# Scenario 1: Brand new project
+mkdir my-project && cd my-project
+git init
+echo "# My Project" > README.md
+
+# Scenario 2: Existing folder (no git)
+cd /path/to/existing/folder
+git init  # This is all you need!
+
+# Scenario 3: Greenfield with ideation docs
+cd /path/to/project-with-ideation
+git init && echo "# Project Name" > README.md
+
+# Scenario 4: Already have a project
+cd ~/my-existing-project  # Just navigate and deploy!
+```
+
 ## Project-Only Installation
 
 **Project-Local Agents · No Global Pollution · Clean Isolation**
@@ -14,11 +42,8 @@ Welcome to AGENT-11! This guide gets you from curious to deployed to productive 
 # Navigate to your project directory
 cd /path/to/your/project
 
-# Examples of valid project directories:
-cd ~/my-startup-app      # Has package.json, git repo
-cd ~/client-website      # Has git repo, source files
-cd ~/data-analysis       # Has Python files, requirements.txt
-cd ~/mobile-app          # Has React Native, Expo config
+# If deployment fails with "no project detected", quick fix:
+git init  # Creates git repository instantly
 ```
 
 ### Step 2: Deploy Your Squad

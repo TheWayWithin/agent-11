@@ -37,6 +37,32 @@ You're a solo founder with a vision. You need to build fast, ship quality, and c
 - 📈 **The Marketer** - Growth on autopilot
 - 🎖️ **The Coordinator** - Mission commander
 
+## 📋 Prerequisites
+
+**AGENT-11 requires a project context to deploy.** Your directory needs at least ONE of:
+
+- 🔧 **Git repository** (recommended): `git init`
+- 📄 **README file**: `README.md`
+- 📦 **Package file**: `package.json`, `requirements.txt`, `Cargo.toml`, etc.
+- 🗂️ **Any project indicator**: `.gitignore`, source files, or documentation
+
+### Quick Project Setup
+
+```bash
+# For new projects - create and initialize:
+mkdir my-project && cd my-project
+git init
+echo "# My Project" > README.md
+
+# For existing folders - just initialize:
+cd /path/to/existing/folder
+git init  # This is usually all you need!
+
+# For greenfield projects with ideation docs:
+cd /path/to/project-with-ideation
+git init && echo "# Project Name" > README.md
+```
+
 ## 🚀 Project-Only Deployment
 
 **Project-Local Agents · No Global Pollution · Clean Isolation**
@@ -45,7 +71,10 @@ You're a solo founder with a vision. You need to build fast, ship quality, and c
 # Step 1: Navigate to your project (required)
 cd /path/to/your/project
 
-# Step 2: Deploy your squad
+# Step 2: Ensure project context exists (if not already)
+git init  # Quick fix if deployment fails with "no project detected"
+
+# Step 3: Deploy your squad
 # Core Squad (4 agents) - Recommended for most projects
 curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 
@@ -56,11 +85,11 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s minimal
 ```
 
-**Project-focused by design!** The installer automatically:
+**Project-focused by design!** The installer:
 - ✅ Detects your project type and context
 - ✅ Creates project-local `.claude/agents/` directory
 - ✅ Installs your selected squad with project understanding
-- ✅ Verifies project compatibility
+- ❌ Fails gracefully if no project context found (with helpful guidance)
 - ✅ Shows you exactly what to do next
 
 **[📖 See Complete Project Setup Guide →](QUICK-START.md)**
@@ -202,6 +231,41 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 ```
 
 **[📋 Complete Update Guide →](UPDATING.md)** - Everything you need to know about updating
+
+## 🛠️ Troubleshooting
+
+### Common Installation Issues
+
+**"No project detected in current directory"**
+```bash
+# Quick fix - just initialize git:
+git init
+
+# Or create a README:
+echo "# My Project" > README.md
+```
+
+**"Cannot write to current directory"**
+```bash
+# Check permissions:
+ls -la .
+# Fix with: sudo chown -R $(whoami) .
+```
+
+**"Neither curl nor wget available"**
+```bash
+# macOS: brew install curl
+# Ubuntu/Debian: sudo apt-get install curl
+# RHEL/CentOS: sudo yum install curl
+```
+
+**Installation for greenfield projects with ideation docs:**
+```bash
+cd /path/to/project-with-ideation
+git init  # Required!
+echo "# Project Name" > README.md  # Optional but recommended
+# Now run the installer
+```
 
 ## 📖 Documentation
 
