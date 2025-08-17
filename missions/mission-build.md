@@ -23,7 +23,20 @@ Transform product requirements into production-ready implementation. This missio
 **Lead**: @strategist  
 **Objective**: Transform requirements into actionable user stories
 
-**COORDINATOR ACTION**: Immediately call @strategist - do not plan or wait
+**COORDINATOR PROTOCOL**:
+1. **UPDATE project-plan.md** with Phase 1 tasks:
+   ```markdown
+   ## Mission: BUILD [Feature Name]
+   
+   ### Phase 1: Strategic Analysis (In Progress)
+   - [ ] Create detailed user stories in INVEST format (assigned to @strategist)
+   - [ ] Define clear acceptance criteria (assigned to @strategist)
+   - [ ] Identify edge cases and error states (assigned to @strategist)
+   - [ ] Prioritize features for MVP vs future iterations (assigned to @strategist)
+   - [ ] Define success metrics and KPIs (assigned to @strategist)
+   ```
+
+2. **IMMEDIATELY CALL @strategist** - do not plan or wait
 
 ```bash
 @strategist Review the provided requirements and:
@@ -34,7 +47,9 @@ Transform product requirements into production-ready implementation. This missio
 5. Define success metrics and KPIs
 ```
 
-**WAIT FOR @strategist RESPONSE** before proceeding to Phase 2
+3. **WAIT FOR @strategist RESPONSE** 
+4. **UPDATE project-plan.md** mark completed tasks [x] and add Phase 2 tasks
+5. **LOG TO progress.md** any issues encountered during this phase
 
 **Deliverables**:
 - User stories with acceptance criteria

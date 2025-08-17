@@ -48,24 +48,28 @@ Parse the arguments to determine:
    - **IMMEDIATELY BEGIN DELEGATION** - no confirmation needed
    - Start orchestration following mission protocol
 
-3. **Mission Execution - IMMEDIATE ACTION PROTOCOL**:
-   - Create/update `project-plan.md` with mission tasks
+3. **Mission Execution - IMMEDIATE ACTION WITH MANDATORY UPDATES**:
+   - **CREATE/UPDATE `project-plan.md`** with all planned mission tasks marked [ ]
    - **IMMEDIATELY DELEGATE** to specialists using `@agent` syntax
    - **WAIT FOR EACH AGENT RESPONSE** before proceeding to next
-   - Track progress with [ ] → [x] task completion ONLY after agent confirms
-   - Update `progress.md` with insights and learnings
+   - **UPDATE `project-plan.md`** mark tasks [x] ONLY after agent confirms completion
+   - **LOG TO `progress.md`** any issues, blockers, or unexpected problems
+   - **UPDATE `progress.md`** with root causes and fixes when resolved
+   - **PHASE END UPDATES** required before starting next phase
    - Report ACTUAL status (not planned status)
 
-### COORDINATION RULES - NO WAITING PROTOCOL
+### COORDINATION RULES - NO WAITING PROTOCOL WITH MANDATORY UPDATES
 
 - You orchestrate but do NOT implement
 - ALL technical work MUST be delegated to specialists
 - **DELEGATE IMMEDIATELY** - use `@agent` syntax to call specialists now
 - **NO AWAITING CONFIRMATIONS** - call agents and wait for their responses
+- **MANDATORY project-plan.md UPDATES**: Update before each phase and after each completion
+- **MANDATORY progress.md LOGGING**: Log all issues and resolutions immediately
 - Track ACTUAL completion - only mark [x] when specialist confirms
 - If agent doesn't respond, immediately try different approach or agent
 - Report "Currently delegating to @[agent]" while waiting for response
-- Capture blockers and constraints in progress.md
+- **PHASE END REQUIREMENT**: Must update both files before starting next phase
 
 ### IMMEDIATE DELEGATION EXAMPLES
 

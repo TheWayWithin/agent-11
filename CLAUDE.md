@@ -189,6 +189,31 @@ Store your project's design principles in this CLAUDE.md file for consistent app
 - [ ] Pushes the human experience forward
 ```
 
+## Project Documentation Standards
+
+### Mandatory File Management
+
+AGENT-11 coordinators MUST maintain two critical files for all missions:
+
+#### project-plan.md
+- **Purpose**: Track planned vs actual task completion
+- **Update Triggers**: Mission start, phase start, task completion, phase end
+- **Required Elements**: All tasks marked [ ] or [x], agent assignments, deliverables
+- **Template**: See `/templates/project-plan-template.md`
+
+#### progress.md  
+- **Purpose**: Log issues, root causes, resolutions, and learnings
+- **Update Triggers**: Issue encountered, root cause found, problem resolved, phase complete
+- **Required Elements**: Issue descriptions, root causes, fixes, lessons learned
+- **Template**: See `/templates/progress-template.md`
+
+### File Update Protocol
+1. **NEVER skip updates** - both files are mandatory for mission tracking
+2. **Update immediately** when issues occur or phases complete
+3. **Mark tasks complete [x]** only after specialist confirmation
+4. **Log all problems** to progress.md for future learning
+5. **Phase end requirement** - update both files before proceeding
+
 ## Common Tasks
 
 ### Project Initialization
