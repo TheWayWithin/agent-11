@@ -179,6 +179,14 @@ Store your project's design principles in this CLAUDE.md file for consistent app
 - [ ] Keyboard navigation complete
 - [ ] Screen reader tested
 - [ ] Color contrast validated (4.5:1 minimum)
+
+### Innovation Principles
+*"Think Different" - Challenge conventions and push boundaries*
+- [ ] Questions existing patterns and assumptions
+- [ ] Creates breakthrough user experiences
+- [ ] Advances the state of interface design
+- [ ] Makes meaningful difference to users
+- [ ] Pushes the human experience forward
 ```
 
 ## Common Tasks

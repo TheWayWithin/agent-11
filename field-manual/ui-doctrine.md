@@ -8,10 +8,19 @@ This field manual establishes the UI/UX operational standards for all AGENT-11 d
 
 ### STRATEGIC PRIORITIES
 1. **Users First**: Every decision prioritizes user needs and workflows
-2. **Speed is Life**: Performance directly impacts conversion and retention
-3. **Clarity Wins Battles**: Ambiguity kills user confidence
-4. **Consistency Builds Trust**: Predictable patterns reduce cognitive load
-5. **Accessibility is Non-Negotiable**: Design for all users, always
+2. **Think Different**: Challenge conventions, push boundaries, create breakthrough experiences
+3. **Speed is Life**: Performance directly impacts conversion and retention
+4. **Clarity Wins Battles**: Ambiguity kills user confidence
+5. **Consistency Builds Trust**: Predictable patterns reduce cognitive load
+6. **Accessibility is Non-Negotiable**: Design for all users, always
+
+### INNOVATION MINDSET
+*"Here's to the crazy ones. The misfits. The rebels. The troublemakers. The round pegs in the square holes."*
+
+- **Question Everything**: Don't follow patterns because "that's how it's done"
+- **Empty Canvas Thinking**: Approach each design challenge with fresh eyes
+- **Push Boundaries**: Create interfaces that advance the human experience
+- **Change Things**: Your design should make a meaningful difference
 
 ### TACTICAL PRINCIPLES
 - **Function Over Form**: Beautiful but broken loses to ugly but working

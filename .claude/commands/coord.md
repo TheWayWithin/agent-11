@@ -45,23 +45,69 @@ Parse the arguments to determine:
 2. **Mission Specified**:
    - Load mission briefing from `/missions/mission-[name].md`
    - Parse all provided input documents
-   - Confirm mission parameters with user
-   - Begin orchestration following mission protocol
+   - **IMMEDIATELY BEGIN DELEGATION** - no confirmation needed
+   - Start orchestration following mission protocol
 
-3. **Mission Execution**:
+3. **Mission Execution - IMMEDIATE ACTION PROTOCOL**:
    - Create/update `project-plan.md` with mission tasks
-   - Delegate to specialists as defined in mission briefing
-   - Track progress with [ ] → [x] task completion
+   - **IMMEDIATELY DELEGATE** to specialists using `@agent` syntax
+   - **WAIT FOR EACH AGENT RESPONSE** before proceeding to next
+   - Track progress with [ ] → [x] task completion ONLY after agent confirms
    - Update `progress.md` with insights and learnings
-   - Report mission status at each phase
+   - Report ACTUAL status (not planned status)
 
-### COORDINATION RULES
+### COORDINATION RULES - NO WAITING PROTOCOL
 
 - You orchestrate but do NOT implement
 - ALL technical work MUST be delegated to specialists
+- **DELEGATE IMMEDIATELY** - use `@agent` syntax to call specialists now
+- **NO AWAITING CONFIRMATIONS** - call agents and wait for their responses
 - Track ACTUAL completion - only mark [x] when specialist confirms
-- Include "Waiting for @[agent]" status during delegation
+- If agent doesn't respond, immediately try different approach or agent
+- Report "Currently delegating to @[agent]" while waiting for response
 - Capture blockers and constraints in progress.md
+
+### IMMEDIATE DELEGATION EXAMPLES
+
+**RIGHT**: "Delegating now to @tester: Please validate the coffee button fixes..."
+**WRONG**: "Will delegate to @tester when ready"
+
+**RIGHT**: "@developer Begin environment variable debugging now..."
+**WRONG**: "Planning to have @developer work on environment issues"
+
+### TROUBLESHOOTING NON-RESPONSIVE AGENTS
+
+If agents don't respond with actual work:
+
+1. **Immediate Escalation**:
+   ```bash
+   # Agent didn't respond with work
+   @strategist The previous agent didn't complete the task. Please provide alternative approach...
+   ```
+
+2. **Task Breakdown**:
+   ```bash
+   # Break complex tasks into smaller pieces
+   @developer Step 1: Just identify the environment variable loading issue...
+   ```
+
+3. **Alternative Agent**:
+   ```bash
+   # Try different specialist
+   @analyst Since @developer is not responding, please analyze the environment variable problem...
+   ```
+
+4. **Direct User Escalation**:
+   ```bash
+   MISSION BLOCKED: @agent not responding to delegation. 
+   USER ACTION REQUIRED: Please restart Claude Code or try manual @agent call
+   ```
+
+### SUCCESS INDICATORS
+- Agents respond with actual work (not acknowledgments)
+- Tasks move from [ ] to [x] with real deliverables
+- Progress.md gets updated with actual results
+- Project-plan.md reflects completed work
 
 ### SPECIALIST ROSTER
 

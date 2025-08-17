@@ -18,11 +18,13 @@ Rapid response protocol for bug diagnosis and resolution. This mission prioritiz
 
 ## Mission Phases
 
-### Phase 1: Triage & Analysis (15-30 minutes)
+### Phase 1: Triage & Analysis (15-30 minutes) - IMMEDIATE ACTION
 
 **Lead**: @analyst  
 **Support**: @developer  
 **Objective**: Understand the bug's impact and root cause
+
+**COORDINATOR ACTION**: Immediately call @analyst - this is emergency response
 
 ```bash
 @analyst Analyze the bug report:
@@ -32,6 +34,8 @@ Rapid response protocol for bug diagnosis and resolution. This mission prioritiz
 4. Analyze error logs and stack traces
 5. Determine reproduction steps
 ```
+
+**WAIT FOR @analyst RESPONSE** - critical path for bug resolution
 
 **Deliverables**:
 - Impact assessment
