@@ -13,11 +13,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update management system with automatic version checking
 - Greenfield implementation guide for new projects
 - Version management with changelog and rollback capabilities
+- **OneRedOak Design Review Integration** - Complete workflow system from top-tier companies
+- **Dedicated Design Review Agent** (`@design-review`) for comprehensive UI/UX audits
+- **Design Review Slash Command** (`/design-review`) for on-demand reviews
+- **Enhanced RECON Protocol** for UI/UX reconnaissance in designer agent
+- **SENTINEL Mode** for systematic testing in tester agent
+- **PARALLEL STRIKE** capability for coordinator (simultaneous multi-agent operations)
+- `/recon` slash command for UI/UX assessment
+- `operation-recon.md` mission for comprehensive design reviews
+- `ui-doctrine.md` field manual for UI/UX operational standards
+- **Design Principles Integration** in CLAUDE.md for project-specific guidelines
+- **7-Phase Systematic Protocol** for design reviews with Playwright automation
 
 ### Changed
-- Enhanced README with mission coordination examples
-- Updated QUICK-START guide with `/coord` command usage
+- Enhanced README with mission coordination examples and new Design Review System
+- Updated QUICK-START guide with `/coord` command usage and design review commands
+- Enhanced ADVANCED-USAGE guide with OneRedOak workflow integration
 - Improved agent coordination protocols
+- Enhanced designer agent with RECON Protocol capabilities
+- Updated documentation with comprehensive design review guidance
 
 ### Deprecated
 - None

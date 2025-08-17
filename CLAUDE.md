@@ -125,6 +125,62 @@ When updating CLAUDE.md, include:
 - Testing strategies that work
 - Deployment optimizations
 
+## Design Review System
+
+### Automated Design Reviews
+
+AGENT-11 includes a comprehensive design review system based on OneRedOak's best practices:
+
+#### Quick Design Review
+```bash
+/design-review
+```
+Executes systematic UI/UX assessment of current branch changes using the RECON Protocol.
+
+#### Specialized Agents
+- **@design-review**: Dedicated agent for comprehensive design audits
+- **@designer**: Enhanced with RECON Protocol capabilities
+- **/recon**: UI/UX reconnaissance command for detailed assessment
+
+#### Review Standards
+The system applies world-class standards from companies like Stripe, Airbnb, and Linear:
+
+1. **Live Environment First**: Interactive testing prioritized over static analysis
+2. **Problems Over Prescriptions**: Describe issues, not technical solutions
+3. **Evidence-Based**: Screenshot proof for all visual findings
+4. **Systematic Protocol**: 7-phase comprehensive evaluation process
+
+#### Design Principles Integration
+Store your project's design principles in this CLAUDE.md file for consistent application:
+
+```markdown
+## Project Design Principles
+
+### Brand Guidelines
+- Primary Color: [Your brand color]
+- Secondary Color: [Supporting color]
+- Typography: [Primary font family]
+- Voice & Tone: [Brand personality]
+
+### UI Standards
+- Design System: [Link or description]
+- Component Library: [Location/documentation]
+- Accessibility Level: WCAG AA+ (minimum)
+- Performance Targets: FCP < 1.8s, LCP < 2.5s
+
+### User Experience Priorities
+1. [Primary user goal]
+2. [Secondary user goal]
+3. [Key conversion metrics]
+
+### Quality Gates
+- [ ] Cross-browser compatibility (Chrome, Firefox, Safari)
+- [ ] Mobile-first responsive design
+- [ ] Keyboard navigation complete
+- [ ] Screen reader tested
+- [ ] Color contrast validated (4.5:1 minimum)
+```
+
 ## Common Tasks
 
 ### Project Initialization

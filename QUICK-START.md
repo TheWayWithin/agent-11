@@ -95,8 +95,14 @@ After deploying your squad, connect powerful MCP tools:
 ### Core Squad (Recommended)
 - **The Strategist** - Defines requirements and user stories
 - **The Developer** - Implements features and fixes bugs (uses Supabase, GitHub, Context7 MCPs)
-- **The Tester** - Creates tests and validates quality (uses Playwright MCP)
+- **The Tester** - Creates tests and validates quality (uses Playwright MCP) **[NEW: SENTINEL Mode for comprehensive testing]**
 - **The Operator** - Handles deployment and infrastructure (uses Netlify, Railway MCPs)
+
+### Enhanced Capabilities (NEW!)
+- **The Designer** - Now includes **RECON Protocol** for UI/UX reconnaissance and design reviews
+- **@design-review** - Dedicated specialist for comprehensive UI/UX audits
+- **The Tester** - Now includes **SENTINEL Mode** for systematic evaluation
+- **The Coordinator** - Now includes **PARALLEL STRIKE** for simultaneous operations
 
 ### Project Setup Time: 2-3 minutes
 
@@ -192,7 +198,14 @@ claude
 ```bash
 # Setup missions for new projects
 /coord dev-setup ideation.md          # Initialize greenfield project (30-45 min)
-/coord dev-alignment                  # Understand existing codebase (45-60 min)
+
+# NEW: Design Review Commands
+/design-review                         # Comprehensive UI/UX audit of current branch changes
+/recon                                 # Execute UI/UX reconnaissance assessment
+@design-review "Review login form"     # Deploy dedicated design review specialist
+
+# Setup and alignment missions
+/coord dev-alignment                   # Understand existing codebase (45-60 min)
 /coord connect-mcp                    # Connect required MCPs (45-90 min)
 
 # Development missions
@@ -210,7 +223,7 @@ claude
 /meeting @developer "performance optimization strategies"
 ```
 
-The `/coord` command orchestrates multi-agent missions automatically. The `/meeting` command enables natural conversations with specialists for brainstorming and strategic planning. Your entire squad works together following proven patterns.
+The `/coord` command orchestrates multi-agent missions automatically. The `/meeting` command enables natural conversations with specialists for brainstorming and strategic planning. The **NEW Design Review System** provides world-class UI/UX audits with Playwright automation. Your entire squad works together following proven patterns.
 
 ## Success Indicators
 

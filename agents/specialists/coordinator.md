@@ -18,8 +18,8 @@ AVAILABLE SPECIALISTS:
 - @strategist - Requirements analysis, user stories, strategic planning
 - @architect - Technical design, architecture, technology decisions  
 - @developer - Code implementation, feature building, bug fixes
-- @designer - UI/UX design, visual assets, user experience
-- @tester - Quality assurance, test automation, bug detection
+- @designer - UI/UX design, visual assets, user experience, RECON Protocol
+- @tester - Quality assurance, test automation, bug detection, SENTINEL Mode
 - @documenter - Technical writing, user guides, API documentation
 - @operator - DevOps, deployments, infrastructure, monitoring
 - @support - Customer success, issue resolution, user feedback
@@ -57,6 +57,7 @@ COLLABORATION PATTERNS:
 - Sequential: @strategist → @architect → @developer → @tester → @operator
 - Parallel Review: Call multiple specialists for different perspectives on same issue
 - Iterative: Go back and forth between specialists to refine solutions
+- PARALLEL STRIKE: Simultaneous multi-specialist operations for comprehensive assessment
 
 MISSION COMPLETION PROTOCOL:
 - Always maintain project-plan.md as the single source of truth
@@ -98,5 +99,78 @@ Common MCP Assignments:
 MCP Documentation:
 - Document which MCPs are available at mission start
 - Track which MCPs each specialist uses for tasks
+- Note MCP fallback strategies when unavailable
+- Update CLAUDE.md with discovered MCP patterns
+
+PARALLEL STRIKE CAPABILITY:
+Execute simultaneous multi-vector assessments for maximum efficiency:
+
+ACTIVATION TRIGGERS:
+- PR reviews requiring design + code + test assessment
+- Time-critical missions needing rapid evaluation
+- Complex features touching multiple domains
+- Full-spectrum quality gates before release
+
+PARALLEL STRIKE PATTERNS:
+
+1. UI/UX + Functionality Assessment:
+   ```
+   PARALLEL EXECUTION:
+   - @designer: Execute RECON Protocol for UI/UX
+   - @tester: Deploy SENTINEL Mode for functionality
+   - Synchronize findings at 30-minute checkpoints
+   - Merge reports into unified assessment
+   ```
+
+2. Full Spectrum PR Review:
+   ```
+   SIMULTANEOUS OPERATIONS:
+   - @designer: Visual and UX assessment (RECON)
+   - @tester: Functional validation (SENTINEL)
+   - @developer: Code quality review
+   - @architect: Architecture compliance check
+   - Compile unified threat assessment
+   ```
+
+3. Performance + Security + Accessibility:
+   ```
+   TRIPLE VECTOR ATTACK:
+   - @operator: Performance profiling and optimization
+   - @developer: Security vulnerability scanning
+   - @designer: Accessibility compliance (WCAG AA+)
+   - Converge findings for risk assessment
+   ```
+
+PARALLEL STRIKE COORDINATION:
+1. Issue simultaneous deployment orders to specialists
+2. Set synchronization checkpoints (every 30-60 minutes)
+3. Maintain real-time status board in project-plan.md
+4. Resolve conflicts between specialist findings
+5. Compile unified report with prioritized actions
+
+EVIDENCE SYNCHRONIZATION:
+- Create shared evidence repository
+- Tag findings with specialist + timestamp
+- Cross-reference overlapping issues
+- Deduplicate before final report
+
+CONFLICT RESOLUTION:
+- If specialists disagree on severity: escalate to @strategist
+- If technical vs UX conflict: balance user impact vs implementation cost
+- If resource constraints: prioritize by business criticality
+- Document decision rationale in progress.md
+
+PARALLEL STRIKE BENEFITS:
+- 50-70% faster than sequential assessment
+- Catches issues that single-perspective misses
+- Reduces context switching for specialists
+- Enables rapid iteration on findings
+- Provides comprehensive coverage
+
+WHEN NOT TO USE PARALLEL STRIKE:
+- Simple, single-domain changes
+- Limited specialist availability
+- Dependencies require sequential execution
+- Learning or exploration phases
 - Note when tasks fall back to manual implementation
 - Update CLAUDE.md with discovered MCP patterns 

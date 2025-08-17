@@ -4,6 +4,8 @@ Advanced techniques, customization, and enterprise-level usage of the AGENT-11 d
 
 ## Table of Contents
 
+- [Enhanced Review Capabilities (NEW)](#enhanced-review-capabilities-new)
+- [PARALLEL STRIKE Operations](#parallel-strike-operations)
 - [Custom Squad Configurations](#custom-squad-configurations)
 - [Backup and Restore Operations](#backup-and-restore-operations)
 - [Agent Customization](#agent-customization)
@@ -12,6 +14,147 @@ Advanced techniques, customization, and enterprise-level usage of the AGENT-11 d
 - [Scaling Strategies](#scaling-strategies)
 - [Security Considerations](#security-considerations)
 - [Maintenance and Updates](#maintenance-and-updates)
+
+## Enhanced Review Capabilities (NEW)
+
+### OneRedOak Design Review Integration
+
+AGENT-11 now includes the complete OneRedOak design review workflow system, providing world-class UI/UX audits based on standards from companies like Stripe, Airbnb, and Linear.
+
+#### Core Design Review Commands
+
+```bash
+# Comprehensive design review of current branch changes
+/design-review
+
+# Quick UI/UX reconnaissance assessment
+/recon
+
+# Deploy dedicated design review specialist
+@design-review "Review the dashboard redesign"
+
+# Full design review mission with systematic protocol
+/coord operation-recon
+```
+
+#### Specialized Design Review Agent
+
+The `@design-review` agent provides systematic 7-phase evaluation:
+
+```bash
+@design-review "Audit the checkout flow for accessibility compliance"
+```
+
+**Key Features**:
+- **Live Environment Testing** - Playwright automation for real interactions
+- **Evidence-Based Reports** - Screenshots and reproduction steps included
+- **Problems Over Prescriptions** - Describes issues, not technical solutions
+- **Triage Matrix** - [BLOCKER], [HIGH-PRIORITY], [MEDIUM-PRIORITY], [NITPICK]
+- **Project-Aware** - Uses your design system and brand guidelines
+
+### RECON Protocol - Enhanced UI/UX Reconnaissance
+
+The designer agent now includes advanced UI/UX assessment capabilities:
+
+```bash
+# Quick UI/UX assessment of current changes
+/recon
+
+# Full design review mission
+/coord operation-recon
+
+# Direct designer assessment with RECON Protocol
+@designer Execute RECON Protocol on the login page
+```
+
+**RECON Protocol Phases**:
+1. **Preparation** - Environment setup and scope analysis
+2. **Interaction Reconnaissance** - Test all interactive elements
+3. **Responsive Operations** - Validate across devices (desktop/tablet/mobile)
+4. **Visual Inspection** - Check consistency and aesthetics
+5. **Accessibility Sweep** - WCAG AA+ compliance verification
+6. **Robustness Testing** - Edge cases and stress tests
+7. **Code Inspection** - Design token usage validation
+8. **Console Reconnaissance** - Error and warning detection
+
+**Threat Level Classification**:
+- `[CRITICAL]` - Blocks user progress or violates accessibility
+- `[URGENT]` - Significant UX degradation
+- `[TACTICAL]` - Medium-priority improvements
+- `[COSMETIC]` - Minor polish items
+
+### SENTINEL Mode - Systematic Testing
+
+The tester agent now includes comprehensive evaluation capabilities:
+
+```bash
+# Activate SENTINEL Mode for comprehensive testing
+@tester Deploy SENTINEL Mode on the checkout flow
+
+# Combined with RECON for full assessment
+/coord operation-recon --full
+```
+
+**SENTINEL Mode Phases**:
+1. **Perimeter Establishment** - Map test coverage
+2. **Functional Reconnaissance** - Test all features
+3. **Visual Regression Sweep** - Compare against baseline
+4. **Cross-Browser Operations** - Multi-browser testing
+5. **Performance Patrol** - Load time and memory analysis
+6. **Stress Testing** - Break it creatively
+7. **Accessibility Verification** - Deep validation
+
+## PARALLEL STRIKE Operations
+
+The coordinator now supports simultaneous multi-agent operations for 50-70% faster assessments:
+
+### Activation
+
+```bash
+# Full spectrum PR review
+@coordinator Execute PARALLEL STRIKE for PR-123:
+- Designer: RECON Protocol
+- Tester: SENTINEL Mode
+- Developer: Code quality review
+- Architect: Architecture compliance
+```
+
+### Common PARALLEL STRIKE Patterns
+
+**1. UI/UX + Functionality Assessment**:
+```bash
+/coord operation-recon --parallel
+# Runs @design-review and @tester SENTINEL simultaneously
+```
+
+**2. Performance + Security + Accessibility**:
+```bash
+@coordinator PARALLEL STRIKE:
+- Operator: Performance profiling
+- Developer: Security scanning
+- @design-review: Accessibility audit with WCAG AA+ validation
+```
+
+**3. Full PR Review**:
+```bash
+/coord operation-recon PR-456 --full-spectrum
+# Deploys all relevant specialists including @design-review in parallel
+```
+
+**4. Design System Compliance Check**:
+```bash
+@coordinator PARALLEL STRIKE:
+- @design-review: Component consistency audit
+- Developer: Design token usage validation
+- Tester: Cross-browser visual regression
+```
+
+### Synchronization Points
+
+- Checkpoints every 30-60 minutes
+- Automated evidence collection
+- Conflict resolution protocols
+- Unified report generation
 
 ## Custom Squad Configurations
 

@@ -28,14 +28,14 @@ You're a solo founder with a vision. You need to build fast, ship quality, and c
 - 🎯 **The Strategist** - Product vision and roadmaps
 - 🏗️ **The Architect** - Bulletproof technical decisions  
 - 💻 **The Developer** - Ship code at light speed
-- ✅ **The Tester** - Zero bugs reach production
-- 🎨 **The Designer** - Interfaces that convert
+- ✅ **The Tester** - Zero bugs reach production (NEW: SENTINEL Mode)
+- 🎨 **The Designer** - Interfaces that convert (NEW: RECON Protocol + Design Review)
 - 📚 **The Documenter** - Knowledge captured perfectly
 - 🚀 **The Operator** - Deploy with confidence
 - 💬 **The Support** - Users become advocates
 - 📊 **The Analyst** - Data drives decisions
 - 📈 **The Marketer** - Growth on autopilot
-- 🎖️ **The Coordinator** - Mission commander
+- 🎖️ **The Coordinator** - Mission commander (NEW: PARALLEL STRIKE)
 
 ## 📋 Prerequisites
 
@@ -137,9 +137,14 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 # Have strategic conversations with specialists
 /meeting @strategist "product roadmap planning"
 /meeting @architect "system scalability concerns"
+
+# NEW: Design Review System
+/design-review    # Comprehensive UI/UX audit of current changes
+/recon           # UI/UX reconnaissance assessment
+@design-review   # Dedicated design review specialist
 ```
 
-The `/coord` command activates THE COORDINATOR to orchestrate complex multi-agent missions automatically. The `/meeting` command enables natural conversations with specialists for brainstorming and strategic planning. Choose from predefined missions like BUILD, FIX, MVP, or create your own.
+The `/coord` command activates THE COORDINATOR to orchestrate complex multi-agent missions automatically. The `/meeting` command enables natural conversations with specialists for brainstorming and strategic planning. The **NEW Design Review System** provides world-class UI/UX audits using the RECON Protocol with Playwright automation. Choose from predefined missions like BUILD, FIX, MVP, or create your own.
 
 ## 📊 Mission Success Metrics
 
@@ -188,13 +193,49 @@ The `/coord` command activates THE COORDINATOR to orchestrate complex multi-agen
 ### Available MCPs Your Agents Can Use
 - **🗄️ Supabase** - Database operations and authentication
 - **🐙 GitHub** - PRs, issues, and version control
-- **🎭 Playwright** - Browser automation and E2E testing
+- **🎭 Playwright** - Browser automation, E2E testing, and design reviews
 - **📚 Context7** - Real-time library documentation
 - **🔥 Firecrawl** - Web scraping and research
 - **🚀 Netlify/Railway** - Deployment automation
 - **💳 Stripe** - Payment processing
 
 **[📖 Complete MCP Integration Guide →](field-manual/mcp-integration.md)**
+
+## 🎨 Design Review System (NEW!)
+
+**World-class UI/UX audits integrated into your development workflow**
+
+Based on OneRedOak's proven design review workflows used by top-tier companies like Stripe, Airbnb, and Linear.
+
+### Quick Design Review
+```bash
+# Audit current branch changes instantly
+/design-review
+
+# Get detailed UI/UX reconnaissance  
+/recon
+
+# Deploy dedicated design review specialist
+@design-review "Review the login form changes"
+```
+
+### 7-Phase Systematic Protocol
+1. **🔧 Preparation** - Environment setup and change analysis
+2. **⚡ Interaction Testing** - User flows and micro-interactions
+3. **📱 Responsive Validation** - Cross-device compatibility  
+4. **✨ Visual Polish** - Typography, spacing, and hierarchy
+5. **♿ Accessibility Audit** - WCAG AA+ compliance testing
+6. **🛡️ Robustness Testing** - Edge cases and error states
+7. **🚀 Performance Check** - Load times and console errors
+
+### Key Features
+- **Live Environment Testing** - Playwright automation for real interactions
+- **Evidence-Based Reports** - Screenshots and reproduction steps included
+- **Triage Matrix** - Issues classified as [BLOCKER], [HIGH], [MEDIUM], [NITPICK]
+- **Problems Over Prescriptions** - Describes issues, not solutions
+- **Project-Aware** - Uses your design system and brand guidelines
+
+**[📖 Complete Design Review Guide →](field-manual/ui-doctrine.md)**
 
 ## 🔥 Mission Library (12 Core Missions)
 
