@@ -14,7 +14,7 @@
 
 **One Founder. Eleven Specialists. Unlimited Potential.**
 
-[🚀 One-Line Deploy](#-project-only-deployment) · [📖 Quick Start](QUICK-START.md) · [📚 Full Docs](docs/DOCUMENTATION-INDEX.md) · [🛠️ Advanced Usage](docs/ADVANCED-USAGE.md)
+[🚀 One-Line Deploy](#-project-only-deployment) · [📖 Quick Start](QUICK-START.md) · [📚 Full Docs](project/docs/DOCUMENTATION-INDEX.md) · [🛠️ Advanced Usage](project/docs/ADVANCED-USAGE.md)
 
 </div>
 
@@ -312,19 +312,19 @@ echo "# Project Name" > README.md  # Optional but recommended
 
 ### Quick References
 - **[🚀 5-Minute Project Setup](QUICK-START.md)** - Zero to deployed in under 5 minutes  
-- **[🔄 Update Existing Installation](docs/UPDATING.md)** - Get latest features in your current project
+- **[🔄 Update Existing Installation](project/docs/UPDATING.md)** - Get latest features in your current project
 - **[⚙️ Project Installation Guide](INSTALLATION.md)** - Complete project setup with troubleshooting
-- **[📋 User Guide](docs/USER-GUIDE.md)** - Master project-based multi-agent workflows
-- **[🛠️ Troubleshooting](docs/TROUBLESHOOTING.md)** - Fix project setup issues fast
+- **[📋 User Guide](project/docs/USER-GUIDE.md)** - Master project-based multi-agent workflows
+- **[🛠️ Troubleshooting](project/docs/TROUBLESHOOTING.md)** - Fix project setup issues fast
 
 ### Advanced Usage
-- **[🔧 Advanced Usage](docs/ADVANCED-USAGE.md)** - Custom configurations and enterprise setup
-- **[🏗️ Agent Architecture](agents/)** - Individual agent capabilities and squad compositions
-- **[🎯 Mission Workflows](missions/)** - Pre-built workflows for common scenarios
+- **[🔧 Advanced Usage](project/docs/ADVANCED-USAGE.md)** - Custom configurations and enterprise setup
+- **[🏗️ Agent Architecture](project/agents/)** - Individual agent capabilities and squad compositions
+- **[🎯 Mission Workflows](project/missions/)** - Pre-built workflows for common scenarios
 
 ### Getting Help
 - **Built-in Support**: `@support` - Deploy the support agent for immediate help
-- **Community**: [Success Stories](community/SUCCESS-STORIES.md) and user experiences
+- **Community**: [Success Stories](project/community/SUCCESS-STORIES.md) and user experiences
 - **Issues**: [GitHub Issues](https://github.com/TheWayWithin/agent-11/issues) for bugs and feature requests
 
 ## 🤝 Join the Elite
@@ -333,7 +333,7 @@ AGENT-11 is open source and community-driven. We welcome contributions from fell
 
 - 🐛 [Report Issues](https://github.com/TheWayWithin/agent-11/issues)
 - 💡 [Request Features](https://github.com/TheWayWithin/agent-11/issues/new?template=feature_request.md)
-- 🔧 [Contribute Code](docs/CONTRIBUTING.md)
+- 🔧 [Contribute Code](project/docs/CONTRIBUTING.md)
 - 💬 [Join Discord](https://discord.gg/agent11)
 
 ## 📜 License
@@ -346,7 +346,7 @@ MIT - Use AGENT-11 to build your empire.
 
 **Ready to deploy your project squad?**
 
-[🚀 Project Setup](#-project-only-deployment) · [📖 Quick Start](QUICK-START.md) · [📚 Full Documentation](docs/DOCUMENTATION-INDEX.md)
+[🚀 Project Setup](#-project-only-deployment) · [📖 Quick Start](QUICK-START.md) · [📚 Full Documentation](project/docs/DOCUMENTATION-INDEX.md)
 
 *"One project. One founder. Eleven specialists. Unlimited potential."*
 

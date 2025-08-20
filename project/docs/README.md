@@ -56,4 +56,4 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 
 ---
 
-*Navigate back to [Main Repository](../README.md) or explore specific documentation above.*
+*Navigate back to [Main Repository](../../README.md) or explore specific documentation above.*

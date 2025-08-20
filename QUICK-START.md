@@ -276,15 +276,15 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 
 ### For Experienced Users:
 - Set up multiple projects with different squads
-- Explore the [Full Documentation](docs/)
+- Explore the [Full Documentation](project/docs/)
 - Try multi-agent workflows with `@coordinator`
 - Customize agents for your specific project domains
 
 ## Need Help?
 
-- **Documentation**: Check `docs/` for detailed guides
+- **Documentation**: Check `project/docs/` for detailed guides
 - **Issues**: Run `@support` for customer success help
-- **Community**: Share your experience in `/community/`
+- **Community**: Share your experience in `project/community/`
 
 ## Update Your Project Squad
 
@@ -309,7 +309,7 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 - ✅ Mission templates for custom workflows  
 - ✅ Latest agent improvements
 
-**[📋 Complete Update Guide →](docs/UPDATING.md)**
+**[📋 Complete Update Guide →](project/docs/UPDATING.md)**
 
 ### Upgrade Squad Size
 
