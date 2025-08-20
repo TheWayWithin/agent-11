@@ -263,7 +263,7 @@ detect_execution_mode() {
     if [[ -d "$PROJECT_ROOT/.git" && -f "$PROJECT_ROOT/README.md" && -d "$PROJECT_ROOT/.claude/agents" ]]; then
         # We're in the actual AGENT-11 repository
         echo "local"
-    elif [[ -d "$PROJECT_ROOT/.git" && -f "$PROJECT_ROOT/README.md" && -d "$PROJECT_ROOT/agents/specialists" ]]; then
+    elif [[ -d "$PROJECT_ROOT/.git" && -f "$PROJECT_ROOT/README.md" && -d "$PROJECT_ROOT/project/agents/specialists" ]]; then
         # We're in the repository but using old structure
         echo "local"
     else
@@ -299,8 +299,8 @@ validate_environment() {
         # Check if source agents exist in new .claude/agents location first
         if [[ -d "$PROJECT_ROOT/.claude/agents" ]]; then
             log "Using agents from: $PROJECT_ROOT/.claude/agents"
-        elif [[ -d "$PROJECT_ROOT/agents/specialists" ]]; then
-            log "Using agents from: $PROJECT_ROOT/agents/specialists"
+        elif [[ -d "$PROJECT_ROOT/project/agents/specialists" ]]; then
+            log "Using agents from: $PROJECT_ROOT/project/agents/specialists"
         else
             fatal "Local agent source directories not found"
         fi
@@ -445,8 +445,8 @@ install_agent() {
         local source_file
         if [[ -f "$PROJECT_ROOT/.claude/agents/$agent_name.md" ]]; then
             source_file="$PROJECT_ROOT/.claude/agents/$agent_name.md"
-        elif [[ -f "$PROJECT_ROOT/agents/specialists/$agent_name.md" ]]; then
-            source_file="$PROJECT_ROOT/agents/specialists/$agent_name.md"
+        elif [[ -f "$PROJECT_ROOT/project/agents/specialists/$agent_name.md" ]]; then
+            source_file="$PROJECT_ROOT/project/agents/specialists/$agent_name.md"
         else
             error "Agent source file not found: $agent_name"
             return 1
@@ -498,20 +498,20 @@ install_mission_system() {
     
     # Define mission files to install
     local mission_files=(
-        "missions/library.md"
-        "missions/mission-build.md"
-        "missions/mission-fix.md"
-        "missions/mission-mvp.md"
-        "missions/mission-refactor.md"
-        "missions/mission-deploy.md"
-        "missions/mission-document.md"
-        "missions/mission-optimize.md"
-        "missions/mission-integrate.md"
-        "missions/mission-migrate.md"
-        "missions/mission-security.md"
-        "missions/mission-release.md"
-        "missions/operation-genesis.md"
-        "missions/README.md"
+        "project/missions/library.md"
+        "project/missions/mission-build.md"
+        "project/missions/mission-fix.md"
+        "project/missions/mission-mvp.md"
+        "project/missions/mission-refactor.md"
+        "project/missions/mission-deploy.md"
+        "project/missions/mission-document.md"
+        "project/missions/mission-optimize.md"
+        "project/missions/mission-integrate.md"
+        "project/missions/mission-migrate.md"
+        "project/missions/mission-security.md"
+        "project/missions/mission-release.md"
+        "project/missions/operation-genesis.md"
+        "project/missions/README.md"
     )
     
     # Define command files to install
@@ -522,8 +522,8 @@ install_mission_system() {
     
     # Define template files to install
     local template_files=(
-        "templates/mission-template.md"
-        "templates/agent-creation-mastery.md"
+        "project/templates/mission-template.md"
+        "project/templates/agent-creation-mastery.md"
     )
     
     local total_files=$((${#mission_files[@]} + ${#command_files[@]} + ${#template_files[@]}))

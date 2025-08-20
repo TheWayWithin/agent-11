@@ -83,11 +83,11 @@ cd /path/to/your/project
 ls -la  # Should show .git, package.json, source files, etc.
 
 # Step 3: Install your squad
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 
 # Other squad options:
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s minimal
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s full
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s minimal
 ```
 
 ### Method 2: Clone AGENT-11 then Install to Project
@@ -116,8 +116,8 @@ cd /path/to/your/project
 mkdir -p .claude/agents
 
 # Step 3: Copy agent files to your project
-cp /path/to/agent-11/agents/specialists/strategist.md .claude/agents/
-cp /path/to/agent-11/agents/specialists/developer.md .claude/agents/
+cp /path/to/agent-11/project/agents/specialists/strategist.md .claude/agents/
+cp /path/to/agent-11/project/agents/specialists/developer.md .claude/agents/
 # ... continue for desired agents
 
 # Step 4: Verify project-local installation
@@ -176,7 +176,7 @@ git commit -m "Initial commit"
 
 ```bash
 # From your project directory, run installer
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 ```
 
 ### Step 3: Verify Project Detection
@@ -324,7 +324,7 @@ If you already have AGENT-11 installed and want to get the latest features (incl
 cd /path/to/your/project
 
 # Update to latest version  
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 ```
 
 **This update will:**
@@ -375,13 +375,13 @@ For comprehensive update instructions, troubleshooting, and advanced options:
 ```bash
 # Each project gets its own isolated squad
 cd ~/project-a
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 
 cd ~/project-b  
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s full
 
 cd ~/project-c
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s minimal
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s minimal
 ```
 
 ### Project Isolation Benefits
@@ -479,7 +479,7 @@ pwd  # Should show your project path
 rm -rf .claude/agents/
 
 # Re-run installation
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 ```
 
 ### Performance Issues
@@ -506,8 +506,8 @@ cd /path/to/your/project
 
 # Then install specific agents manually
 mkdir -p .claude/agents
-cp /path/to/agent-11/agents/specialists/strategist.md .claude/agents/
-cp /path/to/agent-11/agents/specialists/developer.md .claude/agents/
+cp /path/to/agent-11/project/agents/specialists/strategist.md .claude/agents/
+cp /path/to/agent-11/project/agents/specialists/developer.md .claude/agents/
 ```
 
 ### Different Project Agent Directory
@@ -536,7 +536,7 @@ cd /path/to/your/project
 cd /path/to/your/project
 
 # Upgrade from core to full
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s full
 # Existing project agents preserved, new ones added
 
 # Each project can have different squad types
@@ -549,7 +549,7 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 cd /path/to/your/project
 
 # Re-run installation to get latest agents
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 ```
 
 ### Project Agent Management
@@ -563,7 +563,7 @@ ls -la .claude/agents/
 rm -rf .claude/agents/
 
 # Reinstall fresh
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 ```
 
 ## Getting Help

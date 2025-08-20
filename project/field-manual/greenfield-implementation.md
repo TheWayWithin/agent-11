@@ -73,7 +73,7 @@ mkdir -p src tests docs
 npm init -y  # or equivalent for your stack
 
 # Deploy AGENT-11 immediately
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 ```
 
 **Phase 2: Foundation Setup (Days 1-3)**
@@ -105,7 +105,7 @@ Plan thoroughly before implementation:
 **Phase 1: Strategic Planning (Week 1)**
 ```bash
 # Deploy full squad for comprehensive planning
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s full
 
 # Comprehensive planning
 @strategist "Create detailed user stories and product requirements"
@@ -136,7 +136,7 @@ Perfect for learning new technologies:
 **Phase 1: Exploration (Week 1)**
 ```bash
 # Start with minimal squad
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s minimal
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s minimal
 
 # Explore and learn
 @strategist "Research the best practices for [technology] and create a learning roadmap"
@@ -202,7 +202,7 @@ npm init -y
 mkdir -p client server shared docs
 
 # Deploy appropriate squad
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s full
 
 # Start with user research and market analysis
 @strategist "Research the target market and define our SaaS value proposition"
@@ -226,7 +226,7 @@ npx react-native init MobileApp
 cd MobileApp
 
 # Deploy squad
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s full
 
 # Focus on user experience
 @designer "Create mobile-first user experience design and navigation flow"
@@ -251,7 +251,7 @@ npm init -y
 mkdir -p src/routes src/models src/middleware tests docs
 
 # Deploy squad
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 
 # Design API-first
 @architect "Design RESTful API architecture with proper versioning and documentation"
@@ -274,7 +274,7 @@ git init
 mkdir -p src tests docs examples
 
 # Deploy squad
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s full
 
 # Focus on community and documentation
 @strategist "Define the open source project goals and target developer audience"

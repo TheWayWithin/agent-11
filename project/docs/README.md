@@ -36,10 +36,10 @@ Complete documentation for deploying and using your elite AI development squad.
 
 ```bash
 # Deploy core squad (recommended)
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 
 # Deploy full squad (11 specialists)
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s full
 
 # Start coordination mission
 /coord build requirements.md

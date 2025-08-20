@@ -68,7 +68,7 @@ Start with analysis and documentation, gradually expand to implementation:
 **Phase 1: Understanding and Documentation (Week 1)**
 ```bash
 # Deploy minimal analysis squad
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s minimal
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s minimal
 
 # Start with understanding
 @strategist "Analyze this existing project and identify the top 3 improvement opportunities"
@@ -88,7 +88,7 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 **Phase 3: Controlled Feature Development (Week 4+)**
 ```bash
 # Upgrade to full squad for new development
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s full
 
 # New features only
 @coordinator "Plan and implement the user dashboard feature as a separate module"
@@ -103,7 +103,7 @@ Create new features alongside existing code:
 git checkout -b agent-11-enhancements
 
 # Deploy full squad
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s full
 
 # Work on isolated improvements
 @developer "Create a new user profile module in /src/features/profile/ without touching existing user management code"
@@ -132,7 +132,7 @@ Systematically improve existing code:
 
 ```bash
 # Deploy appropriate squad
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 
 # Assessment phase
 @strategist "Analyze this legacy web application and create a modernization roadmap that prioritizes user-facing improvements"
@@ -151,7 +151,7 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 
 ```bash
 # Conservative minimal deployment
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s minimal
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s minimal
 
 # Focus on documentation and analysis
 @analyst "Analyze the codebase metrics and identify modules with the highest technical debt"
@@ -168,7 +168,7 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 
 ```bash
 # Deploy architecture-focused squad
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 
 # Migration planning
 @architect "Analyze the existing monolith and create a microservices migration plan starting with the least coupled modules"
@@ -187,7 +187,7 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 
 ```bash
 # Mobile-focused squad
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s full
 
 # Performance analysis
 @analyst "Analyze the React Native app performance and identify bottlenecks in navigation and data loading"

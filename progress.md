@@ -247,7 +247,7 @@ Professional documentation, comprehensive troubleshooting guides, and self-servi
 
 ```bash
 # Deploy the squad that built AGENT-11
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 
 # Then use your squad to build your vision
 @strategist I want to build [your project idea]. What's our plan?

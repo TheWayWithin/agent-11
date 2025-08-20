@@ -76,13 +76,13 @@ git init  # Quick fix if deployment fails with "no project detected"
 
 # Step 3: Deploy your squad
 # Core Squad (4 agents) - Recommended for most projects
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 
 # Full Squad (11 agents) - For complex projects  
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s full
 
 # Minimal Squad (2 agents) - For quick prototyping
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s minimal
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s minimal
 ```
 
 **Project-focused by design!** The installer:
@@ -268,7 +268,7 @@ Based on OneRedOak's proven design review workflows used by top-tier companies l
 ```bash
 # Single command to update your project
 cd /path/to/your/project
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 ```
 
 **[📋 Complete Update Guide →](project/docs/UPDATING.md)** - Everything you need to know about updating

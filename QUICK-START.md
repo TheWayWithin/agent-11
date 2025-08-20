@@ -50,13 +50,13 @@ git init  # Creates git repository instantly
 
 ```bash
 # Core Squad (4 agents) - Recommended for most projects
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 
 # Full Squad (11 agents) - For complex projects  
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s full
 
 # Minimal Squad (2 agents) - For quick prototyping
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s minimal
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s minimal
 ```
 
 **Project-focused by design!** The installer automatically:
@@ -253,7 +253,7 @@ ls -la  # Should show project files (.git, package.json, etc.)
 cd /path/to/your/project
 
 # Re-run installation
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 ```
 
 ### "Permission denied" or "Directory not writable"
@@ -263,7 +263,7 @@ ls -ld .
 # Should show write permissions for your user
 
 # If you own the project directory, try again:
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 ```
 
 ## What's Next?
@@ -297,7 +297,7 @@ If you have an existing AGENT-11 installation, update to get the `/coord` comman
 cd /path/to/your/project
 
 # Update to latest version with mission system
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 
 # Your existing project work is preserved - backups are automatic
 ```
@@ -317,7 +317,7 @@ Add more specialists to your existing squad:
 
 ```bash
 # Upgrade from Core to Full Squad (adds 7 more specialists)
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s full
 ```
 
 ## Multi-Project Workflow
@@ -325,10 +325,10 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deploymen
 ```bash
 # Each project gets its own isolated squad
 cd ~/project-a
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 
 cd ~/project-b  
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s full
 
 # No cross-contamination, perfect isolation
 ```

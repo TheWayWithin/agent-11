@@ -99,7 +99,7 @@ git init
 echo '{}' > package.json  # or create appropriate project files
 
 # Re-run installation
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 ```
 
 ### Problem: "Cannot write to project directory"
@@ -128,7 +128,7 @@ mkdir -p .claude/agents
 chmod 755 .claude/agents
 
 # Re-run installation from project directory
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 ```
 
 ### Problem: Installation Hangs or Freezes
@@ -157,7 +157,7 @@ rm -rf .claude/agents/
 pwd  # Should show your project path
 
 # Restart installation
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 ```
 
 ### Problem: "Invalid agent file format"
@@ -283,7 +283,7 @@ echo "Expected agents for core squad: strategist, developer, tester, operator"
 **Solution**:
 ```bash
 # Re-run installation for missing agents from project directory
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 
 # Restart Claude Code in project directory
 /exit
@@ -309,7 +309,7 @@ grep -i "strategist" .claude/agents/strategist.md
 **Solution**:
 ```bash
 # Re-install project agents to get latest versions
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 
 # This will update your project's agents
 ```
@@ -409,11 +409,11 @@ ls -la missions/
 mkdir -p missions
 
 # Download missing mission files
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/missions/library.md -o missions/library.md
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/missions/mission-build.md -o missions/mission-build.md
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/missions/mission-fix.md -o missions/mission-fix.md
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/missions/mission-mvp.md -o missions/mission-mvp.md
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/missions/mission-refactor.md -o missions/mission-refactor.md
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/missions/library.md -o missions/library.md
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/missions/mission-build.md -o missions/mission-build.md
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/missions/mission-fix.md -o missions/mission-fix.md
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/missions/mission-mvp.md -o missions/mission-mvp.md
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/missions/mission-refactor.md -o missions/mission-refactor.md
 
 # Or copy from AGENT-11 source if available locally
 cp -r /path/to/agent-11/missions/* missions/
@@ -428,7 +428,7 @@ cp -r /path/to/agent-11/missions/* missions/
 **Solutions**:
 ```bash
 # Reinstall with updated installer to get full mission system
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 
 # Or manually install mission system components
 mkdir -p missions .claude/commands templates
@@ -457,8 +457,8 @@ ls -la templates/
 mkdir -p templates
 
 # Download template files
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/templates/mission-template.md -o templates/mission-template.md
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/templates/agent-creation-mastery.md -o templates/agent-creation-mastery.md
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/templates/mission-template.md -o templates/mission-template.md
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/templates/agent-creation-mastery.md -o templates/agent-creation-mastery.md
 
 # Or copy from source
 cp -r /path/to/agent-11/templates/* templates/
@@ -553,7 +553,7 @@ sudo swapon /swapfile
 rm -rf .claude/agents/
 
 # Reinstall project squad
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 
 # Restart Claude Code in project directory
 /exit
@@ -583,7 +583,7 @@ pwd  # Should show your project path
 mkdir -p .claude/agents/
 
 # Reinstall fresh project agents
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 ```
 
 ### Problem: No Backups Available
@@ -598,7 +598,7 @@ rm -rf .claude/agents/
 pwd  # Should show your project path
 
 # Fresh installation
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 
 # This will create new project-specific agents
 ```
@@ -655,7 +655,7 @@ bash
 ```bash
 # Use Linux paths in WSL and navigate to your project
 cd /mnt/c/Users/username/my-project/
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 ```
 
 **Problem**: File permissions in WSL
@@ -709,7 +709,7 @@ pwd  # Should show your project path
 ls -la  # Should show project files (.git, package.json, etc.)
 
 # 3. Fresh project installation
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 
 # 4. Verify project installation
 /exit
@@ -731,7 +731,7 @@ If some project agents work but others don't:
 rm -rf .claude/agents/
 
 # 3. Reinstall project squad
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 
 # 4. Test all project agents
 @strategist What can we build in this project?
@@ -756,7 +756,7 @@ cd /path/to/your/project
 claude
 
 # 4. Try installation again
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 
 # 5. Verify recovery
 /agents

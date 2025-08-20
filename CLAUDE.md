@@ -10,14 +10,14 @@ AGENT-11 is a framework for deploying specialized AI agents in Claude Code to fo
 
 This is a documentation-based project with the following structure:
 
-- `/agents/` - Agent profiles and deployment commands
+- `/project/agents/` - Agent profiles and deployment commands
   - `core-squad.md` - 4 essential agents for getting started
   - `full-squad.md` - All 11 specialized agents
   - `specialists/` - Individual agent profiles with detailed capabilities
-- `/field-manual/` - User guides and best practices (minimal content currently)
-- `/missions/` - Predefined workflows and operation guides
-- `/community/` - Success stories and user contributions
-- `/templates/` - Reusable templates for common scenarios
+- `/project/field-manual/` - User guides and best practices (minimal content currently)
+- `/project/missions/` - Predefined workflows and operation guides
+- `/project/community/` - Success stories and user contributions
+- `/project/templates/` - Reusable templates for common scenarios
 
 ## Agent Deployment System
 
@@ -238,9 +238,9 @@ AGENT-11 coordinators MUST maintain two critical files for all missions:
 - Optimizes CLAUDE.md for project
 
 ### Adding New Agent Profiles
-1. Create new file in `/agents/specialists/`
+1. Create new file in `/project/agents/specialists/`
 2. Follow existing template structure
-3. Update `/agents/full-squad.md` with new agent
+3. Update `/project/agents/full-squad.md` with new agent
 4. Add deployment command to relevant quick-start guides
 
 ### Updating Documentation

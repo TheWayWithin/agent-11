@@ -11,7 +11,7 @@
 cd /path/to/your/project
 
 # Update to latest version with mission system
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 ```
 
 **This will:**
@@ -56,7 +56,7 @@ cp -r .claude/ backup-claude-$(date +%Y%m%d)
 ### Option 1: Complete Update (Recommended)
 Updates everything to latest version:
 ```bash
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 ```
 
 ### Option 2: Mission System Only
@@ -66,26 +66,26 @@ If you just want to add the `/coord` command and missions:
 mkdir -p missions .claude/commands templates
 
 # Download mission system files
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/missions/library.md -o missions/library.md
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/missions/mission-build.md -o missions/mission-build.md
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/missions/mission-fix.md -o missions/mission-fix.md
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/missions/mission-mvp.md -o missions/mission-mvp.md
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/missions/mission-refactor.md -o missions/mission-refactor.md
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/missions/operation-genesis.md -o missions/operation-genesis.md
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/missions/README.md -o missions/README.md
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/missions/library.md -o missions/library.md
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/missions/mission-build.md -o missions/mission-build.md
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/missions/mission-fix.md -o missions/mission-fix.md
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/missions/mission-mvp.md -o missions/mission-mvp.md
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/missions/mission-refactor.md -o missions/mission-refactor.md
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/missions/operation-genesis.md -o missions/operation-genesis.md
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/missions/README.md -o missions/README.md
 
 # Download command files
 curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/.claude/commands/coord.md -o .claude/commands/coord.md
 
 # Download templates
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/templates/mission-template.md -o templates/mission-template.md
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/templates/agent-creation-mastery.md -o templates/agent-creation-mastery.md
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/templates/mission-template.md -o templates/mission-template.md
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/templates/agent-creation-mastery.md -o templates/agent-creation-mastery.md
 ```
 
 ### Option 3: Squad Upgrade
 Upgrade from Core to Full squad (adds 7 more specialists):
 ```bash
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s full
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s full
 ```
 
 ## After Updating
@@ -157,10 +157,10 @@ If you have AGENT-11 in multiple projects:
 ```bash
 # Update each project separately
 cd ~/project-1
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 
 cd ~/project-2  
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 ```
 
 Each project gets updated independently with no interference.
@@ -171,7 +171,7 @@ Each project gets updated independently with no interference.
 Set up the update manager for automatic checking:
 ```bash
 # Download update manager
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/update-manager.sh -o deployment/scripts/update-manager.sh
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/update-manager.sh -o deployment/scripts/update-manager.sh
 chmod +x deployment/scripts/update-manager.sh
 
 # Configure automatic checking
@@ -185,7 +185,7 @@ Check for updates periodically:
 curl -s https://api.github.com/repos/TheWayWithin/agent-11/releases/latest | grep '"tag_name"'
 
 # Update when ready
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 ```
 
 ## Version History
