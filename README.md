@@ -7,9 +7,9 @@
 [![Claude Code Compatible](https://img.shields.io/badge/Claude%20Code-Native-blue?style=for-the-badge)](https://claude.ai)
 [![Deploy Time](https://img.shields.io/badge/Deploy%20Time-Under%201%20Second-green?style=for-the-badge)](QUICK-START.md)
 [![Success Rate](https://img.shields.io/badge/Success%20Rate-98%25-brightgreen?style=for-the-badge)](INSTALLATION.md)
-[![Agents](https://img.shields.io/badge/Agents-11%20Specialists-red?style=for-the-badge)](agents/)
-[![Missions](https://img.shields.io/badge/Missions-12%20Workflows-purple?style=for-the-badge)](missions/)
-[![MCP Integration](https://img.shields.io/badge/MCP-Enabled-orange?style=for-the-badge)](field-manual/mcp-integration.md)
+[![Agents](https://img.shields.io/badge/Agents-11%20Specialists-red?style=for-the-badge)](project/agents/)
+[![Missions](https://img.shields.io/badge/Missions-12%20Workflows-purple?style=for-the-badge)](project/missions/)
+[![MCP Integration](https://img.shields.io/badge/MCP-Enabled-orange?style=for-the-badge)](project/field-manual/mcp-integration.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
 **One Founder. Eleven Specialists. Unlimited Potential.**
@@ -171,7 +171,7 @@ The `/coord` command activates THE COORDINATOR to orchestrate complex multi-agen
 > "Clean deployments, isolated teams per project. Finally, AI that scales with my workflow."  
 > — *David Kim, Multi-Project Founder*
 
-[Read more success stories →](community/SUCCESS-STORIES.md)
+[Read more success stories →](project/community/SUCCESS-STORIES.md)
 
 ## 🔌 MCP Integration (NEW!)
 
@@ -199,7 +199,7 @@ The `/coord` command activates THE COORDINATOR to orchestrate complex multi-agen
 - **🚀 Netlify/Railway** - Deployment automation
 - **💳 Stripe** - Payment processing
 
-**[📖 Complete MCP Integration Guide →](field-manual/mcp-integration.md)**
+**[📖 Complete MCP Integration Guide →](project/field-manual/mcp-integration.md)**
 
 ## 🎨 Design Review System (NEW!)
 
@@ -235,31 +235,31 @@ Based on OneRedOak's proven design review workflows used by top-tier companies l
 - **Problems Over Prescriptions** - Describes issues, not solutions
 - **Project-Aware** - Uses your design system and brand guidelines
 
-**[📖 Complete Design Review Guide →](field-manual/ui-doctrine.md)**
+**[📖 Complete Design Review Guide →](project/field-manual/ui-doctrine.md)**
 
 ## 🔥 Mission Library (12 Core Missions)
 
 ### Setup Missions (NEW!)
-- **[🚀 DEV-SETUP](missions/dev-setup.md)** - Greenfield project initialization (30-45 min)
-- **[🎯 DEV-ALIGNMENT](missions/dev-alignment.md)** - Existing project understanding (45-60 min)
-- **[🔌 CONNECT-MCP](missions/connect-mcp.md)** - MCP discovery and connection (45-90 min)
+- **[🚀 DEV-SETUP](project/missions/dev-setup.md)** - Greenfield project initialization (30-45 min)
+- **[🎯 DEV-ALIGNMENT](project/missions/dev-alignment.md)** - Existing project understanding (45-60 min)
+- **[🔌 CONNECT-MCP](project/missions/connect-mcp.md)** - MCP discovery and connection (45-90 min)
 
 ### Development Missions
-- **[🏗️ BUILD](missions/mission-build.md)** - New feature development (4-8 hours)
-- **[🐛 FIX](missions/mission-fix.md)** - Emergency bug resolution (1-3 hours)  
-- **[♻️ REFACTOR](missions/mission-refactor.md)** - Code quality improvement (2-4 hours)
-- **[🚀 DEPLOY](missions/mission-deploy.md)** - Production deployment (1-2 hours)
-- **[📚 DOCUMENT](missions/mission-document.md)** - Documentation creation (2-4 hours)
+- **[🏗️ BUILD](project/missions/mission-build.md)** - New feature development (4-8 hours)
+- **[🐛 FIX](project/missions/mission-fix.md)** - Emergency bug resolution (1-3 hours)  
+- **[♻️ REFACTOR](project/missions/mission-refactor.md)** - Code quality improvement (2-4 hours)
+- **[🚀 DEPLOY](project/missions/mission-deploy.md)** - Production deployment (1-2 hours)
+- **[📚 DOCUMENT](project/missions/mission-document.md)** - Documentation creation (2-4 hours)
 
 ### Strategic Missions  
-- **[💡 MVP](missions/mission-mvp.md)** - Minimum viable product (1-3 days)
-- **[🔄 MIGRATE](missions/mission-migrate.md)** - System migration (4-8 hours)
-- **[⚡ OPTIMIZE](missions/mission-optimize.md)** - Performance optimization (3-6 hours)
-- **[🔒 SECURITY](missions/mission-security.md)** - Security audit & fixes (4-6 hours)
-- **[🔌 INTEGRATE](missions/mission-integrate.md)** - Third-party integration (3-6 hours)
-- **[🎯 RELEASE](missions/mission-release.md)** - Release management (2-4 hours)
+- **[💡 MVP](project/missions/mission-mvp.md)** - Minimum viable product (1-3 days)
+- **[🔄 MIGRATE](project/missions/mission-migrate.md)** - System migration (4-8 hours)
+- **[⚡ OPTIMIZE](project/missions/mission-optimize.md)** - Performance optimization (3-6 hours)
+- **[🔒 SECURITY](project/missions/mission-security.md)** - Security audit & fixes (4-6 hours)
+- **[🔌 INTEGRATE](project/missions/mission-integrate.md)** - Third-party integration (3-6 hours)
+- **[🎯 RELEASE](project/missions/mission-release.md)** - Release management (2-4 hours)
 
-[📋 Complete Mission Library →](missions/library.md)
+[📋 Complete Mission Library →](project/missions/library.md)
 
 ## 🔄 Updating Existing Installation
 
@@ -271,7 +271,7 @@ cd /path/to/your/project
 curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/deployment/scripts/install.sh | bash -s core
 ```
 
-**[📋 Complete Update Guide →](UPDATING.md)** - Everything you need to know about updating
+**[📋 Complete Update Guide →](project/docs/UPDATING.md)** - Everything you need to know about updating
 
 ## 🛠️ Troubleshooting
 
