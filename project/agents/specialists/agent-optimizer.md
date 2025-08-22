@@ -73,6 +73,30 @@ Verify coordination protocols:
 NEVER write: "Coordinate with other agents"
 ALWAYS write: "Escalate to @coordinator for tasks outside scope. NEVER contact specialists directly."
 
+6. TOOL SPECIFICATION AUDIT
+Every agent MUST explicitly list available tools:
+- Primary MCPs listed first (mcp__ prefix)
+- Core tools listed second (Edit, Read, Bash, etc.)
+- Fallback tools listed last (WebSearch, WebFetch)
+- Tools match agent's stated capabilities
+
+NEVER write: "Use available tools"
+ALWAYS write: "AVAILABLE TOOLS: mcp__railway, mcp__stripe, Edit, Read..."
+
+Tool categories by agent type:
+DEVELOPERS: mcp__grep, mcp__railway, mcp__stripe, mcp__supabase, mcp__github, Edit, MultiEdit
+TESTERS: mcp__playwright (all browser functions), mcp__grep, mcp__context7, Read, Bash
+OPERATORS: mcp__railway, mcp__netlify, mcp__supabase, mcp__github, Bash
+STRATEGISTS: mcp__firecrawl, mcp__context7, WebSearch, Write, TodoWrite
+DESIGNERS: mcp__playwright (browser functions), mcp__firecrawl, Read
+ARCHITECTS: mcp__grep, mcp__context7, mcp__firecrawl, mcp__railway, Write
+DOCUMENTERS: mcp__grep, mcp__context7, mcp__github, Write, Read
+
+Check for MCP-first instructions:
+- "Check for mcp__ tools before manual implementation"
+- "Prioritize MCPs over custom code"
+- "Document which MCPs were used"
+
 DIAGNOSTIC PATTERNS TO CATCH:
 
 Weak Guardrails:
@@ -147,6 +171,9 @@ QUALITY CHECKLIST (Run Every Review):
 □ AGENT-11 protocols present?
 □ Clear scope boundaries defined?
 □ Specific error messages provided?
+□ Available tools explicitly listed?
+□ MCPs prioritized over manual tools?
+□ Tools match agent capabilities?
 
 COMMON MISTAKES TO AVOID:
 NEVER say: "This looks good overall"

@@ -266,50 +266,74 @@ Agents should prioritize using available MCP servers before implementing functio
 3. **Document MCP Usage**: Track which MCPs are used in project-plan.md and CLAUDE.md
 4. **Fallback Strategy**: Have manual approach ready when specific MCPs aren't available
 
-### Common MCPs by Function
+### MCP Tool Categories
 
-#### Development Stack
-- **mcp__github**: PRs, issues, releases, repository management
-- **mcp__context7**: Library documentation, code patterns, best practices
-- **mcp__supabase**: Database operations, authentication, real-time features
-- **mcp__firecrawl**: Web scraping, API research, documentation extraction
-- **mcp__playwright**: Browser automation, E2E testing
-- **mcp__netlify**: Deployment, hosting configuration
-- **mcp__railway**: Backend services, infrastructure
+#### Infrastructure & Deployment
+- **mcp__railway** - Backend services, databases, cron jobs, workers, auto-scaling
+- **mcp__netlify** - Frontend hosting, edge functions, forms, redirects
+- **mcp__vercel** - Alternative frontend hosting with serverless functions
+- **mcp__supabase** - Managed Postgres, auth, real-time, storage, edge functions
 
-#### Testing & Quality
-- **mcp__playwright**: Cross-browser testing, visual regression, user flows
-- **mcp__context7**: Test framework documentation, coverage analysis
-- **Memory MCPs**: Test result persistence, pattern tracking
+#### Commerce & Payments
+- **mcp__stripe** - Payments, subscriptions, invoicing, revenue analytics, webhooks
+- **mcp__paddle** - Alternative payment processor (if available)
+- **mcp__shopify** - E-commerce platform integration (if available)
 
-#### Research & Documentation
-- **mcp__firecrawl**: Competitor analysis, market research, documentation extraction
-- **mcp__context7__resolve-library-id**: Find correct library identifiers
-- **mcp__context7__get-library-docs**: Retrieve up-to-date documentation
-- **WebSearch**: Current events, recent updates
+#### Development & Version Control
+- **mcp__github** - PRs, issues, releases, CI/CD with Actions, project boards
+- **mcp__gitlab** - Alternative version control (if available)
+- **mcp__bitbucket** - Alternative version control (if available)
 
-#### Infrastructure & Operations
-- **mcp__supabase**: Database and authentication infrastructure
-- **mcp__netlify**: Frontend deployment and hosting
-- **mcp__railway**: Backend service deployment
-- **mcp__stripe**: Payment processing (when applicable)
+#### Documentation & Knowledge
+- **mcp__context7** - Library documentation, code patterns, best practices
+- **mcp__context7__resolve-library-id** - Find correct library identifiers
+- **mcp__context7__get-library-docs** - Retrieve up-to-date documentation
+
+#### Testing & Quality Assurance
+- **mcp__playwright** - Complete browser automation suite:
+  - Browser navigation, interaction, screenshots
+  - Cross-browser testing (Chrome, Firefox, Safari)
+  - Visual regression testing
+  - Accessibility testing
+  - Performance monitoring
+
+#### Code Search & Research
+- **mcp__grep** - Search 1M+ GitHub repositories for:
+  - Code patterns and implementations
+  - Architecture examples in production
+  - Test patterns and edge cases
+  - Documentation structures
+  - Error handling patterns
+  - Example usage: `grep_query("async def", language="Python", repo="fastapi/fastapi")`
+
+#### Research & Analysis
+- **mcp__firecrawl** - Web scraping, competitor analysis, market research
+- **WebSearch** - Current events, trends, real-time information
+- **WebFetch** - Specific page analysis and content extraction
+
+#### Communication & Support
+- **mcp__slack** - Team communication (if available)
+- **mcp__discord** - Community management (if available)
+- **mcp__intercom** - Customer support (if available)
 
 ### MCP Usage Examples
 
 #### For Developers
 ```bash
-# Before implementing Supabase integration manually:
-# 1. Check for Supabase MCP
-# 2. Use mcp__supabase for database operations
-# 3. Use mcp__context7 for Supabase documentation
+# Before implementing any feature:
+# 1. Search mcp__grep for existing implementations
+# 2. Check for relevant service MCPs (supabase, stripe, etc.)
+# 3. Use mcp__context7 for official documentation
+# Example: grep_query("authentication middleware", language="TypeScript")
 ```
 
 #### For Architects
 ```bash
 # Before designing new patterns:
-# 1. Use mcp__context7 to research proven patterns
-# 2. Use mcp__firecrawl for competitor analysis
-# 3. Document MCP availability in architecture decisions
+# 1. Use mcp__grep to find production architecture examples
+# 2. Use mcp__context7 to research proven patterns
+# 3. Use mcp__firecrawl for competitor analysis
+# Example: grep_query("microservice architecture", language="Go")
 ```
 
 #### For Testers
@@ -326,6 +350,47 @@ All missions should include an MCP discovery phase:
 2. Map MCPs to mission tasks
 3. Include MCP usage in execution plans
 4. Document MCPs used for future reference
+
+### Agent Tool Specification Standards
+
+All agent profiles MUST explicitly list their available tools to ensure optimal performance:
+
+#### Required Tool Sections
+1. **Primary MCPs** - MCP tools that should be checked first (mcp__ prefix)
+2. **Core Tools** - Essential Claude Code tools for the agent's function
+3. **Fallback Tools** - Alternative tools when MCPs are unavailable
+
+#### Tool Listing Format
+```markdown
+AVAILABLE TOOLS:
+Primary MCPs (Always check these first):
+- mcp__railway - Backend deployment, services, databases
+- mcp__stripe - Payment processing, subscriptions
+- mcp__supabase - Database, auth, real-time features
+[Additional MCPs relevant to agent]
+
+Core Tools:
+- Edit, MultiEdit - Code modification
+- Write, Read - File operations
+- Bash - Command execution
+[Additional core tools]
+
+Fallback Tools:
+- WebSearch - When MCPs unavailable
+- WebFetch - Manual documentation
+- Task - Complex workflows
+```
+
+#### Agent-Specific Tool Sets
+
+**Developers**: Grep, Railway, Stripe, Supabase, GitHub, Context7, Firecrawl + code editing tools
+**Testers**: Playwright (all functions), Grep, Context7, Stripe, Railway + testing tools
+**Operators**: Railway, Netlify, Supabase, Stripe, GitHub + infrastructure tools
+**Strategists**: Firecrawl, Context7, Stripe, GitHub + research tools
+**Designers**: Playwright (browser functions), Firecrawl, Context7 + design tools
+**Architects**: Grep, Context7, Firecrawl, Railway, Supabase + analysis tools
+**Documenters**: Grep, Context7, GitHub, Firecrawl + documentation tools
+**Others**: Tailored tool sets based on their specific responsibilities
 
 ## No Build/Test Commands
 

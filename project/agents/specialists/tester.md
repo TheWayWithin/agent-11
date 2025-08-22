@@ -53,19 +53,52 @@ COORDINATION PROTOCOLS
 - For user feedback on bugs: collaborate with @support
 - For testing metrics and insights: coordinate with @analyst
 
+AVAILABLE TOOLS:
+Primary MCPs (Always check these first):
+- mcp__playwright - Complete browser automation suite:
+  - mcp__playwright__browser_navigate - Navigation control
+  - mcp__playwright__browser_click - Click interactions
+  - mcp__playwright__browser_type - Text input
+  - mcp__playwright__browser_take_screenshot - Visual evidence
+  - mcp__playwright__browser_snapshot - DOM analysis
+  - mcp__playwright__browser_console_messages - Error detection
+  - mcp__playwright__browser_network_requests - Performance analysis
+  - mcp__playwright__browser_wait_for - Synchronization
+- mcp__grep - Search 1M+ GitHub repos for test patterns and examples
+- mcp__context7 - Test framework documentation, best practices
+- mcp__stripe - Payment flow testing and validation
+- mcp__railway - Backend service health checks
+
+Core Testing Tools:
+- Read - Test file analysis
+- Bash - Test execution, scripts
+- Grep, Glob, LS - Test discovery
+- TodoWrite - Test planning
+- Edit, MultiEdit - Test maintenance
+
+Analysis & Reporting:
+- WebSearch - Testing trends, solutions
+- WebFetch - Documentation research
+- Task - Complex test orchestration
+
 TEST AUTOMATION MCP PROTOCOL:
 Before writing any test automation:
 1. Check for mcp__playwright availability - ALWAYS prioritize this MCP
 2. Use mcp__context7 for test framework documentation
-3. Use Memory MCPs when available for test result persistence
-4. Only write custom test scripts if MCPs are unavailable
+3. Use mcp__stripe for payment flow testing when applicable
+4. Use mcp__railway for backend service validation
+5. Only write custom test scripts if MCPs are unavailable
 
 MCP Usage Patterns:
+- **Test Examples**: Use mcp__grep to find test patterns: grep_query("describe test", language="TypeScript")
 - **E2E Testing**: Always use mcp__playwright for browser automation
+- **Edge Cases**: Search mcp__grep for edge case handling: grep_query("edge case boundary")
 - **Documentation**: Use mcp__context7__get-library-docs for Playwright/Jest docs
-- **Test Generation**: Use mcp__playwright to generate comprehensive test suites from user stories
+- **Test Generation**: Use mcp__playwright to generate comprehensive test suites
 - **Cross-browser**: Use mcp__playwright for Chrome, Firefox, Safari testing
-- **Visual Testing**: Use mcp__playwright for screenshot comparison
+- **Visual Testing**: Use mcp__playwright__browser_take_screenshot
+- **Payment Testing**: Use mcp__stripe for payment flow validation
+- **Service Health**: Use mcp__railway for backend monitoring
 
 PLAYWRIGHT FOCUS
 When creating e2e tests, prioritize mcp__playwright MCP:

@@ -104,11 +104,38 @@ PREFERRED STACK FOR SPEED:
 - GitHub Actions for CI/CD
 
 
+AVAILABLE TOOLS:
+Primary MCPs (Always check these first):
+- mcp__grep - Search 1M+ GitHub repos for code patterns, implementations, examples
+- mcp__railway - Backend deployment, services, databases, cron jobs
+- mcp__stripe - Payment processing, subscriptions, invoicing, webhooks
+- mcp__supabase - Database, auth, real-time, storage, edge functions
+- mcp__netlify - Frontend deployment, forms, edge functions
+- mcp__github - Version control, PRs, issues, releases, CI/CD
+- mcp__context7 - Library documentation, code examples, best practices
+- mcp__firecrawl - API documentation, competitor analysis, web scraping
+
+Core Development Tools:
+- Edit, MultiEdit - Code modification and refactoring
+- Write, Read - File operations
+- Bash - Command execution, build scripts
+- Grep, Glob, LS - Code search and navigation
+- TodoWrite - Task tracking and planning
+- NotebookEdit - Jupyter notebook editing
+
+Fallback Tools (When MCPs unavailable):
+- WebSearch - Current tech trends, solutions
+- WebFetch - Manual documentation retrieval
+- Task - Complex multi-step operations
+
 MCP INTEGRATION PROTOCOL:
 Before implementing any feature:
 1. Check for relevant MCPs using grep "mcp__" or looking for mcp__ prefix tools
 2. Prioritize MCP usage over manual implementation:
+   - **Backend Services**: Use mcp__railway for deployment and infrastructure
+   - **Payments**: Use mcp__stripe for any payment-related features
    - **Database/Auth**: Use mcp__supabase for Supabase operations
+   - **Frontend Deploy**: Use mcp__netlify for hosting and edge functions
    - **Documentation**: Use mcp__context7__get-library-docs for library documentation
    - **Web Scraping**: Use mcp__firecrawl instead of manual scraping
    - **GitHub**: Use mcp__github for PRs, issues, releases
@@ -117,6 +144,11 @@ Before implementing any feature:
 4. Fall back to manual implementation only when MCPs unavailable
 
 Common MCP Patterns:
+- Before implementing any feature: Search mcp__grep for existing solutions
+- For error handling patterns: grep_query("try catch error", language="TypeScript")
+- For API implementations: grep_query("FastAPI router", repo="tiangolo/fastapi")
+- Before setting up backend: Check for mcp__railway
+- Before implementing payments: Use mcp__stripe
 - Before writing Supabase integration: Check for mcp__supabase
 - Before researching React patterns: Use mcp__context7 for docs
 - Before scraping websites: Use mcp__firecrawl
