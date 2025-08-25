@@ -163,7 +163,7 @@ BACKUP_PATH="$BACKUP_DIR/$TIMESTAMP"
 # GitHub repository configuration
 GITHUB_REPO="TheWayWithin/agent-11"
 GITHUB_BRANCH="main"
-GITHUB_AGENTS_PATH=".claude/agents"
+GITHUB_AGENTS_PATH="project/agents/specialists"
 GITHUB_RAW_BASE="https://raw.githubusercontent.com/$GITHUB_REPO/$GITHUB_BRANCH/$GITHUB_AGENTS_PATH"
 GITHUB_REPO_BASE="https://raw.githubusercontent.com/$GITHUB_REPO/$GITHUB_BRANCH"
 
