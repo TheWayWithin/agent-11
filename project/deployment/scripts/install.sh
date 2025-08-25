@@ -516,8 +516,10 @@ install_mission_system() {
     
     # Define command files to install
     local command_files=(
-        ".claude/commands/coord.md"
-        ".claude/commands/meeting.md"
+        "project/commands/coord.md"
+        "project/commands/meeting.md"
+        "project/commands/design-review.md"
+        "project/commands/recon.md"
     )
     
     # Define template files to install
