@@ -14,7 +14,7 @@ This is a documentation-based project with the following structure:
   - `core-squad.md` - 4 essential agents for getting started
   - `full-squad.md` - All 11 specialized agents
   - `specialists/` - Individual agent profiles with detailed capabilities
-- `/project/field-manual/` - User guides and best practices (minimal content currently)
+- `/project/field-manual/` - User guides and best practices
 - `/project/missions/` - Predefined workflows and operation guides
 - `/project/community/` - Success stories and user contributions
 - `/project/templates/` - Reusable templates for common scenarios
@@ -91,128 +91,80 @@ The ideation file is a centralized document containing all requirements, context
 ### Core Tracking Files
 
 1. **project-plan.md** - Strategic roadmap and milestones
-   - Executive summary
-   - Objectives and goals
-   - Technical architecture
-   - Milestone timeline
-   - Success metrics
-   - Risk assessment
+   - Executive summary, objectives, technical architecture
+   - Milestone timeline, success metrics, risk assessment
 
 2. **progress.md** - Operational log and learnings
-   - Completed milestones
-   - Current sprint status
-   - Issues and resolutions
-   - Lessons learned
-   - Technical decisions
-   - Performance insights
+   - Issues and resolutions, lessons learned
+   - Technical decisions and performance insights
 
 ### Update Protocol
 
 After each work session or milestone:
 1. ✅ Mark completed tasks in `project-plan.md`
-2. 📝 Log issues and resolutions in `progress.md`
-3. 💡 Document lessons learned in `progress.md`
-4. ⚡ Record performance insights in both `progress.md` and `CLAUDE.md`
-5. 🔧 Update `CLAUDE.md` with any new patterns, decisions, or optimizations
-
-### Performance-Driving Insights
-
-When updating CLAUDE.md, include:
-- Discovered optimization opportunities
-- Successful patterns and approaches
-- Performance bottlenecks and solutions
-- Architecture decisions and rationale
-- Testing strategies that work
-- Deployment optimizations
+2. 📝 Log issues, resolutions, and lessons in `progress.md`
+3. ⚡ Record performance insights and optimizations in `CLAUDE.md`
 
 ## Design Review System
 
-### Automated Design Reviews
+For UI/UX projects, AGENT-11 includes design review capabilities:
+- **@designer**: Enhanced with comprehensive UI/UX assessment
+- **@design-review**: Dedicated agent for design audits (when available)
+- **Standards**: Live environment testing, evidence-based feedback
 
-AGENT-11 includes a comprehensive design review system based on OneRedOak's best practices:
+*Note: For project-specific design principles, add them to your project's CLAUDE.md file. See `/templates/` for design principles template.*
 
-#### Quick Design Review
-```bash
-/design-review
-```
-Executes systematic UI/UX assessment of current branch changes using the RECON Protocol.
+## Mission Documentation Standards
 
-#### Specialized Agents
-- **@design-review**: Dedicated agent for comprehensive design audits
-- **@designer**: Enhanced with RECON Protocol capabilities
-- **/recon**: UI/UX reconnaissance command for detailed assessment
+### Mandatory Tracking Files
 
-#### Review Standards
-The system applies world-class standards from companies like Stripe, Airbnb, and Linear:
+For all missions, coordinators MUST maintain:
+- **project-plan.md**: Strategic roadmap with task completion tracking
+- **progress.md**: Issues, resolutions, and lessons learned
+- **Templates**: Available in `/templates/` directory
 
-1. **Live Environment First**: Interactive testing prioritized over static analysis
-2. **Problems Over Prescriptions**: Describe issues, not technical solutions
-3. **Evidence-Based**: Screenshot proof for all visual findings
-4. **Systematic Protocol**: 7-phase comprehensive evaluation process
+### Critical Requirements
+1. Update files immediately when issues occur or phases complete
+2. Mark tasks complete [x] only after specialist confirmation
+3. Log all problems for future learning
+4. Both files mandatory before proceeding to next phase
 
-#### Design Principles Integration
-Store your project's design principles in this CLAUDE.md file for consistent application:
+## Coordinator Delegation Protocol
 
-```markdown
-## Project Design Principles
+### CRITICAL: Using /coord Command
 
-### Brand Guidelines
-- Primary Color: [Your brand color]
-- Secondary Color: [Supporting color]
-- Typography: [Primary font family]
-- Voice & Tone: [Brand personality]
+When using `/coord` to orchestrate missions, the coordinator MUST use the Task tool for actual delegation:
 
-### UI Standards
-- Design System: [Link or description]
-- Component Library: [Location/documentation]
-- Accessibility Level: WCAG AA+ (minimum)
-- Performance Targets: FCP < 1.8s, LCP < 2.5s
+1. **Task Tool Usage (CORRECT)**:
+   - The coordinator must call the Task tool with proper parameters
+   - Example: `Task(subagent_type="developer", description="Fix auth", prompt="Detailed instructions...")`
+   - This actually spawns a new agent instance that performs the work
 
-### User Experience Priorities
-1. [Primary user goal]
-2. [Secondary user goal]
-3. [Key conversion metrics]
+2. **@agent Syntax (INCORRECT)**:
+   - Never use `@agent` syntax in coordinator prompts - this is just text output
+   - `@developer` is for users to invoke agents directly, not for internal delegation
+   - Writing "Delegating to @developer" does NOT actually delegate anything
 
-### Quality Gates
-- [ ] Cross-browser compatibility (Chrome, Firefox, Safari)
-- [ ] Mobile-first responsive design
-- [ ] Keyboard navigation complete
-- [ ] Screen reader tested
-- [ ] Color contrast validated (4.5:1 minimum)
+3. **Verification Protocol**:
+   - Coordinator must confirm Task tool was actually called
+   - Look for "Using Task tool with subagent_type='[agent]'" in output
+   - If you see "Delegating to @agent" without Task tool usage, delegation didn't happen
 
-### Innovation Principles
-*"Think Different" - Challenge conventions and push boundaries*
-- [ ] Questions existing patterns and assumptions
-- [ ] Creates breakthrough user experiences
-- [ ] Advances the state of interface design
-- [ ] Makes meaningful difference to users
-- [ ] Pushes the human experience forward
-```
+4. **Example of Proper Delegation**:
+   ```
+   # WRONG (just describes delegation):
+   "I'm delegating to @tester for testing"
+   
+   # RIGHT (actually uses Task tool):
+   Task(
+     subagent_type="tester",
+     description="Test auth flow",
+     prompt="Create Playwright tests for authentication..."
+   )
+   ```
 
-## Project Documentation Standards
-
-### Mandatory File Management
-
-AGENT-11 coordinators MUST maintain two critical files for all missions:
-
-#### project-plan.md
-- **Purpose**: Track planned vs actual task completion
-- **Update Triggers**: Mission start, phase start, task completion, phase end
-- **Required Elements**: All tasks marked [ ] or [x], agent assignments, deliverables
-- **Template**: See `/templates/project-plan-template.md`
-
-#### progress.md  
-- **Purpose**: Log issues, root causes, resolutions, and learnings
-- **Update Triggers**: Issue encountered, root cause found, problem resolved, phase complete
-- **Required Elements**: Issue descriptions, root causes, fixes, lessons learned
-- **Template**: See `/templates/progress-template.md`
-
-### File Update Protocol
-1. **NEVER skip updates** - both files are mandatory for mission tracking
-2. **Update immediately** when issues occur or phases complete
-3. **Mark tasks complete [x]** only after specialist confirmation
-4. **Log all problems** to progress.md for future learning
-5. **Phase end requirement** - update both files before proceeding
+### NO ROLE-PLAYING RULE
+The coordinator must NEVER role-play or simulate delegation. Every delegation must be an actual Task tool invocation that spawns a real agent instance. Status updates should reflect actual Task tool responses, not imagined agent responses.
 
 ## Common Tasks
 
@@ -316,33 +268,14 @@ Agents should prioritize using available MCP servers before implementing functio
 - **mcp__discord** - Community management (if available)
 - **mcp__intercom** - Customer support (if available)
 
-### MCP Usage Examples
+### MCP Usage Pattern
 
-#### For Developers
-```bash
-# Before implementing any feature:
-# 1. Search mcp__grep for existing implementations
-# 2. Check for relevant service MCPs (supabase, stripe, etc.)
-# 3. Use mcp__context7 for official documentation
-# Example: grep_query("authentication middleware", language="TypeScript")
-```
-
-#### For Architects
-```bash
-# Before designing new patterns:
-# 1. Use mcp__grep to find production architecture examples
-# 2. Use mcp__context7 to research proven patterns
-# 3. Use mcp__firecrawl for competitor analysis
-# Example: grep_query("microservice architecture", language="Go")
-```
-
-#### For Testers
-```bash
-# For E2E testing:
-# 1. Prioritize mcp__playwright for browser automation
-# 2. Use mcp__context7 for Playwright documentation
-# 3. Only write custom scripts if MCP unavailable
-```
+**Standard Workflow**: Always check for relevant MCPs first:
+1. **Research**: Use mcp__grep for existing implementations
+2. **Documentation**: Use mcp__context7 for official docs  
+3. **Services**: Use service-specific MCPs (mcp__supabase, mcp__stripe, etc.)
+4. **Testing**: Use mcp__playwright for browser automation
+5. **Fallback**: Manual implementation only when MCPs unavailable
 
 ### MCP Integration in Missions
 All missions should include an MCP discovery phase:
@@ -353,48 +286,16 @@ All missions should include an MCP discovery phase:
 
 ### Agent Tool Specification Standards
 
-All agent profiles MUST explicitly list their available tools to ensure optimal performance:
+All agent profiles should explicitly list their available tools:
+- **Primary MCPs**: Service-specific tools (e.g., mcp__supabase, mcp__stripe)
+- **Core Tools**: Essential Claude Code tools (Edit, Read, Bash, etc.)
+- **Fallback Tools**: Alternatives when MCPs unavailable
 
-#### Required Tool Sections
-1. **Primary MCPs** - MCP tools that should be checked first (mcp__ prefix)
-2. **Core Tools** - Essential Claude Code tools for the agent's function
-3. **Fallback Tools** - Alternative tools when MCPs are unavailable
+*See `/templates/agent-creation-mastery.md` for complete tool specification format and agent-specific tool sets.*
 
-#### Tool Listing Format
-```markdown
-AVAILABLE TOOLS:
-Primary MCPs (Always check these first):
-- mcp__railway - Backend deployment, services, databases
-- mcp__stripe - Payment processing, subscriptions
-- mcp__supabase - Database, auth, real-time features
-[Additional MCPs relevant to agent]
+## Development Notes
 
-Core Tools:
-- Edit, MultiEdit - Code modification
-- Write, Read - File operations
-- Bash - Command execution
-[Additional core tools]
-
-Fallback Tools:
-- WebSearch - When MCPs unavailable
-- WebFetch - Manual documentation
-- Task - Complex workflows
-```
-
-#### Agent-Specific Tool Sets
-
-**Developers**: Grep, Railway, Stripe, Supabase, GitHub, Context7, Firecrawl + code editing tools
-**Testers**: Playwright (all functions), Grep, Context7, Stripe, Railway + testing tools
-**Operators**: Railway, Netlify, Supabase, Stripe, GitHub + infrastructure tools
-**Strategists**: Firecrawl, Context7, Stripe, GitHub + research tools
-**Designers**: Playwright (browser functions), Firecrawl, Context7 + design tools
-**Architects**: Grep, Context7, Firecrawl, Railway, Supabase + analysis tools
-**Documenters**: Grep, Context7, GitHub, Firecrawl + documentation tools
-**Others**: Tailored tool sets based on their specific responsibilities
-
-## No Build/Test Commands
-
-This project has no build system, package management, or automated testing since it's purely documentation-based. Changes can be verified by:
-- Reviewing Markdown formatting
-- Testing deployment commands in Claude Code
-- Validating links and references between files
+- **No Build System**: Pure documentation project - verify changes through Markdown review and deployment testing
+- **Mission System**: Use `/coord [mission] [files]` for systematic workflows
+- **Templates**: Available in `/templates/` for reusable patterns
+- **Updates**: Changes automatically deployed via GitHub integration
