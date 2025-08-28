@@ -1,5 +1,7 @@
 # AGENT-11 Development Journey: Behind the Scenes
 
+**Last Updated**: December 27, 2024
+
 ## The Ultimate "Dogfooding" Project
 
 **AGENT-11 built AGENT-11.** This is the real-time development log of how we used the AGENT-11 squad to transform itself from a manual process into a production-grade deployment system. Every feature, every line of code, and every decision was made by the specialists themselves.
@@ -7,6 +9,34 @@
 **The Result**: 6-week project completed in 3 weeks, 98% success rate, production-ready system, all 11 agents fully optimized.
 
 ---
+
+## Recent Improvements: December 2024
+
+### Critical Coordinator Enhancement
+
+**Issue Resolved**: Coordinator agents were occasionally using @agent syntax instead of Task tool
+**Root Cause**: Insufficient enforcement in agent prompts and command instructions
+**Solution Implemented**: Multi-layered enforcement system
+
+#### Changes Made:
+1. **Coordinator Agent Enhancement**
+   - Added mandatory warning box at top of coordinator.md
+   - Implemented failure detection patterns
+   - Created 5-point self-check protocol before delegations
+   - Strengthened Task tool requirements throughout
+
+2. **Command System Improvements**
+   - Updated /coord command with visual checklists
+   - Added protocol violation indicators
+   - Implemented Task tool reminders in all headers
+   - Created project/commands/ directory structure
+
+3. **GitHub MCP Integration**
+   - Successfully connected GitHub MCP server
+   - Configured authentication with personal access token
+   - Enabled GitHub API operations within Claude Code
+
+**Result**: Coordinator now reliably uses Task tool for all delegations
 
 ## Development Milestones: How the Squad Built Itself
 
