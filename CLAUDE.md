@@ -293,6 +293,18 @@ All agent profiles should explicitly list their available tools:
 
 *See `/templates/agent-creation-mastery.md` for complete tool specification format and agent-specific tool sets.*
 
+## Available Commands
+
+### Mission Orchestration
+- `/coord [mission] [files]` - Orchestrate multi-agent missions
+- `/design-review` - Comprehensive UI/UX audit
+- `/recon` - Design reconnaissance
+- `/meeting [agenda]` - Facilitate structured meetings
+
+### Reporting & Analysis
+- `/report [since_date]` - Generate progress reports for stakeholders
+- `/pmd [issue]` - Post Mortem Dump for root cause analysis
+
 ## Development Notes
 
 - **No Build System**: Pure documentation project - verify changes through Markdown review and deployment testing

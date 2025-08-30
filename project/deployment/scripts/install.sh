@@ -520,6 +520,8 @@ install_mission_system() {
         "project/commands/meeting.md"
         "project/commands/design-review.md"
         "project/commands/recon.md"
+        "project/commands/report.md"
+        "project/commands/pmd.md"
     )
     
     # Define template files to install
@@ -725,6 +727,12 @@ verify_installation() {
     fi
     if [[ ! -f "$COMMANDS_DIR/meeting.md" ]]; then
         missing_items+=("command:meeting.md")
+    fi
+    if [[ ! -f "$COMMANDS_DIR/report.md" ]]; then
+        missing_items+=("command:report.md")
+    fi
+    if [[ ! -f "$COMMANDS_DIR/pmd.md" ]]; then
+        missing_items+=("command:pmd.md")
     fi
     
     # Verify template files

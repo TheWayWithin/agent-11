@@ -219,6 +219,38 @@ Based on OneRedOak's proven design review workflows used by top-tier companies l
 @design-review "Review the login form changes"
 ```
 
+## 📊 Reporting & Analysis Commands (NEW!)
+
+### Progress Reporting
+```bash
+# Generate stakeholder progress report
+/report
+
+# Report since specific date
+/report 2025-08-20
+```
+
+Generates professional progress reports for BOS-AI or stakeholders including:
+- Completed tasks with dates and impact
+- Issues encountered and resolutions
+- Current status and metrics
+- Next milestones and resource needs
+
+### Post Mortem Analysis
+```bash
+# Analyze recent failures
+/pmd
+
+# Analyze specific issue
+/pmd "Coordinator not using Task tool correctly"
+```
+
+Conducts root cause analysis to identify improvements in:
+- Agent performance and prompts
+- Documentation quality
+- Tool usage patterns
+- Process and coordination issues
+
 ### 7-Phase Systematic Protocol
 1. **🔧 Preparation** - Environment setup and change analysis
 2. **⚡ Interaction Testing** - User flows and micro-interactions
