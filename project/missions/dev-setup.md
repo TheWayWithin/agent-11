@@ -70,16 +70,35 @@ This mission establishes the foundation for a new greenfield project by:
 - Maps business objectives
 - Notes brand/design requirements
 
-### Phase 3: Project Planning (15 min)
+### Phase 3: Architecture Documentation (10 min)
 ```bash
-/coord "Creating initial project plan based on ideation analysis..."
+/coord "Creating architecture documentation based on ideation and requirements..."
+```
+
+**Agent Actions:**
+- @architect creates `architecture.md` using template:
+  - System overview and boundaries
+  - Infrastructure architecture
+  - Application architecture
+  - Data architecture
+  - Integration points
+  - Architecture decisions
+  - Current limitations
+  - Next steps
+
+**Note**: Uses `/templates/architecture.md` as starting point
+**Reference**: See `/project/field-manual/architecture-sop.md` for comprehensive guidelines
+
+### Phase 4: Project Planning (15 min)
+```bash
+/coord "Creating initial project plan based on ideation analysis and architecture..."
 ```
 
 **Agent Actions:**
 - @strategist creates `project-plan.md` with:
   - Executive summary
   - Core objectives
-  - Technical architecture
+  - Technical architecture (referencing architecture.md)
   - Milestone roadmap
   - Success metrics
   - Risk assessment
@@ -141,7 +160,7 @@ This mission establishes the foundation for a new greenfield project by:
 - [ ] Dependency 2
 ```
 
-### Phase 4: Progress Tracking Setup (5 min)
+### Phase 5: Progress Tracking Setup (5 min)
 ```bash
 /coord "Setting up progress tracking system..."
 ```
@@ -179,7 +198,7 @@ _Key architectural and implementation decisions will be logged here_
 _Optimization opportunities and performance wins_
 ```
 
-### Phase 5: CLAUDE.md Configuration (10 min)
+### Phase 6: CLAUDE.md Configuration (10 min)
 ```bash
 /coord "Updating CLAUDE.md with project-specific instructions..."
 ```
@@ -238,6 +257,7 @@ After each work session or milestone:
 ✅ **Mission Complete When:**
 - [ ] GitHub repository configured
 - [ ] Ideation document analyzed
+- [ ] architecture.md created from template
 - [ ] project-plan.md created with roadmap
 - [ ] progress.md initialized
 - [ ] CLAUDE.md updated with tracking instructions

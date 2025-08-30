@@ -7,118 +7,103 @@ description: Generate progress report for stakeholders
 
 **Command**: `/report [since_date]`
 
-**Arguments**: 
-- `since_date` (optional): Date to report from (YYYY-MM-DD format). Defaults to last report date or 7 days ago.
+**Purpose**: Generate a structured progress report documenting completed tasks, issues encountered, and project status for external stakeholders (BOS-AI, clients, or management).
 
-## REPORT GENERATION PROTOCOL
+## KEY FEATURES
 
-You are generating a structured progress report for external stakeholders (BOS-AI or clients) based on project-plan.md and progress.md.
+- **Automated Data Collection**: Pulls from project-plan.md, progress.md, and git history
+- **Time-Based Reporting**: Reports changes since last report or specified date
+- **Stakeholder-Ready Format**: Professional structure suitable for external communication
+- **BOS-AI Integration**: Special sections when integrated with BOS-AI documents
+- **Issue Tracking**: Documents problems encountered and their resolutions
 
-### EXECUTION STEPS
+## USAGE EXAMPLES
 
-1. **Parse Arguments**
-   - Extract since_date if provided
-   - If not provided, look for last progress-report.md date
-   - Default to 7 days ago if no previous report exists
+```bash
+# Generate report for last 7 days (default)
+/report
 
-2. **Gather Information**
-   - Read project-plan.md for completed tasks
-   - Read progress.md for issues and resolutions
-   - Check git log for recent commits
-   - Review any test results or metrics
+# Generate report since specific date
+/report 2025-08-20
 
-3. **Generate Report Structure**
+# Generate report since last report (automatic detection)
+/report
+```
 
-Create `progress-report.md` with the following format:
+## REPORT SECTIONS
 
-```markdown
-# Progress Report
+### 1. Executive Summary
+Brief overview of progress and current status
 
-**Report Date**: [Today's date]
-**Period**: [Since date] to [Today's date]
-**Project**: AGENT-11 Development
+### 2. Tasks Completed
+Table of completed tasks with dates and business impact
 
-## Executive Summary
+### 3. Issues & Resolutions
+Documentation of problems encountered and how they were resolved
 
-[2-3 sentences summarizing overall progress and status]
+### 4. Current Status
+Overall project health and active phase
 
-## Tasks Completed
+### 5. Metrics
+Key performance indicators and trends
 
-| Task | Completion Date | Impact |
-|------|----------------|--------|
-| [Task from project-plan.md] | [Date] | [Business value delivered] |
+### 6. Next Milestones
+Upcoming deliverables and target dates
 
-## Issues & Resolutions
+### 7. Resource Needs
+Decisions, resources, or clarifications needed from stakeholders
 
-| Issue | Date | Resolution | Status |
-|-------|------|------------|--------|
-| [From progress.md] | [Date] | [How resolved] | ✅ Resolved / ⚠️ In Progress |
+### 8. Business Alignment (BOS-AI Integration)
+How development aligns with business vision and requirements
 
-## Current Status
+## OUTPUT
 
-- **Overall Progress**: [On Track / At Risk / Behind Schedule]
-- **Active Phase**: [Current phase from project-plan.md]
-- **Blockers**: [Any current blockers]
+Generates `progress-report.md` with:
+- Structured markdown format
+- Tables for easy scanning
+- Visual indicators (✅, ⚠️, 📈, 📉)
+- Clear action items for stakeholders
+- Timestamp and next report date
 
-## Metrics
+## BENEFITS
 
-| Metric | Target | Actual | Trend |
-|--------|--------|--------|-------|
-| Development Velocity | [X] tasks/week | [Y] completed | 📈/📉/➡️ |
-| Issue Resolution Time | <24 hours | [Actual] | 📈/📉/➡️ |
-| Test Coverage | >80% | [If available] | 📈/📉/➡️ |
+- **Transparency**: Clear visibility into development progress
+- **Accountability**: Documented completion and issue resolution
+- **Communication**: Bridge between technical work and business stakeholders
+- **Tracking**: Historical record of project evolution
+- **Planning**: Identifies resource needs and blockers early
 
-## Next Milestones
+## INTEGRATION WITH BOS-AI
 
-| Milestone | Target Date | Status |
-|-----------|------------|--------|
-| [From project-plan.md] | [Date] | Planning / In Progress / At Risk |
+When BOS-AI documents are present in the ideation folder:
+- Reports PRD requirement coverage percentage
+- Shows alignment with Vision and Mission.md
+- References Strategic Roadmap milestones
+- Translates technical progress to business value
 
-## Resource Needs
+## BEST PRACTICES
 
-- [ ] [Any decisions needed from stakeholders]
-- [ ] [Any resources or support required]
-- [ ] [Any clarifications needed]
+1. **Regular Cadence**: Generate reports weekly for active projects
+2. **Accurate Dating**: Always verify dates against actual completion
+3. **Business Language**: Translate technical achievements to business value
+4. **Action Items**: Clearly identify what stakeholders need to provide
+5. **Trend Analysis**: Show whether project is improving or declining
 
-## Recommendations
+## ERROR HANDLING
 
-[Any strategic recommendations based on progress]
+- **Missing project-plan.md**: Falls back to git commit history
+- **Missing progress.md**: Reports only completed tasks
+- **No activity**: Generates "No Activity" report with explanation
+- **Date parsing errors**: Defaults to 7-day window
+
+## CUSTOMIZATION
+
+The report format can be customized by modifying the command to:
+- Add project-specific metrics
+- Include additional sections
+- Adjust formatting for different stakeholders
+- Integrate with external tracking systems
 
 ---
-*Generated: [Timestamp]*
-*Next Report Due: [Date + 7 days]*
-```
 
-4. **Special Sections for BOS-AI Integration**
-
-If BOS-AI documents detected in ideation folder, add:
-
-```markdown
-## Business Alignment
-
-**Requirements Coverage**: [X]% of PRD requirements completed
-**Vision Alignment**: [How development aligns with Vision and Mission.md]
-**Next Business Milestone**: [From Strategic Roadmap]
-```
-
-5. **Quality Checks**
-   - Ensure all dates are accurate
-   - Verify task completion status
-   - Cross-reference with git commits
-   - Include only factual information
-
-### SUCCESS CRITERIA
-
-✅ Report generated with accurate information
-✅ All completed tasks since last report included
-✅ Issues and resolutions documented
-✅ Clear next steps identified
-✅ Professional format suitable for stakeholders
-
-### ERROR HANDLING
-
-- If no project-plan.md exists: Report basic git activity
-- If no progress.md exists: Focus on completed tasks only
-- If no changes since last report: Generate "No Activity" report
-
-Remember: This report may be the only visibility stakeholders have into the project. Make it comprehensive, accurate, and actionable.
+*The /report command ensures stakeholders stay informed with minimal manual effort, creating a consistent communication channel between development and business teams.*

@@ -15,9 +15,11 @@ This is a documentation-based project with the following structure:
   - `full-squad.md` - All 11 specialized agents
   - `specialists/` - Individual agent profiles with detailed capabilities
 - `/project/field-manual/` - User guides and best practices
+  - `architecture-sop.md` - Comprehensive architecture documentation guidelines
 - `/project/missions/` - Predefined workflows and operation guides
 - `/project/community/` - Success stories and user contributions
-- `/project/templates/` - Reusable templates for common scenarios
+- `/templates/` - Reusable templates for common scenarios
+  - `architecture.md` - Production-ready architecture documentation template
 
 ## Agent Deployment System
 
@@ -121,7 +123,13 @@ For UI/UX projects, AGENT-11 includes design review capabilities:
 For all missions, coordinators MUST maintain:
 - **project-plan.md**: Strategic roadmap with task completion tracking
 - **progress.md**: Issues, resolutions, and lessons learned
+- **architecture.md**: System design and architecture decisions (for kickoff missions)
 - **Templates**: Available in `/templates/` directory
+
+### Architecture Documentation
+- **Template**: `/templates/architecture.md` - Production-ready template with examples
+- **SOP**: `/project/field-manual/architecture-sop.md` - Comprehensive guidelines
+- **When Created**: During dev-setup (new projects) or dev-alignment (existing projects)
 
 ### Critical Requirements
 1. Update files immediately when issues occur or phases complete
@@ -176,6 +184,7 @@ The coordinator must NEVER role-play or simulate delegation. Every delegation mu
 ```
 - Sets up GitHub repository
 - Analyzes ideation documents
+- Creates architecture.md from template
 - Creates project-plan.md
 - Initializes progress.md
 - Configures CLAUDE.md
@@ -186,6 +195,7 @@ The coordinator must NEVER role-play or simulate delegation. Every delegation mu
 ```
 - Analyzes existing codebase
 - Understands project context
+- Reviews/creates architecture.md
 - Creates/updates tracking files
 - Optimizes CLAUDE.md for project
 

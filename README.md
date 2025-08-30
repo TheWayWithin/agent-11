@@ -173,6 +173,34 @@ The `/coord` command activates THE COORDINATOR to orchestrate complex multi-agen
 
 [Read more success stories →](project/community/SUCCESS-STORIES.md)
 
+## 📐 Architecture Documentation System
+
+**Comprehensive architecture documentation for every project:**
+
+### Architecture Template & SOP
+Every project initialized with AGENT-11 includes professional architecture documentation:
+
+- **📋 Template**: Production-ready architecture.md template at `/templates/architecture.md`
+- **📚 SOP**: Complete guidelines at `/project/field-manual/architecture-sop.md`
+- **🚀 Auto-Creation**: Generated during kickoff missions (dev-setup/dev-alignment)
+
+### Key Sections Covered
+- System boundaries and context
+- Infrastructure architecture with diagrams
+- Application architecture patterns
+- Data models and flows
+- Integration points and APIs
+- Architecture decisions (ADRs)
+- Security considerations
+- Performance requirements
+
+### When It's Created
+- **New Projects**: Automatically during `/coord dev-setup`
+- **Existing Projects**: During `/coord dev-alignment` 
+- **Manual**: Use the template anytime you need architecture docs
+
+**[📖 Architecture SOP →](project/field-manual/architecture-sop.md)** | **[📋 Template →](templates/architecture.md)**
+
 ## 🔌 MCP Integration (NEW!)
 
 **Your agents now leverage powerful MCP (Model Context Protocol) tools for maximum efficiency:**

@@ -163,7 +163,30 @@ This mission aligns AGENT-11 with an existing project by:
 - Technical: [if applicable]
 ```
 
-### Phase 3: Project Plan Creation/Update (15 min)
+### Phase 3: Architecture Review/Documentation (10 min)
+```bash
+/coord "Reviewing and documenting system architecture..."
+```
+
+**Agent Actions:**
+- @architect reviews existing architecture or creates new documentation:
+
+#### Path A: Existing architecture.md
+- Reviews current documentation
+- Updates with recent changes
+- Identifies architectural drift
+- Adds missing sections
+
+#### Path B: No architecture.md exists
+- Creates architecture.md using template from `/templates/architecture.md`
+- Documents current system design
+- Identifies architectural patterns
+- Maps infrastructure and data flows
+- Records architecture decisions
+
+**Reference**: See `/project/field-manual/architecture-sop.md` for documentation standards
+
+### Phase 4: Project Plan Creation/Update (15 min)
 ```bash
 /coord "Creating project plan based on analysis and context..."
 ```
@@ -220,7 +243,7 @@ This mission aligns AGENT-11 with an existing project by:
 - DevOps: [if applicable]
 ```
 
-### Phase 4: Progress Tracking Setup (5 min)
+### Phase 5: Progress Tracking Setup (5 min)
 ```bash
 /coord "Setting up progress tracking..."
 ```
@@ -276,7 +299,7 @@ _To be updated as we progress_
 [Areas identified for improvement]
 ```
 
-### Phase 5: CLAUDE.md Optimization (10 min)
+### Phase 6: CLAUDE.md Optimization (10 min)
 ```bash
 /coord "Optimizing CLAUDE.md for your specific project..."
 ```
@@ -376,6 +399,7 @@ grep "mcp__"
 - [ ] Codebase fully analyzed
 - [ ] Project context understood
 - [ ] Ideation document reviewed/created
+- [ ] architecture.md reviewed/created
 - [ ] project-plan.md created/updated
 - [ ] progress.md initialized
 - [ ] CLAUDE.md optimized for project
