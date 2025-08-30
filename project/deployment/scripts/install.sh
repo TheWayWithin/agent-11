@@ -93,6 +93,7 @@ detect_project_context() {
         COMMANDS_DIR="$CLAUDE_DIR/commands"
         MISSIONS_DIR="$(pwd)/missions"
         TEMPLATES_DIR="$(pwd)/templates"
+        FIELD_MANUAL_DIR="$(pwd)/field-manual"
         BACKUP_DIR="$CLAUDE_DIR/backups/agent-11"
         PROJECT_DETECTED=true
         DETECTED_INDICATORS=("${project_indicators[@]}")
@@ -387,6 +388,15 @@ create_backup() {
         fi
     fi
     
+    # Backup field manual if it exists
+    if [[ -d "$FIELD_MANUAL_DIR" ]]; then
+        mkdir -p "$BACKUP_PATH/field-manual"
+        if cp -r "$FIELD_MANUAL_DIR"/* "$BACKUP_PATH/field-manual/" 2>/dev/null; then
+            log "Backed up existing field manual"
+            has_content=true
+        fi
+    fi
+    
     if [[ "$has_content" == "true" ]]; then
         success "Backup created: $BACKUP_PATH"
         echo "$BACKUP_PATH" > "$BACKUP_DIR/latest"
@@ -511,6 +521,8 @@ install_mission_system() {
         "project/missions/mission-security.md"
         "project/missions/mission-release.md"
         "project/missions/operation-genesis.md"
+        "project/missions/dev-setup.md"
+        "project/missions/dev-alignment.md"
         "project/missions/README.md"
     )
     
@@ -528,9 +540,15 @@ install_mission_system() {
     local template_files=(
         "project/templates/mission-template.md"
         "project/templates/agent-creation-mastery.md"
+        "templates/architecture.md"
     )
     
-    local total_files=$((${#mission_files[@]} + ${#command_files[@]} + ${#template_files[@]}))
+    # Define field manual files to install
+    local field_manual_files=(
+        "project/field-manual/architecture-sop.md"
+    )
+    
+    local total_files=$((${#mission_files[@]} + ${#command_files[@]} + ${#template_files[@]} + ${#field_manual_files[@]}))
     local current=0
     local failed_files=()
     
@@ -627,6 +645,38 @@ install_mission_system() {
         sleep 0.1
     done
     
+    # Install field manual files
+    local FIELD_MANUAL_DIR="$(pwd)/field-manual"
+    for field_manual_file in "${field_manual_files[@]}"; do
+        ((current++))
+        show_progress "$current" "$total_files" "Installing $(basename "$field_manual_file")"
+        
+        local dest_file="$FIELD_MANUAL_DIR/$(basename "$field_manual_file")"
+        
+        if [[ "$execution_mode" == "local" ]]; then
+            local source_file="$PROJECT_ROOT/$field_manual_file"
+            if [[ -f "$source_file" ]]; then
+                mkdir -p "$FIELD_MANUAL_DIR"
+                if cp "$source_file" "$dest_file"; then
+                    log "Installed: $(basename "$field_manual_file")"
+                else
+                    failed_files+=("$field_manual_file")
+                fi
+            else
+                failed_files+=("$field_manual_file")
+            fi
+        else
+            # Remote installation
+            if download_file_from_github "$field_manual_file" "$dest_file"; then
+                log "Installed: $(basename "$field_manual_file")"
+            else
+                failed_files+=("$field_manual_file")
+            fi
+        fi
+        
+        sleep 0.1
+    done
+    
     if [[ ${#failed_files[@]} -eq 0 ]]; then
         success "Mission system installed successfully!"
         return 0
@@ -714,7 +764,7 @@ verify_installation() {
     done
     
     # Verify mission system files
-    local mission_files=("library.md" "mission-build.md" "mission-fix.md" "mission-mvp.md" "mission-refactor.md" "mission-deploy.md" "mission-document.md" "mission-optimize.md" "mission-integrate.md" "mission-migrate.md" "mission-security.md" "mission-release.md")
+    local mission_files=("library.md" "mission-build.md" "mission-fix.md" "mission-mvp.md" "mission-refactor.md" "mission-deploy.md" "mission-document.md" "mission-optimize.md" "mission-integrate.md" "mission-migrate.md" "mission-security.md" "mission-release.md" "dev-setup.md" "dev-alignment.md")
     for mission_file in "${mission_files[@]}"; do
         if [[ ! -f "$MISSIONS_DIR/$mission_file" ]]; then
             missing_items+=("mission:$mission_file")
@@ -736,19 +786,25 @@ verify_installation() {
     fi
     
     # Verify template files
-    local template_files=("mission-template.md" "agent-creation-mastery.md")
+    local template_files=("mission-template.md" "agent-creation-mastery.md" "architecture.md")
     for template_file in "${template_files[@]}"; do
         if [[ ! -f "$TEMPLATES_DIR/$template_file" ]]; then
             missing_items+=("template:$template_file")
         fi
     done
     
+    # Verify field manual files
+    if [[ ! -f "$FIELD_MANUAL_DIR/architecture-sop.md" ]]; then
+        missing_items+=("field-manual:architecture-sop.md")
+    fi
+    
     if [[ ${#missing_items[@]} -eq 0 ]]; then
         success "Installation verification passed!"
         log "✓ Agents: ${#squad_agents[@]} installed"
-        log "✓ Mission system: Complete"
+        log "✓ Mission system: Complete with kickoff missions"
         log "✓ Commands: /coord and /meeting available"
-        log "✓ Templates: Available"
+        log "✓ Templates: Including architecture.md template"
+        log "✓ Field Manual: Architecture SOP included"
         return 0
     else
         error "Verification failed. Missing items: ${missing_items[*]}"
@@ -766,7 +822,7 @@ rollback_installation() {
         
         if [[ -d "$latest_backup" ]]; then
             # Remove current installation
-            rm -rf "$AGENTS_DIR" "$COMMANDS_DIR" "$MISSIONS_DIR" "$TEMPLATES_DIR"
+            rm -rf "$AGENTS_DIR" "$COMMANDS_DIR" "$MISSIONS_DIR" "$TEMPLATES_DIR" "$FIELD_MANUAL_DIR"
             
             # Restore from backup
             if [[ -d "$latest_backup/agents" ]]; then
@@ -793,13 +849,19 @@ rollback_installation() {
                 log "Restored templates from backup"
             fi
             
+            if [[ -d "$latest_backup/field-manual" ]]; then
+                mkdir -p "$FIELD_MANUAL_DIR"
+                cp -r "$latest_backup/field-manual"/* "$FIELD_MANUAL_DIR/" 2>/dev/null || true
+                log "Restored field manual from backup"
+            fi
+            
             success "Rollback completed. Restored from: $latest_backup"
         else
             warn "Backup directory not found. Manual cleanup may be required."
         fi
     else
         # No backup exists, just clean up
-        rm -rf "$AGENTS_DIR" "$COMMANDS_DIR" "$MISSIONS_DIR" "$TEMPLATES_DIR"
+        rm -rf "$AGENTS_DIR" "$COMMANDS_DIR" "$MISSIONS_DIR" "$TEMPLATES_DIR" "$FIELD_MANUAL_DIR"
         success "Clean rollback completed (no previous installation to restore)"
     fi
 }
