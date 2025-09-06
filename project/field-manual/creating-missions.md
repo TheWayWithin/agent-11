@@ -11,9 +11,10 @@ Every mission consists of:
 1. **Mission Metadata** - Code, duration, complexity, squad
 2. **Mission Briefing** - Clear objective and context
 3. **Required Inputs** - Documents and context needed
-4. **Mission Phases** - Step-by-step execution plan
-5. **Success Criteria** - Measurable completion markers
-6. **Coordination Notes** - Process guidance
+4. **Context Initialization** - Setup of context preservation files
+5. **Mission Phases** - Step-by-step execution plan
+6. **Success Criteria** - Measurable completion markers
+7. **Coordination Notes** - Process guidance
 
 ## Creating Your First Mission
 
@@ -70,6 +71,23 @@ proper measurement and rollback capabilities.
 3. **Target Metrics** (optional) - Success measurement criteria
 ```
 
+### Step 5.5: Initialize Context Preservation
+
+```markdown
+## Context Initialization
+
+### Required Context Files
+1. **agent-context.md** - Mission-wide context accumulator
+2. **handoff-notes.md** - Agent-to-agent handoff documentation
+3. **evidence-repository.md** - Centralized artifacts collection
+
+### Initialization Steps
+1. Coordinator creates context files from templates
+2. Populates mission objectives and constraints
+3. Sets up initial handoff notes for first agent
+4. Initializes evidence repository structure
+```
+
 ### Step 6: Design Mission Phases
 
 Each phase needs:
@@ -77,6 +95,7 @@ Each phase needs:
 - Time estimate
 - Specific objectives
 - Concrete deliverables
+- Context preservation requirements
 
 Example phase:
 
@@ -87,13 +106,20 @@ Example phase:
 **Support**: @strategist  
 **Objective**: Prepare all launch materials
 
+**Context Requirements**:
+- Read: agent-context.md, handoff-notes.md
+- Update: handoff-notes.md with marketing decisions
+- Add to: evidence-repository.md with campaign assets
+
 \`\`\`bash
 @marketer Create launch materials:
-1. Write announcement blog post
-2. Create social media content calendar
-3. Design email campaign
-4. Prepare press release
-5. Set up landing page
+1. Read context files for mission objectives
+2. Write announcement blog post
+3. Create social media content calendar
+4. Design email campaign
+5. Prepare press release
+6. Set up landing page
+7. Update handoff-notes.md for next agent
 \`\`\`
 
 **Deliverables**:
@@ -102,6 +128,7 @@ Example phase:
 - Email templates
 - Press release
 - Landing page
+- Updated handoff-notes.md
 ```
 
 ### Step 7: Define Success Criteria
@@ -257,6 +284,10 @@ Example: Implement → Verify → Continue
 3. Verify deliverables
 4. Check time estimates
 5. Validate success criteria
+6. **Verify context preservation**:
+   - Check agent-context.md accumulation
+   - Review handoff-notes.md quality
+   - Validate evidence-repository.md completeness
 
 ### Iteration Process
 
@@ -273,6 +304,9 @@ Example: Implement → Verify → Continue
 - [ ] Agents have clear instructions
 - [ ] Handoffs work smoothly
 - [ ] Success criteria measurable
+- [ ] Context files properly maintained
+- [ ] No context loss between agents
+- [ ] Evidence repository comprehensive
 
 ## Common Mission Types to Create
 
