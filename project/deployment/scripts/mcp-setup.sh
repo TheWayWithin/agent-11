@@ -8,7 +8,8 @@ set -euo pipefail
 
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+# Use current directory as PROJECT_ROOT for MCP setup
+PROJECT_ROOT="$(pwd)"
 
 # Colors for output
 RED='\033[0;31m'
