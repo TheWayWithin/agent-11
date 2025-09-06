@@ -108,16 +108,21 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/d
 ```
 
 ### 🔌 Optional: Enable MCP Integration (Recommended)
+
+The installer downloads MCP configuration files automatically. To enable MCPs:
+
 ```bash
-# Copy environment template
+# Copy the template (downloaded during installation)
 cp .env.mcp.template .env.mcp
 
-# Add your API keys to .env.mcp
-# Then run MCP setup
-./project/deployment/scripts/mcp-setup.sh
+# Edit .env.mcp to add your API keys
+nano .env.mcp  # or: code .env.mcp
+
+# Run MCP setup
+./mcp-setup.sh
 
 # Verify MCPs are connected
-./project/deployment/scripts/mcp-setup.sh --verify
+./mcp-setup.sh --verify
 ```
 
 MCPs provide agents with superpowers: GitHub integration, web scraping, database management, and more. See [MCP Setup Guide](CLAUDE.md#mcp-model-context-protocol-setup) for details.

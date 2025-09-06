@@ -873,87 +873,51 @@ rollback_installation() {
 setup_mcp_configuration() {
     log "Setting up MCP integration..."
     
-    # Check if .mcp.json exists
-    if [[ -f "$PROJECT_ROOT/.mcp.json" ]]; then
-        success "Found .mcp.json configuration"
+    # Use current directory as target for MCP files
+    local TARGET_DIR="$(pwd)"
+    
+    # Always download MCP files to ensure latest version
+    log "Downloading MCP configuration files..."
+    
+    # Download .mcp.json
+    if curl -sSL -o "$TARGET_DIR/.mcp.json" "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/.mcp.json" 2>/dev/null; then
+        success "Downloaded .mcp.json"
     else
-        warn "No .mcp.json found - downloading from AGENT-11 repository"
-        # Try local copy first
-        if [[ -f "$SCRIPT_DIR/../../../.mcp.json" ]]; then
-            cp "$SCRIPT_DIR/../../../.mcp.json" "$PROJECT_ROOT/.mcp.json"
-            success "Copied .mcp.json to project root"
-        else
-            # Download from GitHub
-            log "Downloading .mcp.json from GitHub..."
-            if curl -sSL -o "$PROJECT_ROOT/.mcp.json" "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/.mcp.json"; then
-                success "Downloaded .mcp.json from GitHub"
-            else
-                warn "MCP configuration file not found - MCPs will need manual setup"
-                return 0  # Don't fail installation for missing MCPs
-            fi
-        fi
+        warn "Could not download .mcp.json"
     fi
     
-    # Check for .env.mcp
-    if [[ -f "$PROJECT_ROOT/.env.mcp" ]]; then
-        success "Found .env.mcp with API keys"
-        
-        # Try to run MCP setup if available
-        local mcp_setup_script="$PROJECT_ROOT/mcp-setup.sh"
-        
-        # Download mcp-setup.sh if not present
-        if [[ ! -f "$mcp_setup_script" ]]; then
-            # Try local copy first
-            if [[ -f "$SCRIPT_DIR/mcp-setup.sh" ]]; then
-                cp "$SCRIPT_DIR/mcp-setup.sh" "$mcp_setup_script"
-                chmod +x "$mcp_setup_script"
-                success "Copied mcp-setup.sh from local repository"
-            else
-                # Download from GitHub
-                log "Downloading mcp-setup.sh from GitHub..."
-                if curl -sSL -o "$mcp_setup_script" "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/mcp-setup.sh"; then
-                    chmod +x "$mcp_setup_script"
-                    success "Downloaded mcp-setup.sh from GitHub"
-                fi
-            fi
-        fi
-        
-        if [[ -f "$mcp_setup_script" && -x "$mcp_setup_script" ]]; then
-            log "Running automated MCP configuration..."
-            if "$mcp_setup_script" --verify > /dev/null 2>&1; then
-                success "MCP servers configured successfully"
-            else
-                warn "Some MCPs could not be configured - manual setup may be needed"
-            fi
+    # Download .env.mcp.template
+    if curl -sSL -o "$TARGET_DIR/.env.mcp.template" "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/.env.mcp.template" 2>/dev/null; then
+        success "Downloaded .env.mcp.template"
+    else
+        warn "Could not download .env.mcp.template"
+    fi
+    
+    # Download mcp-setup.sh
+    if curl -sSL -o "$TARGET_DIR/mcp-setup.sh" "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/mcp-setup.sh" 2>/dev/null; then
+        chmod +x "$TARGET_DIR/mcp-setup.sh"
+        success "Downloaded mcp-setup.sh"
+    else
+        warn "Could not download mcp-setup.sh"
+    fi
+    
+    # Provide instructions for MCP setup
+    echo ""
+    echo "📌 MCP Setup Instructions:"
+    if [[ -f "$TARGET_DIR/.env.mcp" ]]; then
+        success "Found .env.mcp - running automatic MCP configuration..."
+        if [[ -f "$TARGET_DIR/mcp-setup.sh" ]] && "$TARGET_DIR/mcp-setup.sh" --verify > /dev/null 2>&1; then
+            success "MCP servers configured automatically"
+        else
+            warn "Some MCPs could not be configured - check your API keys"
         fi
     else
-        # Check for template
-        if [[ -f "$PROJECT_ROOT/.env.mcp.template" ]]; then
-            warn ".env.mcp not found but template exists"
-            echo "  To enable MCPs: cp .env.mcp.template .env.mcp"
-            echo "  Then add your API keys and run: ./project/deployment/scripts/mcp-setup.sh"
-        else
-            # Try local copy first
-            if [[ -f "$SCRIPT_DIR/../../../.env.mcp.template" ]]; then
-                cp "$SCRIPT_DIR/../../../.env.mcp.template" "$PROJECT_ROOT/.env.mcp.template"
-                success "Copied .env.mcp.template from local repository"
-            else
-                # Download from GitHub
-                log "Downloading .env.mcp.template from GitHub..."
-                if curl -sSL -o "$PROJECT_ROOT/.env.mcp.template" "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/.env.mcp.template"; then
-                    success "Downloaded .env.mcp.template from GitHub"
-                else
-                    warn "No MCP environment template found - MCPs will need manual configuration"
-                    return 0
-                fi
-            fi
-            
-            if [[ -f "$PROJECT_ROOT/.env.mcp.template" ]]; then
-                warn "Created .env.mcp.template - configure API keys for MCP access"
-                echo "  To enable MCPs: cp .env.mcp.template .env.mcp"
-                echo "  Then add your API keys and run: ./project/deployment/scripts/mcp-setup.sh"
-            fi
-        fi
+        echo "  To enable MCP integration (optional but recommended):"
+        echo "  1. Copy template: cp .env.mcp.template .env.mcp"
+        echo "  2. Edit .env.mcp and add your API keys"
+        echo "  3. Run setup: ./mcp-setup.sh"
+        echo ""
+        echo "  MCPs provide GitHub, web scraping, database, and other integrations."
     fi
     
     return 0  # Always succeed - MCPs are enhancement, not requirement
