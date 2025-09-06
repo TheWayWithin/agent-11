@@ -46,6 +46,27 @@ Parse the arguments to determine:
 
 **View detailed mission briefings**: Check `/missions/mission-[name].md`
 
+### CONTEXT PRESERVATION REQUIREMENTS
+
+⚠️ **CRITICAL**: All missions MUST use context preservation:
+
+1. **Initialize Context Files** (if not present):
+   - Create `agent-context.md` from template
+   - Create `handoff-notes.md` for agent communication
+   - Create `evidence-repository.md` for artifacts
+
+2. **Every Task Delegation MUST Include**:
+   ```
+   "First read agent-context.md and handoff-notes.md for mission context.
+   [Your specific instructions here]
+   Update handoff-notes.md with your findings for the next specialist."
+   ```
+
+3. **After Each Task Completion**:
+   - Verify agent updated handoff-notes.md
+   - Merge findings into agent-context.md
+   - Add evidence to evidence-repository.md if applicable
+
 ### EXECUTION PROTOCOL
 
 1. **No Mission Specified**:

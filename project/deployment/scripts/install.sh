@@ -541,6 +541,9 @@ install_mission_system() {
         "project/templates/mission-template.md"
         "project/templates/agent-creation-mastery.md"
         "templates/architecture.md"
+        "templates/agent-context-template.md"
+        "templates/handoff-notes-template.md"
+        "templates/evidence-repository-template.md"
     )
     
     # Define field manual files to install
@@ -786,7 +789,7 @@ verify_installation() {
     fi
     
     # Verify template files
-    local template_files=("mission-template.md" "agent-creation-mastery.md" "architecture.md")
+    local template_files=("mission-template.md" "agent-creation-mastery.md" "architecture.md" "agent-context-template.md" "handoff-notes-template.md" "evidence-repository-template.md")
     for template_file in "${template_files[@]}"; do
         if [[ ! -f "$TEMPLATES_DIR/$template_file" ]]; then
             missing_items+=("template:$template_file")
