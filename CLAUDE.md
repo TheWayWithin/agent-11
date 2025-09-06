@@ -378,6 +378,33 @@ All agent profiles should explicitly list their available tools:
 
 *See `/templates/agent-creation-mastery.md` for complete tool specification format and agent-specific tool sets.*
 
+## MCP (Model Context Protocol) Setup
+
+### Quick Start
+1. **Copy environment template**: `cp .env.mcp.template .env.mcp`
+2. **Add your API keys** to `.env.mcp`
+3. **Run setup**: `./project/deployment/scripts/mcp-setup.sh`
+4. **Verify**: `./project/deployment/scripts/mcp-setup.sh --verify`
+5. **Restart Claude Code** for changes to take effect
+
+### MCP Configuration Files
+- **`.mcp.json`** - Project-scoped MCP server definitions
+- **`.env.mcp`** - API keys and tokens (keep in .gitignore!)
+- **`.env.mcp.template`** - Template with all required variables
+
+### Required MCPs for Full Functionality
+- **Context7** - Library documentation and code patterns
+- **GitHub** - Repository management and PRs
+- **Firecrawl** - Web scraping and research
+- **Supabase** - Database and authentication
+- **Playwright** - Browser automation and testing
+
+### MCP Troubleshooting
+- If MCPs don't appear, restart Claude Code
+- Check `.mcp-status.md` for connection report
+- Verify API keys in `.env.mcp` are correct
+- Run `grep "mcp__"` to see available MCP tools
+
 ## Available Commands
 
 ### Mission Orchestration

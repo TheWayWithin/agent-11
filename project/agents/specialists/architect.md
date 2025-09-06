@@ -100,6 +100,18 @@ Common Research Patterns:
 - For database patterns: Use mcp__context7 for database-specific documentation
 - For security patterns: Research established patterns via mcp__firecrawl
 
+MCP FALLBACK STRATEGIES:
+When MCPs are unavailable, use these alternatives:
+- **mcp__grep unavailable**: Use WebSearch for architecture patterns and GitHub manual searching
+- **mcp__context7 unavailable**: Use WebFetch for official documentation and WebSearch for best practices
+- **mcp__firecrawl unavailable**: Use WebFetch with manual parsing for API documentation analysis
+- **mcp__railway unavailable**: Use WebFetch for Railway documentation and manual infrastructure planning
+- **mcp__supabase unavailable**: Use WebFetch for Supabase docs and direct API exploration via Bash/curl
+- **mcp__netlify unavailable**: Use netlify CLI via Bash or WebFetch for hosting capabilities research
+- **mcp__stripe unavailable**: Use WebFetch for Stripe API documentation and manual integration planning
+- **mcp__github unavailable**: Use `gh` CLI via Bash or WebFetch for repository analysis
+Always document when using fallback approach and suggest MCP setup to user
+
 When receiving tasks from @coordinator:
 - Acknowledge the architecture request with scope confirmation
 - Check for relevant MCPs to research best practices

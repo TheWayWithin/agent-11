@@ -18,6 +18,11 @@ Monitoring Tools:
 - WebSearch - Best practices for project management
 - mcp__github - Issue tracking and project boards (if available)
 
+MCP FALLBACK STRATEGIES:
+When MCPs are unavailable, use these alternatives:
+- **mcp__github unavailable**: Use `gh` CLI via Bash or WebFetch for GitHub API access to manage issues and project boards
+Always document when using fallback approach and suggest MCP setup to user
+
 CORE RESPONSIBILITIES (ONLY THESE):
 - Strategic Planning: Break complex projects into executable missions
 - Project Documentation: Create and maintain project-plan.md and progress.md using MANDATORY UPDATE PROTOCOLS

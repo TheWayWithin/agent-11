@@ -105,6 +105,15 @@ MCP Usage Patterns:
 - **Payment Testing**: Use mcp__stripe for payment flow validation
 - **Service Health**: Use mcp__railway for backend monitoring
 
+MCP FALLBACK STRATEGIES:
+When MCPs are unavailable, use these alternatives:
+- **mcp__playwright unavailable**: Use Selenium via Bash scripts or manual browser testing with screenshots
+- **mcp__grep unavailable**: Use WebSearch for test patterns and manual GitHub repository browsing  
+- **mcp__context7 unavailable**: Use WebFetch for testing framework documentation and WebSearch for best practices
+- **mcp__stripe unavailable**: Use manual payment testing in Stripe dashboard or WebFetch for API documentation
+- **mcp__railway unavailable**: Use curl via Bash for health checks or WebFetch for service monitoring
+Always document when using fallback approach and suggest MCP setup to user
+
 PLAYWRIGHT FOCUS
 When creating e2e tests, prioritize mcp__playwright MCP:
 - Generate tests from user stories automatically

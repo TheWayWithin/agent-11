@@ -869,6 +869,58 @@ rollback_installation() {
     fi
 }
 
+# Setup MCP configuration
+setup_mcp_configuration() {
+    log "Setting up MCP integration..."
+    
+    # Check if .mcp.json exists
+    if [[ -f "$PROJECT_ROOT/.mcp.json" ]]; then
+        success "Found .mcp.json configuration"
+    else
+        warn "No .mcp.json found - copying from AGENT-11 repository"
+        if [[ -f "$SCRIPT_DIR/../../../.mcp.json" ]]; then
+            cp "$SCRIPT_DIR/../../../.mcp.json" "$PROJECT_ROOT/.mcp.json"
+            success "Copied .mcp.json to project root"
+        else
+            warn "MCP configuration file not found - MCPs will need manual setup"
+            return 0  # Don't fail installation for missing MCPs
+        fi
+    fi
+    
+    # Check for .env.mcp
+    if [[ -f "$PROJECT_ROOT/.env.mcp" ]]; then
+        success "Found .env.mcp with API keys"
+        
+        # Try to run MCP setup if available
+        local mcp_setup_script="$SCRIPT_DIR/mcp-setup.sh"
+        if [[ -f "$mcp_setup_script" && -x "$mcp_setup_script" ]]; then
+            log "Running automated MCP configuration..."
+            if "$mcp_setup_script" --verify > /dev/null 2>&1; then
+                success "MCP servers configured successfully"
+            else
+                warn "Some MCPs could not be configured - manual setup may be needed"
+            fi
+        fi
+    else
+        # Check for template
+        if [[ -f "$PROJECT_ROOT/.env.mcp.template" ]]; then
+            warn ".env.mcp not found but template exists"
+            echo "  To enable MCPs: cp .env.mcp.template .env.mcp"
+            echo "  Then add your API keys and run: ./project/deployment/scripts/mcp-setup.sh"
+        elif [[ -f "$SCRIPT_DIR/../../../.env.mcp.template" ]]; then
+            # Copy template from AGENT-11 repo
+            cp "$SCRIPT_DIR/../../../.env.mcp.template" "$PROJECT_ROOT/.env.mcp.template"
+            warn "Created .env.mcp.template - configure API keys for MCP access"
+            echo "  To enable MCPs: cp .env.mcp.template .env.mcp"
+            echo "  Then add your API keys and run: ./project/deployment/scripts/mcp-setup.sh"
+        else
+            warn "No MCP environment template found - MCPs will need manual configuration"
+        fi
+    fi
+    
+    return 0  # Always succeed - MCPs are enhancement, not requirement
+}
+
 # Display post-installation instructions
 show_post_install_instructions() {
     local squad_type="$1"
@@ -1003,7 +1055,8 @@ main() {
         create_backup &&
         install_squad "$squad_type" &&
         install_mission_system &&
-        verify_installation "$squad_type"
+        verify_installation "$squad_type" &&
+        setup_mcp_configuration
     } || {
         error "Installation failed. Initiating rollback..."
         rollback_installation

@@ -152,6 +152,17 @@ Before implementing any feature:
 3. Document which MCPs were used in implementation notes
 4. Fall back to manual implementation only when MCPs unavailable
 
+MCP FALLBACK STRATEGIES:
+When MCPs are unavailable, use these alternatives:
+- **mcp__github unavailable**: Use `gh` CLI via Bash or WebFetch for GitHub API
+- **mcp__context7 unavailable**: Use WebSearch for documentation, WebFetch for specific docs
+- **mcp__firecrawl unavailable**: Use WebFetch with custom parsing logic
+- **mcp__supabase unavailable**: Use direct HTTP API calls via Bash/curl
+- **mcp__railway unavailable**: Use manual deployment scripts via Bash
+- **mcp__stripe unavailable**: Use Stripe API directly via curl/WebFetch
+- **mcp__netlify unavailable**: Use netlify CLI via Bash
+Always document when using fallback approach and suggest MCP setup to user
+
 Common MCP Patterns:
 - Before implementing any feature: Search mcp__grep for existing solutions
 - For error handling patterns: grep_query("try catch error", language="TypeScript")

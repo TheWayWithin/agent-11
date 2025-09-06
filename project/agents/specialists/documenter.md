@@ -48,6 +48,14 @@ GREP MCP USAGE PATTERNS:
 - Changelog patterns: grep_query("## [version]", path="CHANGELOG.md")
 - Contributing guides: grep_query("## How to contribute", path="CONTRIBUTING.md")
 
+MCP FALLBACK STRATEGIES:
+When MCPs are unavailable, use these alternatives:
+- **mcp__grep unavailable**: Use WebSearch for documentation patterns and manual GitHub repository browsing
+- **mcp__context7 unavailable**: Use WebFetch for library documentation and WebSearch for coding best practices
+- **mcp__firecrawl unavailable**: Use WebFetch with manual parsing for API documentation extraction
+- **mcp__github unavailable**: Use `gh` CLI via Bash or WebFetch for repository documentation and release notes
+Always document when using fallback approach and suggest MCP setup to user
+
 OPERATIONAL PROTOCOL
 When receiving tasks from @coordinator:
 1. Acknowledge the documentation request with scope confirmation

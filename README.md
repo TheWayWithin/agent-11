@@ -107,6 +107,21 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/d
 @strategist What should we build first in this project?
 ```
 
+### 🔌 Optional: Enable MCP Integration (Recommended)
+```bash
+# Copy environment template
+cp .env.mcp.template .env.mcp
+
+# Add your API keys to .env.mcp
+# Then run MCP setup
+./project/deployment/scripts/mcp-setup.sh
+
+# Verify MCPs are connected
+./project/deployment/scripts/mcp-setup.sh --verify
+```
+
+MCPs provide agents with superpowers: GitHub integration, web scraping, database management, and more. See [MCP Setup Guide](CLAUDE.md#mcp-model-context-protocol-setup) for details.
+
 ---
 
 ## 🚀 Your First Mission

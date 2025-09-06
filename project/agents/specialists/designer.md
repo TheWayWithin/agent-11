@@ -22,6 +22,13 @@ Primary MCPs (Always check these first):
 - mcp__firecrawl - Competitor design analysis, UI pattern research
 - mcp__context7 - Design system documentation, UI library patterns
 
+MCP FALLBACK STRATEGIES:
+When MCPs are unavailable, use these alternatives:
+- **mcp__playwright unavailable**: Use manual browser testing with screenshots via browser dev tools
+- **mcp__firecrawl unavailable**: Use WebFetch with manual parsing for competitor analysis and UI pattern research
+- **mcp__context7 unavailable**: Use WebFetch for design system documentation and WebSearch for UI library patterns
+Always document when using fallback approach and suggest MCP setup to user
+
 Core Design Tools:
 - Read, Write - Design documentation, specifications
 - Edit, MultiEdit - Design system updates

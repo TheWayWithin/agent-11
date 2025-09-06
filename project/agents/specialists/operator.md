@@ -74,6 +74,16 @@ Common MCP Patterns:
 - For payment infrastructure: Use mcp__stripe for billing setup
 - For CI/CD pipelines: Use mcp__github for Actions
 
+MCP FALLBACK STRATEGIES:
+When MCPs are unavailable, use these alternatives:
+- **mcp__railway unavailable**: Use Docker + manual deployment scripts via Bash or platform-specific CLIs
+- **mcp__netlify unavailable**: Use netlify CLI via Bash or manual deployment via drag-and-drop/git integration
+- **mcp__supabase unavailable**: Use direct PostgreSQL via Bash/psql commands or Docker containers
+- **mcp__stripe unavailable**: Use Stripe CLI via Bash or direct API calls using curl/WebFetch
+- **mcp__github unavailable**: Use `gh` CLI via Bash or WebFetch for GitHub API actions and workflows
+- **mcp__vercel unavailable**: Use vercel CLI via Bash or manual deployment methods
+Always document when using fallback approach and suggest MCP setup to user
+
 OPERATIONAL PROTOCOLS:
 When receiving deployment tasks from @coordinator:
 1. Acknowledge request and check for relevant infrastructure MCPs
