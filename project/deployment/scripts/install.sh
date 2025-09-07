@@ -499,6 +499,41 @@ install_agent() {
     fi
 }
 
+# Install CLAUDE.md file with context preservation instructions
+install_claude_md() {
+    local execution_mode
+    execution_mode=$(detect_execution_mode)
+    
+    log "Installing CLAUDE.md with context preservation system..."
+    
+    local dest_file="$(pwd)/CLAUDE.md"
+    
+    if [[ "$execution_mode" == "local" ]]; then
+        local source_file="$PROJECT_ROOT/CLAUDE.md"
+        if [[ -f "$source_file" ]]; then
+            if cp "$source_file" "$dest_file"; then
+                success "Installed CLAUDE.md with context preservation instructions"
+                return 0
+            else
+                error "Failed to install CLAUDE.md"
+                return 1
+            fi
+        else
+            error "CLAUDE.md not found in project root"
+            return 1
+        fi
+    else
+        # Remote installation - download from GitHub
+        if download_file_from_github "CLAUDE.md" "$dest_file"; then
+            success "Downloaded and installed CLAUDE.md with context preservation instructions"
+            return 0
+        else
+            error "Failed to download CLAUDE.md from GitHub"
+            return 1
+        fi
+    fi
+}
+
 # Install mission system files (missions, commands, templates)
 install_mission_system() {
     local execution_mode
@@ -801,6 +836,11 @@ verify_installation() {
         missing_items+=("field-manual:architecture-sop.md")
     fi
     
+    # Verify CLAUDE.md file
+    if [[ ! -f "$(pwd)/CLAUDE.md" ]]; then
+        missing_items+=("system:CLAUDE.md")
+    fi
+    
     if [[ ${#missing_items[@]} -eq 0 ]]; then
         success "Installation verification passed!"
         log "✓ Agents: ${#squad_agents[@]} installed"
@@ -1056,6 +1096,7 @@ main() {
         validate_environment &&
         create_backup &&
         install_squad "$squad_type" &&
+        install_claude_md &&
         install_mission_system &&
         verify_installation "$squad_type" &&
         setup_mcp_configuration
