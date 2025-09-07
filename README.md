@@ -107,25 +107,67 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/d
 @strategist What should we build first in this project?
 ```
 
-### 🔌 Optional: Enable MCP Integration (Recommended)
+### 🔌 MCP Integration Setup (Highly Recommended)
 
-The installer downloads MCP configuration files automatically. To enable MCPs:
+MCPs (Model Context Protocol) give your agents superpowers. Here's how to set them up correctly:
 
+#### Step 1: Install Required MCP Packages
 ```bash
-# Copy the template (downloaded during installation)
+# Install globally (required for Claude Code to find them)
+npm install -g @playwright/mcp           # Browser automation
+npm install -g @upstash/context7-mcp    # Documentation lookup
+npm install -g firecrawl-mcp            # Web scraping
+npm install -g github-mcp-custom        # GitHub integration
+npm install -g supabase-mcp             # Database management
+npm install -g figma-developer-mcp      # Design tools
+```
+
+#### Step 2: Configure API Keys
+```bash
+# Copy the template (created during installation)
 cp .env.mcp.template .env.mcp
 
 # Edit .env.mcp to add your API keys
 nano .env.mcp  # or: code .env.mcp
-
-# Run MCP setup
-./mcp-setup.sh
-
-# Verify MCPs are connected
-./mcp-setup.sh --verify
 ```
 
-MCPs provide agents with superpowers: GitHub integration, web scraping, database management, and more. See [MCP Setup Guide](CLAUDE.md#mcp-model-context-protocol-setup) for details.
+Required API keys for full functionality:
+- `GITHUB_PERSONAL_ACCESS_TOKEN` - [Create GitHub token](https://github.com/settings/tokens)
+- `SUPABASE_ACCESS_TOKEN` & `SUPABASE_PROJECT_REF` - From Supabase dashboard
+- `CONTEXT7_API_KEY` - For documentation lookup
+- `FIRECRAWL_API_KEY` - For web scraping
+
+#### Step 3: Run MCP Setup
+```bash
+# Use the v2 script with correct package names
+./project/deployment/scripts/mcp-setup-v2.sh
+
+# Or if in project directory:
+bash .claude/deployment/scripts/mcp-setup-v2.sh
+```
+
+#### Step 4: Restart Claude Code
+```bash
+# Exit Claude Code
+/exit
+
+# Restart in your project directory
+claude
+```
+
+#### Step 5: Verify MCPs are Working
+After restart, check for MCP tools:
+- Look for tools prefixed with `mcp__`
+- Example: `mcp__playwright__browser_navigate`
+- Run: `claude mcp list` to see connection status
+
+**Common Issues & Solutions:**
+- **"Failed to connect"** - Normal before restart, exit and restart Claude Code
+- **Wrong package names** - Use the exact names listed above, not @modelcontextprotocol/*
+- **Missing packages** - Install globally with npm install -g
+- **API key issues** - Verify keys in .env.mcp are correct
+
+See [Complete MCP Guide](project/field-manual/mcp-integration.md) for advanced configuration.
 
 ---
 
@@ -267,31 +309,48 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/d
 
 **This system transforms chaotic multi-agent coordination into a seamless collaborative experience where every specialist builds on previous work instead of starting from scratch.**
 
-## 🔌 MCP Integration (NEW!)
+## 🔌 MCP Integration
 
-**Your agents now leverage powerful MCP (Model Context Protocol) tools for maximum efficiency:**
+**Your agents leverage powerful MCP (Model Context Protocol) tools for enhanced capabilities:**
 
-### Automatic MCP Discovery & Setup
+### Quick MCP Setup (IMPORTANT: Use Correct Package Names)
 ```bash
-# After deploying your squad, connect required MCPs
-/coord connect-mcp
+# 1. Install MCP packages globally (REQUIRED)
+npm install -g @playwright/mcp           # NOT @modelcontextprotocol/server-playwright
+npm install -g @upstash/context7-mcp    # NOT @context7/mcp-server
+npm install -g firecrawl-mcp            # NOT @mendable/firecrawl-mcp
+npm install -g github-mcp-custom        # NOT @modelcontextprotocol/server-github
+npm install -g supabase-mcp             # NOT @supabase/mcp-server
 
-# The mission will:
-# 1. Analyze your project requirements
-# 2. Identify needed MCPs (Supabase, GitHub, Playwright, etc.)
-# 3. Install and configure them automatically
-# 4. Test all connections
-# 5. Map MCPs to your agents
+# 2. Configure API keys
+cp .env.mcp.template .env.mcp
+nano .env.mcp  # Add your API keys
+
+# 3. Run setup with v2 script (has correct package names)
+./project/deployment/scripts/mcp-setup-v2.sh
+
+# 4. RESTART Claude Code (CRITICAL!)
+/exit
+claude  # Restart in your project directory
+
+# 5. Verify MCPs are connected
+claude mcp list  # Should show "Connected" not "Failed to connect"
 ```
 
 ### Available MCPs Your Agents Can Use
-- **🗄️ Supabase** - Database operations and authentication
-- **🐙 GitHub** - PRs, issues, and version control
-- **🎭 Playwright** - Browser automation, E2E testing, and design reviews
-- **📚 Context7** - Real-time library documentation
-- **🔥 Firecrawl** - Web scraping and research
-- **🚀 Netlify/Railway** - Deployment automation
-- **💳 Stripe** - Payment processing
+- **🎭 Playwright** (`mcp__playwright__`) - Browser automation and E2E testing
+- **🗄️ Supabase** (`mcp__supabase__`) - Database and authentication
+- **🐙 GitHub** (`mcp__github__`) - PRs, issues, and version control
+- **📚 Context7** (`mcp__context7__`) - Real-time library documentation
+- **🔥 Firecrawl** (`mcp__firecrawl__`) - Web scraping and research
+- **🚀 Railway/Netlify** - Deployment automation
+- **💳 Stripe** - Payment processing (if installed)
+
+### Common MCP Issues & Solutions
+- **"Failed to connect"** → Exit and restart Claude Code
+- **Package not found** → Use exact package names above, install with `npm install -g`
+- **No mcp__ tools** → Restart required after configuration
+- **Wrong package names** → Don't use @modelcontextprotocol/* packages
 
 **[📖 Complete MCP Integration Guide →](project/field-manual/mcp-integration.md)**
 
