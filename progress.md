@@ -1,6 +1,38 @@
-# MCP Fallback Protocol Update - Progress Report
+# AGENT-11 Development Progress Log
 
-## Mission Completed: December 2024
+## Latest Update: MCP Configuration Fix - January 2025
+
+### Problem Identified
+MCP servers failing to connect in SoloMarket deployment due to incorrect npm package names
+
+### Root Cause Analysis
+- Using non-existent package names (e.g., @modelcontextprotocol/server-playwright)
+- Incorrect CLI syntax with --command flag instead of proper -- separator
+- Missing global package installations
+
+### Solution Implemented
+Fixed package names to use actual npm packages:
+- @playwright/mcp (not @modelcontextprotocol/server-playwright)
+- @upstash/context7-mcp (not @context7/mcp-server)
+- firecrawl-mcp (not @mendable/firecrawl-mcp)
+- supabase-mcp (not @supabase/mcp-server)
+- github-mcp-custom (not @modelcontextprotocol/server-github)
+
+### Files Updated
+- Created mcp-setup-v2.sh with correct package names
+- Fixed install.sh MCP configuration
+- Updated documentation with correct packages
+
+### Result
+- 2 MCPs working immediately (firecrawl, railway)
+- 6 MCPs configured correctly, awaiting Claude Code restart
+- AGENT-11 scripts updated for future installations
+
+---
+
+## MCP Fallback Protocol Update - Progress Report
+
+### Mission Completed: December 2024
 
 ### Executive Summary
 Successfully updated all 12 AGENT-11 specialist agents with comprehensive MCP fallback protocols, ensuring operational continuity when Model Context Protocol servers are unavailable.
