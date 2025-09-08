@@ -114,12 +114,12 @@ MCPs (Model Context Protocol) give your agents superpowers. Here's how to set th
 #### Step 1: Install Required MCP Packages
 ```bash
 # Install globally (required for Claude Code to find them)
-npm install -g @playwright/mcp           # Browser automation
-npm install -g @upstash/context7-mcp    # Documentation lookup
-npm install -g firecrawl-mcp            # Web scraping
-npm install -g github-mcp-custom        # GitHub integration
-npm install -g supabase-mcp             # Database management
-npm install -g figma-developer-mcp      # Design tools
+npm install -g @playwright/mcp                      # Browser automation
+npm install -g @upstash/context7-mcp               # Documentation lookup
+npm install -g firecrawl-mcp                       # Web scraping
+npm install -g @edjl/github-mcp                    # GitHub integration (uses GITHUB_TOKEN)
+npm install -g @supabase/mcp-server-supabase       # Official Supabase MCP
+npm install -g figma-developer-mcp                 # Design tools
 ```
 
 #### Step 2: Configure API Keys
@@ -316,11 +316,11 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/d
 ### Quick MCP Setup (IMPORTANT: Use Correct Package Names)
 ```bash
 # 1. Install MCP packages globally (REQUIRED)
-npm install -g @playwright/mcp           # NOT @modelcontextprotocol/server-playwright
-npm install -g @upstash/context7-mcp    # NOT @context7/mcp-server
-npm install -g firecrawl-mcp            # NOT @mendable/firecrawl-mcp
-npm install -g github-mcp-custom        # NOT @modelcontextprotocol/server-github
-npm install -g supabase-mcp             # NOT @supabase/mcp-server
+npm install -g @playwright/mcp                      # NOT @modelcontextprotocol/server-playwright
+npm install -g @upstash/context7-mcp               # NOT @context7/mcp-server
+npm install -g firecrawl-mcp                       # NOT @mendable/firecrawl-mcp
+npm install -g @edjl/github-mcp                    # NOT github-mcp-custom or @modelcontextprotocol/server-github
+npm install -g @supabase/mcp-server-supabase       # NOT supabase-mcp (community package)
 
 # 2. Configure API keys
 cp .env.mcp.template .env.mcp

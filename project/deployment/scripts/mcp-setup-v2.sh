@@ -100,8 +100,8 @@ install_mcp_packages() {
         "@playwright/mcp"
         "@upstash/context7-mcp"
         "firecrawl-mcp"
-        "github-mcp-custom"
-        "supabase-mcp"
+        "@edjl/github-mcp"
+        "@supabase/mcp-server-supabase@latest"
         "figma-developer-mcp"
         "@modelcontextprotocol/server-filesystem"
     )
@@ -170,7 +170,7 @@ configure_mcps() {
     # 3. GitHub MCP
     if [[ -n "${GITHUB_PERSONAL_ACCESS_TOKEN:-}" ]]; then
         log "Configuring GitHub..."
-        if claude mcp add github -e "GITHUB_PERSONAL_ACCESS_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN}" -- npx github-mcp-custom -s project 2>/dev/null; then
+        if claude mcp add github -e "GITHUB_TOKEN=${GITHUB_PERSONAL_ACCESS_TOKEN}" -- npx @edjl/github-mcp -s project 2>/dev/null; then
             success "✓ GitHub configured"
             ((configured++))
         else
@@ -195,14 +195,13 @@ configure_mcps() {
         warn "✗ Firecrawl API key not set - skipping"
     fi
     
-    # 5. Supabase MCP
+    # 5. Supabase MCP (Official Package)
     if [[ -n "${SUPABASE_ACCESS_TOKEN:-}" ]] && [[ -n "${SUPABASE_PROJECT_REF:-}" ]]; then
         log "Configuring Supabase..."
-        # Supabase needs special handling with environment variables
+        # Use official Supabase MCP package with correct syntax
         if claude mcp add supabase \
             -e "SUPABASE_ACCESS_TOKEN=${SUPABASE_ACCESS_TOKEN}" \
-            -e "SUPABASE_PROJECT_REF=${SUPABASE_PROJECT_REF}" \
-            -- npx supabase-mcp -s project 2>/dev/null; then
+            -- npx -y @supabase/mcp-server-supabase@latest --project-ref="${SUPABASE_PROJECT_REF}" -s project 2>/dev/null; then
             success "✓ Supabase configured"
             ((configured++))
         else
@@ -357,8 +356,8 @@ These are the correct package names that actually exist:
 - `@playwright/mcp` - Playwright browser automation
 - `@upstash/context7-mcp` - Context7 documentation
 - `firecrawl-mcp` - Web scraping
-- `github-mcp-custom` - GitHub integration
-- `supabase-mcp` - Supabase database
+- `@edjl/github-mcp` - GitHub integration (uses GITHUB_TOKEN env var)
+- `@supabase/mcp-server-supabase@latest` - Official Supabase MCP
 - `figma-developer-mcp` - Figma design
 
 ## Next Steps

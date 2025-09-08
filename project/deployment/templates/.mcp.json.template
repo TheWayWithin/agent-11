@@ -1,25 +1,32 @@
 {
   "mcpServers": {
     "playwright": {
+      "type": "stdio",
       "command": "npx",
       "args": ["@playwright/mcp"]
     },
     "supabase": {
+      "type": "stdio",
       "command": "npx",
-      "args": ["supabase-mcp"],
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--project-ref=${SUPABASE_PROJECT_REF}"
+      ],
       "env": {
-        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_TOKEN}",
-        "SUPABASE_PROJECT_REF": "${SUPABASE_PROJECT_REF}"
+        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_TOKEN}"
       }
     },
     "github": {
+      "type": "stdio",
       "command": "npx",
-      "args": ["github-mcp-custom"],
+      "args": ["@edjl/github-mcp"],
       "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+        "GITHUB_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
       }
     },
     "context7": {
+      "type": "stdio",
       "command": "npx",
       "args": ["@upstash/context7-mcp"],
       "env": {
@@ -27,6 +34,7 @@
       }
     },
     "firecrawl": {
+      "type": "stdio",
       "command": "npx",
       "args": ["firecrawl-mcp"],
       "env": {
@@ -34,6 +42,7 @@
       }
     },
     "filesystem": {
+      "type": "stdio",
       "command": "npx",
       "args": [
         "@modelcontextprotocol/server-filesystem",
@@ -41,6 +50,7 @@
       ]
     },
     "railway": {
+      "type": "stdio",
       "command": "npx",
       "args": ["@railway/mcp-server"],
       "env": {
