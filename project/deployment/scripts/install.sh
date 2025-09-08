@@ -933,12 +933,30 @@ setup_mcp_configuration() {
         warn "Could not download .env.mcp.template"
     fi
     
-    # Download mcp-setup.sh
-    if curl -sSL -o "$TARGET_DIR/mcp-setup.sh" "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/mcp-setup.sh" 2>/dev/null; then
-        chmod +x "$TARGET_DIR/mcp-setup.sh"
-        success "Downloaded mcp-setup.sh"
+    # Download .mcp.json.template with correct package names
+    if curl -sSL -o "$TARGET_DIR/.mcp.json.template" "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/templates/.mcp.json.template" 2>/dev/null; then
+        success "Downloaded .mcp.json.template (correct package names)"
+        # Create .mcp.json from template if it doesn't exist
+        if [[ ! -f "$TARGET_DIR/.mcp.json" ]]; then
+            cp "$TARGET_DIR/.mcp.json.template" "$TARGET_DIR/.mcp.json"
+            success "Created .mcp.json with correct MCP package names"
+        fi
     else
-        warn "Could not download mcp-setup.sh"
+        warn "Could not download .mcp.json.template"
+    fi
+    
+    # Download mcp-setup-v2.sh (the fixed version)
+    if curl -sSL -o "$TARGET_DIR/mcp-setup.sh" "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/mcp-setup-v2.sh" 2>/dev/null; then
+        chmod +x "$TARGET_DIR/mcp-setup.sh"
+        success "Downloaded mcp-setup.sh (v2 with correct package names)"
+    else
+        # Fallback to original if v2 doesn't exist
+        if curl -sSL -o "$TARGET_DIR/mcp-setup.sh" "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/mcp-setup.sh" 2>/dev/null; then
+            chmod +x "$TARGET_DIR/mcp-setup.sh"
+            warn "Downloaded original mcp-setup.sh (may have issues)"
+        else
+            warn "Could not download mcp-setup.sh"
+        fi
     fi
     
     # Provide instructions for MCP setup
