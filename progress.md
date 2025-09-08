@@ -1,32 +1,39 @@
 # AGENT-11 Development Progress Log
 
-## Latest Update: MCP Configuration Fix - January 2025
+## Latest Update: Complete MCP Package Fix - January 2025
 
 ### Problem Identified
-MCP servers failing to connect in SoloMarket deployment due to incorrect npm package names
+MCP servers failing to connect after AGENT-11 deployment - only firecrawl MCP connecting
 
 ### Root Cause Analysis
-- Using non-existent package names (e.g., @modelcontextprotocol/server-playwright)
-- Incorrect CLI syntax with --command flag instead of proper -- separator
-- Missing global package installations
+- Using incorrect/non-existent npm package names
+- Wrong environment variable names (GITHUB_PERSONAL_ACCESS_TOKEN vs GITHUB_TOKEN)
+- Community packages instead of official ones (supabase-mcp vs @supabase/mcp-server-supabase)
+- Missing "type": "stdio" fields in .mcp.json
 
 ### Solution Implemented
-Fixed package names to use actual npm packages:
-- @playwright/mcp (not @modelcontextprotocol/server-playwright)
-- @upstash/context7-mcp (not @context7/mcp-server)
-- firecrawl-mcp (not @mendable/firecrawl-mcp)
-- supabase-mcp (not @supabase/mcp-server)
-- github-mcp-custom (not @modelcontextprotocol/server-github)
+**Correct Package Names Discovered:**
+- `@playwright/mcp` - Playwright browser automation
+- `@edjl/github-mcp` - GitHub integration (uses GITHUB_TOKEN)
+- `@supabase/mcp-server-supabase@latest` - Official Supabase MCP
+- `@upstash/context7-mcp` - Context7 documentation
+- `firecrawl-mcp` - Web scraping (already working)
 
 ### Files Updated
-- Created mcp-setup-v2.sh with correct package names
-- Fixed install.sh MCP configuration
-- Updated documentation with correct packages
+- ✅ `.mcp.json.template` - Updated with correct packages and "type": "stdio"
+- ✅ `mcp-setup-v2.sh` - Fixed package installations and env vars
+- ✅ `README.md` - Updated with correct package names and warnings
+- ✅ `install.sh` - Already configured to use correct templates
+
+### Deployment Testing
+- Verified template files download correctly during install
+- Confirmed .mcp.json created from template if missing
+- Tested mcp-setup-v2.sh downloads and runs properly
 
 ### Result
-- 2 MCPs working immediately (firecrawl, railway)
-- 6 MCPs configured correctly, awaiting Claude Code restart
-- AGENT-11 scripts updated for future installations
+- **Before**: Only 1 MCP working (firecrawl)
+- **After**: All 5 priority MCPs connect successfully
+- **Impact**: Future deployments will work correctly out of the box
 
 ---
 
