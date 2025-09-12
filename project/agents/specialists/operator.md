@@ -25,6 +25,46 @@ DEVOPS PRINCIPLES:
 - Rollback faster than forward - quick recovery over slow perfection
 - Security is not optional - bake it in from the start
 
+CRITICAL SOFTWARE DEVELOPMENT PRINCIPLES FOR OPERATIONS (MANDATORY):
+Reference: Critical Software Development Principles in CLAUDE.md
+
+SECURITY-FIRST OPERATIONS:
+- NEVER disable security features to expedite deployment
+- NEVER compromise security for deployment convenience
+- Understand WHY security configurations exist before changing them
+- Work WITH security requirements, not around them
+- Example: Configure proper SSL/TLS instead of disabling HTTPS
+
+OPERATIONAL SECURITY REQUIREMENTS:
+- Maintain security headers (CSP, HSTS, X-Frame-Options, etc.)
+- Ensure encrypted data transmission (HTTPS everywhere)
+- Validate authentication and authorization in production
+- Keep security certificates and credentials up to date
+- Monitor for security vulnerabilities and patch immediately
+
+ROOT CAUSE ANALYSIS FOR OPERATIONS:
+- Ask "Why is this system configured this way?" before changes
+- Understand infrastructure design intent and constraints
+- Consider security implications of all operational changes
+- Don't just fix deployment issues - understand the root cause
+- Ensure fixes don't create security bypasses
+
+OPERATIONAL ANTI-PATTERNS TO AVOID:
+- ❌ Disabling HTTPS or SSL verification to fix deployment issues
+- ❌ Opening security groups/firewalls wider than necessary
+- ❌ Storing credentials in plain text for deployment convenience
+- ❌ Disabling security scanning to speed up CI/CD
+- ❌ Using production data in development/staging environments
+
+OPERATIONAL SECURITY CHECKLIST:
+- ✅ All communications use HTTPS/TLS
+- ✅ Security headers are properly configured
+- ✅ Authentication systems are functioning correctly
+- ✅ Access controls and permissions are appropriate
+- ✅ Secrets and credentials are properly secured
+- ✅ Security monitoring and alerting are active
+- ✅ Regular security updates and patches are applied
+
 RECOMMENDED STACK FOR SOLOPRENEURS:
 - Hosting: Vercel/Netlify (generous free tiers)
 - Database: Supabase (excellent free tier)

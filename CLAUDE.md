@@ -6,6 +6,45 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 AGENT-11 is a framework for deploying specialized AI agents in Claude Code to form an elite development squad. The project provides templates, documentation, and deployment guides for 11 specialized agents that collaborate to help solo founders build and ship products rapidly.
 
+## Critical Software Development Principles
+
+### Security-First Development
+**NEVER compromise security for convenience.** When encountering security features or policies:
+
+1. **Understand Before Changing**
+   - Research what the security feature does and why it exists
+   - Understand the security implications of any changes
+   - Find ways to work WITH security features, not around them
+   - Example: `strict-dynamic` in CSP exists to prevent XSS attacks - use nonces properly instead of removing it
+
+2. **Root Cause Analysis**
+   - Ask "Why was this designed this way?" before making changes
+   - Look for the architectural intent behind existing code
+   - Consider the broader system impact of changes
+   - Don't just fix symptoms - understand and address root causes
+
+3. **Strategic Solution Checklist**
+   Before implementing any fix, verify:
+   - ✅ Does this maintain all security requirements?
+   - ✅ Is this the architecturally correct solution?
+   - ✅ Will this create technical debt?
+   - ✅ Are there better long-term solutions?
+   - ✅ Have I understood the original design intent?
+
+4. **Common Anti-Patterns to Avoid**
+   - ❌ Removing security features to "make things work"
+   - ❌ Adding `any` types to bypass TypeScript errors
+   - ❌ Using `@ts-ignore` without understanding the issue
+   - ❌ Disabling linters or security scanners
+   - ❌ Implementing quick fixes that break design patterns
+
+5. **When Facing Issues**
+   - PAUSE: Don't rush to implement the first solution
+   - RESEARCH: Understand the system design and constraints
+   - PROPOSE: Present multiple solutions with trade-offs
+   - IMPLEMENT: Choose the solution that maintains system integrity
+   - DOCUMENT: Record why decisions were made for future reference
+
 ## Architecture
 
 This is a documentation-based project with the following structure:
@@ -63,6 +102,9 @@ Includes the core squad plus:
 - Agent profiles follow a consistent structure with deployment commands, capabilities, and collaboration protocols
 - Documentation uses military/tactical metaphors consistently
 - Focus on actionable, practical guidance for solo founders
+- **CRITICAL**: All agents must follow the Critical Software Development Principles above
+- Security-first mindset required for all development decisions
+- Root cause analysis mandatory before implementing fixes
 
 ## File Editing Conventions
 
@@ -190,7 +232,8 @@ AGENT-11 implements a comprehensive context preservation system inspired by BOS-
 ```
 Task(
   subagent_type="developer",
-  prompt="First read agent-context.md and handoff-notes.md for mission context. 
+  prompt="First read agent-context.md and handoff-notes.md for mission context.
+          CRITICAL: Follow the Critical Software Development Principles - never compromise security for convenience, perform root cause analysis before fixes.
           [Specific task instructions]. 
           Update handoff-notes.md with your findings and decisions for the next specialist."
 )
@@ -249,6 +292,13 @@ The coordinator must NEVER role-play or simulate delegation. Every delegation mu
 ### CONTEXT PRESERVATION REQUIREMENT
 Every Task tool invocation MUST include instructions to read context files first and update handoff notes after completion. This ensures seamless context flow between agents.
 
+### PRINCIPLE ENFORCEMENT IN DELEGATION
+Every Task tool delegation MUST remind agents to:
+- Follow Critical Software Development Principles
+- Never compromise security for convenience
+- Perform root cause analysis before implementing fixes
+- Document strategic decisions in handoff-notes.md
+
 ## Common Tasks
 
 ### Project Initialization
@@ -291,6 +341,8 @@ Every Task tool invocation MUST include instructions to read context files first
 - Emphasize speed, efficiency, and practical results
 - Include specific commands and examples
 - Maintain the "elite squad" branding throughout
+- **ESSENTIAL**: Reference Critical Software Development Principles in all agent guidance
+- Ensure security-first development is emphasized in all documentation
 
 ## MCP (Model Context Protocol) Integration
 

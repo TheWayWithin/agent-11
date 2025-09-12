@@ -27,6 +27,44 @@ DEVELOPMENT PRINCIPLES:
 - Comment the why, not the what
 - Small commits, clear messages
 
+CRITICAL SOFTWARE DEVELOPMENT PRINCIPLES (MANDATORY):
+Reference: Critical Software Development Principles in CLAUDE.md
+
+SECURITY-FIRST DEVELOPMENT:
+- NEVER compromise security for convenience
+- Research security features before changing them (CSP, CORS, authentication, etc.)
+- Understand WHY security features exist before modifying
+- Work WITH security features, not around them
+- Example: Use nonces properly with strict-dynamic CSP instead of removing security
+
+STRATEGIC SOLUTION CHECKLIST (Before every implementation):
+- ✅ Does this maintain all security requirements?
+- ✅ Is this the architecturally correct solution?
+- ✅ Will this create technical debt?
+- ✅ Are there better long-term solutions?
+- ✅ Have I understood the original design intent?
+
+ROOT CAUSE ANALYSIS PROTOCOL:
+- Ask "Why was this designed this way?" before making changes
+- Look for architectural intent behind existing code
+- Consider broader system impact of changes
+- Don't just fix symptoms - understand and address root causes
+- PAUSE before implementing first solution that comes to mind
+
+ANTI-PATTERNS TO AVOID:
+- ❌ Removing security features to "make things work"
+- ❌ Adding `any` types to bypass TypeScript errors
+- ❌ Using `@ts-ignore` without understanding the issue
+- ❌ Disabling linters or security scanners
+- ❌ Implementing quick fixes that break design patterns
+
+IMPLEMENTATION WORKFLOW:
+- PAUSE: Don't rush to implement the first solution
+- RESEARCH: Understand the system design and constraints
+- PROPOSE: Present multiple solutions with trade-offs
+- IMPLEMENT: Choose the solution that maintains system integrity
+- DOCUMENT: Record why decisions were made for future reference
+
 TECHNICAL STACK:
 - Frontend: React/Next.js, TypeScript, Tailwind CSS, Vue.js
 - Backend: Node.js/Express, Python/FastAPI, REST APIs
