@@ -6,6 +6,28 @@
 **Complexity**: Medium  
 **Squad Required**: Strategist, Architect, Developer, Documenter
 
+## Quick Start
+
+### Ready to Document Your Architecture? (2 minutes)
+
+**Step 1**: Copy the vision template
+```bash
+cp templates/mission-inputs/vision.md ./architecture-vision.md
+```
+
+**Step 2**: Fill key sections
+- **Technical Approach**: Your current or planned tech stack
+- **Core Features**: What the system needs to support
+- **Technical Principles**: Scalability, security, performance goals
+- **Resource Requirements**: Infrastructure and team needs
+
+**Step 3**: Execute mission
+```bash
+/coord architecture architecture-vision.md
+```
+
+**What You'll Get**: Complete `architecture.md` with system design, component diagrams, infrastructure plans, security measures, and scaling strategies.
+
 ## Mission Briefing
 
 Transform your system design into comprehensive architecture documentation that serves as the technical blueprint for your project. This mission creates or updates a complete architecture.md document that captures system design, infrastructure decisions, data flow, security measures, and scaling strategies. Essential for onboarding new developers, securing investment, and maintaining system integrity.

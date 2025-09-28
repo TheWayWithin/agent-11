@@ -6,6 +6,43 @@
 **Complexity**: Medium to High  
 **Squad Required**: Full team engagement
 
+## Quick Start
+
+### Ready to Build Features? (3 minutes)
+
+**Step 1**: Copy the requirements template
+```bash
+cp templates/mission-inputs/requirements.md ./build-requirements.md
+```
+
+**Step 2**: Complete these critical sections
+- **Core Features & User Stories**: Specific acceptance criteria
+- **Technical Requirements**: Performance, security, integration needs
+- **Business Rules**: Logic constraints and validation rules
+- **Success Metrics**: How you'll measure success
+- **Quality Standards**: Testing and documentation requirements
+
+**Step 3**: Execute mission
+```bash
+/coord build build-requirements.md
+```
+
+**What You'll Get**: Production-ready code with full testing, documentation, and deployment configuration.
+
+**Example Requirements Format**:
+```markdown
+### User Story: User Authentication
+- **As a** new user
+- **I want** to create an account with email/password
+- **So that** I can access personalized features
+
+**Acceptance Criteria:**
+- [ ] User can register with valid email and password (8+ chars)
+- [ ] System sends email verification before activation
+- [ ] User can login with verified credentials
+- [ ] Failed login attempts are rate-limited (5 attempts/hour)
+```
+
 ## Mission Briefing
 
 Transform product requirements into production-ready implementation. This mission takes you from concept through deployment-ready code with full testing and documentation.

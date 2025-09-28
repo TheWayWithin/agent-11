@@ -6,6 +6,29 @@
 **Complexity**: Medium  
 **Squad Required**: Strategist, Analyst, Marketer, Documenter
 
+## Quick Start
+
+### Ready to Create Your Product Description? (2 minutes)
+
+**Step 1**: Copy the vision template
+```bash
+cp templates/mission-inputs/vision.md ./product-vision.md
+```
+
+**Step 2**: Focus on these sections
+- **Problem Statement**: What specific problem you're solving
+- **Business Model**: How you'll make money
+- **Competitive Analysis**: Your market position
+- **Financial Projections**: Revenue targets and costs
+- **Risk Assessment**: Market, technical, and financial risks
+
+**Step 3**: Execute mission
+```bash
+/coord product-description product-vision.md
+```
+
+**What You'll Get**: Complete `product-description.md` with market positioning, pricing strategy, feature roadmap, risk analysis, and investor-ready documentation.
+
 ## Mission Briefing
 
 Create a comprehensive product description document that captures your product's value proposition, features, pricing strategy, technology stack, and critically, risk management strategies. This mission produces a product-description.md that serves as the definitive reference for product positioning, financial planning, and risk mitigation. Essential for investor discussions, team alignment, and strategic planning.

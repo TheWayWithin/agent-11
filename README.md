@@ -8,7 +8,7 @@
 [![Deploy Time](https://img.shields.io/badge/Deploy%20Time-Under%201%20Second-green?style=for-the-badge)](QUICK-START.md)
 [![Success Rate](https://img.shields.io/badge/Success%20Rate-98%25-brightgreen?style=for-the-badge)](INSTALLATION.md)
 [![Agents](https://img.shields.io/badge/Agents-11%20Specialists-red?style=for-the-badge)](project/agents/)
-[![Missions](https://img.shields.io/badge/Missions-14%20Workflows-purple?style=for-the-badge)](project/missions/)
+[![Missions](https://img.shields.io/badge/Missions-18%20Workflows-purple?style=for-the-badge)](project/missions/)
 [![MCP Integration](https://img.shields.io/badge/MCP-Enabled-orange?style=for-the-badge)](project/field-manual/mcp-integration.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
@@ -207,6 +207,128 @@ See [Complete MCP Guide](project/field-manual/mcp-integration.md) for advanced c
 ```
 
 The `/coord` command activates THE COORDINATOR to orchestrate complex multi-agent missions automatically. The `/meeting` command enables natural conversations with specialists for brainstorming and strategic planning. The **NEW Design Review System** provides world-class UI/UX audits using the RECON Protocol with Playwright automation. Choose from predefined missions like BUILD, FIX, MVP, or create your own.
+
+## 🎯 How to Execute Missions
+
+### Mission Command Syntax
+All missions follow the same execution pattern:
+```bash
+/coord [mission-name] [input-file.md]
+```
+
+### Your First Mission (5 Minutes)
+Let's walk through executing your first mission step-by-step:
+
+**Step 1: Choose Your Mission**
+- **New Project**: Use `dev-setup` mission with ideation.md
+- **Existing Project**: Use `dev-alignment` mission (no input file needed)
+- **Build Features**: Use `build` mission with requirements.md
+
+**Step 2: Prepare Input File** 
+```bash
+# Copy the appropriate template
+cp templates/mission-inputs/ideation.md ./my-project-ideation.md
+
+# Edit with your project details
+# Fill out all sections with your specific requirements
+```
+
+**Step 3: Execute Mission**
+```bash
+/coord dev-setup my-project-ideation.md
+```
+
+**Step 4: Monitor Progress**
+Watch for these real-time indicators:
+- ✅ **Task Completion**: Each agent marks their work complete
+- 📋 **File Creation**: New files appear in your project
+- 🔄 **Agent Handoffs**: Coordination between specialists
+- ⚠️  **Issues Flagged**: Problems automatically escalated
+
+**Step 5: Review Results**
+Check these files for mission outcomes:
+- `project-plan.md` - Strategic roadmap with completed tasks
+- `progress.md` - Detailed log of decisions and issues
+- `architecture.md` - Technical system design (if applicable)
+
+### Input File Preparation
+
+**Template Locations**:
+- `templates/mission-inputs/requirements.md` - For BUILD missions
+- `templates/mission-inputs/vision.md` - For MVP missions  
+- `templates/mission-inputs/bug-report.md` - For FIX missions
+- `templates/mission-inputs/ideation.md` - For DEV-SETUP missions
+
+**Quality Checklist**:
+- [ ] All required sections completed
+- [ ] Specific, measurable requirements
+- [ ] Clear success criteria defined
+- [ ] Business context provided
+- [ ] Technical constraints identified
+
+### Real-Time Progress Monitoring
+
+**Watch These Indicators**:
+```bash
+# Mission status updates appear as:
+🎯 Mission: BUILD requirements.md [STARTED]
+├── @strategist analyzing requirements... [IN PROGRESS]
+├── @architect designing system... [QUEUED]  
+├── @developer implementing features... [QUEUED]
+└── @tester validating implementation... [QUEUED]
+
+# Completion signals:
+✅ @strategist: Requirements analysis complete
+✅ @architect: System architecture designed  
+✅ @developer: Core features implemented
+✅ @tester: All tests passing
+🎯 Mission: BUILD requirements.md [COMPLETE]
+```
+
+**Progress Files Updated Live**:
+- `project-plan.md` - Tasks marked complete [x] as they finish
+- `progress.md` - Issues, solutions, and lessons logged immediately  
+- `handoff-notes.md` - Context passed between agents
+
+### Recovery & Troubleshooting
+
+**If Mission Stalls**:
+1. **Check Progress Files**: Review `progress.md` for logged issues
+2. **Resume Mission**: Re-run the same command to continue
+3. **Escalate Issues**: Complex problems automatically flagged to @coordinator
+
+**Common Issues & Solutions**:
+| Issue | Cause | Solution |
+|-------|-------|----------|
+| "Input file not found" | Wrong file path | Use absolute path: `/full/path/to/file.md` |
+| "Missing requirements" | Incomplete template | Fill all sections in input file |
+| "Agent timeout" | Complex analysis | Re-run command - work continues from checkpoint |
+| "Conflicting dependencies" | Technical constraints | Check `progress.md` for resolution steps |
+
+**Emergency Commands**:
+```bash
+/coord status              # Check current mission status
+/coord resume [mission]    # Continue paused mission
+/report today             # Generate progress summary
+```
+
+### Mission Success Patterns
+
+**High-Success Missions Include**:
+- ✅ **Complete Input Files**: All template sections filled with specific details
+- ✅ **Clear Objectives**: Specific, measurable goals defined
+- ✅ **Realistic Scope**: MVP-focused feature sets
+- ✅ **Context Provided**: Business background and user needs
+- ✅ **Technical Constraints**: Budget, timeline, and technology preferences
+
+**Pro Tips for Better Results**:
+1. **Be Specific**: "User login" → "OAuth login with Google and GitHub options"
+2. **Include Examples**: Show exactly what success looks like
+3. **Set Boundaries**: Define what's in/out of scope clearly
+4. **Provide Context**: Explain the "why" behind requirements
+5. **Review Templates**: Study successful examples in `/templates/`
+
+**Mission Execution Cheatsheet**: [📋 Complete Quick Reference →](project/field-manual/mission-execution-cheatsheet.md)
 
 ## 📊 Mission Success Metrics
 
@@ -422,7 +544,7 @@ Conducts root cause analysis to identify improvements in:
 
 **[📖 Complete Design Review Guide →](project/field-manual/ui-doctrine.md)**
 
-## 🔥 Mission Library (14 Core Missions)
+## 🔥 Mission Library (18 Missions)
 
 ### Setup Missions (NEW!)
 - **[🚀 DEV-SETUP](project/missions/dev-setup.md)** - Greenfield project initialization (30-45 min)
@@ -445,6 +567,37 @@ Conducts root cause analysis to identify improvements in:
 - **[🔒 SECURITY](project/missions/mission-security.md)** - Security audit & fixes (4-6 hours)
 - **[🔌 INTEGRATE](project/missions/mission-integrate.md)** - Third-party integration (3-6 hours)
 - **[🎯 RELEASE](project/missions/mission-release.md)** - Release management (2-4 hours)
+
+### Mission Command Quick Reference
+
+| Mission | Command | Input Required | Duration | Use Case |
+|---------|---------|----------------|----------|----------|
+| **Setup Missions** |
+| DEV-SETUP | `/coord dev-setup ideation.md` | ✅ Ideation | 30-45 min | New project initialization |
+| DEV-ALIGNMENT | `/coord dev-alignment` | ❌ None | 45-60 min | Understand existing project |
+| CONNECT-MCP | `/coord connect-mcp` | ❌ None | 45-90 min | Setup external integrations |
+| **Core Development** |
+| BUILD | `/coord build requirements.md` | ✅ Requirements | 3-8 hours | Feature development |
+| MVP | `/coord mvp vision.md` | ✅ Vision | 6-12 hours | Minimum viable product |
+| FIX | `/coord fix bug-report.md` | ✅ Bug Report | 1-4 hours | Bug resolution |
+| REFACTOR | `/coord refactor` | ❌ None | 2-4 hours | Code improvement |
+| DEPLOY | `/coord deploy` | ❌ None | 1-2 hours | Production deployment |
+| DOCUMENT | `/coord document` | ❌ None | 2-4 hours | Documentation creation |
+| MIGRATE | `/coord migrate requirements.md` | ✅ Requirements | 4-8 hours | System migration |
+| **Specialized Operations** |
+| ARCHITECTURE | `/coord architecture vision.md` | ✅ Vision | 2-4 hours | System design |
+| OPTIMIZE | `/coord optimize` | ❌ None | 3-6 hours | Performance tuning |
+| SECURITY | `/coord security` | ❌ None | 4-6 hours | Security audit |
+| INTEGRATE | `/coord integrate requirements.md` | ✅ Requirements | 3-6 hours | Third-party APIs |
+| RELEASE | `/coord release` | ❌ None | 2-4 hours | Deployment prep |
+| **Business & Growth** |
+| PRODUCT-DESCRIPTION | `/coord product-description vision.md` | ✅ Vision | 2-3 hours | Marketing copy |
+| **Operations** |
+| GENESIS | `/coord genesis` | ❌ None | 1-2 hours | Project reconnaissance |
+| RECON | `/coord recon` | ❌ None | 1-3 hours | Design intelligence |
+
+**Input File Templates**: Available in `/templates/mission-inputs/`  
+**Legend**: ✅ Required input file | ❌ No input needed
 
 [📋 Complete Mission Library →](project/missions/library.md)
 

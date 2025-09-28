@@ -122,6 +122,22 @@ This library contains standardized mission protocols for common development scen
 **Required**: Release scope and timeline  
 **Squad**: Coordinator, Developer, Operator, Marketer
 
+### Operations Missions
+
+#### 🔍 GENESIS - Project Reconnaissance
+**File**: `operation-genesis.md`  
+**Purpose**: Deep reconnaissance and analysis of project requirements  
+**Duration**: 1-2 hours  
+**Required**: None (self-contained intelligence gathering)  
+**Squad**: Coordinator, Strategist, Analyst
+
+#### 🎨 RECON - Design Intelligence
+**File**: `operation-recon.md`  
+**Purpose**: Design system reconnaissance and UI/UX intelligence gathering  
+**Duration**: 1-3 hours  
+**Required**: None (autonomous design analysis)  
+**Squad**: Coordinator, Designer, Analyst
+
 ## Mission Execution Guide
 
 ### Starting a Mission
