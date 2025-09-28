@@ -555,6 +555,8 @@ install_mission_system() {
         "project/missions/mission-migrate.md"
         "project/missions/mission-security.md"
         "project/missions/mission-release.md"
+        "project/missions/mission-architecture.md"
+        "project/missions/mission-product-description.md"
         "project/missions/operation-genesis.md"
         "project/missions/dev-setup.md"
         "project/missions/dev-alignment.md"
@@ -575,7 +577,8 @@ install_mission_system() {
     local template_files=(
         "project/templates/mission-template.md"
         "project/templates/agent-creation-mastery.md"
-        "templates/architecture.md"
+        "templates/architecture-template.md"
+        "templates/product-description-template.md"
         "templates/agent-context-template.md"
         "templates/handoff-notes-template.md"
         "templates/evidence-repository-template.md"

@@ -1,6 +1,74 @@
-# Handoff Notes - Context Preservation System Documentation
+# Handoff Notes - Agent Profile Updates with Critical Principles
 
-## Completed Task: README.md Update
+## Current Task: Update Agent Profiles with Critical Software Development Principles
+
+### Context Assessment
+Successfully reviewed CLAUDE.md and identified Critical Software Development Principles that need to be integrated into agent profiles. Found comprehensive principles covering:
+- Security-First Development (never compromise security for convenience)
+- Root Cause Analysis requirements
+- Strategic Solution Checklist
+- Anti-Pattern prevention
+- PAUSE-RESEARCH-PROPOSE-IMPLEMENT-DOCUMENT workflow
+
+### Agent Profiles Successfully Updated
+
+COMPLETED ALL UPDATES - All target agent profiles now reference and enforce the Critical Software Development Principles:
+
+✅ developer.md - UPDATED
+- Added complete "CRITICAL SOFTWARE DEVELOPMENT PRINCIPLES (MANDATORY)" section
+- Includes Security-First Development, Strategic Solution Checklist, Root Cause Analysis Protocol
+- Added Anti-Patterns to Avoid and Implementation Workflow
+- References CLAUDE.md principles directly
+
+✅ tester.md - UPDATED 
+- Added "CRITICAL SOFTWARE DEVELOPMENT PRINCIPLES FOR TESTING (MANDATORY)" section
+- Includes Security-First Testing, Security Validation Requirements
+- Added Root Cause Verification and Security Testing Checklist
+- Enforces security maintenance in all testing validation
+
+✅ architect.md - UPDATED
+- Added "CRITICAL SOFTWARE DEVELOPMENT PRINCIPLES FOR ARCHITECTURE (MANDATORY)" section
+- Includes Security-First Architecture, Strategic Solution Checklist for decisions
+- Added Architectural Root Cause Analysis and Anti-Patterns prevention
+- References complete principle workflow
+
+✅ operator.md - UPDATED
+- Added "CRITICAL SOFTWARE DEVELOPMENT PRINCIPLES FOR OPERATIONS (MANDATORY)" section
+- Includes Security-First Operations with "NEVER disable security features"
+- Added Operational Security Requirements and Security Checklist
+- Strong enforcement against security bypasses
+
+✅ coordinator.md - UPDATED
+- Added "CRITICAL SOFTWARE DEVELOPMENT PRINCIPLES ENFORCEMENT (MANDATORY)" section
+- Enhanced delegation templates to include principle reminders
+- Added Coordinator Security Oversight responsibilities
+- Updated all Task delegation examples to include principle enforcement
+
+### KEY CHANGES IMPLEMENTED
+
+1. **Security-First Enforcement**: All agents now have explicit "NEVER compromise security for convenience" requirements
+2. **Root Cause Analysis**: Every agent must perform root cause analysis before implementing fixes
+3. **Strategic Solution Checklist**: Architects and developers must use the checklist before decisions
+4. **Anti-Pattern Prevention**: Specific anti-patterns listed for each agent role
+5. **Coordinator Oversight**: Coordinators must enforce principles in every delegation
+
+### IMPLEMENTATION IMPACT
+
+- **Developer**: Now required to use Strategic Solution Checklist before every implementation
+- **Tester**: Must verify security requirements are maintained, not just functionality
+- **Architect**: Must ensure designs follow security-first principles and use decision checklist
+- **Operator**: Cannot disable security features for deployment - must work WITH security
+- **Coordinator**: Must include principle reminders in every Task delegation
+
+### ENFORCEMENT MECHANISMS
+
+- Each agent profile references CLAUDE.md principles directly
+- Mandatory sections clearly marked as "CRITICAL" and "MANDATORY"
+- Specific checklists and workflows provided
+- Anti-patterns explicitly called out with ❌ markers
+- Coordinator delegation templates updated to enforce compliance
+
+## Completed Task: README.md Update (Previous Context)
 
 ### What Was Added
 Successfully updated `/Users/jamiewatters/DevProjects/agent-11/README.md` with the Context Preservation System documentation. Added a comprehensive new section after "Architecture Documentation System" that includes:

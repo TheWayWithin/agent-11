@@ -64,7 +64,21 @@ This library contains standardized mission protocols for common development scen
 **Required**: System or feature to document  
 **Squad**: Documenter, Developer, Architect
 
+#### 📐 ARCHITECTURE - System Architecture Documentation
+**File**: `mission-architecture.md`  
+**Purpose**: Create or update comprehensive architecture documentation  
+**Duration**: 2-3 hours  
+**Required**: Existing codebase or design requirements  
+**Squad**: Strategist, Architect, Developer, Documenter
+
 ### Strategic Missions
+
+#### 📋 PRODUCT-DESCRIPTION - Product Definition with Risk Management
+**File**: `mission-product-description.md`  
+**Purpose**: Create comprehensive product description with risk assessment  
+**Duration**: 2-3 hours  
+**Required**: Product vision or PRD  
+**Squad**: Strategist, Analyst, Marketer, Documenter
 
 #### 💡 MVP - Minimum Viable Product
 **File**: `mission-mvp.md`  

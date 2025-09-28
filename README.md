@@ -8,7 +8,7 @@
 [![Deploy Time](https://img.shields.io/badge/Deploy%20Time-Under%201%20Second-green?style=for-the-badge)](QUICK-START.md)
 [![Success Rate](https://img.shields.io/badge/Success%20Rate-98%25-brightgreen?style=for-the-badge)](INSTALLATION.md)
 [![Agents](https://img.shields.io/badge/Agents-11%20Specialists-red?style=for-the-badge)](project/agents/)
-[![Missions](https://img.shields.io/badge/Missions-12%20Workflows-purple?style=for-the-badge)](project/missions/)
+[![Missions](https://img.shields.io/badge/Missions-14%20Workflows-purple?style=for-the-badge)](project/missions/)
 [![MCP Integration](https://img.shields.io/badge/MCP-Enabled-orange?style=for-the-badge)](project/field-manual/mcp-integration.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
@@ -422,7 +422,7 @@ Conducts root cause analysis to identify improvements in:
 
 **[📖 Complete Design Review Guide →](project/field-manual/ui-doctrine.md)**
 
-## 🔥 Mission Library (12 Core Missions)
+## 🔥 Mission Library (14 Core Missions)
 
 ### Setup Missions (NEW!)
 - **[🚀 DEV-SETUP](project/missions/dev-setup.md)** - Greenfield project initialization (30-45 min)
@@ -435,8 +435,10 @@ Conducts root cause analysis to identify improvements in:
 - **[♻️ REFACTOR](project/missions/mission-refactor.md)** - Code quality improvement (2-4 hours)
 - **[🚀 DEPLOY](project/missions/mission-deploy.md)** - Production deployment (1-2 hours)
 - **[📚 DOCUMENT](project/missions/mission-document.md)** - Documentation creation (2-4 hours)
+- **[📐 ARCHITECTURE](project/missions/mission-architecture.md)** - System architecture documentation (2-3 hours)
 
 ### Strategic Missions  
+- **[📋 PRODUCT-DESCRIPTION](project/missions/mission-product-description.md)** - Product definition with risk management (2-3 hours)
 - **[💡 MVP](project/missions/mission-mvp.md)** - Minimum viable product (1-3 days)
 - **[🔄 MIGRATE](project/missions/mission-migrate.md)** - System migration (4-8 hours)
 - **[⚡ OPTIMIZE](project/missions/mission-optimize.md)** - Performance optimization (3-6 hours)
