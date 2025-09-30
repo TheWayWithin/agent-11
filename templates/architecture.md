@@ -1,0 +1,1 @@
+architecture-template.md
