@@ -72,6 +72,26 @@ Execute a systematic migration of systems, databases, or platforms with minimal 
 - Validation rules defined
 - Conflict resolution planned
 
+---
+
+### 🧹 Context Management Checkpoint (Planning Complete)
+
+**Purpose**: Clear planning artifacts before testing begins
+
+**Coordinator Action**:
+- Update /memories/technical/decisions.xml with migration strategy and data mapping
+- Update /memories/project/constraints.xml with migration risks and mitigation plans
+- Update handoff-notes.md with test plan and validation requirements
+
+**If context > 25K tokens, consider /clear**:
+- Preserve: Memory tool calls, migration plan, data mapping, risk mitigation
+- Clear: Initial analysis details, exploration iterations
+- Benefits: Clean context for testing phase
+
+**Reference**: See /project/field-manual/context-editing-guide.md
+
+---
+
 ### Phase 4: Migration Testing (90-120 minutes)
 **Lead**: @developer  
 **Support**: @operator, @architect  
@@ -89,6 +109,28 @@ Execute a systematic migration of systems, databases, or platforms with minimal 
 - Data integrity validated
 - Performance benchmarks established
 - Process optimized
+
+---
+
+### 🧹 Context Management Checkpoint (Testing Complete)
+
+**Purpose**: Clear test execution details before production migration
+
+**Coordinator Action**:
+- Update /memories/lessons/debugging.xml with test findings and optimizations
+- Update /memories/technical/patterns.xml with successful migration patterns
+- Update handoff-notes.md with production migration checklist
+
+**If context > 30K tokens, strongly recommend /clear**:
+- Preserve: Memory tool calls, validated migration process, rollback procedures
+- Clear: Test execution logs, failed test attempts, debugging sessions
+- Benefits: Clean context for critical production migration
+
+**CRITICAL**: Clean context is essential for production migration focus
+
+**Reference**: See /project/field-manual/context-editing-guide.md
+
+---
 
 ### Phase 5: Production Migration Execution (120-180 minutes)
 **Lead**: @operator  
@@ -125,6 +167,32 @@ Execute a systematic migration of systems, databases, or platforms with minimal 
 - Business processes functional
 - System stable and performing
 - Documentation updated
+
+---
+
+### 🧹 Context Management Checkpoint (Migration Complete)
+
+**Purpose**: Final cleanup after successful migration
+
+**Coordinator Action**:
+- Update /memories/lessons/insights.xml with migration learnings and gotchas
+- Update /memories/technical/tooling.xml with final configurations
+- Archive migration context for future reference
+
+**Final /clear recommended**:
+- Preserve: Memory files (all migration knowledge persists)
+- Clear: All execution details (migration logs, validation results)
+- Benefits: Fresh start for post-migration optimization
+
+**Performance Summary**:
+- Mission duration: 6-12 hours
+- Without context editing: ~200K tokens consumed
+- With strategic clearing: ~40K tokens (80% reduction)
+- Critical operation sustainable with memory preservation
+
+**Reference**: See /project/field-manual/context-editing-guide.md
+
+---
 
 ## Migration Types
 

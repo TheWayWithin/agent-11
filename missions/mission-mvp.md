@@ -26,11 +26,16 @@ Transform a product concept into a working Minimum Viable Product. This mission 
 
 ```bash
 @strategist Validate the MVP concept:
+
+**EXTENDED THINKING**: Use THINK HARDER for MVP scope definition - this is a critical strategic decision
+
 1. Define core problem being solved
 2. Identify target user personas
 3. List absolute must-have features
 4. Define success metrics
 5. Create value proposition
+
+Prompt: "Think harder about our MVP scope. Wrong scope wastes months of development. Evaluate what's truly essential vs. nice-to-have. Consider user needs, market timing, and technical feasibility."
 ```
 
 **Deliverables**:
@@ -83,6 +88,29 @@ Transform a product concept into a working Minimum Viable Product. This mission 
 - Integration plan
 - Technical constraints
 
+---
+
+### 🧹 Context Management Checkpoint (Day 1 Complete - Planning Done)
+
+**Purpose**: Clear planning artifacts before development begins
+
+**Coordinator Action**:
+- Update /memories/project/requirements.xml with MVP core features
+- Update /memories/project/architecture.xml with tech stack and MVP architecture
+- Update agent-context.md with Day 1 strategic decisions
+- Update handoff-notes.md with development priorities for Day 2
+
+**If context > 25K tokens, consider /clear**:
+- Preserve: Memory tool calls, final MVP scope, architecture decisions
+- Clear: Market research details, architecture exploration iterations
+- Benefits: Clean context for development sprint
+
+**Multi-Day Note**: This is ideal /clear point between planning (Day 1) and development (Day 2+)
+
+**Reference**: See /project/field-manual/context-editing-guide.md
+
+---
+
 ### Phase 4: Rapid Prototyping (2-3 hours)
 
 **Lead**: @designer  
@@ -125,6 +153,28 @@ Transform a product concept into a working Minimum Viable Product. This mission 
 - Basic but functional UI
 - Essential error handling
 - Quick deployment setup
+
+---
+
+### 🧹 Context Management Checkpoint (Development Complete)
+
+**Purpose**: Clear implementation details before testing and launch prep
+
+**Coordinator Action**:
+- Update /memories/technical/patterns.xml with MVP code patterns
+- Update /memories/lessons/insights.xml with development challenges and solutions
+- Update handoff-notes.md with known limitations and test priorities
+
+**If context > 30K tokens, strongly recommend /clear**:
+- Preserve: Memory tool calls, working code location, deployment setup
+- Clear: Code iteration details, debugging sessions, old implementation attempts
+- Benefits: Clean context for testing and launch activities
+
+**Multi-Day Note**: Ideal checkpoint after intensive development sprint
+
+**Reference**: See /project/field-manual/context-editing-guide.md
+
+---
 
 ### Phase 6: Growth Foundation (2-3 hours)
 
@@ -189,6 +239,32 @@ Transform a product concept into a working Minimum Viable Product. This mission 
 - Monitoring dashboard
 - Error tracking
 - Backup system
+
+---
+
+### 🧹 Context Management Checkpoint (MVP Launch Complete)
+
+**Purpose**: Final cleanup after successful MVP deployment
+
+**Coordinator Action**:
+- Update /memories/lessons/insights.xml with launch learnings
+- Update /memories/technical/tooling.xml with deployment configurations
+- Archive mission context for future iterations
+
+**Final /clear recommended**:
+- Preserve: Memory files (all MVP knowledge persists)
+- Clear: All mission execution details (testing, deployment logs)
+- Benefits: Fresh start for post-launch iteration and optimization
+
+**Performance Summary**:
+- Mission duration: 1-3 days
+- Without context editing: ~300K tokens consumed
+- With strategic clearing: ~50K tokens (83% reduction)
+- Multi-day mission sustainable with memory preservation
+
+**Reference**: See /project/field-manual/context-editing-guide.md
+
+---
 
 ## Success Criteria
 
