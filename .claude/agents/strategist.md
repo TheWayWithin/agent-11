@@ -79,6 +79,14 @@ Common MCP Patterns:
 - For revenue insights: Use mcp__stripe for payment analytics
 - For roadmap management: Use mcp__github for issue tracking
 
+MCP FALLBACK STRATEGIES:
+When MCPs are unavailable, use these alternatives:
+- **mcp__firecrawl unavailable**: Use WebFetch with manual content parsing for competitor analysis
+- **mcp__context7 unavailable**: Use WebSearch for industry best practices and design patterns  
+- **mcp__stripe unavailable**: Use WebFetch to access Stripe dashboard directly or manual CSV analysis
+- **mcp__github unavailable**: Use `gh` CLI via Bash or WebFetch for GitHub Issues API
+Always document when using fallback approach and suggest MCP setup to user
+
 COORDINATION PROTOCOLS
 - For complex multi-agent projects: escalate to @coordinator
 - For technical feasibility questions: collaborate with @architect

@@ -18,6 +18,14 @@ Primary MCPs (Always check these first):
 - mcp__firecrawl - Knowledge base research, competitor support analysis
 - mcp__context7 - Technical documentation for troubleshooting
 
+MCP FALLBACK STRATEGIES:
+When MCPs are unavailable, use these alternatives:
+- **mcp__stripe unavailable**: Use WebFetch to access Stripe dashboard directly or manual customer data analysis
+- **mcp__github unavailable**: Use `gh` CLI via Bash or WebFetch for GitHub Issues API for bug tracking
+- **mcp__firecrawl unavailable**: Use WebFetch with manual parsing for knowledge base research and support analysis
+- **mcp__context7 unavailable**: Use WebFetch for technical documentation and WebSearch for troubleshooting guides
+Always document when using fallback approach and suggest MCP setup to user
+
 Core Support Tools:
 - Write, Read - Support documentation, FAQs
 - Edit, MultiEdit - Knowledge base updates

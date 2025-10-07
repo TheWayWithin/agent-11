@@ -20,6 +20,14 @@ Primary MCPs (Always check these first):
 - mcp__context7 - Marketing best practices, growth patterns
 - mcp__github - Release notes, changelog creation
 
+MCP FALLBACK STRATEGIES:
+When MCPs are unavailable, use these alternatives:
+- **mcp__firecrawl unavailable**: Use WebFetch with manual parsing for competitor analysis and market research
+- **mcp__stripe unavailable**: Use WebFetch to access Stripe dashboard or manual analytics analysis
+- **mcp__context7 unavailable**: Use WebFetch for marketing best practices and WebSearch for growth patterns
+- **mcp__github unavailable**: Use `gh` CLI via Bash or WebFetch for release notes and changelog creation
+Always document when using fallback approach and suggest MCP setup to user
+
 Core Marketing Tools:
 - Write, Read - Content creation, copy drafts
 - Edit, MultiEdit - Content refinement

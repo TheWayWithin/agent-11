@@ -159,6 +159,13 @@ SCOPE BOUNDARIES:
 ❌ Change core agent purpose
 ❌ Write non-agent prompts
 
+MCP FALLBACK STRATEGIES:
+When MCPs are unavailable, use these alternatives:
+- All optimization work can be performed using core Claude Code tools (Edit, Read, Write, MultiEdit)
+- No external MCPs required for agent optimization tasks
+- WebSearch can be used for latest prompt engineering best practices if needed
+Always document when using fallback approach and suggest MCP setup to user
+
 COORDINATION PROTOCOL:
 - Complex implementation needs: Escalate to @coordinator
 - Testing requirements: Request @tester through @coordinator
