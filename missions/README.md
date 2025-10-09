@@ -120,10 +120,26 @@ Edit to define:
 ## Mission Coordination
 
 The Coordinator manages all missions with:
-- Task delegation to specialists
-- Progress tracking in `project-plan.md`
-- Issue resolution in `progress.md`
-- MCP tool assignment
+- Task delegation to specialists via Task tool
+- **project-plan.md** (FORWARD-LOOKING): Strategic roadmap with planned and completed tasks
+- **progress.md** (BACKWARD-LOOKING): Chronological changelog capturing all deliverables, changes, and complete issue history (including ALL fix attempts - even failures)
+- MCP tool assignment and optimization
+
+### Understanding Progress Tracking
+
+**project-plan.md** - What you're PLANNING to do:
+- Tasks with checkboxes [ ] → [x]
+- Milestones and success metrics
+- Updated at mission start, phase transitions, task completions
+
+**progress.md** - What you DID and what you LEARNED:
+- Deliverables created with descriptions
+- Changes made with rationale
+- **Complete issue history**: ALL attempted fixes (not just final solutions)
+- Root cause analyses and prevention strategies
+- **Critical**: Failed attempts are MORE valuable than successes for learning
+
+See `/templates/progress-template.md` for structure.
 
 ### PARALLEL STRIKE Capability (NEW!)
 Missions can now execute with simultaneous agent operations:
@@ -138,7 +154,10 @@ Missions can now execute with simultaneous agent operations:
 2. **Document First**: Run `dev-alignment` on existing projects
 3. **Review Often**: Use `operation-recon` before releases
 4. **Combine Missions**: Chain missions for complex workflows
-5. **Track Progress**: Check `project-plan.md` for status
+5. **Track Progress**:
+   - Check `project-plan.md` for planned vs completed tasks
+   - Review `progress.md` for complete history including all fix attempts
+   - Use `/pmd` to analyze patterns across failures
 
 ## Mission Success Metrics
 

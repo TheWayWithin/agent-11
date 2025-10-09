@@ -134,20 +134,41 @@ The ideation file is a centralized document containing all requirements, context
 
 ### Core Tracking Files
 
-1. **project-plan.md** - Strategic roadmap and milestones
+1. **project-plan.md** - Strategic roadmap and milestones (FORWARD-LOOKING)
    - Executive summary, objectives, technical architecture
+   - Task lists with checkboxes [ ] → [x]
    - Milestone timeline, success metrics, risk assessment
+   - **Purpose**: What we're PLANNING to do
+   - **Update when**: Mission start, phase start, task completion
 
-2. **progress.md** - Operational log and learnings
-   - Issues and resolutions, lessons learned
-   - Technical decisions and performance insights
+2. **progress.md** - Chronological changelog and issue learning repository (BACKWARD-LOOKING)
+   - Deliverables created/updated with descriptions
+   - Changes made to code, configs, documentation
+   - **Complete issue history**: ALL attempted fixes (not just final solution)
+   - Root cause analysis and prevention strategies
+   - Patterns and lessons learned from failures
+   - **Purpose**: What we DID and what we LEARNED (especially from failures)
+   - **Update when**: After each deliverable, after EACH fix attempt, when issue resolved
 
 ### Update Protocol
 
-After each work session or milestone:
-1. ✅ Mark completed tasks in `project-plan.md`
-2. 📝 Log issues, resolutions, and lessons in `progress.md`
-3. ⚡ Record performance insights and optimizations in `CLAUDE.md`
+**For project-plan.md** (The Plan):
+1. **Mission Start**: Create with all planned tasks marked [ ]
+2. **Phase Start**: Add phase-specific tasks before work begins
+3. **Task Completion**: Mark [x] ONLY after specialist confirms done
+4. **Keep Current**: Update to reflect actual vs planned progress
+
+**For progress.md** (The Changelog):
+1. **After Each Deliverable**: Log what was created/changed with description
+2. **When Issue Encountered**: Create issue entry immediately with symptom and context
+3. **After EACH Fix Attempt**: Log attempt, rationale, result (✅ or ❌), and learning
+4. **When Issue Resolved**: Add root cause analysis and prevention strategy
+5. **End of Phase**: Add lessons learned and patterns recognized
+
+**Critical**: Document FAILED attempts, not just successes. Failed attempts teach us what doesn't work and why.
+
+**For CLAUDE.md** (The System):
+3. ⚡ Record permanent process improvements and system-level learnings
 
 ## Design Review System
 

@@ -90,9 +90,6 @@ Transform your system design into comprehensive architecture documentation that 
 
 ```bash
 @architect Based on the requirements analysis:
-
-**EXTENDED THINKING**: Use ULTRATHINK for this critical system design decision
-
 1. Design high-level system architecture with component diagram
 2. Define infrastructure architecture and deployment strategy
 3. Design data architecture and database schema
@@ -100,8 +97,6 @@ Transform your system design into comprehensive architecture documentation that 
 5. Define security architecture and measures
 6. Create scaling strategy and performance targets
 7. Document key architectural decisions and trade-offs
-
-Prompt: "Ultrathink about our system architecture. This is a foundational decision affecting the entire project. Evaluate all alternatives comprehensively considering scalability, maintainability, security, and team capabilities."
 ```
 
 **WAIT FOR @architect RESPONSE** before proceeding to Phase 3

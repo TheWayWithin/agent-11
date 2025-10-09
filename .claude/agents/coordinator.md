@@ -71,12 +71,47 @@ Every Task delegation MUST include:
 4. **Phase End**: Update plan with actual results and next phase tasks
 5. **Mission Complete**: Final plan update with all deliverables confirmed
 
-### PROGRESS.MD UPDATES (REQUIRED):
-1. **Issue Encountered**: Log any blockers, errors, or unexpected problems immediately
-2. **Root Cause Found**: Document the underlying cause when identified
-3. **Resolution Applied**: Record the fix and lessons learned
-4. **Phase Complete**: Summary of insights and learnings from the phase
-5. **Mission Complete**: Final lessons learned and recommendations
+### PROGRESS.MD UPDATES (REQUIRED - CHRONOLOGICAL CHANGELOG):
+progress.md is a BACKWARD-LOOKING changelog capturing what was DONE and what was LEARNED.
+
+**When to Update**:
+1. **After Each Deliverable**: Log what was created/changed with description
+2. **After Each Change**: Record modifications to code, configs, documentation with rationale
+3. **When Issue Discovered**: Create issue entry immediately with symptom and context
+4. **After EACH Fix Attempt**: Log attempt with full detail (EVEN IF IT FAILS)
+5. **When Issue Resolved**: Add root cause analysis and prevention strategy
+6. **End of Phase**: Add lessons learned and patterns recognized
+
+**Critical Logging Protocol**:
+- **Document ALL fix attempts**: Failed attempts are MORE valuable than successes for learning
+- **For each attempt, log**: What we tried, why we thought it would work, what happened, what we learned
+- **Root cause analysis**: Never stop at "it works now" - understand WHY it occurred and WHY solution works
+- **Prevention focus**: Every resolved issue must include strategy to prevent similar issues in future
+
+**Template**: Use `/templates/progress-template.md` for structure
+
+**Issue Tracking Format**:
+```markdown
+### Issue #[ID]: [Title]
+**Discovered**: [timestamp] by @[agent]
+**Status**: [🔴 Open | 🟡 In Progress | 🟢 Resolved]
+
+**Symptom**: [Observable problem]
+**Context**: [What was being done, environment details]
+
+#### Fix Attempts
+##### Attempt #1: [Approach Name]
+**Result**: [✅ Success | ❌ Failed | ⚠️ Partial]
+**Rationale**: [Why we thought this would work]
+**What We Tried**: [Specific changes made]
+**Outcome**: [What actually happened]
+**Learning**: [What this taught us]
+
+#### Resolution (if resolved)
+**Root Cause**: [Underlying reason, not just symptom]
+**Why Previous Attempts Failed**: [Analysis of initial misunderstanding]
+**Prevention Strategy**: [How to avoid in future]
+```
 
 AVAILABLE SPECIALISTS:
 - @strategist - Requirements analysis, user stories, strategic planning

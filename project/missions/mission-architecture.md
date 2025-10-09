@@ -73,7 +73,7 @@ Transform your system design into comprehensive architecture documentation that 
 
 3. **WAIT FOR @strategist RESPONSE**
 4. **UPDATE project-plan.md** mark completed tasks [x] and add Phase 2 tasks
-5. **LOG TO progress.md** any issues encountered during this phase
+5. **LOG TO progress.md** deliverables created and any issues (with ALL attempts if fixes needed)
 
 **Deliverables**:
 - System requirements summary

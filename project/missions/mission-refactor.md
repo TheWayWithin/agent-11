@@ -205,10 +205,10 @@ Improve code quality, maintainability, and performance without changing external
 
 ## Coordination Notes
 
-- Update project-plan.md with progress
+- Update project-plan.md with progress (FORWARD-LOOKING)
 - Small, reviewable pull requests
 - Daily progress check-ins
-- Document decisions in progress.md
+- Document decisions, refactoring attempts (including failures), and learnings in progress.md (BACKWARD-LOOKING)
 
 ---
 

@@ -47,34 +47,23 @@ This mission aligns AGENT-11 with an existing project by:
   - For any libraries: Note mcp__context7 availability
 - Documents MCP availability in analysis
 
-### Phase 1: Codebase Analysis & Memory Bootstrap (20 min)
+### Phase 1: Codebase Analysis (15 min)
 ```bash
-/coord "Analyzing codebase and bootstrapping memory from existing project..."
+/coord "Starting project alignment. Let me analyze your existing codebase..."
 ```
 
 **Agent Actions:**
-- @architect performs comprehensive codebase audit:
-  - Technology stack identification (languages, frameworks, databases)
-  - Architecture pattern analysis (MVC, microservices, etc.)
-  - Dependencies review (production, dev, external services)
-  - Code quality assessment (TypeScript, linting, tests)
-  - Security features detection (CSP, CORS, authentication)
+- @architect performs codebase audit:
+  - Technology stack identification
+  - Architecture pattern analysis
+  - Dependencies review
+  - Code quality assessment
   - Test coverage check
 - @developer identifies:
-  - Core functionality from routes/components
-  - Integration points and external APIs
-  - Development patterns and conventions
+  - Core functionality
+  - Integration points
+  - Development patterns
   - Build/deployment setup
-- **Creates memory structure from analysis**:
-  - `/memories/project/requirements.xml` - Inferred from code structure
-  - `/memories/project/architecture.xml` - Documented from patterns found
-  - `/memories/project/constraints.xml` - Extracted from configs
-  - `/memories/technical/decisions.xml` - Evident from code choices
-  - `/memories/technical/patterns.xml` - Proven patterns in codebase
-- **Security validation**: Path validation, content sanitization, XML structure
-- **Quality checks**: File sizes, no duplicates, well-formed data
-
-**Reference**: See `/project/field-manual/bootstrap-guide.md` for brownfield bootstrap protocol
 
 **Analysis Output:**
 ```markdown
@@ -102,9 +91,9 @@ This mission aligns AGENT-11 with an existing project by:
 3. [Component 3]
 ```
 
-### Phase 2: Context Discovery & Memory Enhancement (15 min)
+### Phase 2: Context Discovery (15 min)
 ```bash
-/coord "Understanding project context and enhancing memory with user insights..."
+/coord "Now let's understand your project's mission. Do you have ideation documents, or shall we discover the context together?"
 ```
 
 **Two Paths:**
@@ -115,11 +104,6 @@ This mission aligns AGENT-11 with an existing project by:
 - Extracts key objectives
 - Identifies gaps in documentation
 - Creates consolidated vision
-- **Enhances memory files**:
-  - Updates `/memories/project/requirements.xml` with ideation details
-  - Adds to `/memories/user/goals.xml` from ideation
-  - Enriches `/memories/project/constraints.xml` with business context
-- Validates memory alignment between code analysis and ideation
 
 #### Path B: Context Discovery Session
 **Agent Actions:**
@@ -135,11 +119,6 @@ This mission aligns AGENT-11 with an existing project by:
   7. What's the vision for success?
   ```
 - @documenter creates ideation.md from responses
-- **Populates user memory files**:
-  - `/memories/user/context.xml` - User background and expertise
-  - `/memories/user/preferences.xml` - Communication and development style
-  - `/memories/user/goals.xml` - Project objectives and priorities
-- Merges discovered context with codebase analysis in memory
 
 **ideation.md Structure (if created):**
 ```markdown
@@ -184,30 +163,9 @@ This mission aligns AGENT-11 with an existing project by:
 - Technical: [if applicable]
 ```
 
-### Phase 3: CLAUDE.md Generation from Codebase (10 min)
+### Phase 3: Architecture Review/Documentation (10 min)
 ```bash
-/coord "Generating project-specific CLAUDE.md from codebase analysis and memory..."
-```
-
-**Agent Actions:**
-- @coordinator generates CLAUDE.md using `/templates/claude-template.md`
-- Populates from memory and codebase analysis:
-  - Project overview from inferred requirements
-  - Technology stack from analysis
-  - Codebase structure from directory analysis
-  - Development guidelines from detected patterns
-  - Security requirements from configs (CSP, auth)
-  - Common commands from package.json scripts
-  - Known issues from TODOs and Git history
-  - MCP opportunities mapped to architecture
-- Includes memory protocol and tracking requirements
-- Validates completeness and accuracy
-
-**Reference**: See `/templates/claude-template.md` for template structure
-
-### Phase 4: Architecture Review/Documentation (10 min)
-```bash
-/coord "Reviewing and documenting system architecture from memory..."
+/coord "Reviewing and documenting system architecture..."
 ```
 
 **Agent Actions:**
@@ -215,33 +173,26 @@ This mission aligns AGENT-11 with an existing project by:
 
 #### Path A: Existing architecture.md
 - Reviews current documentation
-- Updates with recent changes from codebase analysis
+- Updates with recent changes
 - Identifies architectural drift
 - Adds missing sections
-- **Syncs with memory**: Updates `/memories/project/architecture.xml`
 
 #### Path B: No architecture.md exists
 - Creates architecture.md using template from `/templates/architecture.md`
-- Populates from `/memories/project/architecture.xml`
-- Documents current system design from analysis
-- Identifies architectural patterns found in code
+- Documents current system design
+- Identifies architectural patterns
 - Maps infrastructure and data flows
-- Records architecture decisions in memory
+- Records architecture decisions
 
 **Reference**: See `/project/field-manual/architecture-sop.md` for documentation standards
 
-### Phase 5: Project Plan Creation/Update (10 min)
+### Phase 4: Project Plan Creation/Update (15 min)
 ```bash
-/coord "Creating project plan from memory and analysis..."
+/coord "Creating project plan based on analysis and context..."
 ```
 
 **Agent Actions:**
-- @strategist creates/updates `project-plan.md` from memory:
-  - Current state from codebase analysis
-  - Roadmap from requirements and constraints in memory
-  - Success metrics from memory
-  - Risk assessment from analysis findings
-- Ensures alignment with memory and CLAUDE.md
+- @strategist creates/updates `project-plan.md`:
 
 **project-plan.md Structure:**
 ```markdown
@@ -292,16 +243,13 @@ This mission aligns AGENT-11 with an existing project by:
 - DevOps: [if applicable]
 ```
 
-### Phase 6: Progress Tracking Setup (5 min)
+### Phase 5: Progress Tracking Setup (5 min)
 ```bash
-/coord "Setting up progress tracking from memory and analysis..."
+/coord "Setting up progress tracking..."
 ```
 
 **Agent Actions:**
 - @documenter creates/updates `progress.md`:
-- Includes historical context from Git history
-- References memory for baseline metrics
-- Initializes with current state from analysis
 
 **progress.md Structure:**
 ```markdown
@@ -351,85 +299,110 @@ _To be updated as we progress_
 [Areas identified for improvement]
 ```
 
-### Phase 7: Bootstrap Validation (5 min)
+### Phase 6: CLAUDE.md Optimization (10 min)
 ```bash
-/coord "Validating bootstrap results and memory integrity..."
+/coord "Optimizing CLAUDE.md for your specific project..."
 ```
 
 **Agent Actions:**
-- @coordinator validates bootstrap completion:
-  - ✅ Memory structure created from codebase analysis
-  - ✅ All memory files populated correctly
-  - ✅ XML files are well-formed
-  - ✅ Security validation passed (paths, content, sizes)
-  - ✅ CLAUDE.md generated and customized
-  - ✅ architecture.md created/updated with memory sync
-  - ✅ Tracking files initialized
-  - ✅ Memory aligned with codebase reality
-- Reports analysis summary and recommendations
-- Provides bootstrap summary for user review
+- @coordinator updates CLAUDE.md with:
 
-**Bootstrap Summary Output:**
+**CLAUDE.md Updates:**
 ```markdown
-## Brownfield Bootstrap Complete ✅
+## Project Overview
+[From ideation/discovery]
 
-### Codebase Analysis Summary
-- Technology Stack: [Detected stack]
-- Architecture Pattern: [Identified pattern]
-- Lines of Code: [Count]
-- Test Coverage: [Percentage]
-- Dependencies: [Count]
-- Security Features: [CSP, CORS, auth detected]
+## Available MCPs
+[From MCP assessment phase]
+- mcp__[service]: [Usage in project]
+- Example: mcp__supabase: Database operations
+- Example: mcp__playwright: E2E testing
+- Example: mcp__context7: Library documentation
 
-### Memory Files Created
-- /memories/project/requirements.xml (inferred from code)
-- /memories/project/architecture.xml (documented from patterns)
-- /memories/project/constraints.xml (extracted from configs)
-- /memories/user/[context|preferences|goals].xml (from discovery)
-- /memories/technical/decisions.xml (evident from code)
-- /memories/technical/patterns.xml (proven patterns found)
+## Codebase Structure
+[From analysis]
 
-### Project Files Generated/Updated
-- CLAUDE.md (customized for codebase)
-- architecture.md (created/updated from memory)
-- project-plan.md (from memory and analysis)
-- progress.md (initialized with history)
-- ideation.md (created if needed)
+## Development Guidelines
+### Code Style
+[Detected patterns]
 
-### Security Validation
-- ✅ All paths validated
-- ✅ No sensitive data in memory
-- ✅ XML structure validated
-- ✅ File sizes within limits
+### Testing Approach
+[Current testing strategy]
+[Note if mcp__playwright available for testing]
 
-### Key Findings
-- [Architectural strengths identified]
-- [Technical debt items found]
-- [Optimization opportunities]
-- [MCP integration opportunities]
+### Build & Deploy
+[Current processes]
+[Note if mcp__netlify or mcp__railway available]
 
-### Recommendations
-1. [Priority recommendation from analysis]
-2. [Improvement suggestion]
-3. [Next steps for enhancement]
+## Ideation Context
+Location: `./ideation.md`
+Last Updated: [date]
+
+## Key Objectives
+1. [Objective 1]
+2. [Objective 2]
+3. [Objective 3]
+
+## Progress Tracking Protocol
+After each work session:
+1. Update `project-plan.md` with completed tasks and MCPs used
+2. Log issues and resolutions in `progress.md`
+3. Document lessons learned
+4. Record performance insights and MCP patterns
+5. Update this file with any new patterns or decisions
+
+## Performance Insights
+### Current Bottlenecks
+[From analysis]
+
+### Optimization Opportunities
+[From analysis]
+[MCPs that could help]
+
+## Technical Decisions Log
+[Important decisions that affect development]
+[MCPs chosen for specific tasks]
+
+## Common Commands
+```bash
+# Build
+[project-specific build command]
+
+# Test
+[project-specific test command]
+
+# Run
+[project-specific run command]
+
+# MCP Discovery
+grep "mcp__"
 ```
 
+## Known Issues
+[Any identified issues]
+[MCPs that might help resolve]
+
+## Update Checklist
+- [ ] Task completed → Update project-plan.md
+- [ ] Issue resolved → Log in progress.md
+- [ ] Lesson learned → Add to progress.md
+- [ ] Performance insight → Update CLAUDE.md
+- [ ] Pattern discovered → Document in CLAUDE.md
+- [ ] MCP usage → Track successful patterns
+```
 
 ---
 
 ## Success Metrics
 
 ✅ **Mission Complete When:**
-- [ ] Codebase fully analyzed (stack, patterns, quality, security)
-- [ ] Memory structure created from codebase analysis
-- [ ] All memory files populated (requirements, architecture, constraints, decisions, patterns)
-- [ ] User context discovered and captured in memory
-- [ ] Security validation passed (paths, content, file sizes)
-- [ ] CLAUDE.md generated from codebase and memory
-- [ ] architecture.md reviewed/created with memory sync
-- [ ] project-plan.md created/updated from memory
-- [ ] progress.md initialized with historical context
-- [ ] Bootstrap validation complete with summary and recommendations
+- [ ] Codebase fully analyzed
+- [ ] Project context understood
+- [ ] Ideation document reviewed/created
+- [ ] architecture.md reviewed/created
+- [ ] project-plan.md created/updated
+- [ ] progress.md initialized
+- [ ] CLAUDE.md optimized for project
 
 ---
 

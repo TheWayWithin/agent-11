@@ -19,20 +19,16 @@ Conduct comprehensive security assessment and implement protective measures to s
 ## Mission Phases
 
 ### Phase 1: Security Assessment and Threat Modeling (60-90 minutes)
-**Lead**: @architect
-**Support**: @developer
+**Lead**: @architect  
+**Support**: @developer  
 **Objective**: Identify security vulnerabilities and potential attack vectors
-
-**EXTENDED THINKING**: @architect should use THINK HARD for threat modeling - comprehensive threat identification is critical
 
 **Tasks**:
 - Map system architecture and data flows
 - Identify sensitive data and critical assets
-- Create threat model and attack vectors (use "think hard" to systematically identify all threat vectors)
+- Create threat model and attack vectors
 - Review authentication and authorization mechanisms
 - Assess network security and access controls
-
-**Thinking Prompt**: "Think hard about potential security threats to our system. Consider authentication, authorization, data security, network security, and common attack vectors. Identify both obvious and subtle vulnerabilities."
 
 **Success Criteria**:
 - Threat model documented

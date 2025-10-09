@@ -93,26 +93,6 @@ Transform product requirements into production-ready implementation. This missio
 - Feature prioritization matrix
 - Success metrics defined
 
----
-
-### 🧹 Context Management Checkpoint (Phase 1 Complete)
-
-**Purpose**: Prevent context pollution after requirements phase
-
-**Coordinator Action**:
-- Update /memories/project/requirements.xml with final user stories
-- Update agent-context.md with Phase 1 findings
-- Update handoff-notes.md with architecture constraints for @architect
-
-**If context > 25K tokens, consider /clear**:
-- Preserve: Memory tool calls, final user stories, acceptance criteria
-- Clear: Detailed requirement discussions, exploration iterations
-- Benefits: Clean context for architecture phase
-
-**Reference**: See /project/field-manual/context-editing-guide.md
-
----
-
 ### Phase 2: Technical Architecture (30-45 minutes) - IMMEDIATE ACTION
 
 **Lead**: @architect  
@@ -123,16 +103,11 @@ Transform product requirements into production-ready implementation. This missio
 
 ```bash
 @architect Based on the requirements and user stories:
-
-**EXTENDED THINKING**: Use ULTRATHINK for greenfield architecture or THINK HARDER for extending existing systems
-
 1. Define system architecture and component design
 2. Select appropriate technology stack
 3. Design data models and API contracts
 4. Identify integration points
 5. Document architectural decisions and trade-offs
-
-Prompt: "Use ultrathink (if greenfield) or think harder (if extending existing system) to design our technical architecture. Evaluate alternatives, consider long-term implications, and document trade-offs clearly."
 ```
 
 **WAIT FOR @architect RESPONSE** before proceeding to Phase 3
@@ -142,26 +117,6 @@ Prompt: "Use ultrathink (if greenfield) or think harder (if extending existing s
 - Technology decisions
 - API specifications
 - Data model designs
-
----
-
-### 🧹 Context Management Checkpoint (Phase 2 Complete)
-
-**Purpose**: Clear architecture exploration, preserve design decisions
-
-**Coordinator Action**:
-- Update /memories/project/architecture.xml with final system design
-- Update /memories/technical/decisions.xml with technology choices and rationale
-- Update handoff-notes.md with implementation guidelines for @developer
-
-**If context > 25K tokens, consider /clear**:
-- Preserve: Memory tool calls, final architecture, API specs
-- Clear: Technology evaluation details, design iterations
-- Benefits: Clean context for implementation phase
-
-**Reference**: See /project/field-manual/context-editing-guide.md
-
----
 
 ### Phase 3: Design & UX (1-2 hours) *[If UI Required]*
 
@@ -204,26 +159,6 @@ Prompt: "Use ultrathink (if greenfield) or think harder (if extending existing s
 - Test coverage >80%
 - Error handling
 - Code documentation
-
----
-
-### 🧹 Context Management Checkpoint (Phase 4 Complete)
-
-**Purpose**: Clear implementation details before testing phase
-
-**Coordinator Action**:
-- Update /memories/technical/patterns.xml with code patterns and best practices
-- Update /memories/lessons/insights.xml with implementation challenges solved
-- Update handoff-notes.md with known issues and test priorities for @tester
-
-**If context > 30K tokens, strongly recommend /clear**:
-- Preserve: Memory tool calls, final implementation, test requirements
-- Clear: Code iteration details, debugging sessions, old file reads
-- Benefits: Clean context for testing and quality assurance
-
-**Reference**: See /project/field-manual/context-editing-guide.md
-
----
 
 ### Phase 5: Quality Assurance (1 hour)
 
@@ -287,32 +222,6 @@ Prompt: "Use ultrathink (if greenfield) or think harder (if extending existing s
 - Environment configs
 - Monitoring setup
 - Rollback plan
-
----
-
-### 🧹 Context Management Checkpoint (Pre-Deployment)
-
-**Purpose**: Final context cleanup before deployment
-
-**Coordinator Action**:
-- Update /memories/lessons/debugging.xml with critical bugs found and fixes
-- Update /memories/technical/tooling.xml with deployment configurations
-- Verify all phase findings in agent-context.md are complete
-
-**If context > 30K tokens, strongly recommend /clear before deployment**:
-- Preserve: Memory tool calls, deployment configs, monitoring setup
-- Clear: Test execution logs, documentation drafts, old tool results
-- Benefits: Clean context for deployment verification and monitoring
-
-**Performance Summary**:
-- Mission duration: 4-8 hours
-- Without context editing: ~120K tokens consumed
-- With strategic clearing: ~30K tokens (75% reduction)
-- Mission can complete in single session with memory preservation
-
-**Reference**: See /project/field-manual/context-editing-guide.md
-
----
 
 ## Success Criteria
 

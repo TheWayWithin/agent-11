@@ -86,7 +86,7 @@ Transform product requirements into production-ready implementation. This missio
 
 3. **WAIT FOR @strategist RESPONSE** 
 4. **UPDATE project-plan.md** mark completed tasks [x] and add Phase 2 tasks
-5. **LOG TO progress.md** any issues encountered during this phase
+5. **LOG TO progress.md** deliverables created and any issues (with ALL fix attempts if applicable)
 
 **Deliverables**:
 - User stories with acceptance criteria
@@ -256,15 +256,17 @@ Transform product requirements into production-ready implementation. This missio
 - Maintain project-plan.md throughout mission
 - Each phase requires explicit completion confirmation
 - Blockers immediately escalated to coordinator
-- Daily progress updates in progress.md
+- Frequent progress.md updates (after each deliverable and fix attempt - including failures)
 
 ## Mission Debrief Protocol
 
 Upon completion:
-1. Update progress.md with learnings
-2. Document any reusable patterns
-3. Note time variations from estimates
-4. Capture improvement suggestions
+1. Update progress.md with comprehensive learnings and root cause analyses
+2. Document ALL fix attempts (including failed ones) with rationale and outcomes
+3. Add prevention strategies for all issues encountered
+4. Note time variations from estimates
+5. Capture reusable patterns and improvement suggestions
+6. Ensure issue history includes complete attempt logs for future reference
 
 ---
 

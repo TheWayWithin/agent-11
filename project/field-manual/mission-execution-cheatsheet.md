@@ -103,8 +103,8 @@ cp templates/mission-inputs/vision.md ./mvp-vision.md
 ```
 
 ### Progress Files to Monitor
-- **project-plan.md**: Tasks marked [x] as completed
-- **progress.md**: Issues, solutions, lessons learned
+- **project-plan.md** (FORWARD-LOOKING): Strategic roadmap, tasks marked [x] as completed
+- **progress.md** (BACKWARD-LOOKING): Chronological changelog - deliverables, changes, complete issue history with ALL fix attempts (including failures)
 - **handoff-notes.md**: Agent-to-agent context passing
 - **evidence-repository.md**: Screenshots, code snippets, artifacts
 
@@ -119,10 +119,11 @@ cp templates/mission-inputs/vision.md ./mvp-vision.md
 ## 🛠️ Recovery Procedures
 
 ### When Missions Stall
-1. **Check Progress**: Review `progress.md` for logged issues
+1. **Check Progress**: Review `progress.md` for complete issue history including ALL fix attempts
 2. **Verify Input**: Ensure input file is complete and valid
 3. **Resume Mission**: Re-run same command to continue
 4. **Emergency Stop**: Use Ctrl+C and restart if necessary
+5. **Use /pmd**: Run `/pmd` to analyze patterns across failed attempts
 
 ### Common Problems & Solutions
 | Problem | Symptoms | Solution |

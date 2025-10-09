@@ -81,12 +81,12 @@ Parse the arguments to determine:
    - Start orchestration following mission protocol
 
 3. **🔧 Mission Execution - IMMEDIATE ACTION WITH MANDATORY UPDATES [TASK TOOL REQUIRED]**:
-   - **CREATE/UPDATE `project-plan.md`** with all planned mission tasks marked [ ]
+   - **CREATE/UPDATE `project-plan.md`** (FORWARD-LOOKING) with all planned mission tasks marked [ ]
    - **IMMEDIATELY DELEGATE** to specialists using Task tool with subagent_type parameter
    - **WAIT FOR EACH TASK TOOL RESPONSE** before proceeding to next
    - **UPDATE `project-plan.md`** mark tasks [x] ONLY after Task tool confirms completion
-   - **LOG TO `progress.md`** any issues, blockers, or unexpected problems
-   - **UPDATE `progress.md`** with root causes and fixes when resolved
+   - **LOG TO `progress.md`** (BACKWARD-LOOKING CHANGELOG) after EVERY deliverable and fix attempt
+   - **CRITICAL**: Document ALL fix attempts in progress.md (including failures) - see template
    - **PHASE END UPDATES** required before starting next phase
    - Report ACTUAL status (not planned status)
 
@@ -97,7 +97,13 @@ Parse the arguments to determine:
 - **DELEGATE IMMEDIATELY** - use Task tool with subagent_type='agent_name' parameter
 - **NO AWAITING CONFIRMATIONS** - call Task tool and wait for actual responses
 - **MANDATORY project-plan.md UPDATES**: Update before each phase and after each completion
-- **MANDATORY progress.md LOGGING**: Log all issues and resolutions immediately
+- **MANDATORY progress.md CHANGELOG LOGGING**:
+  - Log deliverables after creation
+  - Log changes with rationale
+  - **Create issue entry when discovered**
+  - **Log EACH fix attempt** (even failures) with rationale, outcome, and learning
+  - **Add root cause analysis when resolved**
+  - Use `/templates/progress-template.md` structure
 - Track ACTUAL completion - only mark [x] when Task tool returns completion
 - If Task tool doesn't respond with work, immediately try different approach or agent
 - Report "Currently using Task tool with subagent_type='[agent]'" while waiting for response

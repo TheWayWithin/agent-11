@@ -225,6 +225,63 @@ ls -la CLAUDE*.md
 @strategist What should we build first in this project?
 ```
 
+## 📊 Mission Progress Tracking System
+
+AGENT-11 uses a two-file tracking system that separates planning from learning:
+
+### Core Tracking Files
+
+**project-plan.md** (FORWARD-LOOKING)
+- **Purpose**: What you're PLANNING to do
+- **Contains**: Strategic roadmap, task lists [ ] → [x], milestones, success metrics
+- **Updated**: Mission start, phase transitions, task completions
+- **Think**: Your project's roadmap
+
+**progress.md** (BACKWARD-LOOKING)
+- **Purpose**: What you DID and what you LEARNED (especially from failures)
+- **Contains**: Chronological changelog of deliverables, changes, and **complete issue history**
+- **Critical Feature**: Documents ALL fix attempts (including failures) - not just final solutions
+- **Updated**: After each deliverable, after EACH fix attempt, when issues resolved
+- **Think**: Your project's learning repository
+
+### Why This Matters
+
+**Traditional Approach**:
+```
+Issue #47: Auth bug fixed ✅
+```
+
+**AGENT-11 Approach** (in progress.md):
+```markdown
+### Issue #47: Authentication Failure
+
+#### Fix Attempts
+##### Attempt #1: Update JWT expiry
+Result: ❌ Failed
+Rationale: Thought token timeout was the issue
+What We Tried: Increased JWT expiry from 1h to 24h
+Outcome: Auth still failed, different error
+Learning: Problem wasn't token expiry - it was validation
+
+##### Attempt #2: Fix token validation
+Result: ✅ Success
+Rationale: Error showed signature validation failing
+What We Tried: Updated JWT secret in .env
+Outcome: Auth working correctly
+Learning: Secret mismatch between services
+
+#### Resolution
+Root Cause: JWT secret mismatch between auth service and API
+Why Attempt #1 Failed: Misread initial error message
+Prevention: Add secret validation to deployment checklist
+```
+
+**Result**: Future similar issues solved in 1 attempt instead of 2+ by learning from documented failures.
+
+### Template Available
+
+See `/templates/progress-template.md` for complete structure and usage guidelines.
+
 ### 🔌 MCP Integration Setup (Highly Recommended)
 
 MCPs (Model Context Protocol) give your agents superpowers. Here's how to set them up correctly:
@@ -365,8 +422,8 @@ Watch for these real-time indicators:
 
 **Step 5: Review Results**
 Check these files for mission outcomes:
-- `project-plan.md` - Strategic roadmap with completed tasks
-- `progress.md` - Detailed log of decisions and issues
+- `project-plan.md` - FORWARD-LOOKING: Strategic roadmap with planned and completed tasks
+- `progress.md` - BACKWARD-LOOKING: Chronological changelog of deliverables, changes, and complete issue history (including ALL fix attempts)
 - `architecture.md` - Technical system design (if applicable)
 
 ### Input File Preparation
@@ -404,14 +461,14 @@ Check these files for mission outcomes:
 ```
 
 **Progress Files Updated Live**:
-- `project-plan.md` - Tasks marked complete [x] as they finish
-- `progress.md` - Issues, solutions, and lessons logged immediately  
+- `project-plan.md` (FORWARD) - Tasks marked complete [x] as they finish, roadmap evolves
+- `progress.md` (BACKWARD) - Deliverables, changes, and ALL fix attempts logged immediately (including failures)
 - `handoff-notes.md` - Context passed between agents
 
 ### Recovery & Troubleshooting
 
 **If Mission Stalls**:
-1. **Check Progress Files**: Review `progress.md` for logged issues
+1. **Check Progress Files**: Review `progress.md` for complete issue history with all attempted fixes
 2. **Resume Mission**: Re-run the same command to continue
 3. **Escalate Issues**: Complex problems automatically flagged to @coordinator
 

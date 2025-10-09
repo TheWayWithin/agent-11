@@ -47,33 +47,9 @@ This mission establishes the foundation for a new greenfield project by:
   - Deployment: mcp__netlify, mcp__railway
 - Notes which agents should use which MCPs
 
-### Phase 1: Memory Bootstrap from Ideation (10 min)
+### Phase 1: GitHub Setup (5 min)
 ```bash
-/coord "Bootstrap greenfield project memory from ideation.md"
-```
-
-**Agent Actions:**
-- @coordinator reads ideation document(s)
-- Creates `/memories` directory structure:
-  - `/memories/project/` (requirements, architecture, constraints, metrics)
-  - `/memories/user/` (preferences, context, goals)
-  - `/memories/technical/` (decisions, patterns, tooling)
-  - `/memories/lessons/` (insights, debugging, optimizations)
-- Extracts to memory files using `/project/field-manual/bootstrap-guide.md`:
-  - `/memories/project/requirements.xml` - Core features, user stories
-  - `/memories/project/constraints.xml` - Security, performance, business limits
-  - `/memories/project/architecture.xml` - Tech stack, architectural decisions
-  - `/memories/user/preferences.xml` - Communication style, technical depth
-  - `/memories/user/context.xml` - User background, goals, pain points
-- **Security validation**: Path validation, content sanitization, size limits
-- **Quality checks**: XML validation, gap identification, duplicate detection
-- Reports bootstrap results and any missing information
-
-**Reference**: See `/project/field-manual/bootstrap-guide.md` for full bootstrap protocol
-
-### Phase 2: GitHub Setup (5 min)
-```bash
-/coord "Setting up GitHub integration..."
+/coord "Let's set up this greenfield project. First, what's the GitHub repository URL or name for this project?"
 ```
 
 **Agent Actions:**
@@ -82,59 +58,51 @@ This mission establishes the foundation for a new greenfield project by:
 - Sets up remote origin
 - Creates initial commit structure
 
-### Phase 3: CLAUDE.md Generation (5 min)
+### Phase 2: Ideation Analysis (10 min)
 ```bash
-/coord "Generating project-specific CLAUDE.md from memory..."
+/coord "Please share your ideation document - this could be a PRD, vision doc, brand guidelines, or architecture specs"
 ```
 
 **Agent Actions:**
-- @coordinator generates CLAUDE.md using `/templates/claude-template.md`
-- Populates from memory files:
-  - Project overview from requirements.xml
-  - Architecture from architecture.xml
-  - Constraints from constraints.xml
-  - Development guidelines from preferences.xml
-- Adds MCP configuration discovered in Phase 0
-- Includes memory protocol and tracking requirements
-- Validates completeness and accuracy
+- @strategist analyzes ideation document
+- Extracts key requirements
+- Identifies technical constraints
+- Maps business objectives
+- Notes brand/design requirements
 
-**Reference**: See `/templates/claude-template.md` for template structure
-
-### Phase 4: Architecture Documentation (10 min)
+### Phase 3: Architecture Documentation (10 min)
 ```bash
-/coord "Creating architecture documentation from memory..."
+/coord "Creating architecture documentation based on ideation and requirements..."
 ```
 
 **Agent Actions:**
-- @architect creates `architecture.md` using `/templates/architecture.md`
-- Populates from `/memories/project/architecture.xml`:
+- @architect creates `architecture.md` using template:
   - System overview and boundaries
-  - Infrastructure architecture (from memory)
-  - Application architecture (from memory)
-  - Data architecture (from memory)
+  - Infrastructure architecture
+  - Application architecture
+  - Data architecture
   - Integration points
-  - Architecture decisions (from memory/technical/decisions.xml)
+  - Architecture decisions
   - Current limitations
   - Next steps
-- Ensures alignment with memory and CLAUDE.md
 
+**Note**: Uses `/templates/architecture.md` as starting point
 **Reference**: See `/project/field-manual/architecture-sop.md` for comprehensive guidelines
 
-### Phase 5: Project Planning (10 min)
+### Phase 4: Project Planning (15 min)
 ```bash
-/coord "Creating project plan from memory and architecture..."
+/coord "Creating initial project plan based on ideation analysis and architecture..."
 ```
 
 **Agent Actions:**
-- @strategist creates `project-plan.md` from memory:
-  - Executive summary (from requirements.xml vision)
-  - Core objectives (from requirements.xml features)
-  - Technical architecture (referencing architecture.md and memory)
-  - Milestone roadmap (from requirements and constraints)
-  - Success metrics (from memories/project/success_metrics.xml)
+- @strategist creates `project-plan.md` with:
+  - Executive summary
+  - Core objectives
+  - Technical architecture (referencing architecture.md)
+  - Milestone roadmap
+  - Success metrics
   - Risk assessment
-  - Resource requirements (from constraints.xml)
-- Ensures alignment with memory and CLAUDE.md
+  - Resource requirements
 
 **project-plan.md Structure:**
 ```markdown
@@ -192,15 +160,13 @@ This mission establishes the foundation for a new greenfield project by:
 - [ ] Dependency 2
 ```
 
-### Phase 6: Progress Tracking Setup (5 min)
+### Phase 5: Progress Tracking Setup (5 min)
 ```bash
 /coord "Setting up progress tracking system..."
 ```
 
 **Agent Actions:**
 - @documenter creates `progress.md`:
-- Initializes with project start date and first milestone
-- References memory for historical context
 
 **progress.md Structure:**
 ```markdown
@@ -232,54 +198,56 @@ _Key architectural and implementation decisions will be logged here_
 _Optimization opportunities and performance wins_
 ```
 
-### Phase 7: Bootstrap Validation (5 min)
+### Phase 6: CLAUDE.md Configuration (10 min)
 ```bash
-/coord "Validating bootstrap results..."
+/coord "Updating CLAUDE.md with project-specific instructions..."
 ```
 
 **Agent Actions:**
-- @coordinator validates bootstrap completion:
-  - ✅ Memory structure created correctly
-  - ✅ All required memory files present
-  - ✅ XML files are well-formed
-  - ✅ Security validation passed (no directory traversal, sensitive data)
-  - ✅ File sizes within limits (< 1000 tokens each)
-  - ✅ CLAUDE.md generated and complete
-  - ✅ Tracking files initialized
-  - ✅ Architecture documentation created
-- Reports any gaps or issues requiring attention
-- Provides bootstrap summary for user review
+- @coordinator updates CLAUDE.md with:
+  - Project overview from ideation
+  - Available MCPs and their usage
+  - Tracking requirements
+  - Performance insights section
+  - Update protocols
 
-**Bootstrap Summary Output:**
+**CLAUDE.md Additions:**
 ```markdown
-## Bootstrap Complete ✅
+## Project Overview
+[Extracted from ideation document]
 
-### Memory Files Created
-- /memories/project/requirements.xml (750 tokens)
-- /memories/project/constraints.xml (450 tokens)
-- /memories/project/architecture.xml (680 tokens)
-- /memories/user/preferences.xml (320 tokens)
-- /memories/user/context.xml (280 tokens)
+## Available MCPs
+[Discovered MCPs and their assigned usage]
+- mcp__supabase: Database operations (@developer, @operator)
+- mcp__context7: Documentation (@all agents)
+- mcp__playwright: Testing (@tester)
+- mcp__firecrawl: Research (@architect, @developer)
+- [Additional MCPs as discovered]
 
-### Project Files Generated
-- CLAUDE.md (customized for project)
-- architecture.md (from template + memory)
-- project-plan.md (from memory)
-- progress.md (initialized)
+## Ideation Context
+Location: `./ideation.md` (or specified location)
+Key Requirements:
+- [Requirement 1]
+- [Requirement 2]
+- [Requirement 3]
 
-### Security Validation
-- ✅ All paths validated
-- ✅ No sensitive data detected
-- ✅ XML structure validated
-- ✅ File sizes within limits
+## Progress Tracking Protocol
+After each work session or milestone:
+1. Update `project-plan.md` with completed tasks and MCPs used
+2. Log issues and resolutions in `progress.md`
+3. Document lessons learned
+4. Record performance insights
+5. Note successful MCP usage patterns
 
-### Gaps Requiring Clarification
-[List any missing information from ideation]
+## Performance Insights
+[To be updated with optimization opportunities]
 
-### Next Steps
-1. Review memory files for accuracy
-2. Clarify any gaps identified
-3. Begin first milestone from project-plan.md
+## Update Checklist
+- [ ] Milestone completed → Update project-plan.md
+- [ ] Issue resolved → Log in progress.md
+- [ ] Lesson learned → Add to progress.md
+- [ ] Performance insight → Update CLAUDE.md
+- [ ] MCP pattern discovered → Document usage
 ```
 
 ---
@@ -287,15 +255,12 @@ _Optimization opportunities and performance wins_
 ## Success Metrics
 
 ✅ **Mission Complete When:**
-- [ ] Memory structure initialized from ideation
-- [ ] All memory files created and validated (requirements, constraints, architecture, preferences, context)
-- [ ] Security validation passed (paths, content, file sizes)
-- [ ] CLAUDE.md generated from memory
-- [ ] architecture.md created from template + memory
-- [ ] project-plan.md created from memory
-- [ ] progress.md initialized
 - [ ] GitHub repository configured
-- [ ] Bootstrap validation complete with summary provided
+- [ ] Ideation document analyzed
+- [ ] architecture.md created from template
+- [ ] project-plan.md created with roadmap
+- [ ] progress.md initialized
+- [ ] CLAUDE.md updated with tracking instructions
 
 ---
 
