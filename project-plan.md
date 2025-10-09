@@ -220,7 +220,75 @@ This modernization initiative implements recommendations from a comprehensive ex
 - Updated design-review.md command
 - UI testing templates
 
-### 3.4 Mission Template Upgrade
+### 3.4 OpsDev Workflow Integration
+**Objective**: Integrate standardized development lifecycle (OpsDev) from LLM.txt Mastery into AGENT-11 core
+
+**Context**: LLM.txt Mastery successfully implemented staging environments, automated deployments, and safe release procedures. Results: 90%+ deployment risk reduction, 2-4 hours saved per bug fix, preview URLs for stakeholder review. See `/Documents/Ideation/AGENT-11-OPSDEV-UPDATE.md` for complete implementation details.
+
+**Phase 1: Core Agent Library Updates** (Week 1):
+- [ ] Read and analyze AGENT-11-OPSDEV-UPDATE.md for requirements
+- [ ] Add OPSDEV WORKFLOW INTEGRATION section to `/project/agents/specialists/operator.md`
+  - Branch strategy (main/develop/feature/*)
+  - Environment parity rule (staging mirrors production)
+  - Workflow reference documents
+  - Pre-flight checklist for staging setup
+- [ ] Create `/project/missions/mission-opsdev.md` - OpsDev setup mission
+  - Phase 0: Pre-flight validation (15 min)
+  - Phase 1: Staging environment setup (1-2 hours)
+  - Phase 2: Workflow integration (30 min)
+  - Phase 3: End-to-end verification (30 min)
+- [ ] Update `/project/field-manual/mission-catalog.md` with opsdev mission
+- [ ] Add opsdev orchestration example to coordinator documentation
+
+**Phase 2: Templates & Documentation** (Week 2):
+- [ ] Create `/templates/devops-implementation-plan.md` template
+  - Adapt from LLM.txt Mastery version
+  - Add platform-specific sections (Railway, Netlify, Supabase, Neon)
+  - Include pre-flight checklist with placeholders
+  - Document common issues and solutions
+- [ ] Create `/templates/development-lifecycle-guide.md` template
+  - Branch strategy visualization
+  - Daily feature workflow
+  - Emergency hotfix procedure
+  - Environment URLs reference
+- [ ] Update `/project/field-manual/coordinator-guide.md` with opsdev mission examples
+- [ ] Add platform-specific considerations documentation
+
+**Phase 3: Testing & Validation** (Week 3):
+- [ ] Test opsdev mission with sample project (not LLM.txt Mastery)
+- [ ] Verify operator can complete mission-opsdev.md independently
+- [ ] Test coordinator delegation of opsdev missions
+- [ ] Validate templates work for new project setup
+- [ ] Document edge cases and gotchas discovered during testing
+- [ ] End-to-end workflow testing (3+ projects)
+
+**Phase 4: Documentation & Release** (Week 4):
+- [ ] Update README.md with OpsDev capabilities
+- [ ] Create case study: LLM.txt Mastery implementation
+- [ ] Add OpsDev section to Field Manual
+- [ ] Update mission library documentation
+- [ ] Create announcement for AGENT-11 community
+- [ ] Establish quarterly review process for platform updates
+
+**Deliverables**:
+- ✅ Updated `/project/agents/specialists/operator.md` with OPSDEV section
+- ✅ New `/project/missions/mission-opsdev.md` mission file
+- ✅ Two new templates: devops-implementation-plan.md and development-lifecycle-guide.md
+- ✅ Updated mission catalog and coordinator guide
+- ✅ Platform-specific documentation (Railway, Netlify, Supabase, Neon)
+- ✅ Testing results and edge case documentation
+- ✅ Case study and community announcement
+
+**Expected Impact**:
+- 90%+ reduction in deployment risk for AGENT-11 projects
+- 2-4 hours saved per bug fix (catch in staging)
+- Preview URLs enable stakeholder review before production
+- Standardized workflow across all AGENT-11 projects
+- Safe experimentation environment (staging is disposable)
+
+**Reference Implementation**: llmtxtmastery.com (live project using OpsDev workflow)
+
+### 3.5 Mission Template Upgrade
 **Objective**: Create sophisticated mission input templates and workflows
 
 - [ ] Audit all 18 current mission files for consistency
