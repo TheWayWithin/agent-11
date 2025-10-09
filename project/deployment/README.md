@@ -194,18 +194,25 @@ Specific configuration for Core Squad deployment including installation sequence
    - Timestamped with metadata
    - Skip if no existing agents
 
-3. **Agent Installation**
+3. **CLAUDE.md Template Installation** 🆕
+   - **Never overwrites** existing CLAUDE.md files
+   - Creates `CLAUDE-AGENT11-TEMPLATE.md` with AGENT-11 instructions
+   - **If CLAUDE.md exists**: Preserves it + creates safety backup
+   - **If CLAUDE.md missing**: Creates from template
+   - Provides clear merge instructions for integration
+
+4. **Agent Installation**
    - Sequential installation with progress tracking
    - YAML header validation
    - File integrity verification
    - Error collection for rollback
 
-4. **Post-Install Verification**
+5. **Post-Install Verification**
    - Verify all agents installed correctly
    - Validate file formats and content
    - Confirm functionality
 
-5. **Rollback on Failure**
+6. **Rollback on Failure**
    - Automatic rollback if any step fails
    - Restore from backup if available
    - Clean removal if no backup exists
@@ -219,6 +226,58 @@ Specific configuration for Core Squad deployment including installation sequence
 | Full Squad Install Time | <5 min | ✅ ~4 min |
 | Environment Validation | 100% | ✅ 100% |
 | Rollback Success | 100% | ✅ 100% |
+
+## 📝 CLAUDE.md File Handling
+
+### Safe Template Approach
+
+AGENT-11 uses a **template-based approach** to ensure your custom CLAUDE.md files are never overwritten.
+
+### Behavior
+
+| Scenario | Action | Result |
+|----------|--------|--------|
+| **No CLAUDE.md exists** | Creates CLAUDE.md from template | ✅ Ready to use immediately |
+| **CLAUDE.md exists** | Preserves existing + creates template | ✅ Your instructions safe |
+| **Update/Reinstall** | Always creates fresh template | ✅ Get latest AGENT-11 features |
+
+### Files Created
+
+1. **CLAUDE.md**
+   - Your project's instructions (never overwritten if exists)
+   - Created from template only if missing
+
+2. **CLAUDE-AGENT11-TEMPLATE.md**
+   - Latest AGENT-11 instructions
+   - Always updated on each install
+   - Reference for merging capabilities
+
+3. **CLAUDE.md.backup-[timestamp]**
+   - Safety backup when existing CLAUDE.md detected
+   - Timestamped for version history
+
+### Integration Instructions
+
+When AGENT-11 finds an existing CLAUDE.md, you'll see:
+
+```
+📝 AGENT-11 Integration Instructions:
+  1. Review AGENT-11 features: cat CLAUDE-AGENT11-TEMPLATE.md
+  2. Your current instructions: ./CLAUDE.md
+  3. Your backup (safety): ./CLAUDE.md.backup-[timestamp]
+
+To add AGENT-11 capabilities to your project:
+  • Copy relevant sections from CLAUDE-AGENT11-TEMPLATE.md
+  • Paste into your CLAUDE.md where appropriate
+  • Or append entire template: cat CLAUDE-AGENT11-TEMPLATE.md >> CLAUDE.md
+```
+
+### Best Practices
+
+- **Review the template**: Check `CLAUDE-AGENT11-TEMPLATE.md` for new features
+- **Selective merge**: Copy only sections relevant to your project
+- **Keep backups**: Timestamped backups preserved for safety
+- **Update regularly**: Reinstall to get latest AGENT-11 capabilities in template
 
 ## 🛡 Error Handling
 

@@ -1,6 +1,10 @@
 # AGENT-11 installation artifacts
 .claude/backups/
 
+# CLAUDE.md backup files (user-generated)
+CLAUDE.md.backup-*
+CLAUDE.md.before-*
+
 # Temporary files
 *.tmp
 *.swp

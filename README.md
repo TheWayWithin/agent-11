@@ -127,10 +127,87 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/d
 - ✅ Detects your project type and context
 - ✅ Creates project-local `.claude/agents/` directory
 - ✅ Installs your selected squad with project understanding
+- ✅ **Never overwrites existing CLAUDE.md** - uses safe template approach
 - ❌ Fails gracefully if no project context found (with helpful guidance)
 - ✅ Shows you exactly what to do next
 
 **[📖 See Complete Project Setup Guide →](QUICK-START.md)**
+
+## 📋 Understanding AGENT-11 Deployment
+
+### What Gets Installed in Your Project
+
+When you deploy AGENT-11, the installer creates a project-local squad with these components:
+
+```
+your-project/
+├── .claude/
+│   ├── agents/              # Your specialist squad (project-scoped)
+│   │   ├── strategist.md
+│   │   ├── developer.md
+│   │   ├── tester.md
+│   │   └── ...
+│   ├── commands/            # Mission orchestration commands
+│   │   ├── coord.md         # /coord command for mission workflows
+│   │   ├── meeting.md       # /meeting for structured discussions
+│   │   └── ...
+│   └── backups/            # Automatic backups of previous installs
+│
+├── missions/               # Pre-built mission workflows
+│   ├── library.md          # Complete mission catalog
+│   ├── mission-build.md    # Build feature from PRD
+│   ├── mission-fix.md      # Emergency bug fixes
+│   └── ...
+│
+├── templates/              # Reusable project templates
+│   ├── architecture-template.md
+│   ├── agent-context-template.md
+│   └── ...
+│
+├── field-manual/           # Best practices and SOPs
+│   └── architecture-sop.md
+│
+├── CLAUDE.md               # Your project instructions (never overwritten!)
+└── CLAUDE-AGENT11-TEMPLATE.md  # AGENT-11 capabilities reference
+```
+
+### CLAUDE.md: Your Project's Intelligence
+
+**CLAUDE.md** is the brain of your project - it tells Claude Code (and all agents) how to work with YOUR specific codebase.
+
+#### How Deployment Handles CLAUDE.md
+
+The installer uses a **safe template approach**:
+
+| Scenario | What Happens | Files Created |
+|----------|--------------|---------------|
+| **Fresh project** | Creates CLAUDE.md from AGENT-11 template | • CLAUDE.md<br>• CLAUDE-AGENT11-TEMPLATE.md |
+| **Existing CLAUDE.md** | Preserves your file completely | • CLAUDE.md (untouched)<br>• CLAUDE-AGENT11-TEMPLATE.md (new)<br>• CLAUDE.md.backup-[timestamp] (safety) |
+| **Update/reinstall** | Never overwrites, updates template only | • CLAUDE.md (preserved)<br>• CLAUDE-AGENT11-TEMPLATE.md (updated) |
+
+**Key Points:**
+- ✅ **Your CLAUDE.md is NEVER overwritten** - existing instructions always preserved
+- ✅ **Automatic backup** - timestamped safety copy created when existing file detected
+- ✅ **Latest features available** - CLAUDE-AGENT11-TEMPLATE.md always updated with newest capabilities
+- ✅ **Your choice** - decide which AGENT-11 features to integrate into your project
+
+#### Integrating AGENT-11 Capabilities
+
+When you have existing CLAUDE.md, the installer provides clear instructions:
+
+```bash
+📝 AGENT-11 Integration Instructions:
+  1. Review AGENT-11 features: cat CLAUDE-AGENT11-TEMPLATE.md
+  2. Your current instructions: ./CLAUDE.md
+  3. Your backup (safety): ./CLAUDE.md.backup-[timestamp]
+
+To add AGENT-11 capabilities to your project:
+  • Copy relevant sections from CLAUDE-AGENT11-TEMPLATE.md
+  • Paste into your CLAUDE.md where appropriate
+  • Or append entire template: cat CLAUDE-AGENT11-TEMPLATE.md >> CLAUDE.md
+```
+
+**Best Practice:** Review the template, copy sections that benefit your project (like mission orchestration, context preservation, MCP integration), and paste them into your CLAUDE.md.
 
 ## ✅ Verify Your Project Deployment
 
@@ -140,6 +217,9 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/d
 
 # List your project-local agents
 /agents
+
+# Verify CLAUDE.md files
+ls -la CLAUDE*.md
 
 # Test your first specialist (knows your project context)
 @strategist What should we build first in this project?
@@ -837,6 +917,12 @@ Conducts root cause analysis to identify improvements in:
 cd /path/to/your/project
 curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 ```
+
+**🛡️ Your Custom CLAUDE.md is Safe!** The installer:
+- ✅ **Never overwrites** your existing CLAUDE.md file
+- ✅ Creates `CLAUDE-AGENT11-TEMPLATE.md` with latest AGENT-11 features
+- ✅ Creates automatic backup: `CLAUDE.md.backup-[timestamp]`
+- ✅ Provides clear instructions for merging new capabilities
 
 **[📋 Complete Update Guide →](project/docs/UPDATING.md)** - Everything you need to know about updating
 

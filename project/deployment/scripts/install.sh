@@ -500,22 +500,25 @@ install_agent() {
 }
 
 # Install CLAUDE.md file with context preservation instructions
+# Uses template approach to never overwrite existing CLAUDE.md files
 install_claude_md() {
     local execution_mode
     execution_mode=$(detect_execution_mode)
-    
-    log "Installing CLAUDE.md with context preservation system..."
-    
+
+    log "Installing AGENT-11 CLAUDE.md template..."
+
     local dest_file="$(pwd)/CLAUDE.md"
-    
+    local template_file="$(pwd)/CLAUDE-AGENT11-TEMPLATE.md"
+    local backup_file="$(pwd)/CLAUDE.md.backup-$(date +%Y%m%d_%H%M%S)"
+
+    # Always install/update the template file
     if [[ "$execution_mode" == "local" ]]; then
         local source_file="$PROJECT_ROOT/CLAUDE.md"
         if [[ -f "$source_file" ]]; then
-            if cp "$source_file" "$dest_file"; then
-                success "Installed CLAUDE.md with context preservation instructions"
-                return 0
+            if cp "$source_file" "$template_file"; then
+                log "AGENT-11 template installed: CLAUDE-AGENT11-TEMPLATE.md"
             else
-                error "Failed to install CLAUDE.md"
+                error "Failed to install AGENT-11 template"
                 return 1
             fi
         else
@@ -524,11 +527,46 @@ install_claude_md() {
         fi
     else
         # Remote installation - download from GitHub
-        if download_file_from_github "CLAUDE.md" "$dest_file"; then
-            success "Downloaded and installed CLAUDE.md with context preservation instructions"
+        if download_file_from_github "CLAUDE.md" "$template_file"; then
+            log "AGENT-11 template downloaded: CLAUDE-AGENT11-TEMPLATE.md"
+        else
+            error "Failed to download AGENT-11 template from GitHub"
+            return 1
+        fi
+    fi
+
+    # Check if CLAUDE.md already exists
+    if [[ -f "$dest_file" ]]; then
+        # Existing CLAUDE.md found - preserve it
+        warn "Existing CLAUDE.md detected - preserving your custom instructions"
+
+        # Create backup for safety
+        if cp "$dest_file" "$backup_file"; then
+            log "Safety backup created: $backup_file"
+        fi
+
+        success "Your existing CLAUDE.md has been preserved"
+        echo ""
+        echo -e "${BLUE}📝 AGENT-11 Integration Instructions:${NC}"
+        echo "  1. Review AGENT-11 features: cat CLAUDE-AGENT11-TEMPLATE.md"
+        echo "  2. Your current instructions: $dest_file"
+        echo "  3. Your backup (safety): $backup_file"
+        echo ""
+        echo -e "${YELLOW}To add AGENT-11 capabilities to your project:${NC}"
+        echo "  • Copy relevant sections from CLAUDE-AGENT11-TEMPLATE.md"
+        echo "  • Paste into your CLAUDE.md where appropriate"
+        echo "  • Or append entire template: cat CLAUDE-AGENT11-TEMPLATE.md >> CLAUDE.md"
+        echo ""
+
+        return 0
+    else
+        # No existing CLAUDE.md - safe to create from template
+        if cp "$template_file" "$dest_file"; then
+            success "Created CLAUDE.md from AGENT-11 template"
+            log "Template also available at: CLAUDE-AGENT11-TEMPLATE.md"
             return 0
         else
-            error "Failed to download CLAUDE.md from GitHub"
+            error "Failed to create CLAUDE.md from template"
             return 1
         fi
     fi
@@ -839,10 +877,12 @@ verify_installation() {
         missing_items+=("field-manual:architecture-sop.md")
     fi
     
-    # Verify CLAUDE.md file
-    if [[ ! -f "$(pwd)/CLAUDE.md" ]]; then
-        missing_items+=("system:CLAUDE.md")
+    # Verify CLAUDE.md template file (always created)
+    if [[ ! -f "$(pwd)/CLAUDE-AGENT11-TEMPLATE.md" ]]; then
+        missing_items+=("system:CLAUDE-AGENT11-TEMPLATE.md")
     fi
+
+    # Note: CLAUDE.md itself may not exist if user already had one (preserved)
     
     if [[ ${#missing_items[@]} -eq 0 ]]; then
         success "Installation verification passed!"
