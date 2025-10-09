@@ -16,6 +16,25 @@ This file has been restructured to be a BACKWARD-LOOKING changelog capturing:
 
 ## 📦 Recent Deliverables
 
+### [2025-10-09] - OpsDev Integration Plan Added to Project Roadmap
+**Created by**: @coordinator
+**Type**: Planning Documentation
+**Files**: project-plan.md
+
+**Description**:
+Added comprehensive 4-week plan (Phase 3.4) to integrate OpsDev workflow from LLM.txt Mastery into AGENT-11 core library. Includes staging environments, automated deployments, and safe release procedures.
+
+**Impact**:
+- Provides roadmap for standardized development lifecycle across all AGENT-11 projects
+- 90%+ deployment risk reduction expected
+- 2-4 hours saved per bug fix (catch in staging before production)
+- Preview URLs enable stakeholder review before production deploy
+- Reference implementation: llmtxtmastery.com
+
+**Related**: Phase 3.4 in project-plan.md, /Documents/Ideation/AGENT-11-OPSDEV-UPDATE.md
+
+---
+
 ### [2025-10-09] - Progress Tracking System Transformation
 **Created by**: @coordinator
 **Type**: Documentation Enhancement
@@ -36,7 +55,26 @@ Transformed progress.md from narrative log into comprehensive learning-focused c
 
 ## 🔨 Recent Changes
 
-### [2025-10-09] - Documentation & Template Updates
+### [2025-10-09] - Project Plan Updated with OpsDev Integration Phase
+**Modified by**: @coordinator
+**Category**: Planning
+**Files Changed**: project-plan.md
+
+**What Changed**:
+- Added Phase 3.4: OpsDev Workflow Integration (lines 223-289)
+- Structured as 4-week plan across 4 phases with 25 tasks
+- Includes core agent library updates, templates, testing, and release
+- Deliverables: operator.md updates, mission-opsdev.md, 2 templates, platform docs, case study
+
+**Why Changed**:
+LLM.txt Mastery successfully validated OpsDev workflow (staging environments, automated deployments) with 90%+ risk reduction and 2-4 hours saved per bug fix. Integration into AGENT-11 core will provide these benefits to all users while maintaining framework simplicity.
+
+**Rationale**:
+OpsDev addresses critical gap in AGENT-11: no standardized deployment lifecycle. Current approach: developers push directly to production with no staging testing. OpsDev provides production-mirrored staging, preview URLs, and safe rollback procedures.
+
+---
+
+### [2025-10-09] - Documentation & Template Updates (Progress Tracking System)
 **Modified by**: @coordinator
 **Category**: Documentation
 **Files Changed**: CLAUDE.md, README.md, coordinator.md (2x), coord.md, pmd.md, 6 mission files, field manual, missions/README.md
