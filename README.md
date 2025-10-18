@@ -62,6 +62,35 @@ Complete documentation for all modernization features:
 
 **Ready to experience next-generation agentic development?** All enhancements work seamlessly within Claude Code - no external infrastructure required.
 
+---
+
+## 🤝 BOS-AI Integration: Strategic Planning → Rapid Execution
+
+**Coming from BOS-AI?** AGENT-11 provides native integration with BOS-AI's 30-agent strategic framework, enabling seamless handoff from business strategy to technical execution.
+
+### What is BOS-AI Integration?
+
+**BOS-AI** handles strategic planning (market research, product strategy, requirements) → **AGENT-11** handles technical execution (MVP development, feature building, deployment). Together, they form a complete AI-powered product development pipeline.
+
+### Who Should Use This?
+
+- ✅ **BOS-AI users** who have completed strategic planning and want to start building
+- ✅ **Solo founders** who want strategic clarity before development begins
+- ✅ **Teams** looking for seamless handoff between strategy and execution agents
+
+### Get Started in 5 Minutes
+
+Already have BOS-AI strategy documents? **[→ 5-Minute Quickstart](project/field-manual/bos-ai-quickstart.md)**
+
+**Quickstart Summary:**
+1. Copy BOS-AI documents to `ideation/` folder
+2. Run `/coord dev-setup ideation/PRD.md`
+3. Start building with `/coord build` or `/coord mvp`
+
+**[📖 Complete BOS-AI Integration Guide →](project/field-manual/bos-ai-integration-guide.md)** - Full documentation with troubleshooting, advanced patterns, and best practices
+
+---
+
 ### Your Squad Includes:
 - 🎯 **The Strategist** - Product vision and roadmaps
 - 🏗️ **The Architect** - Bulletproof technical decisions  
