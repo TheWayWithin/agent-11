@@ -1007,10 +1007,15 @@ setup_mcp_configuration() {
     echo "📌 MCP Setup Instructions:"
     if [[ -f "$TARGET_DIR/.env.mcp" ]]; then
         success "Found .env.mcp - running automatic MCP configuration..."
-        if [[ -f "$TARGET_DIR/mcp-setup.sh" ]] && "$TARGET_DIR/mcp-setup.sh" --verify > /dev/null 2>&1; then
-            success "MCP servers configured automatically"
+        if [[ -f "$TARGET_DIR/mcp-setup.sh" ]]; then
+            # Run full setup (not just --verify) to actually register MCPs
+            if "$TARGET_DIR/mcp-setup.sh"; then
+                success "MCP servers configured - restart Claude Code to activate"
+            else
+                warn "Some MCPs could not be configured - check your API keys"
+            fi
         else
-            warn "Some MCPs could not be configured - check your API keys"
+            warn "mcp-setup.sh not found - skipping MCP configuration"
         fi
     else
         echo "  To enable MCP integration (optional but recommended):"
