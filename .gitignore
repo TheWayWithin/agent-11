@@ -21,3 +21,26 @@ Thumbs.db
 # MCP Configuration
 .env.mcp
 .env.mcp.local
+.mcp-status.md
+mcp-setup.sh
+
+# Archive directory
+.archive/
+
+# Analysis and research documents (archived)
+BOS-AI*.md
+LIVE-DEPLOYMENT-TEST-REPORT.md
+Documents/
+
+# Field manual staging documents (archived)
+field-manual/STAGING-*.md
+
+# Working templates (moved to templates/)
+.claude/templates/
+CLAUDE-AGENT11-TEMPLATE.md
+
+# IDE settings
+.claude/settings.json
+
+# Verification frameworks (draft)
+templates/verification-framework.md
