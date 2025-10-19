@@ -311,6 +311,182 @@ Prevention: Add secret validation to deployment checklist
 
 See `/templates/progress-template.md` for complete structure and usage guidelines.
 
+## 🔄 Project Lifecycle Management (NEW!)
+
+**AGENT-11 now includes a comprehensive lifecycle management system for maintaining project health over time.**
+
+### The Challenge
+
+Traditional AI agent projects accumulate "context pollution" over time:
+- Tracking files grow endlessly (20,000+ lines in large projects)
+- Historical details clutter current context
+- Lessons learned get buried in progress logs
+- Agents waste time reading irrelevant historical details
+
+### The Solution: Strategic Cleanup
+
+AGENT-11 implements a **three-tier cleanup strategy** based on project status:
+
+#### 1️⃣ Milestone Transition (Every 2-4 Weeks)
+
+**When**: Major milestone complete, but project continues
+**Time**: 30-60 minutes
+**Purpose**: Archive completed work, retain essentials
+
+**Actions**:
+- Extract lessons to searchable `lessons/` index
+- Archive milestone handoff notes to `archives/handoffs/`
+- Clean agent-context.md (keep essentials, archive history)
+- Create fresh handoff-notes.md for next milestone
+- Update project-plan.md with next milestone tasks
+
+**Quick Command**: See `templates/cleanup-checklist.md` Section A
+
+#### 2️⃣ Project Completion (Mission Accomplished!)
+
+**When**: All objectives achieved, ready for new mission
+**Time**: 1-2 hours
+**Purpose**: Comprehensive archive and knowledge extraction
+
+**Actions**:
+- Extract ALL lessons from progress.md to `lessons/`
+- Create mission archive in `archives/missions/mission-[name]-YYYY-MM-DD/`
+- Update CLAUDE.md with system-level learnings
+- Archive all tracking files (project-plan.md, progress.md, etc.)
+- Prepare fresh start for next mission
+
+**Quick Command**: See `templates/cleanup-checklist.md` Section B
+
+#### 3️⃣ Continue Active Work (No Cleanup)
+
+**When**: Mission complete, continuing same phase
+**Actions**: Simply update progress.md and project-plan.md
+
+### Lessons Learned System
+
+**Problem**: Valuable insights buried in 10,000+ line progress.md files
+**Solution**: Searchable, categorized lessons repository
+
+**Structure**:
+```
+lessons/
+├── index.md                    # Searchable catalog
+├── security/
+│   ├── auth-bypass-prevention.md
+│   └── jwt-validation.md
+├── performance/
+│   ├── database-query-optimization.md
+│   └── caching-strategies.md
+├── architecture/
+│   └── microservice-communication.md
+└── process/
+    └── deployment-automation.md
+```
+
+**Benefits**:
+- **Searchable**: `grep -r "auth" lessons/` finds all auth-related learnings
+- **Categorized**: Browse by security, performance, architecture, process
+- **Portable**: Lessons transfer to new projects
+- **Growing**: Knowledge compounds across missions
+
+**Lesson File Format** (see `templates/lesson-template.md`):
+```markdown
+# [Lesson Title]
+
+**Lesson ID**: L-SECURITY-001
+**Category**: Security
+**Severity**: Critical
+**Discovered**: 2025-10-19
+
+## Problem
+[What went wrong]
+
+## Root Cause
+[Why it happened - deep analysis]
+
+## Solution
+[How to fix it]
+
+## Prevention
+[How to avoid in future]
+
+## Related Issues
+- Issue #47: Auth bypass vulnerability
+- Issue #52: Token validation failure
+```
+
+### Post-Mission Cleanup Decision
+
+**Every mission file now includes cleanup guidance:**
+
+After completing any mission, agents and users see clear options:
+- ✅ **Milestone Transition** - Archive and continue
+- 🎯 **Project Completion** - Full archive and fresh start
+- 🔄 **Continue Active Work** - Keep working, no cleanup
+
+**Example** (from mission-build.md):
+```markdown
+## Post-Mission Cleanup Decision
+
+### ✅ Milestone Transition (Every 2-4 weeks)
+When: This mission completes a major project milestone, but more work remains.
+Actions: Extract lessons, archive handoffs, clean context
+See: templates/cleanup-checklist.md Section A
+
+### 🎯 Project Completion (Mission accomplished!)
+When: All project objectives achieved, ready for new mission.
+Actions: Extract ALL lessons, create mission archive, update CLAUDE.md
+See: templates/cleanup-checklist.md Section B
+
+### 🔄 Continue Active Work (No cleanup needed)
+When: Mission complete but continuing active development in same phase.
+Actions: Update progress.md and project-plan.md, continue working.
+```
+
+### Lifecycle Templates & Guides
+
+**Templates** (in `/templates/`):
+- `cleanup-checklist.md` - Quick reference for milestone/project cleanup
+- `project-plan-template.md` - Task verification and completion protocols
+- `lessons-index-template.md` - Searchable lessons catalog structure
+- `lesson-template.md` - Individual lesson file format
+
+**Comprehensive Guide**:
+- `project/field-manual/project-lifecycle-guide.md` - Complete lifecycle management procedures
+
+### Why This Matters
+
+**Without Lifecycle Management**:
+```
+Mission 1: 100 lines tracking
+Mission 2: 500 lines tracking (includes Mission 1 history)
+Mission 3: 2,000 lines tracking (includes all history)
+Mission 10: 20,000+ lines tracking (agents overwhelmed by history)
+```
+
+**With Lifecycle Management**:
+```
+Mission 1: 100 lines tracking → Archive
+Mission 2: 150 lines tracking (fresh start) → Archive + Lessons
+Mission 3: 120 lines tracking (fresh start) → Archive + Lessons
+Mission 10: 180 lines tracking + 50 searchable lessons (knowledge compounds)
+```
+
+**Result**:
+- Agents stay focused on current mission (not buried in history)
+- Knowledge preserved in searchable lessons (not lost)
+- Context pollution eliminated (tracking files stay manageable)
+- Faster agent execution (less to read, more relevant context)
+
+### Quick Start
+
+1. **Complete a mission** - Follow mission workflow normally
+2. **See cleanup decision** - Every mission file now has guidance at the end
+3. **Choose your path** - Milestone transition, project completion, or continue
+4. **Follow checklist** - Use `templates/cleanup-checklist.md` for step-by-step
+
+**For detailed procedures**: See `project/field-manual/project-lifecycle-guide.md`
+
 ## 🧪 Testing & Quality Assurance
 
 AGENT-11 uses a **separation of duties** approach to ensure test integrity and maintain high quality standards.
