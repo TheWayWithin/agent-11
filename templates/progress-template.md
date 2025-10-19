@@ -6,6 +6,147 @@
 
 ---
 
+## 🚨 REAL-TIME UPDATE PROTOCOL
+
+**CRITICAL**: This file documents what has HAPPENED (backward-looking). Update IMMEDIATELY when events occur, not later.
+
+### When to Update IMMEDIATELY (Not Later)
+
+#### ✅ UPDATE NOW (Real-Time)
+1. **Deliverable Created/Modified** → Log within 5 minutes of completion
+   - Don't wait for phase end or daily summary
+   - Capture while details are fresh
+   - Include file paths and immediate impact
+
+2. **Change Made to Code/Configs** → Log immediately after change
+   - Record rationale before context lost
+   - Document "why" while decision is clear
+   - Link to related issues if applicable
+
+3. **Issue Discovered** → Create issue entry the moment problem identified
+   - Don't wait to understand full scope
+   - Capture symptom and immediate context
+   - Mark status as 🔴 Open
+
+4. **Fix Attempted** → Log EVERY attempt immediately after trying
+   - Document even if fix fails (especially if it fails!)
+   - Capture rationale before moving to next attempt
+   - Record learning while insight is fresh
+
+5. **Issue Resolved** → Add root cause analysis within 30 minutes
+   - Document why it worked before forgetting details
+   - Capture prevention strategy while problem is clear
+   - Link all attempted fixes for pattern recognition
+
+#### ❌ DON'T WAIT (Common Anti-Patterns)
+
+**DON'T**:
+- ❌ Batch updates at end of day/week ("I'll log it later")
+- ❌ Wait until issue fully resolved to start logging
+- ❌ Skip logging failed attempts ("nobody needs to know what didn't work")
+- ❌ Assume you'll remember details tomorrow
+- ❌ Only log successes and hide failures
+- ❌ Wait for phase completion to document lessons
+
+**WHY REAL-TIME MATTERS**:
+1. **Context Lost**: Details forgotten within hours, not days
+2. **Pattern Recognition**: Failed attempts reveal patterns success hides
+3. **Learning Value**: Failures teach more than successes
+4. **Audit Trail**: Complete history prevents repeated mistakes
+5. **Knowledge Transfer**: Next specialist needs full story, not sanitized version
+
+### In-Progress Work Format
+
+While actively working on tasks, use this format:
+
+```markdown
+### [YYYY-MM-DD HH:MM] - [Work Description] - 🔵 IN PROGRESS
+**Working on**: [Specific task or issue]
+**Assigned to**: @[specialist]
+**Started**: [YYYY-MM-DD HH:MM]
+
+**Current Status**:
+[What's happening right now - update every 1-2 hours during active work]
+
+**Progress So Far**:
+- [Completed step 1]
+- [Completed step 2]
+- [Currently working on step 3]
+
+**Blockers Encountered**:
+- [Blocker 1 if any]
+- [Temporary workaround if applicable]
+
+**Next Steps**:
+- [Immediate next action]
+
+---
+```
+
+**Update this entry every 1-2 hours during active work** to maintain real-time status.
+
+### Real-Time Update Examples
+
+#### GOOD Example (Immediate Logging):
+```markdown
+### 2025-10-19 14:30 - Authentication Issue Discovered
+**Discovered by**: @developer
+**Status**: 🔴 Open
+
+**Symptom**: Users logged out after 5 minutes unexpectedly
+
+**Context**: Testing login flow, noticed session expires too quickly
+
+#### Fix Attempts
+
+##### Attempt #1: Increased token expiry - 2025-10-19 14:45
+**Result**: ❌ Failed
+**Rationale**: Thought 5-minute token expiry was too short
+**What We Tried**: Changed JWT expiry from 5min to 60min
+**Outcome**: Users still logged out after 5min - expiry time not the issue
+**Learning**: Problem is NOT token expiry, must be refresh mechanism
+
+##### Attempt #2: Fixed refresh token rotation - 2025-10-19 15:20
+**Result**: ✅ Success
+**Rationale**: Refresh tokens not being stored/rotated properly
+**What We Tried**: Added refresh token to localStorage with proper rotation
+**Outcome**: Users now stay logged in correctly
+**Learning**: Always check refresh mechanism before adjusting token expiry
+
+#### Resolution
+**Resolved**: 2025-10-19 15:30
+**Root Cause**: Refresh token was not stored after login, causing session loss
+**Prevention**: Add test to verify refresh token storage after authentication
+```
+
+#### BAD Example (Delayed Logging):
+```markdown
+### 2025-10-19 - Fixed authentication
+**Fixed by**: @developer
+**Status**: ✅ Complete
+
+Users were getting logged out. Fixed it by updating refresh tokens.
+```
+*(Problems: No timestamps, no failed attempts, no learning, no context, no root cause)*
+
+### Daily Check-In Protocol
+
+**End of Each Work Session** (15 minutes):
+1. Review all in-progress entries - update current status
+2. Convert completed work from "🔵 IN PROGRESS" to final entries
+3. Ensure all attempted fixes logged (successes AND failures)
+4. Check that all issues have current status (not stale)
+5. Add any patterns or insights noticed during work
+
+**DO NOT** wait for:
+- Phase completion
+- End of week
+- Issue fully resolved
+- All fixes attempted
+- "Until I have something successful to report"
+
+---
+
 ## 📦 Deliverables
 
 ### [YYYY-MM-DD HH:MM] - [Deliverable Name]

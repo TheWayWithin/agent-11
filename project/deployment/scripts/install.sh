@@ -620,11 +620,18 @@ install_mission_system() {
         "templates/agent-context-template.md"
         "templates/handoff-notes-template.md"
         "templates/evidence-repository-template.md"
+        "templates/project-plan-template.md"
+        "templates/progress-template.md"
+        "templates/lessons-index-template.md"
+        "templates/lesson-template.md"
+        "templates/cleanup-checklist.md"
+        "templates/claude-template.md"
     )
     
     # Define field manual files to install
     local field_manual_files=(
         "project/field-manual/architecture-sop.md"
+        "project/field-manual/project-lifecycle-guide.md"
     )
     
     local total_files=$((${#mission_files[@]} + ${#command_files[@]} + ${#template_files[@]} + ${#field_manual_files[@]}))

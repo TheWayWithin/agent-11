@@ -306,6 +306,229 @@ After each work session or milestone:
    - Lessons learned → /memories/lessons/insights.xml
    - Architecture changes → /memories/project/architecture.xml
 
+## Todo List Integration Protocol
+
+**CRITICAL**: TodoWrite tool DERIVES from project-plan.md. It is NOT an independent task tracker.
+
+### Fundamental Relationship
+
+```
+project-plan.md (Source of Truth)
+       ↓
+   TodoWrite (Derived View)
+       ↓
+Real-Time Status Display
+```
+
+**project-plan.md is the MASTER**:
+- All planned work lives in project-plan.md
+- Tasks marked [ ] or [x] in project-plan.md
+- TodoWrite reflects current work status
+- When TodoWrite completes → Update project-plan.md [x]
+
+### Rules for Todo Usage
+
+#### Rule 1: Derive from project-plan.md
+- **DON'T**: Create independent todos in TodoWrite
+- **DO**: Use TodoWrite to show current status of project-plan.md tasks
+- **WHY**: Single source of truth prevents drift
+
+**Example**:
+```markdown
+# In project-plan.md (MASTER)
+- [ ] Implement authentication (@developer)
+- [ ] Create login UI (@designer)
+- [ ] Test auth flow (@tester)
+
+# In TodoWrite (DERIVED)
+todos: [
+  {
+    content: "Implement authentication",
+    status: "in_progress",
+    activeForm: "Implementing authentication"
+  },
+  {
+    content: "Create login UI",
+    status: "pending",
+    activeForm: "Creating login UI"
+  }
+]
+```
+
+#### Rule 2: Sync Immediately
+- **Mark in_progress** when specialist starts task (TodoWrite)
+- **Mark completed** when specialist finishes (TodoWrite)
+- **Mark [x]** in project-plan.md ONLY after verification (see verification protocol)
+- **Sync happens**: TodoWrite → project-plan.md (after verification)
+
+**Timing**:
+```
+1. Specialist starts → TodoWrite: in_progress
+2. Specialist finishes → TodoWrite: completed
+3. Coordinator verifies → project-plan.md: [x]
+```
+
+#### Rule 3: Verification Before [x]
+TodoWrite marks "completed" but project-plan.md needs verification:
+- [ ] Task tool returned actual response
+- [ ] Deliverable files exist at specified paths
+- [ ] Specialist updated handoff-notes.md
+- [ ] Quality spot-check passed
+- [ ] No blockers preventing next task
+
+**Only after verification** → Mark [x] in project-plan.md
+
+#### Rule 4: Granularity Match
+- TodoWrite shows **current phase tasks** only
+- Not all project-plan.md tasks (too many)
+- Typically 3-7 active todos at once
+- Add next todos as current phase progresses
+
+**Example**:
+```markdown
+# project-plan.md has 50+ tasks across 5 phases
+
+# TodoWrite shows only current phase (5 tasks)
+Phase 2: Development (current)
+- [ ] Task 1 (in_progress)
+- [ ] Task 2 (pending)
+- [ ] Task 3 (pending)
+- [ ] Task 4 (pending)
+- [ ] Task 5 (pending)
+```
+
+### Correct Usage Patterns
+
+#### Pattern 1: Mission Start
+```markdown
+1. Create project-plan.md with all phases
+2. Use TodoWrite for Phase 1 tasks only
+3. As Phase 1 completes, update project-plan.md
+4. Load Phase 2 tasks into TodoWrite
+```
+
+#### Pattern 2: Task Completion
+```markdown
+1. Specialist completes work
+2. TodoWrite: Mark "completed"
+3. Coordinator verifies (checks deliverable, handoff, quality)
+4. Coordinator updates project-plan.md: [x] with timestamp
+5. TodoWrite and project-plan.md now in sync
+```
+
+#### Pattern 3: Task Blocked
+```markdown
+1. Specialist hits blocker
+2. TodoWrite: Keep "in_progress" with note
+3. project-plan.md: Add blocker to Dependencies section
+4. Specialist switches to different task
+5. TodoWrite: New task "in_progress", blocked task remains
+```
+
+### Incorrect Usage Patterns
+
+#### ❌ WRONG: Independent Todo Creation
+```markdown
+# DON'T create todos not in project-plan.md
+TodoWrite([
+  { content: "Fix random bug I noticed", status: "pending" }
+])
+```
+
+**Why wrong**: Not in project-plan.md = no tracking, no verification, no context
+
+#### ❌ WRONG: TodoWrite as Source of Truth
+```markdown
+# DON'T mark [x] in project-plan.md just because TodoWrite says completed
+TodoWrite shows: "completed"
+→ Immediately mark project-plan.md [x] ← WRONG
+```
+
+**Why wrong**: Skips verification protocol, no confirmation of deliverable
+
+#### ❌ WRONG: Loading All Tasks
+```markdown
+# DON'T load all 50 tasks from project-plan.md into TodoWrite
+TodoWrite([...all 50 tasks...])
+```
+
+**Why wrong**: Clutters view, makes current work unclear, overwhelming
+
+### Integration with Coordinator
+
+**When delegating via Task tool**:
+```markdown
+Task(
+  subagent_type="developer",
+  prompt="Implement authentication.
+
+  Read agent-context.md and handoff-notes.md first.
+  CRITICAL: Follow Critical Software Development Principles.
+
+  [Task details]
+
+  When complete, update handoff-notes.md with findings.
+  I will mark the task [x] in project-plan.md after verification."
+)
+
+# Immediately after delegation:
+TodoWrite([
+  {
+    content: "Implement authentication",
+    status: "in_progress",
+    activeForm: "Implementing authentication"
+  }
+])
+```
+
+**When receiving Task tool response**:
+```markdown
+# 1. Task tool returns with deliverable
+# 2. Verify deliverable exists and meets criteria
+# 3. Check handoff-notes.md updated by specialist
+# 4. Update TodoWrite to "completed"
+# 5. Update project-plan.md with [x] and timestamp
+# 6. Merge findings to agent-context.md
+```
+
+### Synchronization Checklist
+
+**After Every Task Completion**:
+- [ ] TodoWrite shows "completed"
+- [ ] Verification protocol passed (deliverable, handoff, quality)
+- [ ] project-plan.md updated with [x] and timestamp
+- [ ] progress.md updated with deliverable entry
+- [ ] agent-context.md merged with specialist findings
+- [ ] TodoWrite and project-plan.md in sync
+
+**Daily Sync Check**:
+- [ ] TodoWrite "in_progress" matches current work
+- [ ] TodoWrite "completed" all marked [x] in project-plan.md
+- [ ] No drift between TodoWrite and project-plan.md
+- [ ] Next pending todos ready for upcoming work
+
+### Benefits of Correct Todo Usage
+
+1. **Single Source of Truth**: project-plan.md always accurate
+2. **Real-Time Visibility**: TodoWrite shows current status
+3. **Verification Enforced**: Can't mark [x] without confirmation
+4. **Context Preserved**: Todos link to project-plan.md tasks
+5. **No Drift**: Sync protocol prevents divergence
+
+### Common Mistakes and Fixes
+
+**Mistake**: TodoWrite and project-plan.md out of sync
+**Fix**: Run sync check, update project-plan.md to match verified completions
+
+**Mistake**: Marking [x] before TodoWrite completion
+**Fix**: Never mark [x] without TodoWrite showing completed first
+
+**Mistake**: Creating todos not in project-plan.md
+**Fix**: Add task to project-plan.md first, then derive to TodoWrite
+
+**Mistake**: Loading too many todos
+**Fix**: Show only current phase (3-7 tasks), add more as needed
+
 ## Critical Software Development Principles
 
 ### Security-First Development
