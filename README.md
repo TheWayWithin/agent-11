@@ -8,7 +8,7 @@
 [![Deploy Time](https://img.shields.io/badge/Deploy%20Time-Under%201%20Second-green?style=for-the-badge)](QUICK-START.md)
 [![Success Rate](https://img.shields.io/badge/Success%20Rate-98%25-brightgreen?style=for-the-badge)](INSTALLATION.md)
 [![Agents](https://img.shields.io/badge/Agents-11%20Specialists-red?style=for-the-badge)](project/agents/)
-[![Missions](https://img.shields.io/badge/Missions-18%20Workflows-purple?style=for-the-badge)](project/missions/)
+[![Missions](https://img.shields.io/badge/Missions-20%20Workflows-purple?style=for-the-badge)](project/missions/)
 [![MCP Integration](https://img.shields.io/badge/MCP-Enabled-orange?style=for-the-badge)](project/field-manual/mcp-integration.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
@@ -310,6 +310,262 @@ Prevention: Add secret validation to deployment checklist
 ### Template Available
 
 See `/templates/progress-template.md` for complete structure and usage guidelines.
+
+## 🧪 Testing & Quality Assurance
+
+AGENT-11 uses a **separation of duties** approach to ensure test integrity and maintain high quality standards.
+
+### Testing Philosophy
+
+**THE TESTER** (Quality Assurance Specialist):
+- ✅ Analyzes code and plans comprehensive test scenarios
+- ✅ Runs test suites and collects results with evidence
+- ✅ Documents bugs with reproduction steps and severity
+- ✅ Uses **mcp__playwright** for E2E browser testing
+- ❌ **Cannot modify code or test files** (read-only for integrity)
+
+**@developer** (Implementation Specialist):
+- Creates test files based on tester's specifications
+- Implements test scenarios following best practices
+- Fixes bugs identified by tester
+- Commits test code to repository
+
+This separation ensures tests remain objective and unbiased - the tester finds issues, the developer fixes them, and the tester verifies the fixes.
+
+### Test File Structure
+
+When AGENT-11 tests your project, it follows this organization:
+
+```
+your-project/
+├── tests/                  # Test code (COMMITTED to git)
+│   ├── e2e/               # End-to-end tests (Playwright)
+│   ├── unit/              # Unit tests (Jest/Vitest)
+│   ├── integration/       # Integration tests
+│   ├── accessibility/     # A11y compliance tests
+│   └── setup/             # Test configuration
+│       ├── auth.setup.js  # Authentication setup
+│       └── .auth/         # Auth state (GITIGNORED)
+│
+└── test-results/          # Test outputs (GITIGNORED)
+    ├── playwright-report/ # HTML reports
+    ├── playwright-results.json
+    ├── screenshots/       # Visual evidence
+    ├── videos/           # Test recordings
+    └── traces/           # Debug traces
+```
+
+**What's Committed vs Ignored**:
+- ✅ **COMMITTED**: Test scripts (`tests/**/*.spec.js`), test setup, configuration
+- ❌ **GITIGNORED**: Test results, auth state, videos, screenshots, reports
+
+### Testing Workflow
+
+**1. @tester Analyzes Code** (Read tool)
+   - Reviews implementation for quality and edge cases
+   - Identifies test scenarios (happy paths, error cases, security)
+   - Creates comprehensive test plan with coverage targets
+   - Documents performance and security requirements
+
+**2. @tester Delegates to @developer** (Task tool)
+   - Provides detailed test specifications and edge cases
+   - Lists security requirements (auth, validation, headers)
+   - Specifies performance benchmarks
+   - Includes accessibility considerations
+
+**3. @developer Creates Tests** (Write/Edit tools)
+   - Implements test files in `tests/` directory structure
+   - Follows testing pyramid (70% unit, 20% integration, 10% E2E)
+   - Commits test code to git repository
+   - Ensures tests are maintainable and reliable
+
+**4. @tester Executes Tests** (Bash + mcp__playwright)
+   - Runs test suites: `npx playwright test`
+   - Captures results and evidence (screenshots, traces)
+   - Monitors console for errors and warnings
+   - Analyzes network requests for performance
+   - Documents findings in `progress.md`
+
+**5. @tester Reports Results**
+   - Bug reports with clear reproduction steps
+   - Evidence attached (screenshots, logs, network traces)
+   - Severity classification (Critical, High, Medium, Low)
+   - Performance metrics and quality gate decision
+
+### SENTINEL Mode: Comprehensive Testing
+
+For critical features and production releases, THE TESTER activates **SENTINEL Mode** - a systematic 7-phase assessment protocol:
+
+**Phase 1: Perimeter Establishment**
+- Map all modified components and dependencies
+- Identify affected user journeys and flows
+- Set up multi-browser testing environment
+- Establish baseline screenshots for regression
+
+**Phase 2: Functional Reconnaissance**
+- Execute all happy path scenarios
+- Test interactive elements systematically
+- Verify form validations and error handling
+- Validate API integrations and responses
+
+**Phase 3: Visual Regression Sweep**
+- Capture screenshots across viewports (mobile, tablet, desktop)
+- Compare against baseline images for unintended changes
+- Detect layout shifts and style regressions
+- Coordinate findings with @designer's RECON Protocol
+
+**Phase 4: Cross-Browser Operations**
+- Chrome/Chromium validation
+- Firefox compatibility check
+- Safari/WebKit testing
+- Edge browser verification
+- Mobile browsers (iOS Safari, Chrome Mobile)
+
+**Phase 5: Performance Patrol**
+- Measure page load times and Time to Interactive (TTI)
+- Monitor memory usage and detect leaks
+- Validate network request optimization
+- Test under throttled network conditions
+
+**Phase 6: Stress Testing**
+- Concurrent user simulation
+- Rapid navigation and form submission testing
+- Large dataset handling validation
+- Network failure resilience testing
+
+**Phase 7: Accessibility Verification**
+- Screen reader compatibility (NVDA, JAWS, VoiceOver)
+- Keyboard-only navigation testing
+- Focus management validation
+- ARIA implementation verification
+- Color contrast compliance (WCAG AA+)
+
+**When SENTINEL Mode Activates**:
+- Critical feature releases before production
+- Pre-production deployment validation
+- After major refactors or architecture changes
+- Security-sensitive code modifications
+
+**SENTINEL Report Format**:
+```markdown
+### SENTINEL REPORT: [Feature/Component]
+
+#### OPERATIONAL STATUS
+- Overall Health: [GREEN/YELLOW/RED]
+- Test Coverage: 87%
+- Issues Detected: 3 CRITICAL, 5 HIGH, 8 MEDIUM
+
+#### CRITICAL THREATS
+- [CRITICAL] Authentication bypass possible on password reset
+  - Reproduction: [detailed steps]
+  - Evidence: test-results/screenshots/auth-bypass.png
+
+#### CROSS-BROWSER STATUS
+- Chrome: PASS (all tests green)
+- Firefox: PASS (all tests green)
+- Safari: FAIL (payment flow issue)
+- Mobile: PASS (iOS/Android validated)
+
+#### RECOMMENDATIONS
+1. Block deployment - critical security issue found
+2. Fix Safari payment integration before release
+```
+
+### Testing in Mission Workflows
+
+Testing is embedded throughout AGENT-11 mission workflows:
+
+**mission-build** (Feature Development):
+- **Phase 5: Quality Assurance** (1 hour)
+- @tester validates implementation against acceptance criteria
+- Execute edge case testing and security validation
+- Performance benchmarks and regression testing
+
+**mission-fix** (Bug Resolution):
+- **Phase 4: Verification & Testing** (20-30 min)
+- @tester confirms bug is resolved with reproduction
+- Run regression test suite to prevent side effects
+- Document fix verification in progress.md
+
+**mission-mvp** (MVP Development):
+- **Phase 7: Quick Testing** (2-3 hours)
+- @tester validates core user journeys work correctly
+- Test on target devices and browsers
+- Basic load testing and performance validation
+
+**mission-refactor** (Code Improvement):
+- Testing after each refactor phase
+- Ensure no functionality broken by changes
+- Validate performance improvements achieved
+
+All missions include @tester for quality validation before completion, ensuring zero bugs reach production.
+
+### Testing Tools & Technology
+
+**Primary Tool: mcp__playwright MCP**
+- Complete browser automation for E2E testing
+- Cross-browser testing (Chrome, Firefox, Safari, Edge)
+- Visual regression with screenshot comparison
+- Network interception and performance monitoring
+- Accessibility testing with DOM snapshots
+- Mobile device emulation
+
+**Unit Testing**:
+- Jest (JavaScript/TypeScript projects)
+- Vitest (Vite-based projects)
+- Pytest (Python projects)
+
+**Integration Testing**:
+- API endpoint validation
+- Database integration tests
+- Third-party service mocking
+
+**Documentation & Patterns**:
+- **mcp__context7** - Test framework documentation
+- **mcp__grep** - Search GitHub for test patterns and examples
+
+### Quality Metrics & Standards
+
+AGENT-11 maintains high quality standards:
+
+**Coverage Targets**:
+- 80%+ on critical paths and business logic
+- 100% on security-sensitive code (auth, payments, data access)
+- 70%+ overall project coverage
+
+**Quality Gates**:
+- Zero critical or high severity bugs before deployment
+- All tests passing across target browsers
+- Performance benchmarks met (load times, TTI)
+- Accessibility compliance (WCAG AA minimum)
+
+**Test Reliability**:
+- <5% flaky test rate (tests that fail inconsistently)
+- <10 minute CI/CD test execution time
+- 70%+ test automation rate
+
+**Bug Escape Rate**:
+- <5% of bugs reach production (caught in testing)
+- Mean Time to Detection: <1 day for production issues
+
+### Security-First Testing
+
+THE TESTER validates security requirements in every test run:
+
+**Security Testing Checklist**:
+- ✅ Authentication flows work correctly and securely
+- ✅ Authorization prevents unauthorized access
+- ✅ Input validation prevents injection attacks
+- ✅ Security headers function properly (CSP, HSTS, etc.)
+- ✅ Data encryption and protection work as designed
+- ✅ Session management is secure (timeout, invalidation)
+- ✅ Error messages don't leak sensitive information
+
+**Root Cause Analysis Required**:
+- Don't just test that bugs are fixed - verify root cause addressed
+- Ensure fixes don't create security workarounds
+- Validate architectural intent is preserved
+- Verify fixes follow established design patterns
 
 ### 🔌 MCP Integration Setup (Highly Recommended)
 
@@ -937,11 +1193,13 @@ Conducts root cause analysis to identify improvements in:
 
 **Total Documentation**: 2,650+ lines of comprehensive guides created in Phase 1 & 2 modernization
 
-## 🔥 Mission Library (18 Missions)
+## 🔥 Mission Library (20 Missions)
 
 ### Setup Missions (NEW!)
 - **[🚀 DEV-SETUP](project/missions/dev-setup.md)** - Greenfield project initialization (30-45 min)
 - **[🎯 DEV-ALIGNMENT](project/missions/dev-alignment.md)** - Existing project understanding (45-60 min)
+- **[⚙️ OPSDEV-SETUP](project/missions/mission-opsdev-setup.md)** - DevOps & environment configuration (20-30 min)
+- **[📋 CLAUDE-SETUP](project/missions/mission-claude-setup.md)** - CLAUDE.md creation & sync (15-25 min)
 - **[🔌 CONNECT-MCP](project/missions/connect-mcp.md)** - MCP discovery and connection (45-90 min)
 
 ### Development Missions
