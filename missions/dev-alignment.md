@@ -249,54 +249,56 @@ This mission aligns AGENT-11 with an existing project by:
 ```
 
 **Agent Actions:**
-- @documenter creates/updates `progress.md`:
+- @documenter creates/updates `progress.md` from `/templates/progress-template.md`:
 
 **progress.md Structure:**
 ```markdown
-# Project Progress Log
+# Progress Log
+# BACKWARD-LOOKING changelog: deliverables, changes, and complete issue history
 
-## Overview
-Project Start Date: [original date]
-AGENT-11 Onboarding: [today's date]
-Last Updated: [today's date]
+**Mission**: [Project Name]
+**Project Start**: [original date]
+**AGENT-11 Onboarding**: [today's date]
+**Last Updated**: [today's date]
 
 ## Historical Context
 [Summary of work done before AGENT-11]
 
-## Completed Milestones
-[List any existing completed work]
+## 📦 Deliverables
+[Log what was created/changed with descriptions - both historical and new]
 
-## Current Sprint
-### Goals
-- [ ] [From immediate roadmap]
-- [ ] [From immediate roadmap]
+## 🔨 Changes Made
+[Record modifications with rationale - track all changes going forward]
 
-### Active Issues
-[Any current bugs/issues identified]
+## 🐛 Issues Encountered
+[Complete issue history with ALL fix attempts - including failures]
 
-### Blockers
-[Any identified blockers]
+### Issue #[ID]: [Title]
+**Discovered**: [timestamp] by @[agent]
+**Status**: [🔴 Open | 🟡 In Progress | 🟢 Resolved]
 
-## Lessons Learned
+#### Fix Attempts
+##### Attempt #1: [Approach]
+**Result**: [✅ Success | ❌ Failed | ⚠️ Partial]
+**Rationale**: Why we thought this would work
+**What We Tried**: Specific changes made
+**Outcome**: What actually happened
+**Learning**: What this taught us
+
+#### Resolution (if resolved)
+**Root Cause**: Underlying reason
+**Why Previous Attempts Failed**: Analysis
+**Prevention Strategy**: How to avoid in future
+
+## 🎓 Lessons Learned
 ### Pre-AGENT-11
-[Any existing lessons]
+[Any existing lessons from codebase history]
 
 ### With AGENT-11
-_To be updated as we progress_
+[Key insights and patterns from missions]
 
-## Technical Decisions
-### Historical
-[Key decisions already made]
-
-### Pending
-[Decisions that need to be made]
-
-## Performance Insights
-### Current Performance
-[Baseline metrics from analysis]
-
-### Optimization Targets
-[Areas identified for improvement]
+## 📊 Metrics & Progress
+[Time tracking, velocity, quality indicators]
 ```
 
 ### Phase 6: CLAUDE.md Optimization (10 min)
@@ -344,12 +346,29 @@ Last Updated: [date]
 3. [Objective 3]
 
 ## Progress Tracking Protocol
-After each work session:
-1. Update `project-plan.md` with completed tasks and MCPs used
-2. Log issues and resolutions in `progress.md`
-3. Document lessons learned
-4. Record performance insights and MCP patterns
-5. Update this file with any new patterns or decisions
+
+### project-plan.md (FORWARD-LOOKING)
+**What we're PLANNING to do**:
+- Update when: Mission start, phase start, task completion
+- Task lists with checkboxes [ ] → [x]
+- Milestones, success metrics, risk assessment
+
+### progress.md (BACKWARD-LOOKING CHANGELOG)
+**What we DID and what we LEARNED**:
+- Update when: After EACH deliverable, after EACH fix attempt, when issue resolved
+- Log ALL fix attempts (including failures) - not just final solutions
+- Root cause analysis for all issues
+- Prevention strategies and lessons learned
+- **CRITICAL**: Failed attempts teach us what doesn't work and why
+
+### Update After:
+1. **Each Deliverable**: Log to progress.md with description
+2. **Each Change**: Record in progress.md with rationale
+3. **Issue Discovery**: Create issue entry in progress.md immediately
+4. **EACH Fix Attempt**: Log attempt, rationale, result, learning (even if it fails)
+5. **Issue Resolution**: Add root cause analysis and prevention strategy
+6. **Task Completion**: Mark [x] in project-plan.md
+7. **Phase End**: Update both files with results and lessons
 
 ## Performance Insights
 ### Current Bottlenecks
@@ -383,12 +402,15 @@ grep "mcp__"
 [MCPs that might help resolve]
 
 ## Update Checklist
-- [ ] Task completed → Update project-plan.md
-- [ ] Issue resolved → Log in progress.md
-- [ ] Lesson learned → Add to progress.md
+- [ ] Deliverable created → Log in progress.md with description
+- [ ] Code/config changed → Record in progress.md with rationale
+- [ ] Issue discovered → Create issue entry in progress.md
+- [ ] Fix attempted → Log attempt with result and learning in progress.md
+- [ ] Issue resolved → Add root cause analysis to progress.md
+- [ ] Task completed → Mark [x] in project-plan.md
 - [ ] Performance insight → Update CLAUDE.md
 - [ ] Pattern discovered → Document in CLAUDE.md
-- [ ] MCP usage → Track successful patterns
+- [ ] MCP usage → Track successful patterns in CLAUDE.md
 ```
 
 ---
@@ -400,9 +422,9 @@ grep "mcp__"
 - [ ] Project context understood
 - [ ] Ideation document reviewed/created
 - [ ] architecture.md reviewed/created
-- [ ] project-plan.md created/updated
-- [ ] progress.md initialized
-- [ ] CLAUDE.md optimized for project
+- [ ] project-plan.md created/updated with FORWARD-LOOKING roadmap
+- [ ] progress.md initialized from template with BACKWARD-LOOKING changelog structure
+- [ ] CLAUDE.md optimized for project (including Critical Software Development Principles)
 
 ---
 

@@ -50,7 +50,8 @@ Rapid response protocol for bug diagnosis and resolution. This mission prioritiz
 
 3. **WAIT FOR @analyst RESPONSE** - critical path for bug resolution
 4. **UPDATE project-plan.md** with analysis results and Phase 2 tasks
-5. **LOG TO progress.md** any urgent issues or complications found
+5. **LOG TO progress.md** issue discovery with symptom, context, and initial hypothesis
+6. **CRITICAL**: Start issue entry in progress.md - will add ALL fix attempts as mission progresses
 
 **Deliverables**:
 - Impact assessment
@@ -128,15 +129,25 @@ Rapid response protocol for bug diagnosis and resolution. This mission prioritiz
 
 ```bash
 @analyst Conduct post-mortem:
-1. Document timeline of events
-2. Identify why bug wasn't caught earlier
-3. Propose prevention measures
-4. Update testing strategies
-5. Create action items
+1. Document complete timeline of events including ALL fix attempts
+2. Review all attempted solutions from progress.md (successes AND failures)
+3. Identify why bug wasn't caught earlier
+4. Analyze why each failed attempt didn't work
+5. Determine root cause and why it was the underlying issue
+6. Propose prevention measures based on attempt history
+7. Update testing strategies
+8. Create action items
 ```
 
+**COORDINATOR**: Ensure progress.md is updated with:
+- Complete resolution section with root cause analysis
+- "Why Previous Attempts Failed" analysis
+- Prevention strategy to avoid similar issues
+- Lessons learned from all attempts
+
 **Deliverables**:
-- Post-mortem document
+- Post-mortem document leveraging progress.md issue history
+- Root cause analysis explaining why earlier attempts failed
 - Prevention recommendations
 - Process improvements
 - Action items

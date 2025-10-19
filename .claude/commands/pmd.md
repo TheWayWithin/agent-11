@@ -153,11 +153,36 @@ When multiple PMDs are run, the system can identify:
 ## INTEGRATION WITH AGENT-11
 
 PMD works seamlessly with:
-- **progress.md**: Analyzes logged issues
-- **CLAUDE.md**: Suggests improvements
-- **Agent prompts**: Recommends enhancements
+- **progress.md**: Primary data source - analyzes logged issues with ALL fix attempts (including failures)
+  - Reads issue history with complete attempt logs
+  - Identifies patterns across failed attempts
+  - Extracts learnings from attempt outcomes
+  - Uses chronological changelog to reconstruct failure timeline
+  - Leverages root cause analyses from resolved issues
+- **CLAUDE.md**: Suggests improvements to Critical Software Development Principles adherence
+- **Agent prompts**: Recommends enhancements to prevent security shortcuts
 - **Task tool**: Identifies delegation issues
 - **MCPs**: Checks tool availability
+
+### PMD Analysis Protocol for progress.md
+
+When analyzing issues from progress.md:
+1. **Extract Complete Attempt History**: Read ALL attempts for each issue (not just final resolution)
+2. **Pattern Analysis Across Attempts**:
+   - Identify common misunderstandings leading to failed attempts
+   - Recognize anti-patterns (e.g., bypassing security for convenience)
+   - Track evolution of understanding from attempt to attempt
+3. **Learning Extraction**: Capture what each attempt taught about the problem
+4. **Root Cause Validation**: Verify root cause aligns with attempt history
+5. **Prevention Strategy Assessment**: Evaluate if prevention strategies would have stopped initial attempts
+
+### Output Enhancement for Failed Attempts
+
+PMD output includes:
+- **Failed Attempt Patterns**: Common mistakes across multiple issues
+- **Time-to-Understanding**: How many attempts before root cause identified
+- **Anti-Pattern Detection**: Violations of Critical Software Development Principles
+- **Prevention Gaps**: What checks could have prevented initial failed attempts
 
 ## SUCCESS METRICS
 
