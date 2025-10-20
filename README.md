@@ -793,6 +793,161 @@ AGENT-11 uses separation of duties: THE TESTER analyzes code and creates test pl
 
 [→ Complete Mission Execution Guide](project/field-manual/mission-execution-cheatsheet.md) | [→ Mission Library](#-mission-library-20-missions)
 
+---
+
+## 🎮 Command Reference
+
+AGENT-11 provides 6 powerful slash commands for different workflows:
+
+### 🎖️ `/coord` - Mission Orchestration
+**Orchestrate multi-agent missions with automatic specialist coordination**
+
+```bash
+# Pattern: /coord [mission] [input-file.md]
+/coord build requirements.md      # Feature development (4-8 hours)
+/coord fix bug-report.md          # Bug resolution (1-3 hours)
+/coord mvp vision.md              # Build MVP (1-3 days)
+/coord dev-setup ideation.md      # Project initialization (30-45 min)
+/coord dev-alignment              # Analyze existing project (45-60 min)
+```
+
+**What it does**:
+- Automatically delegates to appropriate specialists
+- Maintains context across agent handoffs
+- Updates project-plan.md and progress.md
+- Ensures quality through built-in verification
+
+[→ See all 20 missions](#-mission-library-20-missions)
+
+---
+
+### 🤝 `/meeting` - Strategic Conversations
+**Have natural, conversational discussions with specialists for brainstorming and planning**
+
+```bash
+# Pattern: /meeting @agent [topic]
+/meeting @strategist                                    # Product strategy discussion
+/meeting @architect "microservices vs monolith"         # Architecture consultation
+/meeting @designer "improving user onboarding"          # Design brainstorming
+/meeting @developer "real-time data synchronization"    # Technical problem-solving
+```
+
+**When to use**:
+- Brainstorming new features or approaches
+- Getting expert advice before formal missions
+- Exploring technical decisions and trade-offs
+- Creative collaboration and idea generation
+
+**Available specialists**: @strategist, @architect, @coordinator, @developer, @tester, @designer, @operator, @marketer, @analyst, @documenter, @support
+
+---
+
+### 🎨 `/design-review` - UI/UX Audit
+**Comprehensive design audit using RECON Protocol with automated testing**
+
+```bash
+/design-review    # Full 7-phase UI/UX audit with evidence
+```
+
+**What it analyzes** (7-phase RECON Protocol):
+1. **Preparation** - Environment setup, baseline screenshots
+2. **Interaction** - User flows, micro-interactions, navigation
+3. **Responsive** - Mobile, tablet, desktop compatibility
+4. **Visual** - Typography, spacing, hierarchy, consistency
+5. **Accessibility** - WCAG AA+ compliance, screen readers
+6. **Robustness** - Edge cases, error states, loading
+7. **Performance** - Load times, console errors
+
+**Deliverables**:
+- Issues classified by severity (BLOCKER/HIGH/MEDIUM/NITPICK)
+- Screenshots and reproduction steps
+- Accessibility compliance report
+- Specific recommendations with examples
+
+[→ Complete UI Doctrine Guide](project/field-manual/ui-doctrine.md)
+
+---
+
+### 🔍 `/recon` - Design Intelligence
+**Quick design reconnaissance for understanding existing UI/UX patterns**
+
+```bash
+/recon    # Rapid design analysis and pattern identification
+```
+
+**What it does**:
+- Analyzes current design system and patterns
+- Identifies UI/UX strengths and weaknesses
+- Documents design decisions and rationale
+- Provides strategic design recommendations
+
+**Use when**: Need quick design assessment before major changes or starting new features
+
+---
+
+### 📊 `/report` - Progress Reports
+**Generate stakeholder-ready progress reports automatically**
+
+```bash
+# Pattern: /report [since_date]
+/report                  # Last 7 days (default)
+/report 2025-08-20      # Since specific date
+```
+
+**Report includes**:
+- Executive summary of progress
+- Completed tasks with business impact
+- Issues encountered and resolutions
+- Current project status and health
+- Key metrics and trends
+- Next milestones and resource needs
+- BOS-AI alignment (if integrated)
+
+**Output**: Creates `progress-report.md` with professional formatting suitable for stakeholders, clients, or management
+
+---
+
+### 🔬 `/pmd` - Post Mortem Analysis
+**Systematic root cause analysis of failures to prevent recurrence**
+
+```bash
+# Pattern: /pmd [issue_description]
+/pmd                                          # Analyze recent failures from progress.md
+/pmd "Coordinator not using Task tool"        # Analyze specific issue
+/pmd "Installation failing on Windows"        # Analyze deployment failure
+```
+
+**Analysis covers**:
+- **Agent Performance** - Prompt clarity, scope compliance, tool usage
+- **Documentation Quality** - CLAUDE.md accuracy, task definitions
+- **Tool Usage** - MCP prioritization, error handling
+- **Process Issues** - Planning, communication, testing coverage
+
+**Deliverables**:
+- Timeline of events leading to failure
+- Root cause analysis with evidence
+- Immediate fixes (do now)
+- Short-term improvements (this week)
+- Long-term enhancements (this month)
+- Prevention strategies and detection mechanisms
+
+**Output**: Creates `post-mortem-analysis.md` with actionable recommendations
+
+---
+
+### Command Comparison
+
+| Command | Purpose | Duration | Output | Best For |
+|---------|---------|----------|--------|----------|
+| `/coord` | Execute missions with specialists | 1-8 hours | Code, tests, docs | Building, fixing, deploying |
+| `/meeting` | Strategic conversations | 15-60 min | Discussion, ideas | Brainstorming, planning |
+| `/design-review` | Full UI/UX audit | 1-2 hours | Design report | Pre-launch quality checks |
+| `/recon` | Quick design analysis | 30-45 min | Design insights | Understanding existing UI |
+| `/report` | Stakeholder updates | 5-10 min | Progress report | Communication, tracking |
+| `/pmd` | Failure analysis | 30-60 min | Root cause analysis | Learning from mistakes |
+
+---
+
 ## 🎖️ Community Success Stories
 
 > "Each project gets its own elite team that understands the codebase perfectly. Game changer."
@@ -808,20 +963,6 @@ AGENT-11 uses separation of duties: THE TESTER analyzes code and creates test pl
 > — *AGENT-11 Beta Tester*
 
 [Read more success stories →](project/community/SUCCESS-STORIES.md)
-
-
-## 🎨 Design Review System (NEW!)
-
-AGENT-11's RECON Protocol delivers world-class UI/UX audits with 7-phase systematic testing (Preparation, Interaction, Responsive, Visual, Accessibility, Robustness, Performance). Uses Playwright automation for live environment testing with evidence-based reports.
-
-**Commands**: `/design-review` | `/recon` | `@design-review`
-
-[→ Complete UI Doctrine & RECON Guide](project/field-manual/ui-doctrine.md)
-
-## 📊 Reporting Commands (NEW!)
-
-**Progress reporting**: `/report` or `/report 2025-08-20` - Stakeholder updates with completed tasks, issues, metrics
-**Post-mortem analysis**: `/pmd` or `/pmd "issue"` - Root cause analysis for improvements
 
 ## 🔥 Mission Library (20 Missions)
 
