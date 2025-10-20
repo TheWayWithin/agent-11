@@ -129,19 +129,84 @@ claude
 - Context management system
 - Project templates
 
-[→ Troubleshooting installation](#-troubleshooting)
+### Installation Issues?
+
+**"Command not found" after install?**
+```bash
+# Restart Claude Code completely
+/exit
+claude
+```
+
+**"Permission denied"?**
+```bash
+chmod +x ./project/deployment/scripts/install.sh
+./project/deployment/scripts/install.sh full
+```
+
+**Agents not appearing?**
+```bash
+# Check installation
+ls -la .claude/agents/
+# Should show 11 .md files
+```
+
+**Expected output after `/agents` command:**
+```
+Project agents (.claude/agents):
+- coordinator.md
+- strategist.md
+- developer.md
+- tester.md
+- operator.md
+- architect.md
+- designer.md
+- documenter.md
+- support.md
+- analyst.md
+- marketer.md
+```
+
+**Success indicator:** You see 11 agents listed
+
+**If agents don't appear:**
+1. Check `.claude/agents/` directory exists: `ls -la .claude/agents/`
+2. Restart Claude Code: `/exit` then `claude`
+3. Re-run installation if needed
+
+[→ Complete troubleshooting guide](#-troubleshooting)
 
 ### Step 2: Verify Deployment (30 seconds)
 
 ```bash
 # List your agents
 /agents
+```
 
+**Expected output:**
+```
+Project agents (.claude/agents):
+- coordinator.md
+- strategist.md
+- developer.md
+- tester.md
+- operator.md
+- architect.md
+- designer.md
+- documenter.md
+- support.md
+- analyst.md
+- marketer.md
+```
+
+**Success indicator:** You see 11 agents listed
+
+```bash
 # Test your first specialist
 @strategist What should we build first?
 ```
 
-**Success indicator**: You see 11 agents listed and strategist responds with analysis
+**Success indicator:** Strategist responds with analysis and questions
 
 ### Step 3: Run Your First Mission (2-3 minutes)
 
@@ -152,15 +217,67 @@ claude
 Analyzes your codebase, creates documentation, sets up context system.
 
 **For new projects**:
-```bash
-# 1. Create ideation document
-cp templates/mission-inputs/vision.md my-idea.md
-# Edit with your product vision
 
-# 2. Initialize project
-/coord dev-setup my-idea.md
+**Step 1: Create your vision document**
+```bash
+# Copy template
+cp templates/mission-inputs/vision.md my-project-vision.md
+
+# Edit with your details (example below)
+nano my-project-vision.md
 ```
-Creates architecture, project plan, memory system.
+
+**Example vision.md content:**
+```markdown
+# Project: Task Manager MVP
+
+## Goal
+Simple web-based task management for small teams
+
+## Target Users
+Small teams (3-10 people) needing basic task tracking
+
+## Core Features (MVP)
+1. Create, edit, delete tasks
+2. Assign tasks to team members
+3. Mark complete/incomplete
+4. Basic search and filtering
+5. Simple dashboard view
+
+## Technical Preferences
+- Frontend: React with TypeScript
+- Backend: Node.js with Express
+- Database: PostgreSQL
+- Hosting: Vercel + Railway
+
+## Timeline
+2-day MVP for initial testing
+
+## Success Criteria
+- 5 team members can use simultaneously
+- Tasks persist across sessions
+- Mobile-responsive interface
+```
+
+**Step 2: Initialize project**
+```bash
+/coord dev-setup my-project-vision.md
+```
+
+**What happens (30-45 minutes):**
+- Strategist analyzes vision → creates requirements
+- Architect designs system → creates architecture.md
+- Developer sets up structure → initializes codebase
+- Tester configures testing → sets up test framework
+
+**Expected deliverables:**
+- `architecture.md` - System design
+- `project-plan.md` - Development roadmap
+- `CLAUDE.md` - Project-specific instructions
+- `/memories/` - Persistent knowledge
+- Basic project structure
+
+**Time:** 30-45 minutes
 
 **Success indicator**: Mission completes with `project-plan.md` and `progress.md` created
 
@@ -216,6 +333,32 @@ Learn the most common AGENT-11 workflows with real examples, time estimates, and
 
 **Real example**: [LLM.txt Mastery](https://llmtxtmastery.com) built in 3 days
 
+**Cost estimate:** $5-10 in API usage
+
+**Recovery Protocols:**
+
+**MVP too complex?**
+```bash
+@strategist "Review my MVP scope and identify what can be cut to ship faster"
+```
+
+**Tests failing?**
+```bash
+/coord fix test-failures.md
+```
+
+**Need to add feature after MVP?**
+```bash
+/coord build feature-requirements.md
+```
+
+**Verify deliverables:**
+```bash
+# Check these files were created:
+ls architecture.md project-plan.md progress.md README.md
+ls -la src/ tests/ deployment-config/
+```
+
 ---
 
 ### 2. Fixing Critical Issues (2-4 hours)
@@ -238,6 +381,33 @@ Learn the most common AGENT-11 workflows with real examples, time estimates, and
 - Documenter updates docs → prevents recurrence
 
 **Deliverables**: Bug fix, regression tests, updated documentation
+
+**Cost estimate:** $0.50-1.50 in API usage
+
+**Recovery Protocols:**
+
+**Can't reproduce the bug?**
+```bash
+@tester "Help me create a minimal reproduction case for this bug"
+```
+
+**Fix causes other issues?**
+```bash
+/coord test  # Run full test suite
+@tester "Identify regressions from recent fix"
+```
+
+**Need emergency rollback?**
+```bash
+@operator "Rollback to previous deployment"
+```
+
+**Verify deliverables:**
+```bash
+# Confirm fix is deployed:
+git log -1  # See commit
+npm test    # Tests pass
+```
 
 ---
 
@@ -272,6 +442,33 @@ Learn the most common AGENT-11 workflows with real examples, time estimates, and
 
 **Real example**: "Identified 12 accessibility issues before launch, preventing legal compliance problems"
 
+**Cost estimate:** $0.50-1 in API usage
+
+**Recovery Protocols:**
+
+**Too many issues to fix?**
+```bash
+@designer "Prioritize design issues by business impact"
+```
+
+**Need design implementation help?**
+```bash
+@developer "Implement the HIGH priority design fixes"
+```
+
+**Accessibility issues found?**
+```bash
+@designer "Create accessibility remediation plan"
+```
+
+**Verify deliverables:**
+```bash
+# Check report was created:
+ls design-review-report.md
+# Review evidence:
+ls evidence-repository.md
+```
+
 ---
 
 ### 4. Feature Development (4-8 hours)
@@ -302,6 +499,33 @@ Learn the most common AGENT-11 workflows with real examples, time estimates, and
 
 **Real example**: "Implemented payment processing with Stripe in 6 hours including tests and error handling"
 
+**Cost estimate:** $1-3 in API usage
+
+**Recovery Protocols:**
+
+**Feature too complex?**
+```bash
+@architect "Break this feature into smaller incremental phases"
+```
+
+**Implementation stuck?**
+```bash
+@developer "Review current implementation and suggest alternative approach"
+```
+
+**Tests not passing?**
+```bash
+@tester "Debug test failures and identify root cause"
+```
+
+**Verify deliverables:**
+```bash
+# Check feature is complete:
+git log --oneline -5  # Recent commits
+npm test             # Tests pass
+ls src/features/     # New feature code
+```
+
 ---
 
 ### 5. Security Audit (2-3 hours)
@@ -331,6 +555,34 @@ Learn the most common AGENT-11 workflows with real examples, time estimates, and
 - ✅ Security documentation and prevention strategies
 
 **Real example**: "Identified and fixed XSS vulnerability before launch, prevented potential data breach"
+
+**Cost estimate:** $2-4 in API usage
+
+**Recovery Protocols:**
+
+**Critical vulnerabilities found?**
+```bash
+@developer "Implement immediate patches for CRITICAL security issues"
+@operator "Review production security posture"
+```
+
+**False positives in scan?**
+```bash
+@architect "Review security findings and filter false positives"
+```
+
+**Need compliance documentation?**
+```bash
+@documenter "Create security compliance documentation for [GDPR/SOC2/etc]"
+```
+
+**Verify deliverables:**
+```bash
+# Check security is improved:
+ls security-audit-report.md
+npm audit  # No critical vulnerabilities
+grep -r "TODO.*security" src/  # All TODOs addressed
+```
 
 ---
 
@@ -676,6 +928,16 @@ Complete overview of AGENT-11's capabilities organized by category.
 
 [→ Complete Performance Analysis](docs/features/performance.md)
 
+### Known Limitations
+
+- **Large codebases** (>50 files) may need phased approach
+- **Complex dependencies** may require manual setup
+- **Single-user operation** (no real-time collaboration)
+- **Requires internet** (Claude API connection)
+- **Token costs** vary by mission complexity ($0.50-$10)
+
+[→ Complete capabilities and limitations guide](docs/features/capabilities.md)
+
 ---
 
 ### Feature Documentation
@@ -689,6 +951,36 @@ Complete overview of AGENT-11's capabilities organized by category.
 - [Enhanced Prompting](project/field-manual/enhanced-prompting-guide.md) - Quality assurance (600+ lines)
 
 **Total Documentation**: 3,750+ lines of feature guides and implementation patterns
+
+## 🆘 Getting Unstuck Protocol
+
+### Step 1: Immediate Recovery
+```bash
+/clear  # Reset context (preserves memory)
+@coordinator "I'm stuck. Help me diagnose and recover."
+```
+
+### Step 2: System Check
+```bash
+# Verify installation
+/agents  # Should list 11 agents
+ls .claude/missions/  # Should show mission files
+ls .claude/agents/  # Should show 11 .md files
+```
+
+### Step 3: Simple Test
+```bash
+# Run basic functionality test
+@developer "Create a simple 'hello world' HTML file to verify system working"
+```
+
+### Step 4: Escalation
+- Check [Troubleshooting Guide](project/docs/TROUBLESHOOTING.md)
+- Use `@support` agent for built-in help
+- Create [GitHub Issue](https://github.com/TheWayWithin/agent-11/issues)
+- Join [Discord Community](https://discord.gg/agent11)
+
+---
 
 ## 📚 Complete Documentation
 
