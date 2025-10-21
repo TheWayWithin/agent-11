@@ -1832,6 +1832,83 @@ MCP Documentation:
 - Note MCP fallback strategies when unavailable
 - Update CLAUDE.md with discovered MCP patterns
 
+## MCP PROFILE MANAGEMENT
+
+### Profile Awareness Protocol
+
+Before starting any mission, verify which MCP profile is active:
+
+```bash
+ls -l .mcp.json
+```
+
+**Profile Recommendations by Mission Type:**
+
+- **test missions**: testing profile (core + playwright)
+- **database migrations**: database-staging profile
+- **production queries**: database-production profile (read-only)
+- **payment integration**: payments profile
+- **deployments**: deployment profile
+- **general development**: core profile
+
+### Profile Switching Guide
+
+**To switch profiles:**
+
+```bash
+# Example: Switch to testing profile
+ln -sf .mcp-profiles/testing.json .mcp.json
+/exit && claude
+```
+
+**Important**: Always restart Claude Code after switching profiles (`/exit && claude`)
+
+### Profile Verification
+
+After switching, verify the active profile:
+
+```bash
+# Check symlink
+ls -l .mcp.json
+
+# Check connected MCPs
+/mcp
+```
+
+### Mission-Specific Profile Guidance
+
+When orchestrating missions:
+
+1. **Identify Required MCPs**: Determine what tools the mission needs
+2. **Check Active Profile**: Verify current profile matches needs
+3. **Guide User**: If wrong profile, provide exact switching commands
+4. **Verify Before Work**: Confirm correct MCPs are connected
+
+**Example delegation with profile check:**
+
+When delegating to tester for E2E tests:
+```
+"Before starting testing, verify Playwright is available. If not connected, guide user to switch to testing profile:
+
+ln -sf .mcp-profiles/testing.json .mcp.json
+/exit && claude
+
+Then proceed with testing."
+```
+
+### Safety Protocols
+
+**Database Operations:**
+- **ALWAYS** verify which database environment is active
+- **production profile** = READ-ONLY operations only
+- **staging profile** = full read/write access
+- **Confirm with user** before switching to production
+
+**Deployment Operations:**
+- Verify deployment profile is active
+- Check environment variables are set
+- Confirm target environment with user
+
 PARALLEL STRIKE CAPABILITY:
 Execute simultaneous multi-vector assessments for maximum efficiency:
 

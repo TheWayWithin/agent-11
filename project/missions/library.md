@@ -4,6 +4,39 @@
 
 This library contains standardized mission protocols for common development scenarios. Each mission provides a proven execution pattern for multi-agent collaboration.
 
+## MCP Profile Recommendations by Mission
+
+Different missions benefit from different MCP profiles for optimal context usage:
+
+| Mission | Recommended Profile | Reason |
+|---------|-------------------|---------|
+| connect-mcp | core | Lightweight MCP setup and configuration |
+| dev-setup | core | Initial project setup with essential tools |
+| dev-alignment | core | Project analysis and understanding |
+| mission-build | core or fullstack | Depends on feature requirements |
+| mission-fix | core | Bug diagnosis and quick fixes |
+| mission-refactor | core | Code improvement and optimization |
+| mission-deploy | deployment | Direct Netlify + Railway access |
+| mission-document | core | Documentation creation |
+| mission-architecture | core | Architecture documentation |
+| mission-product-description | core | Product definition and planning |
+| mission-mvp | fullstack | Comprehensive toolset for rapid development |
+| mission-migrate | database-staging | Safe database migration with read/write access |
+| mission-optimize | core | Performance analysis and improvement |
+| mission-security | database-production | Read-only production database review |
+| mission-integrate | varies | Depends on integration type (payments, deployment, etc.) |
+| mission-release | deployment | Deployment and release coordination |
+| operation-genesis | core | Intelligence gathering and analysis |
+| operation-recon | core | Design reconnaissance |
+
+**Profile Switching**:
+```bash
+ln -sf .mcp-profiles/[profile].json .mcp.json
+# Restart Claude Code
+```
+
+See [MCP Profile Guide](../../docs/MCP-GUIDE.md) for complete profile reference.
+
 ### Project Setup Missions
 
 #### 🚀 DEV-SETUP - Greenfield Project Initialization

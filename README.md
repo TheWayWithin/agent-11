@@ -833,16 +833,45 @@ Automatic setup during missions. Manual: `@tester "Set up testing infrastructure
 
 ---
 
-### MCP Integration (Optional)
+### MCP Profile System (Recommended)
 
+**Running out of context during long missions?** The MCP Profile System solves this by loading only the tools you need.
+
+Instead of loading all 8 MCPs every session (15,000 tokens of context), profiles load only relevant MCPs for your task - giving you 40-80% more space for code and conversation.
+
+**Why Use Profiles:**
+- ✅ **Longer missions** - 40-80% more context for code and conversation
+- ✅ **Faster responses** - Load only what you need
+- ✅ **Task-appropriate tools** - Testing profile for tests, deployment for deploys
+- ✅ **Production safety** - Read-only database profiles prevent accidents
+
+**What are profiles?** Pre-configured sets of MCP servers for different tasks. Instead of loading all 8 servers, load just the 3-5 you need:
+
+| Profile | MCPs | Context | Reduction | Use Case |
+|---------|------|---------|-----------|----------|
+| **core** | 3 | 3,000 | 80% | General development |
+| **testing** | 4 | 5,500 | 63% | Playwright automation |
+| **database-staging** | 4 | 8,000 | 47% | Database development |
+| **database-production** | 4 | 8,000 | 47% | Production queries (read-only) |
+| **payments** | 4 | 7,000 | 53% | Stripe integration |
+| **deployment** | 5 | 9,000 | 40% | Netlify + Railway |
+| **fullstack** | 8 | 15,000 | 0% | All development MCPs |
+
+**Start with `core`** - works for 90% of development. Switch to specialized profiles only when needed.
+
+**Quick Setup:**
+
+Start with the lightweight `core` profile (80% less context):
 ```bash
-npm install -g @playwright/mcp @upstash/context7-mcp firecrawl-mcp @edjl/github-mcp @supabase/mcp-server-supabase
-cp .env.mcp.template .env.mcp && nano .env.mcp
-./project/deployment/scripts/mcp-setup-v2.sh
-/exit && claude  # Restart required
+ln -sf .mcp-profiles/core.json .mcp.json && /exit && claude
 ```
 
-[→ Complete MCP Setup Guide](project/field-manual/mcp-integration.md)
+Need full setup? [→ Complete MCP Setup Guide](docs/MCP-GUIDE.md) covers MCP installation, API keys, and all 7 profiles.
+
+**Documentation:**
+- [📖 MCP Setup Guide](docs/MCP-GUIDE.md) - Complete setup and usage instructions
+- [📋 Profile Reference](docs/MCP-PROFILES.md) - Detailed profile documentation
+- [🔧 Troubleshooting](docs/MCP-TROUBLESHOOTING.md) - Common issues and solutions
 
 ---
 
@@ -1609,8 +1638,26 @@ AGENT-11 provides 6 powerful slash commands for different workflows:
 | GENESIS | `/coord genesis` | ❌ None | 1-2 hours | Project reconnaissance |
 | RECON | `/coord recon` | ❌ None | 1-3 hours | Design intelligence |
 
-**Input File Templates**: Available in `/templates/mission-inputs/`  
+**Input File Templates**: Available in `/templates/mission-inputs/`
 **Legend**: ✅ Required input file | ❌ No input needed
+
+### Mission MCP Profile Guide
+
+Some missions benefit from specific MCP profiles for optimal performance and context efficiency:
+
+- **Testing missions** (BUILD with E2E tests, QA phases) → Use `testing` profile (adds Playwright)
+- **Deployment missions** (DEPLOY, RELEASE) → Use `deployment` profile (Netlify + Railway access)
+- **Database work** (MIGRATE, schema changes) → Use `database-staging` or `database-production` profile
+- **Full-stack development** (complex features) → Use `fullstack` profile (all development MCPs)
+- **General development** (BUILD, FIX, REFACTOR) → Use `core` profile (lightweight, 80% less context)
+
+**Profile Switching**:
+```bash
+ln -sf .mcp-profiles/[profile].json .mcp.json
+# Restart Claude Code
+```
+
+[→ Complete MCP Profile Guide](docs/MCP-GUIDE.md)
 
 [📋 Complete Mission Library →](project/missions/library.md)
 

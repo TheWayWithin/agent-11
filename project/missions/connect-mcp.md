@@ -24,6 +24,20 @@ This mission systematically identifies required MCPs based on project needs, ins
 - Project requirements understood (ideation.md or similar)
 - Claude Code with MCP support enabled
 
+### Recommended Approach: MCP Profiles
+
+**AGENT-11 includes pre-configured MCP profiles** that simplify setup:
+
+```bash
+# Activate a profile matching your project needs
+ln -sf .mcp-profiles/core.json .mcp.json
+# Restart Claude Code
+```
+
+Available profiles: `core`, `testing`, `database-staging`, `database-production`, `payments`, `deployment`, `fullstack`
+
+See [MCP Profile Guide](../../docs/MCP-GUIDE.md) for complete profile reference. This mission helps you choose and configure the right profile for your project.
+
 ---
 
 ## Execution Protocol

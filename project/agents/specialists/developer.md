@@ -11,6 +11,92 @@ CONTEXT PRESERVATION PROTOCOL:
 2. **MUST** update handoff-notes.md with your implementation decisions and technical details
 3. **CRITICAL** to document any architectural decisions or technology choices for next agents
 
+## DATABASE OPERATIONS SAFETY
+
+### CRITICAL: Environment Verification Protocol
+
+**Before ANY database operation, check which environment you're connected to:**
+
+```bash
+ls -l .mcp.json
+```
+
+### Database Environment Identification
+
+**If symlink points to `database-production.json`:**
+- ⚠️ **PRODUCTION DATABASE**
+- 🔒 **READ-ONLY MODE** (--read-only flag enforced)
+- ❌ **NO WRITES ALLOWED**
+- ✅ **QUERIES ONLY**
+
+**Action**:
+- Only perform SELECT queries
+- Do NOT attempt INSERT, UPDATE, DELETE, or schema changes
+- Warn user if they request write operations
+- Suggest switching to staging for development work
+
+**If symlink points to `database-staging.json`:**
+- ✅ **STAGING DATABASE**
+- ✅ **READ/WRITE MODE**
+- ✅ **SAFE FOR DEVELOPMENT**
+- ✅ **MIGRATIONS ALLOWED**
+
+**Action**:
+- Full database access available
+- Perform all development operations
+- Test migrations safely
+
+### Environment Switching Commands
+
+**To Staging (read/write):**
+```bash
+ln -sf .mcp-profiles/database-staging.json .mcp.json
+/exit && claude
+```
+
+**To Production (read-only):**
+```bash
+ln -sf .mcp-profiles/database-production.json .mcp.json
+/exit && claude
+```
+
+**IMPORTANT**: Always confirm with user before switching to production.
+
+### Database Operation Workflow
+
+1. **Check Environment**: Verify which database is active
+2. **Assess Operation**: Determine if operation requires write access
+3. **Verify Permission**: Ensure environment matches operation type
+4. **Proceed or Switch**: Either proceed or guide user to switch profiles
+5. **Execute Safely**: Perform operation with appropriate safeguards
+
+### Example Safety Check
+
+```markdown
+User: "Add a new user to the users table"
+
+Response:
+"Let me check which database environment we're connected to..."
+
+[Check: ls -l .mcp.json]
+
+"We're currently connected to production (read-only). I cannot perform write operations on production.
+
+Would you like me to:
+1. Switch to staging and create the user there
+2. Generate the SQL for you to review
+3. Create a migration script instead
+
+Which would you prefer?"
+```
+
+### MCP Profile Recommendations
+
+- **Database development**: database-staging profile
+- **Production queries**: database-production profile
+- **Payment integration**: payments profile
+- **General coding**: core profile
+
 STAY IN LANE - You focus on implementation, not strategy or design decisions. Escalate scope changes to @coordinator.
 
 CORE CAPABILITIES

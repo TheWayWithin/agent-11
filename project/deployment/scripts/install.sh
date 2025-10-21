@@ -959,13 +959,90 @@ rollback_installation() {
     fi
 }
 
+# Install MCP profiles and documentation
+install_mcp_system() {
+    local execution_mode
+    execution_mode=$(detect_execution_mode)
+
+    log "Installing MCP profile system..."
+
+    local TARGET_DIR="$(pwd)"
+
+    # Copy MCP profile directory
+    if [[ "$execution_mode" == "local" ]]; then
+        if [[ -d "$PROJECT_ROOT/.mcp-profiles" ]]; then
+            log "Installing MCP profiles from local repository..."
+            cp -r "$PROJECT_ROOT/.mcp-profiles" "$TARGET_DIR/"
+            success "MCP profiles installed (7 profiles)"
+        else
+            warn "MCP profiles not found in local repository"
+        fi
+    else
+        # Remote installation - download profiles
+        log "Downloading MCP profiles from GitHub..."
+        mkdir -p "$TARGET_DIR/.mcp-profiles"
+
+        local profiles=("core" "testing" "database-staging" "database-production" "payments" "deployment" "fullstack")
+        for profile in "${profiles[@]}"; do
+            if download_file_from_github ".mcp-profiles/${profile}.json" "$TARGET_DIR/.mcp-profiles/${profile}.json"; then
+                log "Downloaded profile: ${profile}.json"
+            else
+                warn "Failed to download profile: ${profile}.json"
+            fi
+        done
+    fi
+
+    # Copy MCP documentation
+    if [[ "$execution_mode" == "local" ]]; then
+        if [[ -d "$PROJECT_ROOT/docs" ]]; then
+            log "Installing MCP documentation from local repository..."
+            mkdir -p "$TARGET_DIR/docs"
+
+            if [[ -f "$PROJECT_ROOT/docs/MCP-GUIDE.md" ]]; then
+                cp "$PROJECT_ROOT/docs/MCP-GUIDE.md" "$TARGET_DIR/docs/"
+                cp "$PROJECT_ROOT/docs/MCP-PROFILES.md" "$TARGET_DIR/docs/"
+                cp "$PROJECT_ROOT/docs/MCP-TROUBLESHOOTING.md" "$TARGET_DIR/docs/"
+                success "MCP documentation installed"
+            fi
+        fi
+    else
+        # Remote installation - download documentation
+        log "Downloading MCP documentation from GitHub..."
+        mkdir -p "$TARGET_DIR/docs"
+
+        if download_file_from_github "docs/MCP-GUIDE.md" "$TARGET_DIR/docs/MCP-GUIDE.md"; then
+            log "Downloaded: MCP-GUIDE.md"
+        fi
+        if download_file_from_github "docs/MCP-PROFILES.md" "$TARGET_DIR/docs/MCP-PROFILES.md"; then
+            log "Downloaded: MCP-PROFILES.md"
+        fi
+        if download_file_from_github "docs/MCP-TROUBLESHOOTING.md" "$TARGET_DIR/docs/MCP-TROUBLESHOOTING.md"; then
+            log "Downloaded: MCP-TROUBLESHOOTING.md"
+        fi
+    fi
+
+    # Copy .env.mcp.template
+    if [[ "$execution_mode" == "local" ]]; then
+        if [[ -f "$PROJECT_ROOT/.env.mcp.template" ]]; then
+            cp "$PROJECT_ROOT/.env.mcp.template" "$TARGET_DIR/"
+            success "MCP environment template installed"
+        fi
+    else
+        if download_file_from_github ".env.mcp.template" "$TARGET_DIR/.env.mcp.template"; then
+            success "MCP environment template downloaded"
+        fi
+    fi
+
+    return 0  # Always succeed - MCPs are enhancement
+}
+
 # Setup MCP configuration
 setup_mcp_configuration() {
     log "Setting up MCP integration..."
-    
+
     # Use current directory as target for MCP files
     local TARGET_DIR="$(pwd)"
-    
+
     # Always download MCP files to ensure latest version
     log "Downloading MCP configuration files..."
     
@@ -1103,6 +1180,20 @@ show_post_install_instructions() {
     echo "  • Create custom missions using /templates"
     echo "  • Documentation: https://github.com/TheWayWithin/agent-11"
     echo
+
+    echo -e "${BLUE}🔧 MCP Profile System Installed!${NC}"
+    echo "  ✓ 7 specialized profiles in .mcp-profiles/"
+    echo "  ✓ MCP documentation in docs/"
+    echo "  ✓ Environment template: .env.mcp.template"
+    echo
+    echo "  📝 Setup MCPs in 3 steps:"
+    echo "     1. cp .env.mcp.template .env.mcp"
+    echo "     2. Edit .env.mcp with your API keys"
+    echo "     3. Choose profile: ln -sf .mcp-profiles/core.json .mcp.json"
+    echo "     4. Restart Claude Code"
+    echo
+    echo "  📖 Documentation: docs/MCP-GUIDE.md"
+    echo
     
     if [[ -d "$BACKUP_PATH" ]]; then
         echo -e "${YELLOW}💾 Backup Information${NC}"
@@ -1171,6 +1262,7 @@ main() {
         install_squad "$squad_type" &&
         install_claude_md &&
         install_mission_system &&
+        install_mcp_system &&
         verify_installation "$squad_type" &&
         setup_mcp_configuration
     } || {
