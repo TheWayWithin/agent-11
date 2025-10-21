@@ -586,6 +586,217 @@ grep -r "TODO.*security" src/  # All TODOs addressed
 
 ---
 
+### 6. Code Refactoring (2-4 hours)
+
+**When to use**: Technical debt accumulated, code quality degraded, or preparing for major features
+
+**What you'll get**: Clean, maintainable code with improved architecture and reduced complexity
+
+**Time estimate**: 2-4 hours for standard refactoring
+
+```bash
+# Run refactoring mission
+/coord refactor
+```
+
+**What happens**:
+1. **@architect** audits codebase → identifies tech debt and patterns (30-45 min)
+2. **@developer** refactors code → improves structure, removes duplication (1-2 hours)
+3. **@tester** validates → ensures no regressions with comprehensive tests (30-45 min)
+4. **@documenter** updates → reflects architectural changes in docs (optional, 30 min)
+
+**Deliverables**:
+- ✅ Refactored codebase with improved architecture
+- ✅ Reduced complexity and code duplication
+- ✅ Updated tests ensuring no functional changes
+- ✅ Technical debt documentation and justification
+
+**Real example**: "Refactored authentication system from 800 lines to 400 lines, improved testability by 60%"
+
+**Cost estimate:** $0.75-2 in API usage
+
+**Recovery Protocols:**
+
+**Refactoring breaks functionality?**
+```bash
+git revert HEAD  # Roll back changes
+@tester "Identify which refactoring caused regression"
+@developer "Apply refactoring incrementally with tests"
+```
+
+**Too much tech debt to tackle?**
+```bash
+@architect "Prioritize refactoring by business impact and risk"
+@strategist "Create phased refactoring plan over multiple sprints"
+```
+
+**Tests insufficient for safe refactoring?**
+```bash
+@tester "Create characterization tests before refactoring"
+@developer "Add test coverage to critical paths first"
+```
+
+**Verify deliverables:**
+```bash
+# Check refactoring is safe:
+npm test              # All tests pass
+git diff --stat       # Review changes
+npm run lint          # Code quality improved
+grep -r "TODO" src/   # Tech debt items addressed
+```
+
+---
+
+### 7. Performance Optimization (3-6 hours)
+
+**When to use**: Slow load times, high resource usage, scalability bottlenecks, or poor user experience
+
+**What you'll get**: Faster application with reduced resource usage and improved scalability
+
+**Time estimate**: 3-6 hours for comprehensive optimization
+
+```bash
+# Run performance optimization
+/coord optimize
+```
+
+**What happens**:
+1. **@analyst** benchmarks performance → identifies bottlenecks (45-60 min)
+2. **@architect** reviews architecture → proposes optimization strategies (30-45 min)
+3. **@developer** implements optimizations → code, queries, caching (1-3 hours)
+4. **@tester** validates performance → benchmarks before/after (30-45 min)
+5. **@operator** tunes infrastructure → server config, CDN, compression (30 min)
+
+**Deliverables**:
+- ✅ Performance benchmarks (before/after metrics)
+- ✅ Optimized code with faster execution
+- ✅ Database query optimization and indexing
+- ✅ Caching strategy implementation
+- ✅ Infrastructure tuning recommendations
+
+**Real example**: "Reduced page load time from 4.2s to 1.1s (74% improvement), decreased server costs by 40%"
+
+**Cost estimate:** $1.50-3 in API usage
+
+**Recovery Protocols:**
+
+**Optimization breaks functionality?**
+```bash
+@tester "Identify which optimization caused issue"
+@developer "Roll back specific optimization, apply fix"
+```
+
+**Can't identify bottleneck?**
+```bash
+@analyst "Set up comprehensive performance monitoring"
+@developer "Add profiling and instrumentation to critical paths"
+```
+
+**Optimizations show minimal improvement?**
+```bash
+@architect "Review architecture for fundamental scalability issues"
+@operator "Analyze infrastructure constraints (CPU, memory, network)"
+```
+
+**Need to prove ROI?**
+```bash
+@analyst "Generate performance report with business impact metrics"
+# Metrics: load time reduction, bounce rate, conversion improvement
+```
+
+**Verify deliverables:**
+```bash
+# Check performance improvements:
+npm run benchmark  # Compare before/after
+ls performance-report.md  # Review metrics
+npm test  # Functionality preserved
+# Check specific metrics:
+# - Page load time < 2s
+# - Time to First Byte < 200ms
+# - Lighthouse score > 90
+```
+
+---
+
+### 8. Production Deployment (1-2 hours)
+
+**When to use**: Ready to ship features, security patches deployed, or scheduled releases
+
+**What you'll get**: Safe, verified production deployment with rollback capability
+
+**Time estimate**: 1-2 hours for standard deployment
+
+```bash
+# Deploy to production
+/coord deploy
+```
+
+**What happens**:
+1. **@tester** runs pre-deployment checks → full test suite (15-20 min)
+2. **@operator** prepares deployment → backup, staging validation (15-20 min)
+3. **@operator** deploys to production → zero-downtime deployment (10-15 min)
+4. **@tester** validates production → smoke tests, monitoring (15-20 min)
+5. **@documenter** logs deployment → changelog, rollback procedures (10-15 min)
+
+**Deliverables**:
+- ✅ Production deployment with zero downtime
+- ✅ Database backup and rollback procedures
+- ✅ Smoke test results confirming functionality
+- ✅ Monitoring dashboards and alerting configured
+- ✅ Deployment documentation and changelog
+
+**Real example**: "Deployed payment system update to 10,000 active users with zero downtime, 0% error rate"
+
+**Cost estimate:** $0.50-1 in API usage
+
+**Recovery Protocols:**
+
+**Deployment fails mid-process?**
+```bash
+@operator "Execute rollback procedure immediately"
+@developer "Investigate deployment failure in staging"
+```
+
+**Production errors after deployment?**
+```bash
+@operator "Check error rates and logs"
+# If critical (>5% error rate):
+@operator "Rollback to previous version immediately"
+# If minor (<1% error rate):
+@developer "Prepare hotfix for next deployment window"
+```
+
+**Database migration issues?**
+```bash
+@operator "Verify database backup exists and is restorable"
+@developer "Test migration rollback procedure in staging"
+```
+
+**Need emergency hotfix?**
+```bash
+@developer "Create hotfix branch from production tag"
+@tester "Run critical path tests only (15 min max)"
+@operator "Deploy hotfix with expedited process"
+```
+
+**Verify deliverables:**
+```bash
+# Check deployment success:
+curl https://your-app.com/health  # Health check passes
+@operator "Verify monitoring shows no errors"
+git tag -l  # Deployment tagged
+ls deployment-report.md  # Deployment documented
+
+# Critical checks:
+# - Error rate < 0.1%
+# - Response time < 500ms
+# - All critical paths functional
+# - Database migrations applied
+# - Rollback tested and ready
+```
+
+---
+
 ### More Workflows
 
 AGENT-11 includes 20 pre-built missions covering every development need:
@@ -616,173 +827,370 @@ Beyond basic installation, configure advanced features for production readiness.
 
 ### Testing Infrastructure
 
-**SENTINEL Mode Testing** - Zero bugs reach production
+Automatic setup during missions. Manual: `@tester "Set up testing infrastructure"`
 
-AGENT-11 includes comprehensive testing philosophy with separation of duties:
-- Developer writes feature code (not tests)
-- Tester writes all tests (ensures objectivity)
-- SENTINEL Mode validates before deployment
-
-**Quick setup:**
-```bash
-# Automatic during missions, or manual:
-@tester "Set up testing infrastructure"
-```
-
-[→ Complete Testing Setup Guide](#-testing--quality-assurance)
+[→ Testing Guide](#-testing--quality-assurance)
 
 ---
 
 ### MCP Integration (Optional)
 
-**Extend AGENT-11 with 15+ service integrations**
-
 ```bash
-# Quick MCP setup
 npm install -g @playwright/mcp @upstash/context7-mcp firecrawl-mcp @edjl/github-mcp @supabase/mcp-server-supabase
-
-# Configure API keys
-cp .env.mcp.template .env.mcp
-nano .env.mcp
-
-# Run setup
+cp .env.mcp.template .env.mcp && nano .env.mcp
 ./project/deployment/scripts/mcp-setup-v2.sh
-
-# Restart Claude Code (critical!)
-/exit && claude
+/exit && claude  # Restart required
 ```
 
-**Available Integrations**: GitHub, Stripe, Railway, Netlify, Supabase, Playwright, Context7, Firecrawl
-
-[→ Complete MCP Setup Guide](#-mcp-integration-setup-highly-recommended)
+[→ Complete MCP Setup Guide](project/field-manual/mcp-integration.md)
 
 ---
 
 ### Project Initialization
 
-**New projects:**
-```bash
-/coord dev-setup ideation.md
-```
-Creates: Architecture docs, project plan, memory system, CLAUDE.md
-Duration: 30-45 minutes
+**New**: `/coord dev-setup ideation.md` (30-45 min) | **Existing**: `/coord dev-alignment` (45-60 min)
 
-**Existing projects:**
-```bash
-/coord dev-alignment
-```
-Analyzes: Codebase structure, tech stack, patterns, documentation
-Duration: 45-60 minutes
-
-[→ Greenfield guide](project/field-manual/greenfield-implementation.md) | [→ Brownfield guide](project/field-manual/brownfield-implementation.md)
+[→ Greenfield](project/field-manual/greenfield-implementation.md) | [→ Brownfield](project/field-manual/brownfield-implementation.md)
 
 ## 🏗️ How AGENT-11 Works
 
-Understanding the architecture helps you maximize effectiveness.
+Understanding the architecture helps you maximize effectiveness through visual diagrams and clear explanations.
 
-### Three-Layer Architecture
+### System Architecture Overview
 
-**1. Mission Layer** - What you want to accomplish
-- 20 pre-built missions (BUILD, FIX, MVP, DEPLOY, etc.)
-- Custom missions via /coord command
-- Input: Your requirements → Output: Completed work
+```mermaid
+graph TB
+    subgraph User["👤 User Layer"]
+        U[Developer/Founder]
+    end
 
-**2. Coordination Layer** - How agents collaborate
-- THE COORDINATOR orchestrates specialists
-- Context preservation prevents information loss
-- Parallel execution where possible
-- Automatic dependency resolution
+    subgraph Mission["🎯 Mission Layer"]
+        CMD["/coord Command"]
+        M1["20 Pre-built Missions"]
+        M2["Custom Workflows"]
+    end
 
-**3. Specialist Layer** - Who does the work
-- 11 specialized agents with domain expertise
-- Each agent has explicit tool permissions
-- Extended thinking modes for complex decisions
-- Self-verification protocols ensure quality
+    subgraph Coord["🎖️ Coordination Layer"]
+        C[Coordinator Agent]
+        PP["project-plan.md<br/>(Planning)"]
+        AC["agent-context.md<br/>(Knowledge)"]
+        HN["handoff-notes.md<br/>(Handoffs)"]
+        PR["progress.md<br/>(History)"]
+    end
+
+    subgraph Agents["🤖 Specialist Layer"]
+        S[Strategist]
+        A[Architect]
+        D[Developer]
+        T[Tester]
+        O[Operator]
+        Des[Designer]
+        Doc[Documenter]
+        Sup[Support]
+        Ana[Analyst]
+        Mar[Marketer]
+    end
+
+    subgraph Tools["🔧 Tool Layer"]
+        R[Read/Write/Edit]
+        B[Bash/Git]
+        MCP["MCP Integrations<br/>(GitHub, Playwright, etc.)"]
+        Mem["Memory API<br/>(/memories/)"]
+    end
+
+    U --> CMD
+    CMD --> M1
+    CMD --> M2
+    M1 --> C
+    M2 --> C
+    C --> PP
+    C --> AC
+    C --> HN
+    C --> PR
+    C --> S
+    C --> A
+    C --> D
+    C --> T
+    C --> O
+    C --> Des
+    C --> Doc
+    C --> Sup
+    C --> Ana
+    C --> Mar
+    S --> R
+    A --> R
+    D --> R
+    D --> B
+    T --> R
+    O --> B
+    O --> MCP
+    Des --> MCP
+    Doc --> R
+    S --> Mem
+    A --> Mem
+    D --> Mem
+
+    style U fill:#e1f5ff
+    style CMD fill:#fff4e6
+    style C fill:#f3e5f5
+    style S fill:#e8f5e9
+    style A fill:#e8f5e9
+    style D fill:#e8f5e9
+    style T fill:#e8f5e9
+    style O fill:#e8f5e9
+    style Des fill:#e8f5e9
+    style Doc fill:#e8f5e9
+    style Sup fill:#e8f5e9
+    style Ana fill:#e8f5e9
+    style Mar fill:#e8f5e9
+    style Mem fill:#fffde7
+```
+
+**Three-Layer Architecture Explained:**
+
+1. **Mission Layer** - 20 pre-built missions + custom workflows via `/coord`
+2. **Coordination Layer** - Context preservation, parallel execution, dependency resolution
+3. **Specialist Layer** - 11 agents with domain expertise, tool permissions, extended thinking, self-verification
 
 [→ Complete agent reference](#your-squad)
 
 ---
 
-### Mission Execution Flow
+### Agent Collaboration Flow
 
+How specialists work together with zero context loss:
+
+```mermaid
+sequenceDiagram
+    participant U as 👤 User
+    participant C as 🎖️ Coordinator
+    participant S as 🎯 Strategist
+    participant A as 🏗️ Architect
+    participant D as 💻 Developer
+    participant T as ✅ Tester
+    participant AC as 📝 agent-context.md
+    participant HN as 🤝 handoff-notes.md
+
+    U->>C: /coord build requirements.md
+    C->>AC: Read mission context
+    C->>HN: Initialize handoff system
+
+    Note over C: Phase 1: Analysis
+    C->>S: Analyze requirements
+    S->>AC: Read existing context
+    S->>S: Create user stories (30-45 min)
+    S->>HN: Write findings for Architect
+    S->>AC: Update with decisions
+
+    Note over C: Phase 2: Design
+    C->>A: Design solution
+    A->>AC: Read strategist findings
+    A->>HN: Read specific handoff
+    A->>A: Create architecture (30-45 min)
+    A->>HN: Write specs for Developer
+    A->>AC: Update with design decisions
+
+    Note over C: Phase 3: Implementation
+    C->>D: Implement feature
+    D->>AC: Read all prior context
+    D->>HN: Read architect specs
+    D->>D: Write code + tests (2-4 hours)
+    D->>HN: Document implementation
+    D->>AC: Update with code decisions
+
+    Note over C: Phase 4: Validation
+    C->>T: Validate quality
+    T->>AC: Read full mission context
+    T->>HN: Read developer notes
+    T->>T: Run comprehensive tests (1 hour)
+    T->>HN: Report test results
+    T->>AC: Final quality assessment
+
+    C->>U: Mission complete ✅
+
+    Note over AC,HN: Zero context loss!<br/>100% knowledge preserved
 ```
-User: /coord build requirements.md
-       ↓
-┌─────────────────┐
-│  Coordinator    │ ← Reads mission, creates plan
-└────────┬────────┘
-         ↓
-┌─────────────────┐
-│ @strategist     │ ← Analyzes requirements (30-45 min)
-└────────┬────────┘
-         │ Updates handoff-notes.md
-         ↓
-┌─────────────────┐
-│ @architect      │ ← Designs system (30-45 min)
-└────────┬────────┘
-         │ Updates handoff-notes.md
-         ↓
-┌─────────────────┐
-│ @developer      │ ← Implements feature (2-4 hours)
-└────────┬────────┘
-         │ Updates handoff-notes.md
-         ↓
-┌─────────────────┐
-│ @tester         │ ← Validates quality (1 hour)
-└────────┬────────┘
-         ↓
-┌─────────────────┐
-│ Mission Complete│ ← Updates progress.md, logs learnings
-└─────────────────┘
+
+**Key Collaboration Principles:**
+- **Sequential Handoffs** - Each agent reads context from previous agents via handoff-notes.md
+- **Cumulative Knowledge** - All decisions stored in agent-context.md for mission-wide awareness
+- **Zero Loss** - Every finding, decision, and issue preserved across the entire mission
+
+---
+
+### Context Management System
+
+How AGENT-11 preserves 100% of knowledge across sessions and agent handoffs:
+
+```mermaid
+flowchart TD
+    subgraph Input["📥 Mission Input"]
+        MI["/coord build requirements.md"]
+    end
+
+    subgraph Context["🧠 Context Files"]
+        AC["agent-context.md<br/>━━━━━━━━━━━<br/>• Mission objectives<br/>• All findings (cumulative)<br/>• Technical decisions<br/>• Known issues<br/>• Dependencies"]
+        HN["handoff-notes.md<br/>━━━━━━━━━━━<br/>• Immediate task<br/>• Critical context<br/>• Warnings/blockers<br/>• Specific instructions<br/>• Test results"]
+        ER["evidence-repository.md<br/>━━━━━━━━━━━<br/>• Screenshots<br/>• Code snippets<br/>• Test results<br/>• API responses<br/>• Error logs"]
+    end
+
+    subgraph Memory["💾 Persistent Memory"]
+        MEM["/memories/<br/>━━━━━━━━━━━<br/>project/<br/>  - overview.xml<br/>  - architecture.xml<br/>technical/<br/>  - patterns.xml<br/>  - decisions.xml<br/>lessons/<br/>  - insights.xml"]
+    end
+
+    subgraph Agents["🤖 Agents"]
+        A1[Agent reads context]
+        A2[Agent performs work]
+        A3[Agent updates context]
+    end
+
+    subgraph Output["📤 Deliverables"]
+        PP["project-plan.md<br/>(What we're doing)"]
+        PR["progress.md<br/>(What we did)"]
+        CODE["Code, Tests, Docs"]
+    end
+
+    MI --> AC
+    MI --> HN
+
+    AC --> A1
+    HN --> A1
+    MEM --> A1
+
+    A1 --> A2
+
+    A2 --> A3
+
+    A3 --> AC
+    A3 --> HN
+    A3 --> ER
+    A3 --> MEM
+
+    AC --> PP
+    AC --> PR
+    HN --> PP
+    HN --> PR
+
+    A2 --> CODE
+
+    style AC fill:#e3f2fd
+    style HN fill:#f3e5f5
+    style ER fill:#fff3e0
+    style MEM fill:#e8f5e9
+    style A1 fill:#fffde7
+    style A2 fill:#fffde7
+    style A3 fill:#fffde7
 ```
+
+**Context Preservation Protocol:**
+
+1. **Before Task** - Agent reads agent-context.md + handoff-notes.md + /memories/
+2. **During Task** - Agent maintains awareness of all prior decisions
+3. **After Task** - Agent updates handoff-notes.md with findings for next specialist
+4. **Coordinator** - Merges findings into agent-context.md for mission-wide knowledge
+
+**Result**: Zero context loss, 100% knowledge retention across sessions
+
+[→ Complete context management guide](project/field-manual/memory-management.md)
+
+---
+
+### Mission Execution Lifecycle
+
+From command to deliverables - the complete mission workflow:
+
+```mermaid
+stateDiagram-v2
+    [*] --> Planning: /coord build requirements.md
+
+    Planning --> Analysis: Create project-plan.md
+    note right of Planning
+        Coordinator reads mission
+        Creates execution plan
+        Initializes context files
+    end note
+
+    Analysis --> Design: Strategist completes
+    note right of Analysis
+        Requirements analysis
+        User story creation
+        Success criteria defined
+        30-45 minutes
+    end note
+
+    Design --> Implementation: Architect completes
+    note right of Design
+        System design
+        Technology selection
+        Architecture documentation
+        30-45 minutes
+    end note
+
+    Implementation --> Testing: Developer completes
+    note right of Implementation
+        Code implementation
+        Unit test creation
+        Documentation updates
+        2-4 hours
+    end note
+
+    Testing --> Verification: Tests pass
+    note right of Testing
+        E2E test execution
+        Quality validation
+        Regression checks
+        1 hour
+    end note
+
+    Verification --> Complete: All verified
+    note right of Verification
+        Self-verification protocols
+        Deliverable confirmation
+        Progress documentation
+        15 minutes
+    end note
+
+    Testing --> Implementation: Tests fail
+    Implementation --> Implementation: Bugs found
+
+    Complete --> [*]: Mission success ✅
+
+    note right of Complete
+        progress.md updated
+        Learnings stored in /memories/
+        Ready for next mission
+    end note
+```
+
+**Mission Phases Explained:**
+
+1. **Planning** (5-10 min) - Coordinator reads mission, creates project-plan.md with phases
+2. **Analysis** (30-45 min) - Strategist analyzes requirements, creates user stories
+3. **Design** (30-45 min) - Architect designs system, selects technologies
+4. **Implementation** (2-4 hours) - Developer writes code, creates tests
+5. **Testing** (1 hour) - Tester validates quality, runs comprehensive test suite
+6. **Verification** (15 min) - Self-verification protocols ensure completeness
+
+**Total Time**: 4-8 hours for standard feature development
 
 ---
 
 ### Key Concepts
 
-**Context Preservation**
-- `agent-context.md` - Mission-wide knowledge accumulation
-- `handoff-notes.md` - Agent-to-agent communication
-- Zero context loss across sessions
+**Context Preservation**: Zero loss via agent-context.md + handoff-notes.md + /memories/. **Extended Thinking**: Ultrathink/Think harder/Think modes (39% effectiveness improvement). **Tool Permissions**: Least-privilege security model (64% read-only agents). **Parallel Execution**: Independent tasks run simultaneously for speed.
 
-**Extended Thinking**
-- Ultrathink (Architect) - System design decisions
-- Think harder (Strategist, Coordinator) - Complex planning
-- Think (Developer, Tester) - Implementation work
-
-**Tool Permissions**
-- Read-only for analysis agents (Strategist, Analyst)
-- Full edit for implementation (Developer, Designer)
-- Deployment-specific for Operator
-
-[→ Memory Management](project/field-manual/memory-management.md) | [→ Extended Thinking](project/field-manual/extended-thinking-guide.md)
+[→ Memory Management](project/field-manual/memory-management.md) | [→ Extended Thinking](project/field-manual/extended-thinking-guide.md) | [→ Tool Permissions](project/field-manual/tool-permissions-guide.md)
 
 ---
 
-### BOS-AI Integration (Detailed)
+### BOS-AI Integration
 
-**How AGENT-11 Works With BOS-AI**:
+**Workflow**: BOS-AI (strategy) → AGENT-11 (execution)
 
-BOS-AI handles **strategy** (30 business agents analyzing market, competition, positioning)
-→ Outputs structured requirements (PRD.md, context.md, brand-guidelines.md, vision.md)
-
-AGENT-11 handles **execution** (11 technical agents building the product)
-→ Inputs: BOS-AI documents → Outputs: Production-ready software
-
-**Integration Workflow**:
 ```bash
-# 1. BOS-AI completes strategic analysis
-# Output: /bos-ai-output/*.md
-
-# 2. Copy to AGENT-11 project
-mkdir my-product/ideation
-cp bos-ai-output/*.md my-product/ideation/
-
-# 3. Initialize development
-/coord dev-setup ideation/PRD.md
-
-# 4. Build with complete context
-/coord build ideation/PRD.md
+# 1. Copy BOS-AI outputs to ideation/
+# 2. Initialize: /coord dev-setup ideation/PRD.md
+# 3. Build: /coord build ideation/PRD.md
 ```
 
 [→ Complete BOS-AI Integration Guide](project/field-manual/bos-ai-integration-guide.md)
@@ -793,26 +1201,7 @@ Complete overview of AGENT-11's capabilities organized by category.
 
 ### Context Management
 
-**Memory Tools** - Persistent project knowledge across sessions
-- Native Claude Code memory API integration
-- Structured storage by concern (project, user, technical, lessons)
-- 100% knowledge retention across sessions
-- Automatic bootstrap from ideation documents
-- Zero external dependencies
-
-**Context Preservation** - Zero information loss between agents
-- `agent-context.md` - Mission-wide knowledge accumulation
-- `handoff-notes.md` - Agent-to-agent communication
-- `evidence-repository.md` - Artifacts and supporting materials
-- Hybrid two-tier strategy (memory + files)
-- Complete audit trail of decisions
-
-**Strategic /clear Usage** - Optimize token consumption
-- 84% token reduction in long-running missions
-- Automatic trigger at 30,000 input tokens
-- Memory tools never cleared (persistent knowledge)
-- Agent-specific clearing triggers
-- Enables 30+ hour autonomous missions
+100% knowledge retention with native memory API, zero-loss context preservation (agent-context.md, handoff-notes.md), and strategic /clear usage (84% token reduction enabling 30+ hour missions).
 
 [→ Memory Management](project/field-manual/memory-management.md) | [→ Context Editing](project/field-manual/context-editing-guide.md)
 
@@ -820,53 +1209,15 @@ Complete overview of AGENT-11's capabilities organized by category.
 
 ### Project Management
 
-**Progress Tracking** - Dual-file system for planning and learning
-- `project-plan.md` - Forward-looking task roadmap
-- `progress.md` - Backward-looking changelog with issue learning
-- Complete fix attempt history (not just final solutions)
-- Root cause analysis and prevention strategies
-- Searchable lessons repository
+Dual-file tracking (project-plan.md, progress.md with complete fix history), 20 pre-built mission workflows via `/coord`, automatic greenfield/brownfield bootstrap with CLAUDE.md generation.
 
-**Mission Orchestration** - 20 pre-built workflows
-- Setup missions (DEV-SETUP, DEV-ALIGNMENT, CONNECT-MCP)
-- Development missions (BUILD, FIX, REFACTOR, DEPLOY)
-- Strategic missions (MVP, ARCHITECTURE, SECURITY)
-- Time estimates and input requirements
-- Single command execution via `/coord`
-
-**Bootstrap Patterns** - Automatic project initialization
-- Greenfield bootstrap from ideation documents
-- Brownfield bootstrap for existing codebases
-- CLAUDE.md auto-generation from analysis
-- Memory extraction and structuring
-- Architecture documentation creation
-
-[→ Bootstrap Guide](project/field-manual/bootstrap-guide.md) | [→ Mission Library](#-mission-library-20-missions)
+[→ Progress Tracking](docs/guides/progress-tracking.md) | [→ Bootstrap Guide](project/field-manual/bootstrap-guide.md) | [→ Mission Library](#-mission-library-20-missions)
 
 ---
 
 ### Quality Assurance
 
-**SENTINEL Mode** - Separation of duties prevents bugs
-- Tester analyzes code (read-only for integrity)
-- Developer implements tests (based on tester specs)
-- Tester validates results (objective verification)
-- 7-phase systematic testing protocol
-- Zero bugs reach production
-
-**Self-Verification** - Agents validate their own work
-- Pre-handoff checklists for every agent
-- 5-step error recovery protocols
-- Quality validation frameworks
-- 50% rework reduction
-- Complete handoff documentation required
-
-**Comprehensive Testing** - Unit, integration, E2E automated
-- mcp__playwright for browser automation
-- Cross-browser testing (Chrome, Firefox, Safari, Edge)
-- Visual regression detection
-- Accessibility compliance (WCAG AA+)
-- Performance benchmarks and monitoring
+SENTINEL Mode with separation of duties (zero bugs reach production), self-verification protocols (50% rework reduction), comprehensive testing (mcp__playwright, cross-browser, WCAG AA+).
 
 [→ Testing Guide](#-testing--quality-assurance) | [→ Enhanced Prompting](project/field-manual/enhanced-prompting-guide.md)
 
@@ -874,36 +1225,7 @@ Complete overview of AGENT-11's capabilities organized by category.
 
 ### Advanced Capabilities
 
-**Extended Thinking Modes** - Strategic cognitive resource allocation
-- **Ultrathink** (Architect) - System design decisions (8x cost, prevents 10-100x rework)
-- **Think harder** (Strategist, Coordinator) - Complex planning (3x cost)
-- **Think hard** (Designer, Documenter) - Creative decisions (2x cost)
-- **Think** (Developer, Tester) - Implementation work (1x cost)
-- 39% effectiveness improvement
-
-**MCP Integration** - 15+ service integrations out of box
-- GitHub (PRs, issues, releases, CI/CD)
-- Playwright (browser automation, testing)
-- Context7 (library documentation, code patterns)
-- Firecrawl (web scraping, research)
-- Supabase (database, auth, real-time)
-- Railway, Netlify, Stripe, and more
-- Optional setup, zero core dependencies
-
-**Design Review System** - RECON Protocol with Playwright automation
-- 7-phase systematic UI/UX audit
-- Live environment testing with real interactions
-- Evidence-based reports with screenshots
-- Triage matrix (BLOCKER/HIGH/MEDIUM/NITPICK)
-- Accessibility compliance verification
-- `/design-review` and `/recon` commands
-
-**OpsDev Workflow** - Staging environments and safe deployments
-- Separation of concerns (developer builds, operator deploys)
-- Staging validation before production
-- Deployment verification and rollback
-- Environment-specific configurations
-- Production security hardening
+Extended thinking modes (Ultrathink/Think harder/Think hard/Think - 39% effectiveness improvement), 15+ MCP integrations (GitHub, Playwright, Context7, Firecrawl, Supabase), RECON Protocol design reviews with 7-phase audit, OpsDev workflow with staging validation.
 
 [→ Extended Thinking](project/field-manual/extended-thinking-guide.md) | [→ Tool Permissions](project/field-manual/tool-permissions-guide.md) | [→ UI Doctrine](project/field-manual/ui-doctrine.md)
 
@@ -930,11 +1252,67 @@ Complete overview of AGENT-11's capabilities organized by category.
 
 ### Known Limitations
 
-- **Large codebases** (>50 files) may need phased approach
-- **Complex dependencies** may require manual setup
-- **Single-user operation** (no real-time collaboration)
-- **Requires internet** (Claude API connection)
-- **Token costs** vary by mission complexity ($0.50-$10)
+AGENT-11 is powerful but not unlimited. Understanding these constraints helps you work effectively within the system.
+
+#### 1. Large Codebases
+- **Issue**: Projects with >50 files may exceed context window during analysis
+- **Workaround**: Break work into modules, use phased approach with multiple missions
+- **Command**: `@coordinator "Focus only on [specific module/feature]"`
+
+#### 2. Complex Dependencies
+- **Issue**: Some packages require manual configuration (native bindings, platform-specific tools)
+- **Workaround**: Let agents set up what they can, complete manual steps with provided instructions
+- **Example**: Database setup, API key configuration, external service accounts
+
+#### 3. Mission Interruptions
+- **Issue**: If mission fails mid-way, context may be partially lost
+- **Workaround**: Check progress.md for completed work, resume from last checkpoint
+- **Command**: `@coordinator "Resume from last checkpoint in progress.md"`
+
+#### 4. API Rate Limits
+- **Issue**: Claude API rate limits may pause long-running missions (>2 hours)
+- **Workaround**: Break into smaller phases, use `/clear` between phases to reset context
+- **Recovery**: Wait 1-5 minutes, then continue with next phase
+
+#### 5. Context Size Management
+- **Issue**: Very large files (>2000 lines) or long conversations exceed context window
+- **Workaround**: Use Glob/Grep for targeted searches instead of reading entire files
+- **Command**: `@coordinator "Search for [specific pattern] instead of reading whole file"`
+
+#### 6. Browser Automation Limitations
+- **Issue**: Some JavaScript-heavy sites may not work with Playwright automation
+- **Workaround**: Use manual testing for complex UI, automated for standard paths
+- **When**: Design reviews of SPAs, PWAs, or sites with heavy client-side rendering
+
+#### 7. Platform-Specific Issues
+- **Issue**: Some commands work differently on Windows vs Mac vs Linux
+- **Workaround**: Use cross-platform alternatives (npm scripts vs shell scripts)
+- **Example**: Prefer `npx` over direct binary calls, Node.js scripts over bash
+
+#### 8. Agent Specialization Boundaries
+- **Issue**: Some tasks don't fit cleanly into one agent's role
+- **Workaround**: Use `/coord` missions for cross-functional work requiring multiple agents
+- **Example**: Security audit needs @architect + @developer + @tester coordination
+
+#### 9. Learning Curve
+- **Issue**: First-time users need 1-2 hours to understand agent system and workflows
+- **Workaround**: Start simple - use `/meeting` for conversations, progress to single @agent commands, then to `/coord` missions
+- **Progression**: Individual agents → simple missions → complex orchestration
+
+#### 10. Single-User Operation
+- **Issue**: No real-time collaboration between multiple humans on same project
+- **Workaround**: Use git branches for parallel work, merge through standard PR process
+- **Best Practice**: One person runs missions, team reviews results via PR
+
+#### 11. Internet Dependency
+- **Issue**: Requires active internet connection for Claude API access
+- **Workaround**: Work offline on manual tasks, run missions when connection available
+- **Impact**: No offline development assistance
+
+#### 12. Token Costs
+- **Issue**: API usage costs vary by mission complexity ($0.50-$10 per mission)
+- **Workaround**: Start with smaller missions to estimate costs, use `/coord` efficiently
+- **Monitoring**: Check API usage in Claude dashboard, set budget alerts
 
 [→ Complete capabilities and limitations guide](docs/features/capabilities.md)
 
@@ -942,43 +1320,11 @@ Complete overview of AGENT-11's capabilities organized by category.
 
 ### Feature Documentation
 
-**Comprehensive Guides Available**:
-- [Memory Management](project/field-manual/memory-management.md) - Persistent knowledge system (300+ lines)
-- [Bootstrap Guide](project/field-manual/bootstrap-guide.md) - Project initialization (550+ lines)
-- [Context Editing](project/field-manual/context-editing-guide.md) - Token optimization (650+ lines)
-- [Extended Thinking](project/field-manual/extended-thinking-guide.md) - Cognitive modes (300+ lines)
-- [Tool Permissions](project/field-manual/tool-permissions-guide.md) - Security model (650+ lines)
-- [Enhanced Prompting](project/field-manual/enhanced-prompting-guide.md) - Quality assurance (600+ lines)
-
-**Total Documentation**: 3,750+ lines of feature guides and implementation patterns
+3,750+ lines of comprehensive guides: [Memory Management](project/field-manual/memory-management.md) | [Bootstrap](project/field-manual/bootstrap-guide.md) | [Context Editing](project/field-manual/context-editing-guide.md) | [Extended Thinking](project/field-manual/extended-thinking-guide.md) | [Tool Permissions](project/field-manual/tool-permissions-guide.md) | [Enhanced Prompting](project/field-manual/enhanced-prompting-guide.md)
 
 ## 🆘 Getting Unstuck Protocol
 
-### Step 1: Immediate Recovery
-```bash
-/clear  # Reset context (preserves memory)
-@coordinator "I'm stuck. Help me diagnose and recover."
-```
-
-### Step 2: System Check
-```bash
-# Verify installation
-/agents  # Should list 11 agents
-ls .claude/missions/  # Should show mission files
-ls .claude/agents/  # Should show 11 .md files
-```
-
-### Step 3: Simple Test
-```bash
-# Run basic functionality test
-@developer "Create a simple 'hello world' HTML file to verify system working"
-```
-
-### Step 4: Escalation
-- Check [Troubleshooting Guide](project/docs/TROUBLESHOOTING.md)
-- Use `@support` agent for built-in help
-- Create [GitHub Issue](https://github.com/TheWayWithin/agent-11/issues)
-- Join [Discord Community](https://discord.gg/agent11)
+**Quick Recovery**: `/clear` + `@coordinator "I'm stuck"` | **System Check**: `/agents`, `ls .claude/agents/` | **Test**: `@developer "Create hello world HTML"` | **Escalation**: [Troubleshooting](project/docs/TROUBLESHOOTING.md) | `@support` | [GitHub Issues](https://github.com/TheWayWithin/agent-11/issues) | [Discord](https://discord.gg/agent11)
 
 ---
 
@@ -1015,45 +1361,28 @@ ls .claude/agents/  # Should show 11 .md files
 
 ## 📊 Mission Progress Tracking System
 
-AGENT-11 uses a dual-file tracking system: **project-plan.md** (forward-looking roadmap) and **progress.md** (backward-looking changelog with complete issue history). Unlike traditional changelogs that only record final solutions, progress.md documents ALL fix attempts including failures, enabling future issues to be solved faster by learning from past mistakes.
+AGENT-11 uses a dual-file tracking system: **project-plan.md** (forward-looking roadmap) and **progress.md** (backward-looking changelog with complete issue history including all fix attempts). This approach enables 10-40x faster resolution of similar future issues.
 
-**Key Benefits**:
-- Complete audit trail of what was tried and why it failed
-- Root cause analysis and prevention strategies for every issue
-- Searchable lessons repository that compounds over time
-
-[→ Complete Tracking Guide](templates/progress-template.md)
+[→ Complete Progress Tracking Guide](docs/guides/progress-tracking.md)
 
 ## 🔄 Project Lifecycle Management
 
-AGENT-11 includes a three-tier cleanup strategy to prevent tracking files from growing unmanageably large: **Milestone Transition** (archive completed work every 2-4 weeks), **Project Completion** (comprehensive archive when done), or **Continue Active Work** (no cleanup needed). All lessons from progress.md are extracted to a searchable `lessons/` repository organized by category (security, performance, architecture, process), ensuring knowledge compounds across missions while keeping context lean.
+Three-tier cleanup strategy prevents context pollution: **Milestone Transition** (every 2-4 weeks), **Project Completion** (when shipping), or **Continue Active Work**. Lessons extracted to searchable repository while keeping active context lean (200 lines vs 20,000+).
 
-**Key Benefits**:
-- Prevents context pollution (tracking files stay under 200 lines vs 20,000+)
-- Searchable lessons repository that compounds knowledge over time
-- Agents stay focused on current mission, not buried in historical details
-
-[→ Complete Lifecycle Guide](project/field-manual/project-lifecycle-guide.md) | [→ Cleanup Checklist](templates/cleanup-checklist.md)
+[→ Complete Lifecycle Management Guide](docs/guides/lifecycle-management.md) | [→ Cleanup Checklist](templates/cleanup-checklist.md)
 
 ## 🧪 Testing & Quality Assurance
 
-AGENT-11 uses separation of duties: THE TESTER analyzes code and creates test plans (read-only for integrity), @developer implements tests based on specs, THE TESTER executes and validates. For critical releases, **SENTINEL Mode** activates a 7-phase protocol: perimeter establishment, functional reconnaissance, visual regression, cross-browser operations, performance patrol, stress testing, and accessibility verification (WCAG AA+). Uses mcp__playwright for E2E, Jest/Vitest for unit tests, with comprehensive security validation on every run.
-
-**Key Benefits**:
-- Zero bugs reach production (objective testing prevents confirmation bias)
-- 80%+ coverage on critical paths, 100% on security-sensitive code
-- Cross-browser testing (Chrome, Firefox, Safari, Edge) with visual regression detection
+Separation of duties: **Tester** analyzes (read-only), **Developer** implements tests, **Tester** validates. **SENTINEL Mode** runs 7-phase protocol for critical releases. Zero bugs reach production with 80%+ coverage on critical paths.
 
 [→ Complete Testing Guide](project/field-manual/testing-setup.md)
 
 
 ## 🚀 Your First Mission
 
-**Use `/coord` to orchestrate multi-agent missions** or `@agent` for direct specialist access. All missions follow pattern: `/coord [mission] [input-file.md]`.
+Pattern: `/coord [mission] [input-file.md]` or `@agent` for direct access. Examples: `/coord build requirements.md` | `/coord fix bug-report.md` | `/coord mvp vision.md`
 
-**Quick examples**: `/coord build requirements.md` | `/coord fix bug-report.md` | `/coord mvp vision.md`
-
-[→ Complete Mission Execution Guide](project/field-manual/mission-execution-cheatsheet.md) | [→ Mission Library](#-mission-library-20-missions)
+[→ Mission Execution Guide](project/field-manual/mission-execution-cheatsheet.md) | [→ Mission Library](#-mission-library-20-missions)
 
 ---
 
@@ -1305,9 +1634,7 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/d
 
 ## 🛠️ Troubleshooting
 
-**Common installation issues?** See the [Project-Only Deployment](#-project-only-deployment) section above for setup requirements and quick fixes.
-
-**Complete troubleshooting guide:** [🛠️ Troubleshooting Guide →](project/docs/TROUBLESHOOTING.md)
+[Complete Troubleshooting Guide →](project/docs/TROUBLESHOOTING.md)
 
 ## 🤝 Join the Elite
 
