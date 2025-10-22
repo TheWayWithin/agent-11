@@ -86,9 +86,30 @@ RAILWAY_API_TOKEN=your_railway_token
 
 **Security Note:** `.env.mcp` is in `.gitignore` - never commit credentials to git.
 
-### 3. Choose Your Profile
+### 3. Choose Your Profile (Easy Way)
 
-Switch to the profile you need for your current task:
+**Simple slash commands - no complex syntax to remember:**
+
+```bash
+/mcp-switch core          # For general development
+/mcp-switch testing       # For testing with Playwright
+/mcp-switch database-staging      # For database work (full access)
+/mcp-switch database-production   # For production queries (read-only)
+/mcp-switch payments      # For payment integration
+/mcp-switch deployment    # For deployments
+/mcp-switch fullstack     # For everything (uses more context)
+```
+
+**Other helpful commands:**
+```bash
+/mcp-list    # See all available profiles with descriptions
+/mcp-status  # Check which profile is currently active
+```
+
+<details>
+<summary><strong>Advanced: Manual Profile Switching (click to expand)</strong></summary>
+
+If you prefer manual control, you can use symlinks directly:
 
 ```bash
 # For general development
@@ -112,19 +133,26 @@ ln -sf .mcp-profiles/deployment.json .mcp.json
 # For everything (development only)
 ln -sf .mcp-profiles/fullstack.json .mcp.json
 ```
+</details>
 
 ### 4. Restart Claude Code
 
-After switching profiles, restart Claude Code for changes to take effect:
+After switching profiles, restart Claude Code when prompted:
 
 ```bash
-# Exit and restart Claude Code
+# Type: /exit
+# Then run: claude
 ```
 
 ### 5. Verify Active Profile
 
-Check which profile is currently active:
+Check which profile is active:
 
+```bash
+/mcp-status
+```
+
+Or manually:
 ```bash
 ls -l .mcp.json
 ```
@@ -193,9 +221,9 @@ Output shows: `.mcp.json -> .mcp-profiles/testing.json`
 
 ```bash
 # Switch to testing profile
-ln -sf .mcp-profiles/testing.json .mcp.json
+/mcp-switch testing
 
-# Restart Claude Code
+# Claude Code will prompt you to restart
 
 # Ask agent to create tests
 @tester Create Playwright tests for the login flow
@@ -208,9 +236,9 @@ ln -sf .mcp-profiles/testing.json .mcp.json
 
 ```bash
 # Switch to staging database
-ln -sf .mcp-profiles/database-staging.json .mcp.json
+/mcp-switch database-staging
 
-# Restart Claude Code
+# Restart when prompted
 
 # Ask agent to create migration
 @developer Create a migration to add user preferences table
@@ -223,9 +251,9 @@ ln -sf .mcp-profiles/database-staging.json .mcp.json
 
 ```bash
 # Switch to production database (read-only)
-ln -sf .mcp-profiles/database-production.json .mcp.json
+/mcp-switch database-production
 
-# Restart Claude Code
+# Restart when prompted
 
 # Ask agent to analyze data
 @analyst Generate report on user activity last month
@@ -238,9 +266,9 @@ ln -sf .mcp-profiles/database-production.json .mcp.json
 
 ```bash
 # Switch to deployment profile
-ln -sf .mcp-profiles/deployment.json .mcp.json
+/mcp-switch deployment
 
-# Restart Claude Code
+# Restart when prompted
 
 # Ask agent to deploy
 @operator Deploy the latest version to production
@@ -264,7 +292,7 @@ Always use `database-production.json` for production queries. The read-only flag
 Before any critical operation, verify your active profile:
 
 ```bash
-ls -l .mcp.json
+/mcp-status
 ```
 
 ### 5. Environment Separation
@@ -331,7 +359,15 @@ cp .env.mcp .env.mcp.dev
 cp .env.mcp .env.mcp.prod
 ```
 
-### Profile Switching Script
+### Profile Switching Commands
+
+**Built-in slash commands** (recommended - no setup needed):
+```bash
+/mcp-switch testing
+/mcp-switch database-staging
+```
+
+**Advanced: Custom Shell Script** (if you prefer terminal-based switching):
 
 Create a helper script for quick switching:
 
@@ -351,6 +387,8 @@ mcp-profile testing
 mcp-profile database-staging
 ```
 
+**Note:** The built-in `/mcp-switch` commands are simpler and provide better guidance.
+
 ## Integration with Agents
 
 AGENT-11 agents are MCP-aware and will guide you on profile selection:
@@ -360,7 +398,8 @@ When starting missions, coordinator checks active profile and recommends switche
 
 ```bash
 /coord test
-# Coordinator: "Detected core profile. Recommend switching to testing profile for this mission."
+# Coordinator: "I recommend the testing profile for this mission."
+# "Run: /mcp-switch testing"
 ```
 
 ### Tester
@@ -368,7 +407,8 @@ Before testing work, tester verifies testing profile is active:
 
 ```bash
 @tester Create tests
-# Tester: "Checking active profile... testing profile verified. Proceeding with Playwright tests."
+# Tester: "I need the testing profile for Playwright."
+# "Run: /mcp-switch testing"
 ```
 
 ### Developer
@@ -376,7 +416,7 @@ Before database operations, developer checks environment:
 
 ```bash
 @developer Update user table
-# Developer: "Detected database-production profile (read-only). Cannot perform write operation. Switch to database-staging?"
+# Developer: "I need database access. For staging (read/write), run: /mcp-switch database-staging"
 ```
 
 ### Operator
@@ -384,7 +424,7 @@ Before deployments, operator verifies deployment profile:
 
 ```bash
 @operator Deploy to production
-# Operator: "Checking active profile... deployment profile verified. Proceeding with deployment."
+# Operator: "I need deployment tools. Run: /mcp-switch deployment"
 ```
 
 ## Troubleshooting
@@ -393,13 +433,15 @@ Before deployments, operator verifies deployment profile:
 
 **Symptom:** Switched profiles but MCPs haven't changed
 
-**Solution:** Restart Claude Code after switching profiles
+**Solution:** Always restart Claude Code after switching profiles
 
 ```bash
-# After switching
-ln -sf .mcp-profiles/testing.json .mcp.json
+# After using /mcp-switch, you'll be prompted to restart
+# Type: /exit
+# Then run: claude
 
-# You MUST restart Claude Code
+# Verify the switch worked:
+/mcp-status
 ```
 
 ### MCP Server Not Found

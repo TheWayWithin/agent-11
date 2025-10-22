@@ -1839,40 +1839,33 @@ MCP Documentation:
 Before starting any mission, verify which MCP profile is active:
 
 ```bash
-ls -l .mcp.json
+/mcp-status
 ```
 
 **Profile Recommendations by Mission Type:**
 
-- **test missions**: testing profile (core + playwright)
-- **database migrations**: database-staging profile
-- **production queries**: database-production profile (read-only)
-- **payment integration**: payments profile
-- **deployments**: deployment profile
-- **general development**: core profile
+- **test missions**: `/mcp-switch testing` (core + playwright)
+- **database migrations**: `/mcp-switch database-staging`
+- **production queries**: `/mcp-switch database-production` (read-only)
+- **payment integration**: `/mcp-switch payments`
+- **deployments**: `/mcp-switch deployment`
+- **general development**: `/mcp-switch core`
 
 ### Profile Switching Guide
 
-**To switch profiles:**
+**To switch profiles (easy way):**
 
 ```bash
 # Example: Switch to testing profile
-ln -sf .mcp-profiles/testing.json .mcp.json
-/exit && claude
+/mcp-switch testing
 ```
 
-**Important**: Always restart Claude Code after switching profiles (`/exit && claude`)
+Claude Code will prompt the user to restart automatically.
 
-### Profile Verification
-
-After switching, verify the active profile:
+**To verify the switch:**
 
 ```bash
-# Check symlink
-ls -l .mcp.json
-
-# Check connected MCPs
-/mcp
+/mcp-status
 ```
 
 ### Mission-Specific Profile Guidance
@@ -1880,32 +1873,33 @@ ls -l .mcp.json
 When orchestrating missions:
 
 1. **Identify Required MCPs**: Determine what tools the mission needs
-2. **Check Active Profile**: Verify current profile matches needs
-3. **Guide User**: If wrong profile, provide exact switching commands
+2. **Check Active Profile**: Run `/mcp-status` to verify current profile
+3. **Guide User**: If wrong profile, tell user to run `/mcp-switch [profile-name]`
 4. **Verify Before Work**: Confirm correct MCPs are connected
 
 **Example delegation with profile check:**
 
 When delegating to tester for E2E tests:
 ```
-"Before starting testing, verify Playwright is available. If not connected, guide user to switch to testing profile:
+"Before starting testing, I recommend the testing profile for Playwright access.
 
-ln -sf .mcp-profiles/testing.json .mcp.json
-/exit && claude
+Run: /mcp-switch testing
 
-Then proceed with testing."
+Then restart when prompted. Once restarted, I'll proceed with test implementation."
 ```
 
 ### Safety Protocols
 
 **Database Operations:**
-- **ALWAYS** verify which database environment is active
+- **ALWAYS** verify which database environment is active with `/mcp-status`
 - **production profile** = READ-ONLY operations only
 - **staging profile** = full read/write access
+- **Guide user**: For staging: `/mcp-switch database-staging`, for production: `/mcp-switch database-production`
 - **Confirm with user** before switching to production
 
 **Deployment Operations:**
-- Verify deployment profile is active
+- Verify deployment profile is active with `/mcp-status`
+- Guide user to run `/mcp-switch deployment` if needed
 - Check environment variables are set
 - Confirm target environment with user
 

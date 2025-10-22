@@ -863,8 +863,12 @@ Instead of loading all 8 MCPs every session (15,000 tokens of context), profiles
 
 Start with the lightweight `core` profile (80% less context):
 ```bash
-ln -sf .mcp-profiles/core.json .mcp.json && /exit && claude
+/mcp-switch core
 ```
+
+Then restart Claude Code when prompted.
+
+**See all profiles**: `/mcp-list` | **Check current profile**: `/mcp-status`
 
 Need full setup? [→ Complete MCP Setup Guide](docs/MCP-GUIDE.md) covers MCP installation, API keys, and all 7 profiles.
 
@@ -1645,17 +1649,16 @@ AGENT-11 provides 6 powerful slash commands for different workflows:
 
 Some missions benefit from specific MCP profiles for optimal performance and context efficiency:
 
-- **Testing missions** (BUILD with E2E tests, QA phases) → Use `testing` profile (adds Playwright)
-- **Deployment missions** (DEPLOY, RELEASE) → Use `deployment` profile (Netlify + Railway access)
-- **Database work** (MIGRATE, schema changes) → Use `database-staging` or `database-production` profile
-- **Full-stack development** (complex features) → Use `fullstack` profile (all development MCPs)
-- **General development** (BUILD, FIX, REFACTOR) → Use `core` profile (lightweight, 80% less context)
+- **Testing missions** (BUILD with E2E tests, QA phases) → `/mcp-switch testing` (adds Playwright)
+- **Deployment missions** (DEPLOY, RELEASE) → `/mcp-switch deployment` (Netlify + Railway access)
+- **Database work** (MIGRATE, schema changes) → `/mcp-switch database-staging` or `/mcp-switch database-production`
+- **Full-stack development** (complex features) → `/mcp-switch fullstack` (all development MCPs)
+- **General development** (BUILD, FIX, REFACTOR) → `/mcp-switch core` (lightweight, 80% less context)
 
-**Profile Switching**:
-```bash
-ln -sf .mcp-profiles/[profile].json .mcp.json
-# Restart Claude Code
-```
+**Quick Commands**:
+- Switch profiles: `/mcp-switch [profile-name]`
+- See all profiles: `/mcp-list`
+- Check current: `/mcp-status`
 
 [→ Complete MCP Profile Guide](docs/MCP-GUIDE.md)
 
