@@ -284,48 +284,67 @@ configure_mcps() {
 verify_mcps() {
     log "Verifying MCP connections..."
     echo ""
-    
-    # List configured MCPs
-    log "Currently configured MCP servers:"
-    claude mcp list --scope project 2>/dev/null || claude mcp list 2>/dev/null || warn "Could not list MCPs"
-    
+
+    # Show actual health check output
+    log "MCP Health Check (source of truth):"
     echo ""
-    log "MCP Verification Status:"
-    
+    claude mcp list --scope project 2>/dev/null || claude mcp list 2>/dev/null || warn "Could not list MCPs"
+
+    echo ""
+    log "Reading health check results..."
+
+    # Capture the output to parse it
+    local health_output=$(claude mcp list 2>/dev/null)
+
     # Check for critical MCPs
     local critical_mcps=("context7" "github" "firecrawl" "supabase")
     local recommended_mcps=("playwright" "filesystem")
     local optional_mcps=("stripe" "railway" "netlify" "figma")
-    
+
+    local critical_connected=0
+    local critical_total=${#critical_mcps[@]}
+
     echo ""
     echo "CRITICAL MCPs (Required for core functionality):"
     for mcp in "${critical_mcps[@]}"; do
-        if claude mcp list 2>/dev/null | grep -q "$mcp"; then
-            success "  ✓ $mcp - Configured"
+        if echo "$health_output" | grep -q "$mcp.*Connected"; then
+            success "  ✓ $mcp - Connected and working"
+            ((critical_connected++))
         else
-            error "  ✗ $mcp - Not configured"
+            error "  ✗ $mcp - Not connected (check API keys in .env.mcp)"
         fi
     done
-    
+
     echo ""
     echo "RECOMMENDED MCPs (Enhanced functionality):"
     for mcp in "${recommended_mcps[@]}"; do
-        if claude mcp list 2>/dev/null | grep -q "$mcp"; then
-            success "  ✓ $mcp - Configured"
+        if echo "$health_output" | grep -q "$mcp.*Connected"; then
+            success "  ✓ $mcp - Connected and working"
         else
-            warn "  ⚠ $mcp - Not configured"
+            warn "  ⚠ $mcp - Not connected (recommended but not critical)"
         fi
     done
-    
+
     echo ""
     echo "OPTIONAL MCPs (Specific use cases):"
     for mcp in "${optional_mcps[@]}"; do
-        if claude mcp list 2>/dev/null | grep -q "$mcp"; then
-            success "  ✓ $mcp - Configured"
+        if echo "$health_output" | grep -q "$mcp.*Connected"; then
+            success "  ✓ $mcp - Connected and working"
         else
             log "  ○ $mcp - Not configured (optional)"
         fi
     done
+
+    echo ""
+    if [[ $critical_connected -eq $critical_total ]]; then
+        success "All critical MCPs connected! ($critical_connected/$critical_total)"
+    else
+        warn "Some critical MCPs not connected ($critical_connected/$critical_total)"
+        echo ""
+        echo "To fix:"
+        echo "1. Check your .env.mcp file has the required API keys"
+        echo "2. Re-run this script"
+    fi
 }
 
 # Generate MCP status report
