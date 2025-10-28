@@ -95,7 +95,7 @@ The deployment system you just used was built by AGENT-11 itself—from concept 
 - 📈 **Marketer** - Growth on autopilot
 - 🎖️ **Coordinator** - Mission commander (PARALLEL STRIKE)
 
-[→ Complete Agent Reference](docs/reference/agents.md)
+[→ Complete Agent Reference](project/agents/full-squad.md)
 
 ## 🚀 Quick Start (5 Minutes)
 
@@ -104,8 +104,6 @@ The deployment system you just used was built by AGENT-11 itself—from concept 
 - 🔧 **Git repository** (recommended): `git init`
 - 📄 **README file**: `README.md`
 - 📦 **Package file**: `package.json`, `requirements.txt`, etc.
-
-[→ Detailed prerequisites](#detailed-prerequisites)
 
 ### Step 1: Deploy Your Squad (30 seconds)
 
