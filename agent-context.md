@@ -1,203 +1,140 @@
-# Agent Context: AGENT-11 Modernization Mission
+# Agent Context Document
 
 ## Mission Overview
-**Mission Type**: AGENT-11 Modernization & Claude Code SDK Integration
-**Phases**: Phase 1 (Foundation Enhancement) & Phase 2 (Agent Optimization)
-**Timeline**: Weeks 1-4 of 10-week modernization initiative
-**Date Started**: October 6, 2025
+**Mission Code**: LIBRARY-ENHANCEMENT-2025-10-28
+**Started**: 2025-10-28
+**Current Phase**: Assessment Review & Planning
+**Overall Status**: IN_PROGRESS
 
 ## Mission Objectives
-Transform AGENT-11 into a next-generation agentic development platform by:
-1. Implementing Claude Code's native memory tools for persistent context
-2. Creating bootstrap patterns for automated project initialization
-3. Implementing strategic context editing patterns
-4. Integrating extended thinking modes across all 11 agents
-5. Optimizing tool permissions with security-first approach
-6. Enhancing agent prompts with best practices
+Primary objectives from external assessment:
+- [ ] Standardize agent definitions across all 14 library agents
+- [ ] Consolidate redundant agents (content-creator → marketer, design-review → mission)
+- [ ] Formalize tool permissions structure
+- [ ] Evaluate structured state format options
 
-## Expected Outcomes
-- 39% improvement in agent effectiveness
-- 84% reduction in token consumption
-- 30+ hour autonomous operation capability
-- Enhanced security and reliability
+**External Rating**: 85/100 overall suite design, 100/100 coordination
+**Current Weaknesses**: Agent definition inconsistency (avg 65.4%), 3 weak agents (<50%)
+**Estimated Time**: TBD (to be determined with strategist)
+**Expected Impact**:
+- Improved maintainability and scalability
+- Reduced complexity (14 → 11 agents)
+- Enhanced reliability through standardization
+- Automated validation capabilities
 
-## Key Constraints
-- All improvements must work within Claude Code environment (no external infrastructure)
-- Maintain backward compatibility where possible
-- Follow Critical Software Development Principles (security-first, root cause analysis)
-
-## Critical Context
-### Framework Distinction
-- **Working agents**: `/Users/jamiewatters/DevProjects/agent-11/.claude/agents/` (local development squad we're using)
-- **Library agents**: `/Users/jamiewatters/DevProjects/agent-11/project/agents/specialists/` (what we're modernizing)
-
-### Files to Modernize
-- 11 agent definition files in project/agents/specialists/
-- 18 mission files in project/missions/
-- 6 slash command files (templates for deployment)
-- 20+ documentation files
-- 10+ template files
-
-## Strategic Review Recommendations
-Based on expert panel analysis of Claude Code advancements:
-1. **Memory Tools**: Native persistent context across sessions
-2. **Extended Thinking**: Strategic use of "think", "think hard", "think harder", "ultrathink"
-3. **Tool Permissions**: Explicit allowlists for security and focus
-4. **Context Editing**: Strategic /clear usage to prevent context pollution
-5. **Bootstrap Patterns**: Auto-generate CLAUDE.md from codebase analysis
-6. **Self-Verification**: Checkpoints in missions for quality assurance
-
-## Current Status
-- ✅ Strategic review analyzed
-- ✅ Comprehensive project plan created (project-plan.md)
-- ✅ File inventory completed
-- ✅ Context preservation files initialized
-- ✅ Phase 1.1 Complete: Memory Tool Integration Research & Design
-- 🔄 Phase 1.2 Next: Memory Tool Implementation in Coordinator
+## Critical Constraints
+Important limitations and requirements to maintain:
+- **Library vs Working Squad**: All changes target `project/agents/specialists/` (library agents), NOT `.claude/agents/` (working squad)
+- **Deployment Model**: Changes affect what gets deployed to user projects via install.sh
+- **Backward Compatibility**: Must maintain existing mission compatibility
+- **Security-First**: Never compromise security features in pursuit of convenience
+- **Documentation Standards**: Library docs for general users, personal communication style only for Jamie
+- **Tone Consistency**: Maintain military/tactical metaphors throughout
 
 ## Accumulated Findings
 
-### Phase 1.1: Memory Tool Integration Research & Design ✅
-**Date**: October 6, 2025
-**Agent**: Architect
-**Status**: Complete
+### External Assessment Summary
+**Agent**: Manus AI (External Reviewer)
+**Status**: Completed
+**Key Decisions**:
+- Overall suite design rated 85/100 (excellent concept, minor inconsistencies)
+- Coordination & PM rated 100/100 (state-of-the-art)
+- Individual agent average 65.4% (dragged down by 3 weak agents)
+- Missions & Commands rated 90/100 (comprehensive coverage)
 
-#### Key Architectural Decisions
+**Critical Information**:
+- **11 Strong Agents**: coordinator, developer, architect, tester, strategist, designer, operator, documenter, support, analyst, marketer (all 75%+)
+- **3 Weak Agents**: design-review (40%), agent-optimizer (30%), content-creator (25%)
+- **Inconsistent Quality**: Agent definition structure varies significantly
+- **Markdown Fragility**: Using MD for state management creates brittleness
+- **Tool Permissions**: Current free-text format not robust enough
 
-**1. Hybrid Context Strategy (Two-Tier System)**
-- **Tier 1**: File-based context (agent-context.md, handoff-notes.md) for mission coordination
-- **Tier 2**: Memory tools (/memories/*.xml) for long-term persistent knowledge
-- **Principle**: Memory and context files complement each other, not replace
-  - Memory = What needs to PERSIST (project knowledge)
-  - Context files = What needs to FLOW (mission coordination)
+**Outputs Created**:
+- Comprehensive 130-line assessment report
+- Quantitative scoring for all agents
+- Prioritized recommendations (4 levels)
 
-**2. Memory Architecture**
-```
-/memories/
-├── project/     # Requirements, architecture, constraints, success metrics
-├── user/        # Preferences, context, goals
-├── technical/   # Decisions, patterns, tooling
-└── lessons/     # Insights, debugging, optimizations
-```
+## Technical Context
 
-**3. Security-First Implementation**
-- Path validation prevents directory traversal attacks (`../`, `..\\`, URL-encoded)
-- All paths must start with `/memories`
-- Canonical path resolution: `path.resolve().relative_to(memory_root.resolve())`
-- File size monitoring and expiration for unused files
-- Sensitive data validation beyond Claude's built-in refusal
+### Architecture Decisions
+- **Centralized Coordination**: Single coordinator agent prevents chaotic multi-agent communication
+- **Mission-Oriented Workflows**: Pre-defined missions provide structured, repeatable workflows
+- **Dual-Document State**: project-plan.md (forward) + progress.md (backward) = complete tracking
+- **Context Preservation**: agent-context.md + handoff-notes.md + evidence-repository.md prevent context loss
 
-**4. Integration Patterns**
-- Mission bootstrap: Initialize memory from ideation.md
-- Agent protocol: Read memory → Apply decisions → Update knowledge → Handoff
-- Cross-session learning: Preserve insights in persistent memory
-- Context management: Clear tool results, exclude memory from clearing
+### Current Agent Structure
+- **Library Agents** (deployed to users): 11 core + 3 experimental = 14 total
+- **Working Squad** (internal dev): 15 agents for building AGENT-11 itself
+- **Location**: `project/agents/specialists/*.md` (library)
+- **Format**: Markdown with free-text structure (inconsistent)
 
-#### Technical Specifications
+### Implementation Patterns
+- Agent definitions use military/tactical metaphors consistently
+- Protocols include SCOPE BOUNDARIES, ANTI-PATTERNS, BEHAVIORAL GUIDELINES
+- Extended thinking guidance and self-verification protocols in mature agents
+- Tool permissions defined in free-text format
 
-**Memory Tool API**:
-- Beta header: `context-management-2025-06-27`
-- Supported models: Sonnet 4.5, Sonnet 4, Opus 4.1, Opus 4
-- Client-side execution through tool calls
-- 6 commands: view, create, str_replace, insert, delete, rename
+## Known Issues & Blockers
 
-**Context Editing Integration**:
-- Trigger: 30,000 input tokens (configurable)
-- Keep: 3 most recent tool uses (configurable)
-- Exclude: memory tool (never cleared)
-- Clear at least: 5,000 tokens (configurable)
+### Active Issues
+1. **Issue**: Agent definition inconsistency reduces reliability
+   - **Impact**: Harder to maintain, extend, and parse programmatically
+   - **Workaround**: Manual review and correction
+   - **Owner**: To be delegated to strategist + architect
 
-**Performance Impact**:
-- 39% improvement in agent effectiveness (memory-informed decisions)
-- 84% reduction in token consumption (context editing + memory)
-- 30+ hour autonomous operation capability
-- Zero context loss across session resets
+2. **Issue**: Redundant agents (content-creator, design-review, agent-optimizer)
+   - **Impact**: Increases complexity without adding capability
+   - **Workaround**: None currently
+   - **Owner**: To be delegated to strategist
 
-#### Deliverables Created
+3. **Issue**: Tool permissions not formalized
+   - **Impact**: No automated validation, risk of unauthorized actions
+   - **Workaround**: Manual review
+   - **Owner**: To be delegated to architect
 
-1. **Field Manual**: `/project/field-manual/memory-management.md`
-   - Complete memory tool architecture (300+ lines)
-   - API reference and usage patterns
-   - Security guidelines and implementation
-   - Integration patterns for all 11 agents
-   - Best practices and anti-patterns
+### Resolved Issues
+None yet
 
-2. **Bootstrap Template**: `/templates/memory-bootstrap-template.md`
-   - Memory directory structure design
-   - XML templates for all file types
-   - Bootstrap workflow from ideation
-   - Validation and troubleshooting guide
+## Dependencies & Integrations
 
-#### Critical Insights
+### External Dependencies
+- Claude Code framework and tool ecosystem
+- MCP (Model Context Protocol) integration system
+- GitHub for version control and community
 
-**1. "Fading Memory" Problem**
-- Large memory files reduce Claude's attention (signal lost in noise)
-- Solution: Keep files focused and small (< 1000 tokens each)
-- Use XML structure for clarity
+### Internal Dependencies
+- Agent definitions depend on mission structure
+- Missions depend on coordinator protocol
+- install.sh deployment script depends on consistent agent structure
 
-**2. Prompt Cache Considerations**
-- Context editing invalidates cached prefixes
-- Set clear_at_least threshold to make clearing worthwhile
-- Batch memory updates to minimize cache breaks
+## Next Steps Queue
+Priority-ordered tasks for upcoming phases:
+1. **High Priority**: Review and prioritize Manus AI recommendations with strategist
+2. **High Priority**: Design standardization approach for agent definitions (architect)
+3. **Medium Priority**: Plan consolidation of redundant agents (strategist)
+4. **Medium Priority**: Design tool permissions formalization (architect)
+5. **Low Priority**: Evaluate structured state format options (long-term consideration)
 
-**3. Memory Best Practices**
-- ✅ Use XML format (Anthropic recommendation)
-- ✅ Update existing knowledge, don't accumulate duplicates
-- ✅ Organize by concern (project, user, technical, lessons)
-- ❌ Don't store conversation history
-- ❌ Don't create monolithic files
-- ❌ Don't bypass file-based context system
+## Risk Register
+| Risk | Probability | Impact | Mitigation |
+|------|-------------|--------|------------|
+| Breaking existing missions | Medium | High | Thorough testing, backward compatibility checks |
+| User confusion from agent consolidation | Low | Medium | Clear migration guide, changelog |
+| Over-engineering standardization | Medium | Medium | Start simple, iterate based on feedback |
+| Working squad vs library confusion | High | High | Clear documentation, path verification before changes |
 
-**4. Security Architecture**
-- Implement from architecture phase (not as afterthought)
-- Understand WHY security patterns exist before modifying
-- Design solutions that work WITH security requirements
-- Document all security decisions and rationale
+## Performance Metrics
+- Current library agents: 14
+- Strong agents (75%+): 11
+- Weak agents (<50%): 3
+- Overall suite rating: 85/100
+- Coordination rating: 100/100
 
-#### Lessons Learned
-
-**Research Approach**:
-- ✅ Used Firecrawl MCP for comprehensive documentation research
-- ✅ Used Context7 MCP for SDK patterns and implementation examples
-- ✅ Combined official docs with industry analysis (Skywork AI, PromptHub)
-- ✅ Security-first approach from design phase
-
-**Integration Strategy**:
-- Memory is client-side tool (requires coordinator implementation)
-- Not a drop-in replacement for existing context system
-- Requires manual curation for optimal performance
-- Design for backward compatibility and graceful degradation
-
-#### Next Phase Requirements
-
-**For Developer (Phase 1.2)**:
-1. Implement `LocalFilesystemMemoryTool` class with security validation
-2. Add memory bootstrap to coordinator initialization
-3. Update coordinator prompt with memory protocol
-4. Test memory persistence across sessions
-5. Validate security against directory traversal attacks
-
-**Files to Create/Modify**:
-- Create: `/project/lib/memory_tool.py` (implementation)
-- Modify: `/project/agents/specialists/coordinator.md` (add memory protocol)
-- Update: Mission templates with memory bootstrap patterns
-
-**Testing Checklist**:
-- [ ] Path validation prevents `../` traversal attempts
-- [ ] Memory persists across context resets and sessions
-- [ ] XML files are well-formed and structured
-- [ ] File sizes stay under 1000 tokens each
-- [ ] Token consumption reduces by ~84% as expected
-- [ ] Security vulnerabilities addressed
-
-#### Dependencies & Blockers
-
-**Dependencies**:
-- Anthropic SDK with beta support (`context-management-2025-06-27`)
-- Python implementation environment for coordinator
-- File system access for local memory storage
-
-**No Blockers**: All research complete, architecture defined, ready for implementation
+## Handoff History
+Record of all agent handoffs in this mission:
+1. **From coordinator to pending specialists** (2025-10-28)
+   - Handoff quality: Preparing
+   - Context preserved: Initial mission setup in progress
 
 ---
-**Last Updated**: October 6, 2025 by Architect (Phase 1.1 Complete)
+*This document is continuously updated throughout the mission. Each agent must read this before starting their task and update it with their findings before completing their work.*

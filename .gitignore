@@ -24,6 +24,10 @@ Thumbs.db
 .mcp-status.md
 mcp-setup.sh
 
+# MCP Profile System
+.mcp.json
+.mcp.json.backup*
+
 # Archive directory
 .archive/
 

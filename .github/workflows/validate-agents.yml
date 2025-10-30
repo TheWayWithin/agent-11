@@ -1,0 +1,119 @@
+name: Validate Agent Schemas
+
+on:
+  push:
+    paths:
+      - 'project/agents/specialists/**/*.md'
+      - 'schema/agent-schema.json'
+      - 'scripts/validate-*.js'
+      - 'scripts/agent-parser.js'
+  pull_request:
+    paths:
+      - 'project/agents/specialists/**/*.md'
+      - 'schema/agent-schema.json'
+      - 'scripts/validate-*.js'
+      - 'scripts/agent-parser.js'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run validation (all layers)
+        id: validate
+        continue-on-error: true
+        run: |
+          node scripts/validate-agents.js --all --format=json --verbose > validation-results.json 2>&1
+          echo "results=$(cat validation-results.json)" >> $GITHUB_OUTPUT
+          cat validation-results.json
+
+      - name: Check validation status
+        run: |
+          if ! node scripts/validate-agents.js --all; then
+            echo "❌ Validation failed"
+            exit 1
+          fi
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const results = JSON.parse(fs.readFileSync('validation-results.json', 'utf8'));
+            const failures = results.filter(r => !r.valid);
+
+            if (failures.length === 0) return;
+
+            const body = `## ❌ Agent Validation Failed
+
+            ${failures.length} agent(s) failed validation:
+
+            ${failures.map(f => {
+              const errors = [
+                ...(f.layers.schema?.errors || []),
+                ...(f.layers.semantics?.errors || []),
+                ...(f.layers.content?.errors || [])
+              ];
+
+              return `### 📄 \`${f.file}\`
+
+            **Errors:**
+            ${errors.map(e =>
+              `- **${e.field || e.section}**: ${e.message}
+              - 💡 Fix: ${e.fix}`
+            ).join('\n')}
+            `;
+            }).join('\n---\n')}
+
+            **Performance:** ${failures.reduce((sum, f) => sum + (f.totalPerformance || 0), 0).toFixed(2)}ms total
+
+            ---
+            💡 Run \`npm run validate:agents\` locally to see all validation results.
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      - name: Upload validation results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: validation-results
+          path: validation-results.json
+
+      - name: Performance check
+        if: success()
+        run: |
+          node -e "
+          const results = require('./validation-results.json');
+          const avgTime = results.reduce((sum, r) => sum + (r.totalPerformance || 0), 0) / results.length;
+
+          console.log('⏱️  Performance Summary:');
+          console.log('  Average: ' + avgTime.toFixed(2) + 'ms per agent');
+          console.log('  Target:  <100ms per agent');
+
+          if (avgTime > 150) {
+            console.log('  ⚠️  Performance degraded (acceptable threshold: <150ms)');
+          } else if (avgTime > 100) {
+            console.log('  ⚠️  Performance acceptable but above target');
+          } else {
+            console.log('  ✅ Performance target met');
+          }
+          "

@@ -1,0 +1,41 @@
+{
+  "name": "agent-11",
+  "version": "3.0.0",
+  "description": "Framework for deploying specialized AI agents in Claude Code",
+  "main": "index.js",
+  "scripts": {
+    "validate:agent": "node scripts/validate-agents.js",
+    "validate:agents": "node scripts/validate-agents.js --all",
+    "validate:watch": "nodemon --watch project/agents/specialists --exec 'npm run validate:agents'",
+    "migrate:agent": "node scripts/migrate-agent-schema.js",
+    "migrate:all": "node scripts/migrate-agent-schema.js --all",
+    "install:hooks": "bash scripts/install-git-hooks.sh",
+    "test": "jest",
+    "test:agents": "jest tests/backward-compatibility.test.js",
+    "test:watch": "jest --watch",
+    "benchmark": "node benchmarks/agent-performance.bench.js"
+  },
+  "dependencies": {
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1",
+    "js-yaml": "^4.1.0",
+    "glob": "^10.3.10"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jamiewatters/agent-11.git"
+  },
+  "keywords": [
+    "ai",
+    "agents",
+    "claude",
+    "automation",
+    "workflows"
+  ],
+  "author": "Jamie Watters",
+  "license": "MIT"
+}
