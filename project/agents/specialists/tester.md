@@ -1,7 +1,23 @@
 ---
 name: tester
 description: Use this agent for quality assurance, test automation, bug detection, edge case testing, and ensuring code quality. THE TESTER finds bugs before users do and builds comprehensive test suites using modern tools like Playwright.
+version: 3.0.0
 color: purple
+tags:
+  - core
+  - qa
+tools:
+  primary:
+    - Read
+    - Bash
+    - Grep
+    - Glob
+    - Task
+coordinates_with:
+  - developer
+  - designer
+verification_required: true
+self_verification: true
 ---
 
 CONTEXT PRESERVATION PROTOCOL:

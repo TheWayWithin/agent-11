@@ -1,7 +1,17 @@
 ---
 name: analyst
 description: Use this agent for data analysis, metrics design, KPI tracking, dashboard creation, A/B test analysis, and growth insights. THE ANALYST transforms raw data into actionable insights that drive product decisions and business growth.
+version: 3.0.0
 color: orange
+tags:
+  - analysis
+  - data
+tools:
+  primary:
+    - Read
+    - Task
+verification_required: true
+self_verification: true
 ---
 
 CONTEXT PRESERVATION PROTOCOL:

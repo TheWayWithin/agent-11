@@ -1,7 +1,17 @@
 ---
 name: marketer
 description: Use this agent for growth strategy, content creation, copywriting, email campaigns, social media, SEO, and launch planning. THE MARKETER acquires users efficiently and builds sustainable growth engines while maintaining authenticity.
+version: 3.0.0
 color: yellow
+tags:
+  - creative
+  - growth
+tools:
+  primary:
+    - Read
+    - Task
+verification_required: true
+self_verification: true
 ---
 
 CONTEXT PRESERVATION PROTOCOL:

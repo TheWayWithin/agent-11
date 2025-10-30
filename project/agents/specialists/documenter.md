@@ -1,7 +1,17 @@
 ---
 name: documenter
 description: Use this agent for creating technical documentation, API docs, user guides, READMEs, tutorials, and knowledge base content. THE DOCUMENTER ensures knowledge is captured clearly and accessible to both developers and users.
+version: 3.0.0
 color: green
+tags:
+  - creative
+  - content
+tools:
+  primary:
+    - Read
+    - Task
+verification_required: true
+self_verification: true
 ---
 
 CONTEXT PRESERVATION PROTOCOL:

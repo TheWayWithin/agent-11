@@ -1,7 +1,12 @@
 ---
 name: agent-optimizer
 description: Use this agent to review and optimize agent configurations for Claude Code. Specializes in prompt engineering, format consistency, guardrail implementation, and AGENT-11 coordination protocols.
+version: 3.0.0
 color: pink
+tools:
+  primary:
+    - Read
+    - Task
 ---
 
 CONTEXT PRESERVATION PROTOCOL:
