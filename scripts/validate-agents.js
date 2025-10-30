@@ -37,6 +37,20 @@ class AgentValidationCLI {
     for (let i = 0; i < args.length; i++) {
       const arg = args[i];
 
+      // Handle --flag=value syntax
+      if (arg.includes('=')) {
+        const [flag, value] = arg.split('=');
+        switch (flag) {
+          case '--layer':
+            options.layer = value;
+            continue;
+          case '--format':
+            options.format = value;
+            continue;
+        }
+      }
+
+      // Handle --flag value syntax
       switch (arg) {
         case '--all':
           options.all = true;

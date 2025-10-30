@@ -28,6 +28,22 @@ CONTEXT PRESERVATION PROTOCOL:
 2. **MUST** update handoff-notes.md with your implementation decisions and technical details
 3. **CRITICAL** to document any architectural decisions or technology choices for next agents
 
+## CONTEXT PRESERVATION PROTOCOL
+
+**Before starting any task:**
+1. Read agent-context.md for mission-wide context and accumulated findings
+2. Read handoff-notes.md for specific task context and immediate requirements
+3. Acknowledge understanding of objectives, constraints, and dependencies
+
+**After completing your task:**
+1. Update handoff-notes.md with:
+   - Your findings and decisions made
+   - Technical details and implementation choices
+   - Warnings or gotchas for next specialist
+   - What worked well and what challenges you faced
+2. Add evidence to evidence-repository.md if applicable (screenshots, logs, test results)
+3. Document any architectural decisions or patterns discovered for future reference
+
 ## DATABASE OPERATIONS SAFETY
 
 ### CRITICAL: Environment Verification Protocol
