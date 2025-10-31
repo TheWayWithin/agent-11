@@ -171,7 +171,7 @@ GITHUB_REPO_BASE="https://raw.githubusercontent.com/$GITHUB_REPO/$GITHUB_BRANCH"
 
 # Available squads
 SQUAD_CORE=("strategist" "developer" "tester" "operator")
-SQUAD_FULL=("strategist" "developer" "tester" "operator" "architect" "designer" "documenter" "support" "analyst" "marketer" "coordinator" "agent-optimizer")
+SQUAD_FULL=("strategist" "developer" "tester" "operator" "architect" "designer" "documenter" "support" "analyst" "marketer" "coordinator")
 SQUAD_MINIMAL=("strategist" "developer")
 
 
@@ -297,11 +297,11 @@ validate_environment() {
     log "Execution mode: $execution_mode"
     
     if [[ "$execution_mode" == "local" ]]; then
-        # Check if source agents exist in new .claude/agents location first
-        if [[ -d "$PROJECT_ROOT/.claude/agents" ]]; then
-            log "Using agents from: $PROJECT_ROOT/.claude/agents"
-        elif [[ -d "$PROJECT_ROOT/project/agents/specialists" ]]; then
+        # Check if source agents exist in library location first (project/agents/specialists)
+        if [[ -d "$PROJECT_ROOT/project/agents/specialists" ]]; then
             log "Using agents from: $PROJECT_ROOT/project/agents/specialists"
+        elif [[ -d "$PROJECT_ROOT/.claude/agents" ]]; then
+            log "Using agents from: $PROJECT_ROOT/.claude/agents"
         else
             fatal "Local agent source directories not found"
         fi
@@ -451,12 +451,12 @@ install_agent() {
     mkdir -p "$AGENTS_DIR"
     
     if [[ "$execution_mode" == "local" ]]; then
-        # Try new .claude/agents location first, then fall back to old location
+        # Try library location first (project/agents/specialists), then fall back to working squad
         local source_file
-        if [[ -f "$PROJECT_ROOT/.claude/agents/$agent_name.md" ]]; then
-            source_file="$PROJECT_ROOT/.claude/agents/$agent_name.md"
-        elif [[ -f "$PROJECT_ROOT/project/agents/specialists/$agent_name.md" ]]; then
+        if [[ -f "$PROJECT_ROOT/project/agents/specialists/$agent_name.md" ]]; then
             source_file="$PROJECT_ROOT/project/agents/specialists/$agent_name.md"
+        elif [[ -f "$PROJECT_ROOT/.claude/agents/$agent_name.md" ]]; then
+            source_file="$PROJECT_ROOT/.claude/agents/$agent_name.md"
         else
             error "Agent source file not found: $agent_name"
             return 1
