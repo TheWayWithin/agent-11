@@ -117,9 +117,10 @@ Completion Prompt: Have you copied the files? Ready to continue?
 ### Working Squad (`.claude/agents/`)
 **Purpose**: Internal development squad for AGENT-11 project work
 **Location**: `/Users/jamiewatters/DevProjects/agent-11/.claude/agents/`
-**Agent Count**: 15 agents
+**Agent Count**: 12 agents
 **Use Case**: Building, testing, and maintaining the AGENT-11 framework itself
-**Agents Include**: coordinator, developer, strategist, tester, architect, designer, operator, analyst, marketer, support, documenter, agent-optimizer, design-review, content-creator, meeting
+**Agents Include**: coordinator, developer, strategist, tester, architect, designer, operator, analyst, marketer, support, documenter, agent-optimizer
+**Archived**: content-creator (overlaps with marketer), design-review (overlaps with designer)
 
 **⚠️ DO NOT MODIFY UNLESS**: You are improving the AGENT-11 development process itself
 
@@ -175,7 +176,7 @@ Before modifying ANY agent file, ask yourself:
 ```
 agent-11/
 ├── .claude/
-│   ├── agents/           ← WORKING SQUAD (15 agents, internal use)
+│   ├── agents/           ← WORKING SQUAD (12 agents, internal use)
 │   ├── commands/         ← Slash commands (also deployed)
 │   └── claude.md         ← This file (project guardrails)
 │

@@ -173,8 +173,8 @@ The ideation file is a centralized document containing all requirements, context
 ## Design Review System
 
 For UI/UX projects, AGENT-11 includes design review capabilities:
-- **@designer**: Enhanced with comprehensive UI/UX assessment
-- **@design-review**: Dedicated agent for design audits (when available)
+- **@designer**: Enhanced with comprehensive UI/UX assessment capabilities
+- **/design-review**: Slash command for comprehensive design audits (uses @designer)
 - **Standards**: Live environment testing, evidence-based feedback
 
 *Note: For project-specific design principles, add them to your project's CLAUDE.md file. See `/templates/` for design principles template.*
@@ -482,7 +482,7 @@ All agent profiles should explicitly list their available tools:
 
 ### Mission Orchestration
 - `/coord [mission] [files]` - Orchestrate multi-agent missions
-- `/design-review` - Comprehensive UI/UX audit
+- `/design-review` - Comprehensive UI/UX audit (delegates to @designer)
 - `/recon` - Design reconnaissance
 - `/meeting [agenda]` - Facilitate structured meetings
 
