@@ -6,12 +6,15 @@
   "scripts": {
     "validate:agent": "node scripts/validate-agents.js",
     "validate:agents": "node scripts/validate-agents.js --all",
+    "validate:deployment": "node scripts/validate-deployment.js",
     "validate:watch": "nodemon --watch project/agents/specialists --exec 'npm run validate:agents'",
     "migrate:agent": "node scripts/migrate-agent-schema.js",
     "migrate:all": "node scripts/migrate-agent-schema.js --all",
     "install:hooks": "bash scripts/install-git-hooks.sh",
+    "install:validation-hook": "bash scripts/install-validation-hook.sh",
     "test": "jest",
     "test:agents": "jest tests/backward-compatibility.test.js",
+    "test:deployment": "jest tests/deployment-validation.test.js",
     "test:watch": "jest --watch",
     "benchmark": "node benchmarks/agent-performance.bench.js"
   },
