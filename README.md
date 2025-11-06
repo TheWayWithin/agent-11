@@ -12,7 +12,12 @@
 [![MCP Integration](https://img.shields.io/badge/MCP-Enabled-orange?style=for-the-badge)](project/field-manual/mcp-integration.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
+[![GitHub stars](https://img.shields.io/github/stars/TheWayWithin/agent-11?style=social)](https://github.com/TheWayWithin/agent-11/stargazers)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Support-yellow?logo=buy-me-a-coffee&style=flat)](https://buymeacoffee.com/jamiewatters)
+
 **One Founder. Eleven Specialists. Unlimited Potential.**
+
+*If AGENT-11 has saved you time or helped you ship faster, consider ⭐ [starring the repo](https://github.com/TheWayWithin/agent-11) or [buying me a coffee](https://buymeacoffee.com/jamiewatters) ☕ to support development!*
 
 [🚀 Quick Start](#-quick-start-5-minutes) · [📖 Documentation](#-complete-documentation) · [🎯 Workflows](#-common-workflows) · [💬 Support](#-join-the-elite)
 
@@ -1683,6 +1688,32 @@ curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/d
 ## 🛠️ Troubleshooting
 
 [Complete Troubleshooting Guide →](project/docs/TROUBLESHOOTING.md)
+
+## 💖 Support AGENT-11
+
+AGENT-11 is a passion project that's 100% free and always will be. If this framework has:
+
+- ⚡ Saved you weeks of development time
+- 🚀 Helped you ship your MVP faster
+- 💰 Eliminated the need for expensive contractors
+
+Consider supporting its development:
+
+<a href="https://buymeacoffee.com/jamiewatters" target="_blank">
+  <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+       alt="Buy Me A Coffee"
+       style="height: 41px !important;width: 174px !important;" >
+</a>
+
+Your support keeps AGENT-11 free, actively maintained, and growing with new capabilities!
+
+**Other ways to support**:
+- ⭐ [Star the repo](https://github.com/TheWayWithin/agent-11/stargazers) to help others discover it
+- 📢 Share AGENT-11 with fellow founders and developers
+- 🐛 Report bugs and suggest features
+- 📝 Contribute to documentation
+
+---
 
 ## 🤝 Join the Elite
 
