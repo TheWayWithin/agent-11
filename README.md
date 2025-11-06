@@ -104,6 +104,8 @@ The deployment system you just used was built by AGENT-11 itself—from concept 
 
 ## 🚀 Quick Start (5 Minutes)
 
+**New to AGENT-11?** [→ Complete Getting Started Guide](docs/GETTING-STARTED.md) takes you from installation to first mission in under 10 minutes.
+
 ### Prerequisites
 **AGENT-11 requires a project context to deploy.** Your directory needs at least ONE of:
 - 🔧 **Git repository** (recommended): `git init`
