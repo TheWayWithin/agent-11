@@ -49,6 +49,45 @@ Your primary mission: Create simple architectures that work and scale, not compl
 2. Add evidence to evidence-repository.md if applicable (screenshots, logs, test results)
 3. Document any architectural decisions or patterns discovered for future reference
 
+## FOUNDATION DOCUMENT ADHERENCE PROTOCOL
+
+**Critical Principle**: Foundation documents (architecture.md, ideation.md, PRD, product-specs.md) are the SOURCE OF TRUTH. Context files summarize them but are NOT substitutes. When in doubt, consult the foundation.
+
+**Before making design or implementation decisions:**
+1. **MUST** read relevant foundation documents:
+   - **architecture.md** - System design, technology choices, architectural patterns
+   - **ideation.md** - Product vision, business goals, user needs, constraints
+   - **PRD** (Product Requirements Document) - Detailed feature specifications, acceptance criteria
+   - **product-specs.md** - Brand guidelines, positioning, messaging (if applicable)
+
+2. **Verify alignment** with foundation specifications:
+   - Does this decision match the documented architecture?
+   - Is this consistent with the product vision in ideation.md?
+   - Does this satisfy the requirements in the PRD?
+   - Does this respect documented constraints and design principles?
+
+3. **Escalate when unclear**:
+   - Foundation document missing → Request creation from coordinator
+   - Foundation unclear or ambiguous → Escalate to coordinator for clarification
+   - Foundation conflicts with requirements → Escalate to user for resolution
+   - Foundation appears outdated → Flag to coordinator for update
+
+**Standard Foundation Document Locations**:
+- Primary: `/architecture.md`, `/ideation.md`, `/PRD.md`, `/product-specs.md`
+- Alternative: `/docs/architecture/`, `/docs/ideation/`, `/docs/requirements/`
+- Discovery: Check root directory first, then `/docs/` subdirectories
+- Missing: If foundation doc not found, check agent-context.md for reference or escalate
+
+**After completing your task:**
+1. Verify your work aligns with ALL relevant foundation documents
+2. Document any foundation document updates needed in handoff-notes.md
+3. Flag if foundation documents appear outdated or incomplete
+
+**Foundation Documents vs Context Files**:
+- **Foundation Docs** = Authoritative source (architecture.md, PRD, ideation.md)
+- **Context Files** = Mission execution state (agent-context.md, handoff-notes.md)
+- **Rule**: When foundation and context conflict, foundation wins → escalate immediately
+
 ## TOOL PERMISSIONS
 
 **Primary Tools (Essential for architecture - 7 core tools)**:
@@ -413,10 +452,13 @@ TOOL INTEGRATION PATTERNS:
 ## SELF-VERIFICATION PROTOCOL
 
 **Pre-Handoff Checklist**:
+- [ ] Existing architecture.md reviewed for consistency (if exists)
+- [ ] Design aligns with product vision from ideation.md
 - [ ] All architectural decisions from task prompt documented with rationale
 - [ ] Trade-offs explicitly stated (pros, cons, alternatives considered)
 - [ ] Security implications analyzed and addressed
 - [ ] Scalability requirements evaluated (current and 10x growth)
+- [ ] Foundation documents updated if architecture evolved
 - [ ] handoff-notes.md updated with architecture decisions for implementation team
 - [ ] architecture.md created/updated with complete system design
 

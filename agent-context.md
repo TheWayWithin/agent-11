@@ -1,26 +1,29 @@
 # Agent Context Document
 
 ## Mission Overview
-**Mission Code**: LIBRARY-ENHANCEMENT-2025-10-28
-**Started**: 2025-10-28
-**Current Phase**: Assessment Review & Planning
+**Mission Code**: FOUNDATION-GUARDRAILS-2025-11-09
+**Started**: 2025-11-09
+**Current Phase**: Investigation Setup
 **Overall Status**: IN_PROGRESS
 
 ## Mission Objectives
-Primary objectives from external assessment:
-- [ ] Standardize agent definitions across all 14 library agents
-- [ ] Consolidate redundant agents (content-creator → marketer, design-review → mission)
-- [ ] Formalize tool permissions structure
-- [ ] Evaluate structured state format options
+Foundation document adherence investigation:
+- [x] Investigate how agents currently handle foundation documents
+- [x] Analyze patterns of deviation and root causes
+- [x] Design guardrail improvements to enforce foundation adherence
+- [ ] Implement verification protocols in library agents (IN PROGRESS - ready for developer)
+- [ ] Validate guardrails with realistic test scenarios
+- [ ] Document best practices
 
-**External Rating**: 85/100 overall suite design, 100/100 coordination
-**Current Weaknesses**: Agent definition inconsistency (avg 65.4%), 3 weak agents (<50%)
-**Estimated Time**: TBD (to be determined with strategist)
+**Issue Severity**: HIGH - Undermines product consistency, wastes user time
+**Impact Scope**: Library agents in `project/agents/specialists/`
+**User Reports**: Agents deviating from architecture.md, ideation.md, PRDs, product descriptions
+**Estimated Time**: 4-6 hours
 **Expected Impact**:
-- Improved maintainability and scalability
-- Reduced complexity (14 → 11 agents)
-- Enhanced reliability through standardization
-- Automated validation capabilities
+- Agents consistently adhere to foundation documents
+- Zero architectural deviations without user approval
+- Product deliverables match specifications
+- User confidence in consistency restored
 
 ## Critical Constraints
 Important limitations and requirements to maintain:
@@ -32,6 +35,43 @@ Important limitations and requirements to maintain:
 - **Tone Consistency**: Maintain military/tactical metaphors throughout
 
 ## Accumulated Findings
+
+### Foundation Document Adherence Investigation (2025-11-09)
+**Agent**: Analyst (Investigation) → Architect (Design)
+**Status**: Design Complete - Ready for Implementation
+**Phase**: Guardrail Design Complete
+
+**Investigation Results**:
+- **Context Preservation**: 100% of agents have robust protocol (agent-context.md, handoff-notes.md)
+- **Foundation Document Protocol**: 0% of agents have explicit requirements to read architecture.md, PRD, ideation.md
+- **Root Cause**: Implicit assumption that foundation content flows through context files (lossy, outdated)
+- **Risk Assessment**: 4 critical-risk agents (developer, architect, designer, coordinator) most likely to deviate
+
+**Architectural Design Decisions**:
+- **Solution**: Foundation Document Adherence Protocol mirroring proven context preservation pattern
+- **Approach**: Universal protocol section + verification checkpoints + delegation enhancement + escalation protocol
+- **Implementation**: Risk-based phasing (Phase 1: critical agents, Phase 2: moderate, Phase 3: lower risk)
+- **Impact**: ~780 lines added across 11 agents, 100% backward compatible
+- **Validation**: 7 functional tests + 5 edge cases + foundation reading rate metrics
+
+**Key Innovation**:
+- Extends "MUST read agent-context.md" pattern to foundation documents
+- Multi-layer enforcement: Protocol + Checklists + Delegation + Escalation
+- Coordinator as central enforcement point with explicit verification steps
+- Clear escalation decision tree (5 scenarios) prevents agent improvisation
+
+**Outputs Created**:
+- Complete design document: `foundation-guardrails-design.md` (9,800 words)
+- Ready-to-implement protocol text for all 11 agents
+- Line-by-line insertion specifications with exact locations
+- Comprehensive validation strategy with 12 test scenarios
+- Risk-based implementation plan with success metrics
+
+**Expected Impact**:
+- 0% architectural drift (down from current user-reported issues)
+- >90% foundation reading rate (up from 0% explicit reading)
+- 100% escalation compliance (agents escalate vs improvise)
+- User confidence restored in product consistency
 
 ### External Assessment Summary
 **Agent**: Manus AI (External Reviewer)
@@ -93,7 +133,12 @@ Important limitations and requirements to maintain:
    - **Owner**: To be delegated to architect
 
 ### Resolved Issues
-None yet
+1. **Issue**: Phantom document creation bug (documenter, marketer, designer)
+   - **Root Cause**: Tool permission inconsistency between YAML frontmatter and text descriptions
+   - **Fix Applied**: Added Write, Edit, and supporting tools to frontmatter for all three agents
+   - **Validation**: 100% pass rate (7/7 tests), zero phantom behavior observed
+   - **Status**: ✅ RESOLVED (2025-11-09)
+   - **Business Impact**: HIGH - Core functionality restored, user trust recovered
 
 ## Dependencies & Integrations
 
@@ -109,11 +154,11 @@ None yet
 
 ## Next Steps Queue
 Priority-ordered tasks for upcoming phases:
-1. **High Priority**: Review and prioritize Manus AI recommendations with strategist
-2. **High Priority**: Design standardization approach for agent definitions (architect)
-3. **Medium Priority**: Plan consolidation of redundant agents (strategist)
-4. **Medium Priority**: Design tool permissions formalization (architect)
-5. **Low Priority**: Evaluate structured state format options (long-term consideration)
+1. **CURRENT**: Implement Foundation Document Adherence Protocol in library agents (developer - Phase 1)
+2. **High Priority**: Validate Phase 1 implementation with functional tests (tester)
+3. **High Priority**: Complete Phase 2 & 3 implementation (developer)
+4. **Medium Priority**: Document foundation adherence best practices (documenter)
+5. **Low Priority**: Review and prioritize Manus AI recommendations with strategist
 
 ## Risk Register
 | Risk | Probability | Impact | Mitigation |
@@ -132,9 +177,40 @@ Priority-ordered tasks for upcoming phases:
 
 ## Handoff History
 Record of all agent handoffs in this mission:
-1. **From coordinator to pending specialists** (2025-10-28)
-   - Handoff quality: Preparing
-   - Context preserved: Initial mission setup in progress
+1. **From coordinator to analyst** (2025-11-09 - Phantom Bug Mission)
+   - Handoff quality: Excellent
+   - Context preserved: Complete mission context provided
+   - Task: Root cause analysis of phantom document bug
+
+2. **From analyst to developer** (2025-11-09 - Phantom Bug Mission)
+   - Handoff quality: Excellent
+   - Context preserved: Comprehensive analysis with specific fix instructions
+   - Task: Implement tool permission fixes in frontmatter
+
+3. **From developer to tester** (2025-11-09 - Phantom Bug Mission)
+   - Handoff quality: Excellent
+   - Context preserved: Complete implementation details with validation requirements
+   - Task: Validate fixes with functional testing
+
+4. **From tester to coordinator** (2025-11-09 - Phantom Bug Mission)
+   - Handoff quality: Excellent
+   - Context preserved: Complete validation report with evidence
+   - Task: Mission completion and closure
+
+5. **From coordinator to analyst** (2025-11-09 - Foundation Guardrails Investigation)
+   - Handoff quality: Excellent
+   - Context preserved: Mission objectives, user reports, investigation scope
+   - Task: Root cause analysis of foundation document deviation patterns
+
+6. **From analyst to architect** (2025-11-09 - Foundation Guardrails Design)
+   - Handoff quality: Excellent
+   - Context preserved: Complete investigation findings with statistical evidence
+   - Task: Design comprehensive guardrail system for foundation document adherence
+
+7. **From architect to developer** (2025-11-09 - Foundation Guardrails Implementation - CURRENT)
+   - Handoff quality: Excellent
+   - Context preserved: Complete design document with ready-to-implement protocol text
+   - Task: Implement Foundation Document Adherence Protocol across 11 library agents (3 phases)
 
 ---
 *This document is continuously updated throughout the mission. Each agent must read this before starting their task and update it with their findings before completing their work.*
