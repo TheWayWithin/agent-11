@@ -298,7 +298,7 @@ When using `/coord` to orchestrate missions, the coordinator MUST use the Task t
    ```
    # WRONG (just describes delegation):
    "I'm delegating to @tester for testing"
-   
+
    # RIGHT (actually uses Task tool):
    Task(
      subagent_type="tester",
@@ -309,6 +309,107 @@ When using `/coord` to orchestrate missions, the coordinator MUST use the Task t
 
 ### NO ROLE-PLAYING RULE
 The coordinator must NEVER role-play or simulate delegation. Every delegation must be an actual Task tool invocation that spawns a real agent instance. Status updates should reflect actual Task tool responses, not imagined agent responses.
+
+### TASK TOOL LIMITATIONS & FILE CREATION VERIFICATION
+
+**CRITICAL UNDERSTANDING**: The Task tool and subagents have important limitations:
+
+#### What Subagents CAN Do:
+- ✅ Analyze code and provide recommendations
+- ✅ Design solutions and create implementation plans
+- ✅ Review existing files and suggest changes
+- ✅ Generate content for files (as text in their response)
+- ✅ Provide specific Edit/Write tool calls for the coordinator to execute
+
+#### What Subagents CANNOT Do:
+- ❌ **Directly create or modify files** - They don't have Write/Edit tool access
+- ❌ Execute tool calls themselves (only recommend them)
+- ❌ Verify their outputs were actually created
+- ❌ Make persistent changes to the filesystem
+
+#### Coordinator's Mandatory Verification Protocol:
+
+**After EVERY Task tool delegation that should create/modify files:**
+
+1. **Immediately Verify File Existence**:
+   ```bash
+   ls -la /path/to/expected/file.md 2>/dev/null || echo "FILE MISSING"
+   ```
+
+2. **If File Was Supposed to Be Created But Doesn't Exist**:
+   - The subagent provided a PLAN, not actual execution
+   - Extract the file content from the subagent's response
+   - Use Write tool to actually create the file
+   - Update progress.md noting manual file creation was required
+
+3. **If File Should Have Been Modified But Wasn't**:
+   - The subagent provided RECOMMENDATIONS, not actual edits
+   - Extract the specific changes from the subagent's response
+   - Use Edit tool to apply the changes
+   - Update progress.md noting manual edits were required
+
+4. **Best Practice - Request Tool Calls Directly**:
+   ```
+   Task(
+     subagent_type="developer",
+     prompt="Analyze X and provide the EXACT Write tool call I should execute,
+             including the complete file_path and full content parameters.
+             Format your response as a ready-to-execute tool call."
+   )
+   ```
+
+#### Common Mistake Pattern:
+
+```
+❌ WRONG FLOW:
+1. Coordinator delegates to subagent to "create file X"
+2. Subagent responds with file content
+3. Coordinator assumes file exists
+4. Coordinator marks task complete [x]
+5. File doesn't actually exist
+
+✅ CORRECT FLOW:
+1. Coordinator delegates to subagent to "design file X and provide Write tool call"
+2. Subagent responds with file content and Write tool parameters
+3. Coordinator VERIFIES file doesn't exist yet with ls
+4. Coordinator EXECUTES Write tool with subagent's parameters
+5. Coordinator VERIFIES file now exists
+6. Coordinator marks task complete [x]
+7. Coordinator logs to progress.md what was created
+```
+
+#### Verification Checklist Template:
+
+After any delegation involving file operations, run:
+```bash
+# List all expected outputs
+ls -la file1.md file2.md file3.md 2>&1
+
+# For each missing file:
+# 1. Extract content from subagent response
+# 2. Execute Write tool
+# 3. Verify creation: ls -la file.md
+# 4. Log to progress.md
+```
+
+#### Integration with Progress Tracking:
+
+When manual file creation is required after delegation:
+
+**In progress.md**:
+```markdown
+### [YYYY-MM-DD HH:MM] Delegation Verification Issue
+
+**What Happened**:
+- Delegated file creation to @analyst via Task tool
+- Analyst provided file content but couldn't create file directly
+- Had to manually execute Write tool with analyst's content
+
+**Prevention**:
+- Always verify file existence after delegation
+- Request "provide Write tool call" instead of "create file"
+- Use verification checklist after every file operation delegation
+```
 
 ### CONTEXT PRESERVATION REQUIREMENT
 Every Task tool invocation MUST include instructions to read context files first and update handoff notes after completion. This ensures seamless context flow between agents.

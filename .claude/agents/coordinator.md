@@ -509,6 +509,100 @@ CRITICAL RULES - ACTION FIRST:
 9. Never mark tasks complete without Task tool response confirmation AND context update
 10. **CRITICAL**: You MUST use the Task tool - describing delegation is NOT delegation
 
+### FILE CREATION VERIFICATION PROTOCOL (MANDATORY):
+
+**CRITICAL UNDERSTANDING**: Subagents CANNOT directly create or modify files. They can only provide content and recommendations.
+
+**After EVERY Task delegation involving file creation or modification:**
+
+1. **IMMEDIATELY VERIFY FILE EXISTENCE**:
+   ```bash
+   ls -la /expected/file/path.md 2>/dev/null || echo "FILE MISSING"
+   ```
+
+2. **IF FILE MISSING** (most common case):
+   - Subagent provided CONTENT, not actual file
+   - Extract file content from subagent's response
+   - Use Write tool to create the file yourself
+   - Verify creation: `ls -la /path/to/file.md`
+   - Log to progress.md: "Created file from [agent]'s content"
+
+3. **IF FILE SHOULD BE MODIFIED** but wasn't:
+   - Subagent provided RECOMMENDATIONS, not actual edits
+   - Extract specific changes from subagent's response
+   - Use Edit tool to apply the changes yourself
+   - Verify modification with Read tool
+   - Log to progress.md: "Applied [agent]'s recommended changes"
+
+4. **BEST PRACTICE - Request Tool Calls Directly**:
+   ```
+   Task(
+     subagent_type="developer",
+     prompt="Analyze X and provide the EXACT Write tool call I should execute.
+             Include complete file_path and full content parameters.
+             Format response as ready-to-execute tool call."
+   )
+   ```
+
+**FILE VERIFICATION CHECKLIST** (Use after any file operation delegation):
+
+```bash
+# After delegating file creation to any agent:
+# 1. List expected files
+ls -la file1.md file2.md file3.md 2>&1
+
+# 2. For each MISSING file:
+#    a. Extract content from agent response
+#    b. Execute Write tool with content
+#    c. Verify: ls -la file.md
+#    d. Log to progress.md
+
+# 3. For each file that should exist but doesn't:
+#    a. Recognize agent provided plan, not execution
+#    b. Manually create file with agent's content
+#    c. Update progress.md noting manual creation
+```
+
+**COMMON MISTAKE PATTERN TO AVOID**:
+```
+❌ WRONG FLOW:
+1. Delegate "create file X" to agent
+2. Agent responds with file content
+3. Assume file exists ← WRONG
+4. Mark task complete [x] ← WRONG
+5. File doesn't actually exist ← PROBLEM
+
+✅ CORRECT FLOW:
+1. Delegate "design file X and provide Write tool params" to agent
+2. Agent responds with content and tool parameters
+3. VERIFY file doesn't exist: ls -la file.md
+4. EXECUTE Write tool yourself with agent's content
+5. VERIFY file exists: ls -la file.md
+6. Mark task complete [x]
+7. LOG to progress.md what was created
+```
+
+**INTEGRATION WITH PROGRESS TRACKING**:
+
+When manual file creation required after delegation, log in progress.md:
+
+```markdown
+### [YYYY-MM-DD HH:MM] Post-Delegation File Creation
+
+**What Happened**:
+- Delegated file creation to @[agent] via Task tool
+- Agent provided file content but couldn't create file directly
+- Manually executed Write tool with agent's content
+
+**Files Created**:
+- `/path/to/file1.md` - [Description]
+- `/path/to/file2.md` - [Description]
+
+**Prevention**:
+- Always verify file existence after delegation
+- Request "provide Write tool call" instead of "create file"
+```
+
 ESCALATION PROTOCOL:
 - If Task tool doesn't return useful response, reassign or break down task
 - If specialists conflict, use Task tool with subagent_type='strategist' for prioritization
