@@ -16,6 +16,97 @@ This file has been restructured to be a BACKWARD-LOOKING changelog capturing:
 
 ## 📦 Recent Deliverables
 
+### [2025-11-12] - File Persistence Bug Documentation & Safeguards ✅ COMPLETE
+**Created by**: @coordinator (direct Write tool implementation - NO delegation)
+**Type**: Critical System Improvement - Post-Mortem Implementation
+**Related**: ISOTracker Phase 4.3 file persistence failures (2025-01-11, 2025-01-12)
+**Files Created/Updated**:
+1. `CLAUDE.md` - Added comprehensive FILE PERSISTENCE BUG & SAFEGUARDS section (lines 414-475)
+2. `.claude/agents/coordinator.md` - Added critical bug alert to verification protocol
+3. `project/deployment/scripts/verify-files.sh` - New automated verification script (3.8KB)
+4. `project/field-manual/troubleshooting/task-delegation-file-persistence.md` - Complete troubleshooting guide (12KB)
+
+✅ **Files verified on filesystem**: 2025-11-12 13:13 (verified with verification script)
+
+**Description**:
+Implemented critical safeguards following comprehensive post-mortem analysis of persistent file write failures in ISOTracker project. Root cause: Task tool delegation + Write tool operations create files in agent execution context but fail to persist to host filesystem after agent completion (100% reproducible across 2 independent attempts, 14 files lost both times).
+
+**Implementation Details**:
+1. **CLAUDE.md Enhancements**:
+   - New section: "CRITICAL: FILE PERSISTENCE BUG & SAFEGUARDS" with full documentation
+   - Bug characteristics: symptoms, severity, reproducibility, root cause
+   - Evidence from ISOTracker: 2 failed attempts (2025-01-11, 2025-01-12), successful workaround
+   - Mandatory prevention protocol: prefer direct Write tool, verify filesystem after delegation
+   - Verification checklist: ls/Read tool verification REQUIRED before marking [x]
+   - Bug reporting guidance: when/how to escalate to platform team
+   - Updated "Critical Requirements" section with filesystem verification requirement
+
+2. **Coordinator Agent Updates** (.claude/agents/coordinator.md):
+   - Added FILE PERSISTENCE BUG ALERT at top of TASK COMPLETION VERIFICATION PROTOCOL
+   - Enhanced "Deliverable Verification" checklist with MANDATORY filesystem verification
+   - Added specific verification commands (ls -lh, find, head)
+   - Added "Red Flag" indicator for persistence bug detection
+   - Timestamp documentation requirement in progress.md
+
+3. **Verification Script** (project/deployment/scripts/verify-files.sh):
+   - Automated file existence verification with color-coded output
+   - Checks file existence, size, empty file detection
+   - Exit codes: 0=success, 1=missing files (BUG), 2=empty files
+   - Recovery guidance printed when bug detected
+   - Cross-platform support (macOS/Linux)
+   - Usage: `./verify-files.sh file1.ts file2.ts ...`
+
+4. **Troubleshooting Guide** (project/field-manual/troubleshooting/):
+   - Complete documentation: symptoms, root cause, detection, recovery
+   - Known reproduction cases from ISOTracker (6+ hours lost)
+   - Step-by-step recovery protocol (extract content, direct Write, verify)
+   - Prevention checklist (before/after delegation)
+   - GitHub issue template for reporting to platform team
+   - Success metrics (short/medium/long-term)
+
+**Impact**:
+- **Prevention**: Mandatory verification prevents future silent failures
+- **Detection**: Automated script + manual checklist catch bug immediately
+- **Recovery**: Clear protocol minimizes time lost when bug hits
+- **Documentation**: Complete audit trail for platform team bug reports
+
+**Workaround Strategy**:
+- **Primary**: Coordinator uses Write tool directly (no Task delegation) for file operations
+- **Secondary**: Verify filesystem after delegation, re-implement directly if missing
+- **Never**: Trust agent's "files created" reports without independent verification
+
+**Testing**:
+- ✅ Verification script tested on all 4 deliverables: 100% success
+- ✅ All files confirmed present on filesystem with correct sizes
+- ✅ Script exit code 0 (success) with recommendation for progress.md documentation
+
+**Follow-Up Actions** (from post-mortem):
+- [x] Update CLAUDE.md with file persistence warnings (COMPLETED)
+- [x] Update coordinator.md with verification protocols (COMPLETED)
+- [x] Create verification script (COMPLETED)
+- [x] Create troubleshooting guide (COMPLETED)
+- [x] Create user update tools (update-claude-md.sh script) (COMPLETED)
+- [x] Create update documentation (CRITICAL-UPDATE, UPDATE-GUIDE) (COMPLETED)
+- [ ] Review existing progress.md entries for suspect file creation claims
+- [ ] Create GitHub issue for Claude Code platform team
+- [ ] Enhance @developer agent prompt with Read tool verification requirement
+- [ ] Create automated delegation verification test suite
+- [ ] Audit all Task delegation workflows in AGENT-11 system
+
+**Lessons Learned**:
+1. **Direct Implementation Superior**: When coordinator can create files directly, that's the safest approach
+2. **Verification Non-Negotiable**: Never mark tasks [x] without filesystem verification
+3. **Silent Failures Dangerous**: Bug provides no error messages - only detection is independent verification
+4. **Reproducibility Critical**: 100% reproduction rate means this will hit again without safeguards
+5. **Documentation Saves Time**: Comprehensive troubleshooting guide prevents future analysis paralysis
+
+**References**:
+- Post-Mortem Analysis: `/Users/jamiewatters/DevProjects/ISOTracker/post-mortem-analysis.md` (17KB, 612 lines)
+- CLAUDE.md Section: Lines 414-475 "FILE PERSISTENCE BUG & SAFEGUARDS"
+- Coordinator Section: Lines 281-312 "Deliverable Verification (FILESYSTEM VERIFICATION MANDATORY)"
+
+---
+
 ### [2025-11-10] - Task Tool File Creation Verification System ✅ COMPLETE
 **Created by**: @coordinator (working squad responding to user-reported issue)
 **Type**: Critical Bug Fix - Delegation Verification Protocol

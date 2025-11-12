@@ -196,8 +196,12 @@ For all missions, coordinators MUST maintain:
 
 ### Critical Requirements
 1. Update files immediately when issues occur or phases complete
-2. Mark tasks complete [x] only after specialist confirmation
-3. Log all problems for future learning
+2. **Mark tasks complete [x] ONLY after**:
+   - Specialist confirms completion
+   - **File operations verified on filesystem** (ls, Read tool, not just agent reports)
+   - Verification timestamp documented in progress.md
+   - See "FILE PERSISTENCE BUG & SAFEGUARDS" section for mandatory protocol
+3. Log all problems for future learning (including failed fix attempts)
 4. Both files mandatory before proceeding to next phase
 
 ## Context Preservation System
@@ -410,6 +414,68 @@ When manual file creation is required after delegation:
 - Request "provide Write tool call" instead of "create file"
 - Use verification checklist after every file operation delegation
 ```
+
+### ⚠️ CRITICAL: FILE PERSISTENCE BUG & SAFEGUARDS
+
+**KNOWN ISSUE DISCOVERED 2025-01-12**: Task tool delegation + Write tool operations have a critical file persistence bug where files are created in the agent's execution context but **DO NOT persist to the host filesystem** after agent completion.
+
+#### Bug Characteristics
+- **Symptom**: Agent reports "Files created successfully" with verification output (ls, find), but 0 files exist on filesystem after completion
+- **Severity**: CRITICAL - Silent failure with no error messages
+- **Reproducibility**: 100% across multiple independent attempts
+- **Impact**: Complete loss of work product (hours of wasted implementation)
+- **Root Cause**: Write tool operations in delegated Task contexts don't persist to host filesystem
+
+#### Evidence
+- **2025-01-11**: Task delegation created 14 files, agent verified with ls/find, post-execution: 0 files
+- **2025-01-12**: Second attempt (verification), same pattern: agent reports success, 0 files persist
+- **Workaround Success**: Coordinator direct Write tool usage created all 14 files immediately
+- **Full Analysis**: See `/Users/jamiewatters/DevProjects/ISOTracker/post-mortem-analysis.md`
+
+#### Mandatory Prevention Protocol
+
+**Before Any File Creation Delegation**:
+1. ⚠️ **Prefer Direct Implementation**: If coordinator can create files directly with Write tool, DO THAT
+2. ⚠️ **If Must Delegate**: Include in Task prompt:
+   - "Provide EXACT Write tool calls with absolute paths and complete content"
+   - "Do not claim completion - provide tool call specifications for coordinator to execute"
+   - "Absolute paths must start with /Users/jamiewatters/DevProjects/[project]/"
+
+**After Every File Creation Delegation**:
+1. ⚠️ **NEVER mark task [x] without filesystem verification**
+2. ⚠️ **Immediately verify with independent tools**:
+   ```bash
+   # Single file verification
+   ls -lh /absolute/path/to/file.ts
+
+   # Multiple files verification
+   find /absolute/path/to/directory -type f -name "*.ts" -mtime -1
+
+   # Content spot-check (confirms not just empty file)
+   head -n 5 /absolute/path/to/file.ts
+   ```
+3. ⚠️ **If ANY files missing**: Extract content from agent response, use Write tool directly
+4. ⚠️ **Document in progress.md**: "✅ Files verified on filesystem: [timestamp]"
+
+#### Verification Checklist (MANDATORY)
+
+After Task delegation involving file operations:
+- [ ] Agent has returned with completion report
+- [ ] Run `ls -lh` on ALL reported file paths independently
+- [ ] At least ONE file opened with Read tool to verify content
+- [ ] All expected files confirmed present on filesystem
+- [ ] Verification timestamp documented in progress.md
+- [ ] Task marked [x] ONLY after all checks pass
+
+**If ANY check fails**: Stop, extract content from agent response, implement directly with Write tool, document workaround in progress.md.
+
+#### When to Report This Bug
+If you encounter this issue:
+1. Document in progress.md with "File Persistence Bug Encountered" heading
+2. Note: Reproduction count, files attempted, verification commands used
+3. Use workaround (direct Write tool implementation)
+4. Reference this section and post-mortem analysis
+5. Consider creating GitHub issue for Claude Code platform team
 
 ### CONTEXT PRESERVATION REQUIREMENT
 Every Task tool invocation MUST include instructions to read context files first and update handoff notes after completion. This ensures seamless context flow between agents.
