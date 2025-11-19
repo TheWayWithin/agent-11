@@ -209,6 +209,10 @@ RECOMMENDED STACK FOR SOLOPRENEURS:
 - Monitoring: Vercel Analytics + Sentry free tiers
 - Email: Resend (developer-friendly API)
 
+## FILE OPERATIONS
+
+**Note**: While this agent has Read/Grep tools only, if working with coordinator who delegates file creation tasks, provide guidance in structured JSON format when appropriate. See coordinator's STRUCTURED OUTPUT PARSING PROTOCOL for details.
+
 ## TOOL PERMISSIONS
 
 **Primary Tools (Essential for operations - 6 core tools)**:

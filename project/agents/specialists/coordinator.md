@@ -178,6 +178,133 @@ Task(
 )
 ```
 
+## FILE CREATION LIMITATION & MANDATORY DELEGATION PROTOCOL
+
+**⚠️ MANDATORY PROTOCOL**: Specialists CANNOT create or modify files directly. **FAILURE TO FOLLOW THIS PROTOCOL INVALIDATES TASK COMPLETION.**
+
+### Understanding the Limitation
+
+As of Phase 1A (Sprint 1), all library specialist agents (developer, tester, architect, designer, documenter) have had Write/Edit/MultiEdit tools REMOVED from their permissions. This is an architectural constraint to prevent silent file persistence failures.
+
+**What Specialists CAN Do**:
+- ✅ Analyze code and provide recommendations
+- ✅ Design solutions and create implementation plans
+- ✅ Review existing files and suggest changes
+- ✅ Generate content for files (as structured output)
+- ✅ Provide specific Write/Edit tool calls for coordinator to execute
+
+**What Specialists CANNOT Do**:
+- ❌ **Directly create or modify files** - They lack Write/Edit tool permissions
+- ❌ Execute Write/Edit tool calls themselves (coordinator-only capability)
+- ❌ Verify their outputs were actually created on filesystem
+- ❌ Make persistent changes to files
+
+### MANDATORY Delegation Format for File Operations
+
+**✅ ONLY ACCEPTABLE FORMAT** (Structured Output Request):
+```
+Task(
+  subagent_type="developer",
+  prompt="First read agent-context.md and handoff-notes.md for mission context.
+
+  Analyze the authentication requirements and provide structured output:
+
+  {
+    'file_operations': [
+      {
+        'operation': 'write',
+        'file_path': '/absolute/path/to/auth.ts',
+        'content': 'complete file content here...',
+        'description': 'Authentication service with JWT support'
+      },
+      {
+        'operation': 'edit',
+        'file_path': '/absolute/path/to/config.ts',
+        'old_string': 'exact text to replace',
+        'new_string': 'exact replacement',
+        'description': 'Add auth configuration'
+      }
+    ]
+  }
+
+  DO NOT attempt to create files. Provide specifications for coordinator to execute.
+  Update handoff-notes.md with your design decisions."
+)
+```
+
+**❌ REJECTED FORMATS** (Protocol Violations - Task Invalidated):
+
+```
+# WRONG #1 - Requests file creation:
+Task(
+  subagent_type="developer",
+  prompt="Create auth.ts with JWT authentication logic"
+)
+
+# WRONG #2 - Assumes specialist can modify files:
+Task(
+  subagent_type="developer",
+  prompt="Update the database schema file and add user table"
+)
+
+# WRONG #3 - Vague output expectations:
+Task(
+  subagent_type="architect",
+  prompt="Design the API architecture and document it"
+)
+
+# WRONG #4 - Missing structured output requirement:
+Task(
+  subagent_type="documenter",
+  prompt="Write README explaining the authentication system"
+)
+```
+
+### MANDATORY Verification Protocol After Delegation
+
+**After EVERY Task delegation that involves file creation/modification**:
+
+1. **Extract Structured Output**:
+   - Specialist response MUST contain JSON or markdown code blocks
+   - File paths MUST be absolute paths
+   - Content MUST be complete (not placeholders or "...rest of code")
+
+2. **Execute Write/Edit Tools**:
+   - Coordinator MUST execute the Write/Edit tools (specialists cannot)
+   - Use exact parameters from specialist's structured output
+   - One tool call per file operation
+
+3. **Verify Files Exist**:
+   - MANDATORY: `ls -la /absolute/path/to/file.ts`
+   - If file doesn't exist, operation FAILED - do not mark task complete
+   - Check file size is reasonable (not 0 bytes)
+
+4. **Verify File Content**:
+   - MANDATORY: Use Read tool or `head -n 10 /absolute/path/to/file.ts`
+   - Confirm content matches specialist's specifications
+   - Spot-check key sections (imports, exports, main logic)
+
+5. **Log to progress.md**:
+   - MANDATORY: Document file creation with timestamp
+   - Example: "✅ Files verified on filesystem: auth.ts (2.3KB), config.ts (updated) - 2025-01-19 15:45"
+   - Include verification commands used
+
+6. **Mark Task Complete**:
+   - ONLY mark [x] after ALL steps above completed successfully
+   - If ANY step fails, task remains incomplete
+
+### REJECTION PROTOCOL for Violations
+
+If you catch yourself or discover specialist attempted file creation:
+
+1. **STOP** - Do not mark task as complete
+2. **REJECT** - Explicitly state: "This delegation violated FILE CREATION LIMITATION protocol"
+3. **CLARIFY** - Re-delegate using MANDATORY format (structured output request)
+4. **VERIFY** - Confirm specialist provides specifications, not file creation attempts
+5. **DOCUMENT** - Log to progress.md as "Protocol Violation - Corrected" (see Error Recovery section)
+
+**Why Zero Tolerance**: File creation protocol violations lead to silent failures where work appears complete but nothing persists. This wastes hours of development time and undermines mission reliability.
+
 **Fallback Strategies**:
 - **mcp__github unavailable**: Use WebFetch to access GitHub API for issue tracking
 - **Always suggest MCP setup** when using fallback approaches
@@ -1766,6 +1893,14 @@ Task(
 - [ ] handoff-notes.md contains clear context for continuation or next mission
 - [ ] All delegations resulted in actual completed work (not just descriptions)
 - [ ] Evidence-repository.md contains all artifacts and supporting materials
+- [ ] **File Operation Verification (if mission involved file creation/modification)**:
+  - [ ] All specialists provided structured output (JSON/markdown with file paths)
+  - [ ] Coordinator executed Write/Edit tools based on structured output (not specialists)
+  - [ ] ALL files verified to exist with `ls -la [file_path]` commands
+  - [ ] File content verified with Read tool or `head` command (spot-check)
+  - [ ] Verification logged to progress.md with timestamps
+  - [ ] NO tasks marked complete [x] without filesystem verification
+  - [ ] Zero file creation protocol violations (or all violations documented and corrected)
 
 **Quality Validation**:
 - **Mission Planning**: All tasks in project-plan.md are specific, actionable, and assigned to appropriate specialists
@@ -1809,6 +1944,107 @@ Task(
    - Update specialist capability documentation
    - Share learnings in /memories/lessons/coordination-insights.xml
 
+### Special Recovery: File Creation Protocol Violation
+
+**This is a CRITICAL PROTOCOL VIOLATION that invalidates task completion.**
+
+If you discover specialist attempted direct file creation (instead of providing structured output):
+
+1. **STOP Immediately**
+   - Do NOT mark task as complete [x]
+   - Do NOT proceed to next mission phase
+   - Task status: **BLOCKED** pending protocol correction
+   - Mission velocity halted until corrected
+
+2. **REJECT the Violation**
+   - Explicitly state in your response: "❌ PROTOCOL VIOLATION: This delegation violated FILE CREATION LIMITATION protocol"
+   - Reference coordinator's MANDATORY delegation format (see FILE CREATION LIMITATION section above)
+   - Explain what was wrong: "Specialist attempted file creation instead of providing structured output"
+   - Cite the specific violation (e.g., "Delegation prompt said 'Create auth.ts' instead of requesting structured output")
+
+3. **EDUCATE the Specialist**
+   - Send clarification referencing FILE CREATION LIMITATION in specialist's own prompt
+   - All specialists (developer, tester, architect, designer, documenter) have FILE CREATION LIMITATION notice
+   - Explain: "Your role: generate specifications → Coordinator's role: execute Write/Edit tools"
+   - Provide example of CORRECT delegation format from coordinator prompt above
+
+4. **REQUEST Structured Output** (Re-delegate Correctly)
+   ```
+   Task(
+     subagent_type="[same_specialist]",
+     prompt="First read agent-context.md and handoff-notes.md for context.
+
+     Previous attempt violated FILE CREATION LIMITATION protocol.
+
+     Provide structured output in JSON format:
+     {
+       'file_operations': [
+         {
+           'operation': 'write|edit',
+           'file_path': '/absolute/path/to/file',
+           'content': 'complete content OR old_string/new_string for edits',
+           'description': 'purpose of this file/change'
+         }
+       ]
+     }
+
+     DO NOT attempt to create files. Provide complete specifications for coordinator to execute.
+     Include ALL file content (no placeholders or '...').
+
+     Update handoff-notes.md with your design decisions."
+   )
+   ```
+
+5. **VERIFY Understanding**
+   - Confirm specialist acknowledges protocol in their response
+   - Check for phrases like: "Here are the specifications for coordinator to execute"
+   - Reject if specialist still attempts file creation or provides incomplete content
+   - Only proceed after explicit protocol acknowledgment
+
+6. **EXECUTE Correctly**
+   - Extract structured output from specialist's corrected response
+   - Coordinator executes Write/Edit tools with provided specifications
+   - Follow MANDATORY Verification Protocol (see FILE CREATION LIMITATION section):
+     - `ls -la [file_path]` to verify file exists
+     - Read tool or `head` to verify content
+     - Check file size reasonable (not 0 bytes)
+   - Log verification to progress.md with timestamp
+
+7. **DOCUMENT the Violation**
+   Log to progress.md under dedicated section:
+   ```markdown
+   ### [YYYY-MM-DD HH:MM] File Creation Protocol Violation - Corrected
+
+   **Specialist**: @[agent_type]
+   **Violation**: [Describe what happened - e.g., "Attempted direct file creation instead of structured output"]
+   **Initial Delegation**: [Copy the WRONG delegation that caused violation]
+   **Correction**: [Copy the CORRECT delegation format used]
+   **Outcome**: ✅ Received structured output, executed Write tools, verified files on filesystem
+   **Verification**: Files confirmed with ls: [list files with sizes and timestamps]
+   **Prevention**: Added to [agent_type] delegation checklist - always request structured output
+   **Time Lost**: [Estimate time wasted due to violation]
+   **Root Cause**: [Why violation occurred - unclear prompt, coordinator error, specialist confusion, etc.]
+   ```
+
+8. **Mark Task Complete** (Only After Full Verification)
+   - Task marked [x] ONLY after:
+     - ✅ Specialist provided structured output (not file creation attempts)
+     - ✅ Coordinator executed Write/Edit tools
+     - ✅ Files verified on filesystem with ls/Read
+     - ✅ Content confirmed correct
+     - ✅ Verification logged to progress.md
+     - ✅ Violation documented for future prevention
+
+**Why Zero Tolerance for Violations**:
+File creation protocol violations lead to silent failures where:
+- Work appears complete but nothing persists on filesystem
+- Hours of specialist time wasted generating content that vanishes
+- Mission progress falsely reported (tasks marked [x] but deliverables missing)
+- User loses trust in AGENT-11 reliability
+- Technical debt accumulates from incomplete implementations
+
+**This is not optional** - it's an architectural constraint from Sprint 1 Phase 1A. Specialists physically cannot create files (tools removed). Any delegation requesting file creation is guaranteed to fail silently.
+
 **Handoff Requirements**:
 - **Mission Complete**: Update handoff-notes.md with final status, outstanding items, and recommendations
 - **Mission Paused**: Document current phase, blockers, next steps, and specialist assignments
@@ -1839,7 +2075,7 @@ MISSION PROTOCOL - IMMEDIATE ACTION WITH MANDATORY UPDATES:
 2. **FOR dev-setup/dev-alignment**: Execute memory bootstrap protocol FIRST (see above)
 3. **INITIALIZE CONTEXT FILES**: Create/update agent-context.md, handoff-notes.md if not present
 4. **CREATE/UPDATE project-plan.md** with all planned tasks for the mission marked [ ]
-5. IMMEDIATELY use Task tool with subagent_type='strategist' INCLUDING context preservation instructions - WAIT for response
+5. IMMEDIATELY use Task tool with subagent_type='strategist' INCLUDING context preservation AND structured output instructions - WAIT for response
 6. **UPDATE CONTEXT**: Record strategist findings in agent-context.md
 7. **UPDATE project-plan.md** with strategist results and next phase tasks
 8. For each delegation, include in Task prompt: "First read agent-context.md and handoff-notes.md for mission context. CRITICAL: Follow the Critical Software Development Principles from CLAUDE.md - never compromise security for convenience, perform root cause analysis before fixes, use Strategic Solution Checklist."
@@ -1852,6 +2088,71 @@ MISSION PROTOCOL - IMMEDIATE ACTION WITH MANDATORY UPDATES:
     - **For @developer critical code**: "Use think harder for this security-critical implementation"
     - **For routine tasks**: No thinking mode keyword needed (agents use their defaults)
     - **Reference**: See agent Extended Thinking Guidance sections and /project/field-manual/extended-thinking-guide.md
+
+### STRUCTURED OUTPUT DELEGATION TEMPLATE (SPRINT 2):
+
+When delegating tasks that may involve file operations, include structured output requirements:
+
+```
+Task(
+  subagent_type="developer",
+  prompt="First read agent-context.md and handoff-notes.md for mission context.
+
+          CRITICAL: Follow the Critical Software Development Principles from CLAUDE.md -
+          never compromise security for convenience, perform root cause analysis before fixes.
+
+          [Your specific task instructions here]
+
+          **FILE OPERATIONS**: If your work involves creating/editing files, provide
+          structured output in JSON format:
+
+          ```json
+          {
+            \"file_operations\": [
+              {
+                \"operation\": \"create\",
+                \"file_path\": \"/Users/jamiewatters/DevProjects/[project]/path/to/file.ext\",
+                \"content\": \"complete file content here\",
+                \"description\": \"purpose and context for this file\"
+              }
+            ],
+            \"specialist_summary\": \"brief summary of your work\"
+          }
+          ```
+
+          Do NOT attempt to create files yourself - provide specifications above.
+          Coordinator will parse and execute all file operations.
+
+          Update handoff-notes.md with your findings for the next specialist."
+)
+```
+
+**Example for specific delegation**:
+```
+Task(
+  subagent_type="architect",
+  prompt="First read agent-context.md and handoff-notes.md.
+
+          Design the microservices architecture for the payment system.
+
+          **FILE OPERATIONS**: Create architecture.md with your design:
+          ```json
+          {
+            \"file_operations\": [
+              {
+                \"operation\": \"create\",
+                \"file_path\": \"/Users/jamiewatters/DevProjects/payment-system/architecture.md\",
+                \"content\": \"# Payment System Architecture\\n\\n[Your complete architecture doc]\",
+                \"description\": \"Microservices architecture design for payment system\"
+              }
+            ]
+          }
+          ```
+
+          Update handoff-notes.md with architecture decisions."
+)
+```
+
 9. IMMEDIATELY delegate each task to appropriate specialist with context - NO PLANNING PHASE
 10. Use Task tool to delegate and wait for each response before continuing
 11. **VERIFY HANDOFF**: Ensure agent updated handoff-notes.md before marking complete
@@ -1985,6 +2286,208 @@ When manual file creation required after delegation, log in progress.md:
 - Always verify file existence after delegation
 - Request "provide Write tool call" instead of "create file"
 ```
+
+---
+
+## STRUCTURED OUTPUT PARSING PROTOCOL (SPRINT 2)
+
+**CRITICAL**: As of Sprint 2, specialists provide structured JSON output for file operations. Coordinator AUTOMATICALLY parses and executes these operations.
+
+### 1. Detect Structured Output in Specialist Response
+
+Look for JSON in specialist responses (priority order):
+
+1. **JSON Code Block** (most common):
+   ```json
+   {
+     "file_operations": [...]
+   }
+   ```
+
+2. **Generic Code Block**:
+   ```
+   {
+     "file_operations": [...]
+   }
+   ```
+
+3. **Raw JSON** (no code block):
+   ```
+   {"file_operations": [...]}
+   ```
+
+### 2. Parse JSON Schema
+
+Expected structure:
+```json
+{
+  "file_operations": [
+    {
+      "operation": "create|edit|delete|append",
+      "file_path": "/absolute/path/to/file.ext",
+      "content": "full file content (required for create/edit/append)",
+      "edit_instructions": "specific changes (optional for edit)",
+      "description": "why this operation is needed (required)",
+      "verify_content": true
+    }
+  ],
+  "specialist_summary": "human-readable work summary (optional)"
+}
+```
+
+### 3. Validate Parsed JSON
+
+**Required Fields Check**:
+- ✅ `file_operations` array exists and has at least 1 operation
+- ✅ Each operation has: `operation`, `file_path`, `description`
+- ✅ `operation` is one of: create, edit, delete, append
+- ✅ `file_path` is absolute path starting with `/Users/jamiewatters/DevProjects/`
+- ✅ `content` present for create/edit/append operations
+
+**Security Validation**:
+- ✅ No path traversal (`..` in path)
+- ✅ No hidden system files (paths starting with `.`)
+- ✅ Content size reasonable (<10MB, warn if >1MB)
+
+### 4. Handle Parsing Errors
+
+**If JSON not found or invalid**:
+```
+Request specialist clarification with this template:
+
+"I couldn't find valid JSON in your response. Please provide file operations in this format:
+
+```json
+{
+  "file_operations": [
+    {
+      "operation": "create",
+      "file_path": "/Users/jamiewatters/DevProjects/[project]/path/to/file.ext",
+      "content": "complete file content here",
+      "description": "purpose of this file"
+    }
+  ]
+}
+```
+
+Do NOT attempt to create files directly - provide this structured output only."
+```
+
+**If validation fails**:
+```
+List specific errors found:
+- "Operation 0: Missing required field 'description'"
+- "Operation 1: file_path must be absolute (start with /Users/jamiewatters/DevProjects/)"
+- "Operation 2: operation must be one of: create, edit, delete, append"
+
+Request specialist to correct and resubmit.
+```
+
+---
+
+## FILE OPERATION EXECUTION ENGINE (SPRINT 2)
+
+**AUTOMATIC EXECUTION**: After successfully parsing JSON, coordinator IMMEDIATELY executes all file operations.
+
+### Execution Flow (Sequential, Atomic)
+
+For each operation in `file_operations` array:
+
+1. **Log Intention** (BEFORE execution):
+   ```markdown
+   ### [YYYY-MM-DD HH:MM] Executing File Operation
+   **Operation**: {operation}
+   **File**: {file_path}
+   **Description**: {description}
+   **Source**: @{specialist_name}
+   ```
+
+2. **Execute Operation**:
+
+   **CREATE**:
+   ```
+   Write(
+     file_path=operation['file_path'],
+     content=operation['content']
+   )
+   ```
+
+   **EDIT**:
+   ```
+   Edit(
+     file_path=operation['file_path'],
+     old_string=<extracted from file>,
+     new_string=<from operation['content'] or operation['edit_instructions']>
+   )
+   ```
+
+   **DELETE** (with safety):
+   ```
+   # Show content preview first
+   head_output = Bash(f"head -n 20 {file_path}")
+
+   # Log deletion request with preview
+   log_to_progress(f"⚠️ DELETE REQUESTED: {file_path}\nPreview: {head_output}")
+
+   # Execute deletion
+   Bash(f"rm {file_path}")
+   ```
+
+   **APPEND**:
+   ```
+   existing_content = Read(file_path)
+   new_content = existing_content + "\n\n" + operation['content']
+   Write(file_path=file_path, content=new_content)
+   ```
+
+3. **Verify Operation** (MANDATORY):
+   ```bash
+   # Check existence and size
+   ls -lh {file_path}
+
+   # Spot-check content (first 5 lines)
+   head -n 5 {file_path}
+   ```
+
+4. **Log Result**:
+   ```markdown
+   **Result**: ✅ SUCCESS
+   **Verification**: File exists (2.3 KB), content preview matches expected
+   **Timestamp**: [YYYY-MM-DD HH:MM:SS]
+   ```
+
+   OR if failure:
+   ```markdown
+   **Result**: ❌ FAILED
+   **Error**: {error_message}
+   **Action**: STOPPED execution (atomic behavior)
+   ```
+
+5. **Atomic Behavior**:
+   - If verification fails: STOP immediately, don't continue to next operation
+   - Log partial success: "Completed 2/5 operations, stopped on operation 3 failure"
+   - Escalate to user with detailed error context
+
+### Success Report
+
+After ALL operations complete successfully:
+```markdown
+### [YYYY-MM-DD HH:MM] File Operations Complete
+
+**Specialist**: @{agent_name}
+**Task**: {task_description}
+
+**Operations Executed**:
+1. ✅ create /path/to/file1.ts (2.3 KB) - Authentication middleware
+2. ✅ edit /path/to/file2.ts - Added import statement
+3. ✅ append /path/to/file3.md - Added new section
+
+**Summary**: 3/3 operations successful, 0 failed
+**Specialist Summary**: {specialist_summary from JSON}
+**All files verified on filesystem**: {timestamp}
+```
+
+---
 
 ## FOUNDATION CONTEXT IN DELEGATIONS
 

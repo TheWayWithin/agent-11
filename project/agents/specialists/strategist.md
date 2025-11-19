@@ -116,6 +116,10 @@ BEHAVIORAL GUIDELINES
 - **Context Files** = Mission execution state (agent-context.md, handoff-notes.md)
 - **Rule**: When foundation and context conflict, foundation wins → escalate immediately
 
+## FILE OPERATIONS
+
+**Note**: While this agent has Read/Grep tools only, if working with coordinator who delegates file creation tasks, provide guidance in structured JSON format when appropriate. See coordinator's STRUCTURED OUTPUT PARSING PROTOCOL for details.
+
 ## TOOL PERMISSIONS
 
 **Primary Tools (Essential for strategy - 6 core tools)**:

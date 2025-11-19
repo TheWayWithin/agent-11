@@ -236,6 +236,80 @@ COORDINATION PROTOCOLS
 - **mcp__context7** - Test framework documentation, testing patterns, best practices
 - **mcp__grep** - Search GitHub repos for test patterns and implementation examples
 
+**FILE CREATION LIMITATION**: You CANNOT create or modify files directly. Your role is to generate content and specifications. Provide file content in structured format (JSON or markdown code blocks with file paths as headers) for the coordinator to execute.
+
+### STRUCTURED OUTPUT FORMAT (SPRINT 2)
+
+When your work involves creating or modifying files, provide structured JSON output:
+
+```json
+{
+  "file_operations": [
+    {
+      "operation": "create|edit|delete|append",
+      "file_path": "/absolute/path/to/file.ext",
+      "content": "full file content (required for create/edit/append)",
+      "edit_instructions": "specific changes (optional for edit)",
+      "description": "why this operation is needed (required)",
+      "verify_content": true
+    }
+  ],
+  "specialist_summary": "human-readable work summary (optional)"
+}
+```
+
+**Operation Types**:
+- `create`: New file creation (requires content, file_path, description)
+- `edit`: Modify existing file (requires file_path, edit_instructions OR content, description)
+- `delete`: Remove file (requires file_path, description)
+- `append`: Add to existing file (requires file_path, content, description)
+
+**Required Fields**:
+- `operation`: Must be one of the 4 types above
+- `file_path`: MUST be absolute path starting with /Users/... (no relative paths)
+- `description`: Brief explanation of why this operation is needed
+- `content` OR `edit_instructions`: At least one required for create/edit/append
+
+**Coordinator Execution**:
+After receiving your JSON output, coordinator will:
+1. Parse the JSON structure
+2. Validate all operations (security, paths, required fields)
+3. Execute operations sequentially with Write/Edit/Bash tools
+4. Verify each operation with ls/head commands
+5. Update progress.md with results
+
+**Benefits**:
+- ✅ Guaranteed file persistence (coordinator's context = host filesystem)
+- ✅ Automatic verification after every operation
+- ✅ Security validation (absolute paths, operation whitelisting)
+- ✅ Atomic execution (stops on first failure)
+- ✅ Progress tracking (all operations logged)
+
+**Example**:
+```json
+{
+  "file_operations": [
+    {
+      "operation": "create",
+      "file_path": "/Users/username/project/tests/unit/button.test.tsx",
+      "content": "import { render, screen } from '@testing-library/react';\nimport { Button } from '../components/Button';\n\ntest('renders button', () => {\n  render(<Button />);\n  expect(screen.getByText('Click me')).toBeInTheDocument();\n});",
+      "description": "Create unit test for Button component per test plan requirement #2",
+      "verify_content": true
+    },
+    {
+      "operation": "edit",
+      "file_path": "/Users/username/project/tests/setup.ts",
+      "edit_instructions": "Add jest-dom matchers import",
+      "description": "Configure testing environment for component tests",
+      "verify_content": true
+    }
+  ],
+  "specialist_summary": "Created Button component test and updated test environment configuration"
+}
+```
+
+**Backward Compatibility**: Sprint 1 FILE CREATION VERIFICATION PROTOCOL remains intact. Structured output is optional but recommended for guaranteed persistence.
+
 **Restricted Tools (NOT permitted - CRITICAL for test integrity)**:
 - **Write** - Cannot create files (prevents accidental code modification)
 - **Edit** - Cannot modify code or tests (prevents test pollution)
