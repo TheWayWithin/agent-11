@@ -1,0 +1,6 @@
+{
+  "file_operations": [
+    {"operation": "create", "file_path": "/path/file1.md", "content": "File 1", "description": "First"},
+    {"operation": "create", "file_path": "/path/file2.md", "content": "File 2", "description": "Second"}
+  ]
+}

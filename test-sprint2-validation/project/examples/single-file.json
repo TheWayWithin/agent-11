@@ -1,0 +1,8 @@
+{
+  "file_operations": [{
+    "operation": "create",
+    "file_path": "/path/to/file.md",
+    "content": "# Example",
+    "description": "Example file"
+  }]
+}

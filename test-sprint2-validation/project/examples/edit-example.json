@@ -1,0 +1,9 @@
+{
+  "file_operations": [{
+    "operation": "edit",
+    "file_path": "/path/to/file.md",
+    "old_string": "old",
+    "new_string": "new",
+    "description": "Update content"
+  }]
+}
