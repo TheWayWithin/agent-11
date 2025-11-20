@@ -396,17 +396,7 @@ create_backup() {
             has_content=true
         fi
     fi
-
-    # Backup documentation guides if they exist (Sprint 3 deliverables)
-    local GUIDES_DIR="$(pwd)/docs/guides"
-    if [[ -d "$GUIDES_DIR" ]]; then
-        mkdir -p "$BACKUP_PATH/docs/guides"
-        if cp -r "$GUIDES_DIR"/* "$BACKUP_PATH/docs/guides/" 2>/dev/null; then
-            log "Backed up existing documentation guides"
-            has_content=true
-        fi
-    fi
-
+    
     if [[ "$has_content" == "true" ]]; then
         success "Backup created: $BACKUP_PATH"
         echo "$BACKUP_PATH" > "$BACKUP_DIR/latest"
@@ -643,18 +633,8 @@ install_mission_system() {
         "project/field-manual/architecture-sop.md"
         "project/field-manual/project-lifecycle-guide.md"
     )
-
-    # Define documentation guide files to install (Sprint 3 deliverables)
-    local guide_files=(
-        "docs/guides/essential-setup.md"
-        "docs/guides/common-workflows.md"
-        "docs/guides/progress-tracking.md"
-        "docs/guides/mission-architecture.md"
-        "docs/guides/troubleshooting.md"
-        "docs/guides/advanced-customization.md"
-    )
-
-    local total_files=$((${#mission_files[@]} + ${#command_files[@]} + ${#template_files[@]} + ${#field_manual_files[@]} + ${#guide_files[@]}))
+    
+    local total_files=$((${#mission_files[@]} + ${#command_files[@]} + ${#template_files[@]} + ${#field_manual_files[@]}))
     local current=0
     local failed_files=()
     
@@ -782,39 +762,7 @@ install_mission_system() {
         
         sleep 0.1
     done
-
-    # Install documentation guide files (Sprint 3 deliverables)
-    local GUIDES_DIR="$(pwd)/docs/guides"
-    for guide_file in "${guide_files[@]}"; do
-        ((current++))
-        show_progress "$current" "$total_files" "Installing $(basename "$guide_file")"
-
-        local dest_file="$GUIDES_DIR/$(basename "$guide_file")"
-
-        if [[ "$execution_mode" == "local" ]]; then
-            local source_file="$PROJECT_ROOT/$guide_file"
-            if [[ -f "$source_file" ]]; then
-                mkdir -p "$GUIDES_DIR"
-                if cp "$source_file" "$dest_file"; then
-                    log "Installed: $(basename "$guide_file")"
-                else
-                    failed_files+=("$guide_file")
-                fi
-            else
-                failed_files+=("$guide_file")
-            fi
-        else
-            # Remote installation
-            if download_file_from_github "$guide_file" "$dest_file"; then
-                log "Installed: $(basename "$guide_file")"
-            else
-                failed_files+=("$guide_file")
-            fi
-        fi
-
-        sleep 0.1
-    done
-
+    
     if [[ ${#failed_files[@]} -eq 0 ]]; then
         success "Mission system installed successfully!"
         return 0
@@ -935,16 +883,7 @@ verify_installation() {
     if [[ ! -f "$FIELD_MANUAL_DIR/architecture-sop.md" ]]; then
         missing_items+=("field-manual:architecture-sop.md")
     fi
-
-    # Verify documentation guide files (Sprint 3 deliverables)
-    local GUIDES_DIR="$(pwd)/docs/guides"
-    local guide_files=("essential-setup.md" "common-workflows.md" "progress-tracking.md" "mission-architecture.md" "troubleshooting.md" "advanced-customization.md")
-    for guide_file in "${guide_files[@]}"; do
-        if [[ ! -f "$GUIDES_DIR/$guide_file" ]]; then
-            missing_items+=("guide:$guide_file")
-        fi
-    done
-
+    
     # Verify CLAUDE.md template file (always created)
     if [[ ! -f "$(pwd)/CLAUDE-AGENT11-TEMPLATE.md" ]]; then
         missing_items+=("system:CLAUDE-AGENT11-TEMPLATE.md")
@@ -959,7 +898,6 @@ verify_installation() {
         log "✓ Commands: /coord and /meeting available"
         log "✓ Templates: Including architecture.md template"
         log "✓ Field Manual: Architecture SOP included"
-        log "✓ Documentation Guides: 6 comprehensive guides (essential-setup, common-workflows, etc.)"
         return 0
     else
         error "Verification failed. Missing items: ${missing_items[*]}"
@@ -977,54 +915,46 @@ rollback_installation() {
         
         if [[ -d "$latest_backup" ]]; then
             # Remove current installation
-            local GUIDES_DIR="$(pwd)/docs/guides"
-            rm -rf "$AGENTS_DIR" "$COMMANDS_DIR" "$MISSIONS_DIR" "$TEMPLATES_DIR" "$FIELD_MANUAL_DIR" "$GUIDES_DIR"
-
+            rm -rf "$AGENTS_DIR" "$COMMANDS_DIR" "$MISSIONS_DIR" "$TEMPLATES_DIR" "$FIELD_MANUAL_DIR"
+            
             # Restore from backup
             if [[ -d "$latest_backup/agents" ]]; then
                 mkdir -p "$AGENTS_DIR"
                 cp -r "$latest_backup/agents"/* "$AGENTS_DIR/" 2>/dev/null || true
                 log "Restored agents from backup"
             fi
-
+            
             if [[ -d "$latest_backup/commands" ]]; then
                 mkdir -p "$COMMANDS_DIR"
                 cp -r "$latest_backup/commands"/* "$COMMANDS_DIR/" 2>/dev/null || true
                 log "Restored commands from backup"
             fi
-
+            
             if [[ -d "$latest_backup/missions" ]]; then
                 mkdir -p "$MISSIONS_DIR"
                 cp -r "$latest_backup/missions"/* "$MISSIONS_DIR/" 2>/dev/null || true
                 log "Restored missions from backup"
             fi
-
+            
             if [[ -d "$latest_backup/templates" ]]; then
                 mkdir -p "$TEMPLATES_DIR"
                 cp -r "$latest_backup/templates"/* "$TEMPLATES_DIR/" 2>/dev/null || true
                 log "Restored templates from backup"
             fi
-
+            
             if [[ -d "$latest_backup/field-manual" ]]; then
                 mkdir -p "$FIELD_MANUAL_DIR"
                 cp -r "$latest_backup/field-manual"/* "$FIELD_MANUAL_DIR/" 2>/dev/null || true
                 log "Restored field manual from backup"
             fi
-
-            if [[ -d "$latest_backup/docs/guides" ]]; then
-                mkdir -p "$GUIDES_DIR"
-                cp -r "$latest_backup/docs/guides"/* "$GUIDES_DIR/" 2>/dev/null || true
-                log "Restored documentation guides from backup"
-            fi
-
+            
             success "Rollback completed. Restored from: $latest_backup"
         else
             warn "Backup directory not found. Manual cleanup may be required."
         fi
     else
         # No backup exists, just clean up
-        local GUIDES_DIR="$(pwd)/docs/guides"
-        rm -rf "$AGENTS_DIR" "$COMMANDS_DIR" "$MISSIONS_DIR" "$TEMPLATES_DIR" "$FIELD_MANUAL_DIR" "$GUIDES_DIR"
+        rm -rf "$AGENTS_DIR" "$COMMANDS_DIR" "$MISSIONS_DIR" "$TEMPLATES_DIR" "$FIELD_MANUAL_DIR"
         success "Clean rollback completed (no previous installation to restore)"
     fi
 }
