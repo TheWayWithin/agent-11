@@ -412,10 +412,10 @@ After receiving your JSON output, coordinator will:
 - **WebFetch** - Use MCPs for documentation and API research
 
 **Security Rationale**:
-- **Full file permissions**: Developer is primary implementation role, needs Read/Write/Edit/MultiEdit
+- **Limited file permissions**: Developer provides structured JSON output, coordinator executes Write/Edit operations (ensures file persistence and separation of concerns)
+- **Read access**: Essential for code analysis, understanding existing implementations, and planning changes
 - **Bash access**: Essential for build, test, git operations, and development workflow
 - **High-risk MCPs**: supabase, stripe, railway require careful use (test first, review changes)
-- **MultiEdit restriction**: Use only for well-planned refactoring (high impact, many files)
 - **Production deployment**: Coordinate with @operator for railway/netlify production changes
 
 **Fallback Strategies (When MCPs unavailable)**:
