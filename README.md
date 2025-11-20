@@ -851,7 +851,7 @@ Pattern: `/coord [mission] [input-file.md]` or `@agent` for direct access. Examp
 
 ## 🎮 Command Reference
 
-AGENT-11 provides 6 powerful slash commands for different workflows:
+AGENT-11 provides 7 powerful slash commands for different workflows:
 
 ### 🎖️ `/coord` - Mission Orchestration
 **Orchestrate multi-agent missions with automatic specialist coordination**
@@ -989,6 +989,59 @@ AGENT-11 provides 6 powerful slash commands for different workflows:
 
 ---
 
+### 📅 `/dailyreport` - Daily Progress Reports
+**Generate consolidated daily summaries for build-in-public updates**
+
+```bash
+/dailyreport    # Extract today's work from progress.md
+```
+
+**Report includes**:
+- **Completed Milestones** - Grouped by context (features, fixes, infrastructure)
+- **Issues & Learnings** - Root cause analysis and prevention strategies
+- **Impact Summary** - 2-3 sentence summary of achievements
+- **Next Steps** - Key priorities for tomorrow
+
+**Output Structure** (blog-ready):
+```markdown
+# Progress Report - [Date]
+## Project: [Name]
+
+### ✅ Completed
+- [Milestone descriptions in past tense]
+
+### 🐛 Issues & Learnings
+#### Issue: [Description]
+- **Root Cause**: [Analysis]
+- **Fix**: [Solution]
+- **Prevention**: [Strategy]
+- **Time Impact**: [Duration]
+
+## Impact Summary
+[What was achieved and why it matters]
+
+## Next Steps
+- [Priorities]
+```
+
+**File Location**: Creates `/progress/YYYY-MM-DD.md` in project root
+
+**Incremental Updates**: Run multiple times per day to append new progress
+
+**Use when**:
+- End of work day for daily update blog posts
+- After major milestone completion
+- When switching between multiple projects
+- For authentic build-in-public transparency
+
+**Benefits**:
+- Blog-ready markdown format
+- Shows both wins and challenges
+- Documents learnings for future reference
+- Multi-project workflow support
+
+---
+
 ### Command Comparison
 
 | Command | Purpose | Duration | Output | Best For |
@@ -999,6 +1052,7 @@ AGENT-11 provides 6 powerful slash commands for different workflows:
 | `/recon` | Quick design analysis | 30-45 min | Design insights | Understanding existing UI |
 | `/report` | Stakeholder updates | 5-10 min | Progress report | Communication, tracking |
 | `/pmd` | Failure analysis | 30-60 min | Root cause analysis | Learning from mistakes |
+| `/dailyreport` | Daily progress summaries | 2-5 min | Daily progress file | Build-in-public updates |
 
 ---
 

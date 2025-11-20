@@ -609,6 +609,7 @@ install_mission_system() {
         "project/commands/recon.md"
         "project/commands/report.md"
         "project/commands/pmd.md"
+        "project/commands/dailyreport.md"
     )
     
     # Define template files to install
@@ -869,6 +870,9 @@ verify_installation() {
     fi
     if [[ ! -f "$COMMANDS_DIR/pmd.md" ]]; then
         missing_items+=("command:pmd.md")
+    fi
+    if [[ ! -f "$COMMANDS_DIR/dailyreport.md" ]]; then
+        missing_items+=("command:dailyreport.md")
     fi
     
     # Verify template files

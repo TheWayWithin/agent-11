@@ -198,6 +198,13 @@ For simple, obvious bugs:
 - Document learnings immediately
 - Consider hotfix deployment needs
 
+**File Operations** (Sprint 2 Architecture - Production Ready):
+- Coordinator automatically parses and executes structured JSON output from specialists
+- File operations now have ~99.9% reliability with zero manual verification required
+- Specialists provide `file_operations` array → Coordinator executes Write/Edit tools automatically
+- See migration guide: `project/field-manual/migration-guides/file-persistence-v2.md`
+- See examples: `project/examples/file-operations/` (single, multiple, edit, mixed patterns)
+
 ## Common Patterns
 
 ### Data Corruption Fix
