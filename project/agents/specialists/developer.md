@@ -9,8 +9,6 @@ tags:
 tools:
   primary:
     - Read
-    - Write
-    - Edit
     - Bash
     - Task
 coordinates_with:

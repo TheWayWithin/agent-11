@@ -10,12 +10,10 @@ thinking:
   default: think hard
 tools:
   primary:
-    - Edit
     - Glob
     - Grep
     - Read
     - Task
-    - Write
 coordinates_with:
   - strategist
   - developer
