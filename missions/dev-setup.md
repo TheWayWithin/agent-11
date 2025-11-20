@@ -32,20 +32,20 @@ This mission establishes the foundation for a new greenfield project by:
 
 ## Execution Protocol
 
-### Phase 0: MCP Discovery (2 min)
+### Phase 0: MCP Profile Setup (2 min)
+
+**Recommended**: Start with the `core` profile for lightweight development:
 ```bash
-/coord "Checking available MCPs for project setup..."
+ln -sf .mcp-profiles/core.json .mcp.json
+# Restart Claude Code
 ```
 
+Switch to specialized profiles as needed (testing, deployment, etc.). See [MCP Profile Guide](../../docs/MCP-GUIDE.md) for details.
+
 **Agent Actions:**
-- @coordinator runs grep "mcp__" to identify available tools
-- Documents available MCPs in project-plan.md
-- Maps MCPs to project needs:
-  - Database: mcp__supabase
-  - Documentation: mcp__context7
-  - Testing: mcp__playwright
-  - Deployment: mcp__netlify, mcp__railway
-- Notes which agents should use which MCPs
+- @coordinator identifies which MCP profile matches project needs
+- Documents profile selection in project-plan.md
+- Notes when to switch profiles for specific tasks (testing, deployment)
 
 ### Phase 1: GitHub Setup (5 min)
 ```bash
@@ -351,6 +351,45 @@ Key Requirements:
 # With multiple ideation sources
 /coord dev-setup "PRD.md, brand-guidelines.pdf, architecture.md"
 ```
+
+---
+
+## Post-Mission Cleanup Decision
+
+After completing this mission, decide on cleanup approach based on project status:
+
+### ✅ Milestone Transition (Every 2-4 weeks)
+**When**: This mission completes a major project milestone, but more work remains.
+
+**Actions** (30-60 min):
+1. Extract lessons to `lessons/[category]/` from progress.md
+2. Archive current handoff-notes.md to `archives/handoffs/milestone-X/`
+3. Clean agent-context.md (retain essentials, archive historical details)
+4. Create fresh handoff-notes.md for next milestone
+5. Update project-plan.md with next milestone tasks
+
+**See**: `templates/cleanup-checklist.md` Section A for detailed steps
+
+### 🎯 Project Completion (Mission accomplished!)
+**When**: All project objectives achieved, ready for new mission.
+
+**Actions** (1-2 hours):
+1. Extract ALL lessons from entire progress.md to `lessons/`
+2. Create mission archive in `archives/missions/mission-[name]-YYYY-MM-DD/`
+3. Update CLAUDE.md with system-level learnings
+4. Archive all tracking files (project-plan.md, progress.md, etc.)
+5. Prepare fresh start for next mission
+
+**See**: `templates/cleanup-checklist.md` Section B for detailed steps
+
+### 🔄 Continue Active Work (No cleanup needed)
+**When**: Mission complete but continuing active development in same phase.
+
+**Actions**: Update progress.md and project-plan.md, continue working.
+
+---
+
+**Reference**: See `project/field-manual/project-lifecycle-guide.md` for complete lifecycle management procedures.
 
 ---
 

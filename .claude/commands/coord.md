@@ -34,21 +34,15 @@ Parse the arguments to determine:
 
 **Core Missions**:
 - `build` - Build new service/feature from PRD
-- `fix` - Emergency bug fix with root cause analysis
+- `fix` - Emergency bug fix with root cause analysis  
 - `refactor` - Code improvement and optimization
 - `deploy` - Production deployment preparation
 - `document` - Comprehensive documentation creation
 - `migrate` - System/database migration
-- `optimize` - Performance optimization
+- `optimize` - Performance optimization  
 - `security` - Security audit and fixes
 - `integrate` - Third-party integration
 - `mvp` - Rapid MVP development from concept
-
-**Setup Missions**:
-- `dev-setup` - Initialize greenfield project (30-45 min)
-- `dev-alignment` - Understand existing project (20-30 min)
-- `opsdev-setup` - Configure DevOps & environment settings (20-30 min)
-- `claude-setup` - Create or sync CLAUDE.md configuration (15-25 min)
 
 **View detailed mission briefings**: Check `/missions/mission-[name].md`
 

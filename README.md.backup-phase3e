@@ -167,65 +167,502 @@ claude
 
 Learn the most common AGENT-11 workflows with real examples, time estimates, and expected outcomes.
 
-### Quick Reference
+### 1. Building an MVP (1-3 days)
 
-| Workflow | Command | Duration | Use Case |
-|----------|---------|----------|----------|
-| **MVP** | `/coord mvp vision.md` | 1-3 days | Rapid prototyping with auth, payments, deployment |
-| **Bug Fix** | `/coord fix bug-report.md` | 2-4 hours | Root cause analysis, fix, regression tests |
-| **Design Review** | `/design-review` | 1-2 hours | 7-phase UI/UX audit (RECON Protocol) |
-| **Feature** | `/coord build requirements.md` | 4-8 hours | Complete feature with tests and docs |
-| **Security** | `/coord security` | 2-3 hours | Vulnerability scanning, compliance checks |
-| **Refactor** | `/coord refactor target.md` | 2-4 hours | Code quality improvement, tech debt |
-| **Performance** | `/coord optimize metrics.md` | 3-6 hours | Bottleneck identification, optimization |
-| **Deploy** | `/coord deploy` | 1-2 hours | Production deployment with monitoring |
+**When to use**: You have a product vision and need to ship fast
 
-### Workflow Details
+**What you'll get**: Production-ready MVP with auth, payments, testing, and deployment
 
-**1. MVP Development** - Build production-ready MVP in 1-3 days
-- Full stack: auth, payments, testing, deployment
-- Example: [LLM.txt Mastery](https://llmtxtmastery.com) built in 3 days
-- Cost: $5-10 in API usage
+**Time estimate**: 1-3 days depending on complexity
 
-**2. Bug Fixes** - Debug and resolve production issues in 2-4 hours
-- Root cause analysis, fix implementation, regression tests
-- Cost: $0.50-1.50 in API usage
+```bash
+# Step 1: Create your vision document
+/coord dev-setup ideation/vision.md
 
-**3. Design Review** - Comprehensive UI/UX audit in 1-2 hours
-- 7-phase RECON Protocol: Interaction, responsive, visual, accessibility, robustness, performance
-- Deliverables: Issues classified by severity, screenshots, compliance report
-- Cost: $0.50-1 in API usage
+# Step 2: Build core features
+/coord build ideation/requirements.md
 
-**4. Feature Development** - Build complete features in 4-8 hours
-- Strategist → Architect → Developer → Tester → Documenter workflow
-- Deliverables: Code, tests, API docs, deployment checklist
-- Cost: $1-3 in API usage
+# Step 3: Quality assurance
+/coord test
 
-**5. Security Audit** - Comprehensive security review in 2-3 hours
-- OWASP Top 10, dependency scanning, compliance validation (SOC2, GDPR)
-- Deliverables: Vulnerability report, fixes, security documentation
-- Cost: $2-4 in API usage
+# Step 4: Deploy to production
+/coord deploy
+```
 
-**6. Code Refactoring** - Improve code quality in 2-4 hours
-- Technical debt reduction, performance improvements
-- All tests pass (no functionality changes)
-- Cost: $0.75-2 in API usage
+**What happens**:
+- Strategist analyzes vision → creates product requirements
+- Architect designs system → creates architecture.md
+- Developer implements features → writes code
+- Tester validates quality → runs comprehensive tests
+- Operator deploys safely → sets up staging + production
 
-**7. Performance Optimization** - Tune application performance in 3-6 hours
-- Bottleneck identification, query optimization, caching strategy
-- Deliverables: Before/after benchmarks, performance report
-- Cost: $1.50-3 in API usage
+**Deliverables**: Working MVP, tests, documentation, deployment guides
 
-**8. Production Deployment** - Safe deployment in 1-2 hours
-- Pre-deployment tests, zero-downtime deploy, monitoring, rollback plan
-- Deliverables: Live deployment, smoke tests, runbook
-- Cost: $0.50-1 in API usage
+**Real example**: [LLM.txt Mastery](https://llmtxtmastery.com) built in 3 days
 
-**→ Complete workflow guide**: [Common Workflows Guide](docs/guides/common-workflows.md) for:
-- Detailed mission breakdowns with agent sequences
-- Real-world examples and expected outcomes
-- Recovery strategies for interrupted missions
-- Verification procedures and deliverable checklists
+**Cost estimate:** $5-10 in API usage
+
+**Recovery Protocols:**
+
+**MVP too complex?**
+```bash
+@strategist "Review my MVP scope and identify what can be cut to ship faster"
+```
+
+**Tests failing?**
+```bash
+/coord fix test-failures.md
+```
+
+**Need to add feature after MVP?**
+```bash
+/coord build feature-requirements.md
+```
+
+**Verify deliverables:**
+```bash
+# Check these files were created:
+ls architecture.md project-plan.md progress.md README.md
+ls -la src/ tests/ deployment-config/
+```
+
+---
+
+### 2. Fixing Critical Issues (2-4 hours)
+
+**When to use**: Production bug that needs immediate attention
+
+**What you'll get**: Root cause identified, fix implemented, tests added
+
+**Time estimate**: 2-4 hours average
+
+```bash
+# Analyze and fix the issue
+/coord fix bug-report.md
+```
+
+**What happens**:
+- Coordinator reads bug report → creates fix plan
+- Developer identifies root cause → implements fix
+- Tester validates fix → ensures no regressions
+- Documenter updates docs → prevents recurrence
+
+**Deliverables**: Bug fix, regression tests, updated documentation
+
+**Cost estimate:** $0.50-1.50 in API usage
+
+**Recovery Protocols:**
+
+**Can't reproduce the bug?**
+```bash
+@tester "Help me create a minimal reproduction case for this bug"
+```
+
+**Fix causes other issues?**
+```bash
+/coord test  # Run full test suite
+@tester "Identify regressions from recent fix"
+```
+
+**Need emergency rollback?**
+```bash
+@operator "Rollback to previous deployment"
+```
+
+**Verify deliverables:**
+```bash
+# Confirm fix is deployed:
+git log -1  # See commit
+npm test    # Tests pass
+```
+
+---
+
+### 3. UI/UX Design Review (1-2 hours)
+
+**When to use**: Need professional design audit before launch
+
+**What you'll get**: Comprehensive UI/UX analysis with specific improvements
+
+**Time estimate**: 1-2 hours for full site review
+
+```bash
+# Run design review
+/design-review
+```
+
+**What happens**:
+7-phase systematic audit using RECON Protocol:
+1. **Preparation** - Environment setup, baseline screenshots
+2. **Interaction Testing** - User flows and micro-interactions
+3. **Responsive Validation** - Cross-device compatibility (mobile, tablet, desktop)
+4. **Visual Polish** - Typography, spacing, hierarchy
+5. **Accessibility Audit** - WCAG AA+ compliance, screen readers
+6. **Robustness Testing** - Edge cases, error states, loading states
+7. **Performance Check** - Load times, console errors
+
+**Deliverables**:
+- ✅ Issues classified by severity (BLOCKER/HIGH/MEDIUM/NITPICK)
+- ✅ Screenshots and evidence for each issue
+- ✅ Reproduction steps for developers
+- ✅ Accessibility compliance report
+
+**Real example**: "Identified 12 accessibility issues before launch, preventing legal compliance problems"
+
+**Cost estimate:** $0.50-1 in API usage
+
+**Recovery Protocols:**
+
+**Too many issues to fix?**
+```bash
+@designer "Prioritize design issues by business impact"
+```
+
+**Need design implementation help?**
+```bash
+@developer "Implement the HIGH priority design fixes"
+```
+
+**Accessibility issues found?**
+```bash
+@designer "Create accessibility remediation plan"
+```
+
+**Verify deliverables:**
+```bash
+# Check report was created:
+ls design-review-report.md
+# Review evidence:
+ls evidence-repository.md
+```
+
+---
+
+### 4. Feature Development (4-8 hours)
+
+**When to use**: Building production-quality feature from requirements
+
+**What you'll get**: Feature built, tested, documented, deployed
+
+**Time estimate**: 4-8 hours for standard features
+
+```bash
+# Build new feature
+/coord build requirements.md
+```
+
+**What happens**:
+1. **@strategist** analyzes requirements → user stories (30-45 min)
+2. **@architect** designs solution → technical approach (30-45 min)
+3. **@developer** implements → code + unit tests (2-4 hours)
+4. **@tester** validates → E2E tests and quality assurance (1 hour)
+5. **@documenter** documents → API docs, user guides (optional, 1 hour)
+
+**Deliverables**:
+- ✅ Production-ready feature code
+- ✅ Comprehensive test coverage (unit + E2E)
+- ✅ Documentation (API, user guide)
+- ✅ Updated project-plan.md and progress.md
+
+**Real example**: "Implemented payment processing with Stripe in 6 hours including tests and error handling"
+
+**Cost estimate:** $1-3 in API usage
+
+**Recovery Protocols:**
+
+**Feature too complex?**
+```bash
+@architect "Break this feature into smaller incremental phases"
+```
+
+**Implementation stuck?**
+```bash
+@developer "Review current implementation and suggest alternative approach"
+```
+
+**Tests not passing?**
+```bash
+@tester "Debug test failures and identify root cause"
+```
+
+**Verify deliverables:**
+```bash
+# Check feature is complete:
+git log --oneline -5  # Recent commits
+npm test             # Tests pass
+ls src/features/     # New feature code
+```
+
+---
+
+### 5. Security Audit (2-3 hours)
+
+**When to use**: Before production, after security-related changes, periodic reviews
+
+**What you'll get**: Security vulnerabilities identified and fixed
+
+**Time estimate**: 2-3 hours for comprehensive audit
+
+```bash
+# Run security audit
+/coord security
+```
+
+**What happens**:
+1. **@architect** reviews architecture → security assessment
+2. **@developer** audits code → vulnerability scan (OWASP Top 10)
+3. **@tester** runs security tests → penetration testing
+4. **@operator** reviews infrastructure → deployment security (CSP, CORS, HTTPS)
+5. **@documenter** logs → security documentation and compliance
+
+**Deliverables**:
+- ✅ Vulnerability assessment with severity ratings
+- ✅ Security fixes implemented and tested
+- ✅ Compliance validation (GDPR, SOC2, etc.)
+- ✅ Security documentation and prevention strategies
+
+**Real example**: "Identified and fixed XSS vulnerability before launch, prevented potential data breach"
+
+**Cost estimate:** $2-4 in API usage
+
+**Recovery Protocols:**
+
+**Critical vulnerabilities found?**
+```bash
+@developer "Implement immediate patches for CRITICAL security issues"
+@operator "Review production security posture"
+```
+
+**False positives in scan?**
+```bash
+@architect "Review security findings and filter false positives"
+```
+
+**Need compliance documentation?**
+```bash
+@documenter "Create security compliance documentation for [GDPR/SOC2/etc]"
+```
+
+**Verify deliverables:**
+```bash
+# Check security is improved:
+ls security-audit-report.md
+npm audit  # No critical vulnerabilities
+grep -r "TODO.*security" src/  # All TODOs addressed
+```
+
+---
+
+### 6. Code Refactoring (2-4 hours)
+
+**When to use**: Technical debt accumulated, code quality degraded, or preparing for major features
+
+**What you'll get**: Clean, maintainable code with improved architecture and reduced complexity
+
+**Time estimate**: 2-4 hours for standard refactoring
+
+```bash
+# Run refactoring mission
+/coord refactor
+```
+
+**What happens**:
+1. **@architect** audits codebase → identifies tech debt and patterns (30-45 min)
+2. **@developer** refactors code → improves structure, removes duplication (1-2 hours)
+3. **@tester** validates → ensures no regressions with comprehensive tests (30-45 min)
+4. **@documenter** updates → reflects architectural changes in docs (optional, 30 min)
+
+**Deliverables**:
+- ✅ Refactored codebase with improved architecture
+- ✅ Reduced complexity and code duplication
+- ✅ Updated tests ensuring no functional changes
+- ✅ Technical debt documentation and justification
+
+**Real example**: "Refactored authentication system from 800 lines to 400 lines, improved testability by 60%"
+
+**Cost estimate:** $0.75-2 in API usage
+
+**Recovery Protocols:**
+
+**Refactoring breaks functionality?**
+```bash
+git revert HEAD  # Roll back changes
+@tester "Identify which refactoring caused regression"
+@developer "Apply refactoring incrementally with tests"
+```
+
+**Too much tech debt to tackle?**
+```bash
+@architect "Prioritize refactoring by business impact and risk"
+@strategist "Create phased refactoring plan over multiple sprints"
+```
+
+**Tests insufficient for safe refactoring?**
+```bash
+@tester "Create characterization tests before refactoring"
+@developer "Add test coverage to critical paths first"
+```
+
+**Verify deliverables:**
+```bash
+# Check refactoring is safe:
+npm test              # All tests pass
+git diff --stat       # Review changes
+npm run lint          # Code quality improved
+grep -r "TODO" src/   # Tech debt items addressed
+```
+
+---
+
+### 7. Performance Optimization (3-6 hours)
+
+**When to use**: Slow load times, high resource usage, scalability bottlenecks, or poor user experience
+
+**What you'll get**: Faster application with reduced resource usage and improved scalability
+
+**Time estimate**: 3-6 hours for comprehensive optimization
+
+```bash
+# Run performance optimization
+/coord optimize
+```
+
+**What happens**:
+1. **@analyst** benchmarks performance → identifies bottlenecks (45-60 min)
+2. **@architect** reviews architecture → proposes optimization strategies (30-45 min)
+3. **@developer** implements optimizations → code, queries, caching (1-3 hours)
+4. **@tester** validates performance → benchmarks before/after (30-45 min)
+5. **@operator** tunes infrastructure → server config, CDN, compression (30 min)
+
+**Deliverables**:
+- ✅ Performance benchmarks (before/after metrics)
+- ✅ Optimized code with faster execution
+- ✅ Database query optimization and indexing
+- ✅ Caching strategy implementation
+- ✅ Infrastructure tuning recommendations
+
+**Real example**: "Reduced page load time from 4.2s to 1.1s (74% improvement), decreased server costs by 40%"
+
+**Cost estimate:** $1.50-3 in API usage
+
+**Recovery Protocols:**
+
+**Optimization breaks functionality?**
+```bash
+@tester "Identify which optimization caused issue"
+@developer "Roll back specific optimization, apply fix"
+```
+
+**Can't identify bottleneck?**
+```bash
+@analyst "Set up comprehensive performance monitoring"
+@developer "Add profiling and instrumentation to critical paths"
+```
+
+**Optimizations show minimal improvement?**
+```bash
+@architect "Review architecture for fundamental scalability issues"
+@operator "Analyze infrastructure constraints (CPU, memory, network)"
+```
+
+**Need to prove ROI?**
+```bash
+@analyst "Generate performance report with business impact metrics"
+# Metrics: load time reduction, bounce rate, conversion improvement
+```
+
+**Verify deliverables:**
+```bash
+# Check performance improvements:
+npm run benchmark  # Compare before/after
+ls performance-report.md  # Review metrics
+npm test  # Functionality preserved
+# Check specific metrics:
+# - Page load time < 2s
+# - Time to First Byte < 200ms
+# - Lighthouse score > 90
+```
+
+---
+
+### 8. Production Deployment (1-2 hours)
+
+**When to use**: Ready to ship features, security patches deployed, or scheduled releases
+
+**What you'll get**: Safe, verified production deployment with rollback capability
+
+**Time estimate**: 1-2 hours for standard deployment
+
+```bash
+# Deploy to production
+/coord deploy
+```
+
+**What happens**:
+1. **@tester** runs pre-deployment checks → full test suite (15-20 min)
+2. **@operator** prepares deployment → backup, staging validation (15-20 min)
+3. **@operator** deploys to production → zero-downtime deployment (10-15 min)
+4. **@tester** validates production → smoke tests, monitoring (15-20 min)
+5. **@documenter** logs deployment → changelog, rollback procedures (10-15 min)
+
+**Deliverables**:
+- ✅ Production deployment with zero downtime
+- ✅ Database backup and rollback procedures
+- ✅ Smoke test results confirming functionality
+- ✅ Monitoring dashboards and alerting configured
+- ✅ Deployment documentation and changelog
+
+**Real example**: "Deployed payment system update to 10,000 active users with zero downtime, 0% error rate"
+
+**Cost estimate:** $0.50-1 in API usage
+
+**Recovery Protocols:**
+
+**Deployment fails mid-process?**
+```bash
+@operator "Execute rollback procedure immediately"
+@developer "Investigate deployment failure in staging"
+```
+
+**Production errors after deployment?**
+```bash
+@operator "Check error rates and logs"
+# If critical (>5% error rate):
+@operator "Rollback to previous version immediately"
+# If minor (<1% error rate):
+@developer "Prepare hotfix for next deployment window"
+```
+
+**Database migration issues?**
+```bash
+@operator "Verify database backup exists and is restorable"
+@developer "Test migration rollback procedure in staging"
+```
+
+**Need emergency hotfix?**
+```bash
+@developer "Create hotfix branch from production tag"
+@tester "Run critical path tests only (15 min max)"
+@operator "Deploy hotfix with expedited process"
+```
+
+**Verify deliverables:**
+```bash
+# Check deployment success:
+curl https://your-app.com/health  # Health check passes
+@operator "Verify monitoring shows no errors"
+git tag -l  # Deployment tagged
+ls deployment-report.md  # Deployment documented
+
+# Critical checks:
+# - Error rate < 0.1%
+# - Response time < 500ms
+# - All critical paths functional
+# - Database migrations applied
+# - Rollback tested and ready
+```
+
+---
 
 ### More Workflows
 

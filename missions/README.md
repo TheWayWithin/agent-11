@@ -50,8 +50,6 @@ Pre-configured workflows for common development scenarios. Each mission coordina
 |---------|------|----------|-------------|
 | [Dev Setup](dev-setup.md) | `dev-setup` | 30-45 min | Initialize greenfield project |
 | [Dev Alignment](dev-alignment.md) | `dev-alignment` | 20-30 min | Understand existing project |
-| [OpsDev Setup](mission-opsdev-setup.md) | `opsdev-setup` | 20-30 min | Configure DevOps & environment settings |
-| [CLAUDE.md Setup](mission-claude-setup.md) | `claude-setup` | 15-25 min | Create or sync CLAUDE.md configuration |
 | [Connect MCP](connect-mcp.md) | `connect-mcp` | 15-20 min | Connect MCP tools |
 | [Operation Genesis](operation-genesis.md) | `genesis` | 4-6 hours | Complete project initialization |
 
@@ -103,8 +101,6 @@ Each mission follows this structure:
 ### For Project Setup
 - New project: Use `dev-setup`
 - Existing project: Use `dev-alignment`
-- Configure DevOps: Use `opsdev-setup`
-- Setup/sync CLAUDE.md: Use `claude-setup`
 - Add tools: Use `connect-mcp`
 
 ## Custom Missions

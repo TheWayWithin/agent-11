@@ -10,6 +10,18 @@
 
 Execute a safe, systematic production deployment with proper validation, monitoring, and rollback procedures. This mission ensures your code reaches users reliably with minimal risk.
 
+### Recommended MCP Profile
+
+**Profile**: `deployment` (core + Netlify + Railway)
+
+For deployment missions, switch to the deployment profile for direct access to hosting services:
+```bash
+ln -sf .mcp-profiles/deployment.json .mcp.json
+# Restart Claude Code
+```
+
+See [MCP Profile Guide](../../docs/MCP-GUIDE.md) for details.
+
 ## Required Inputs
 
 1. **Tested Codebase** (required) - Code that has passed all tests
@@ -19,65 +31,21 @@ Execute a safe, systematic production deployment with proper validation, monitor
 ## Mission Phases
 
 ### Phase 1: Pre-Deployment Validation (15-20 minutes)
-**Lead**: @tester
-**Support**: @operator
-**Objective**: Ensure deployment readiness through comprehensive validation
+**Lead**: @tester  
+**Objective**: Ensure deployment readiness
 
-**@tester Actions**:
-1. **Execute Complete Test Suite** (Bash)
-   ```bash
-   # Run all tests
-   npm test                    # Unit + integration tests
-   npx playwright test         # E2E tests
-   npm run test:coverage       # Check coverage
-   ```
-   - Verify 100% test pass rate
-   - Confirm coverage meets standards (>80% critical paths)
-   - Check for flaky tests (rerun to confirm stability)
-
-2. **Validate Build Process** (Bash)
-   ```bash
-   npm run build              # Production build
-   npm run lint               # Code quality checks
-   npm run type-check         # TypeScript validation
-   ```
-   - Confirm build completes without errors
-   - Check bundle sizes are within limits
-   - Validate no console warnings or errors
-
-3. **Security & Configuration Validation** (Read + Bash)
-   - **Environment Variables**:
-     - ✅ All required env vars present (.env.production)
-     - ✅ No test/dev secrets in production config
-     - ✅ API keys and tokens valid and not expired
-   - **Security Checklist**:
-     - ✅ No sensitive data in build artifacts
-     - ✅ Security headers configured (CSP, HSTS, etc.)
-     - ✅ HTTPS enforced for all endpoints
-     - ✅ Authentication and authorization working
-   - **Database Migrations** (if applicable):
-     - ✅ Migration scripts reviewed and tested
-     - ✅ Rollback scripts prepared
-     - ✅ Backup taken before migration
-
-4. **Pre-Deployment Checklist Review** (Read)
-   - ✅ Feature flags configured correctly
-   - ✅ Third-party integrations validated
-   - ✅ Monitoring and alerting configured
-   - ✅ Rollback procedures documented
-   - ✅ Team notified of deployment window
-
-5. **Quality Gate Decision** (Document in progress.md)
-   - **PASS**: All validations successful → Proceed to deployment planning
-   - **BLOCK**: Critical issues found → Document blockers, fix before deployment
+**Tasks**:
+- Run complete test suite and validate all tests pass
+- Verify build process completes successfully
+- Check environment configuration and secrets
+- Validate database migrations (if applicable)
+- Review deployment checklist
 
 **Success Criteria**:
-- ✅ All tests passing (100% pass rate)
-- ✅ Build artifacts generated successfully
-- ✅ Environment variables validated and secure
-- ✅ Migration scripts validated (if applicable)
-- ✅ Security checklist complete
-- ✅ Quality gate: PASS (ready for deployment planning)
+- All tests passing
+- Build artifacts generated successfully
+- Environment variables configured
+- Migration scripts validated
 
 ### Phase 2: Deployment Planning (20-30 minutes)
 **Lead**: @operator  
@@ -96,78 +64,23 @@ Execute a safe, systematic production deployment with proper validation, monitor
 - Monitoring configured
 - Pipeline ready for execution
 
-### Phase 3: Staging Deployment & Validation (15-25 minutes)
-**Lead**: @operator
-**Support**: @developer, @tester
-**Objective**: Deploy to staging and validate production-like environment
+### Phase 3: Staging Deployment (15-25 minutes)
+**Lead**: @operator  
+**Support**: @developer, @tester  
+**Objective**: Deploy to staging for final validation
 
-**@operator Actions** (Deployment):
-1. **Execute Staging Deployment**
-   ```bash
-   # Deploy to staging
-   git push staging main        # Or platform-specific deployment
-   # Wait for deployment completion
-   # Monitor deployment logs for errors
-   ```
-   - Verify deployment completes successfully
-   - Check all services start correctly
-   - Validate deployment version matches expected
-
-2. **Initial Health Checks**
-   - ✅ Application responds to health check endpoint
-   - ✅ Database connection established
-   - ✅ External services reachable
-   - ✅ Background jobs running
-
-**@tester Actions** (Validation):
-3. **Smoke Test Execution** (Bash + mcp__playwright)
-   ```bash
-   # Run smoke tests against staging
-   ENVIRONMENT=staging npx playwright test tests/smoke/
-   ```
-   - **Critical User Flows**:
-     - ✅ Homepage loads successfully
-     - ✅ User login works correctly
-     - ✅ Core feature functionality validated
-     - ✅ Payment flow works (test mode)
-     - ✅ Data displays correctly
-   - **API Validation**:
-     - ✅ All critical API endpoints respond
-     - ✅ Authentication endpoints working
-     - ✅ Data CRUD operations functional
-   - **Integration Validation**:
-     - ✅ Third-party services connected
-     - ✅ Email sending works (test mode)
-     - ✅ File uploads/downloads functional
-
-4. **Performance & Error Monitoring** (mcp__playwright + Browser DevTools)
-   - **Performance Checks**:
-     - ✅ Page load times < 3 seconds
-     - ✅ API response times < 1 second
-     - ✅ Time to Interactive (TTI) < 5 seconds
-     - ✅ No memory leaks during navigation
-   - **Error Detection**:
-     - ✅ No console errors or warnings
-     - ✅ No network request failures
-     - ✅ No JavaScript errors
-     - ✅ Error tracking service receiving events
-
-5. **Cross-Browser Validation** (mcp__playwright)
-   - Test on Chrome, Firefox, Safari (if time permits)
-   - Validate responsive design on mobile viewport
-   - Check for browser-specific issues
-
-6. **Staging Validation Report** (Document in progress.md)
-   - **PASS**: All smoke tests green, performance acceptable → Proceed to production
-   - **FAIL**: Critical issues found → Document blockers, fix before production
+**Tasks**:
+- Deploy to staging environment
+- Run smoke tests on staging
+- Validate all features working correctly
+- Check performance and error rates
+- Verify integrations and external services
 
 **Success Criteria**:
-- ✅ Staging deployment successful
-- ✅ All smoke tests passing (100%)
-- ✅ Performance metrics within acceptable range (<3s load, <1s API)
-- ✅ No critical errors detected
-- ✅ Integrations validated and working
-- ✅ Quality gate: PASS (ready for production deployment)
+- Staging deployment successful
+- All smoke tests passing
+- Performance metrics within acceptable range
+- No critical errors detected
 
 ### Phase 4: Production Deployment (20-30 minutes)
 **Lead**: @operator  
@@ -263,3 +176,42 @@ Execute a safe, systematic production deployment with proper validation, monitor
 **Mission Command**: `/coord deploy [tested-codebase] [deployment-config] [release-notes]`
 
 *"Deployment is not the end, it's the beginning of your code's journey to users."*
+
+---
+
+## Post-Mission Cleanup Decision
+
+After completing this mission, decide on cleanup approach based on project status:
+
+### ✅ Milestone Transition (Every 2-4 weeks)
+**When**: This mission completes a major project milestone, but more work remains.
+
+**Actions** (30-60 min):
+1. Extract lessons to `lessons/[category]/` from progress.md
+2. Archive current handoff-notes.md to `archives/handoffs/milestone-X/`
+3. Clean agent-context.md (retain essentials, archive historical details)
+4. Create fresh handoff-notes.md for next milestone
+5. Update project-plan.md with next milestone tasks
+
+**See**: `templates/cleanup-checklist.md` Section A for detailed steps
+
+### 🎯 Project Completion (Mission accomplished!)
+**When**: All project objectives achieved, ready for new mission.
+
+**Actions** (1-2 hours):
+1. Extract ALL lessons from entire progress.md to `lessons/`
+2. Create mission archive in `archives/missions/mission-[name]-YYYY-MM-DD/`
+3. Update CLAUDE.md with system-level learnings
+4. Archive all tracking files (project-plan.md, progress.md, etc.)
+5. Prepare fresh start for next mission
+
+**See**: `templates/cleanup-checklist.md` Section B for detailed steps
+
+### 🔄 Continue Active Work (No cleanup needed)
+**When**: Mission complete but continuing active development in same phase.
+
+**Actions**: Update progress.md and project-plan.md, continue working.
+
+---
+
+**Reference**: See `project/field-manual/project-lifecycle-guide.md` for complete lifecycle management procedures.

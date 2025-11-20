@@ -4,6 +4,39 @@
 
 This library contains standardized mission protocols for common development scenarios. Each mission provides a proven execution pattern for multi-agent collaboration.
 
+## MCP Profile Recommendations by Mission
+
+Different missions benefit from different MCP profiles for optimal context usage:
+
+| Mission | Recommended Profile | Reason |
+|---------|-------------------|---------|
+| connect-mcp | core | Lightweight MCP setup and configuration |
+| dev-setup | core | Initial project setup with essential tools |
+| dev-alignment | core | Project analysis and understanding |
+| mission-build | core or fullstack | Depends on feature requirements |
+| mission-fix | core | Bug diagnosis and quick fixes |
+| mission-refactor | core | Code improvement and optimization |
+| mission-deploy | deployment | Direct Netlify + Railway access |
+| mission-document | core | Documentation creation |
+| mission-architecture | core | Architecture documentation |
+| mission-product-description | core | Product definition and planning |
+| mission-mvp | fullstack | Comprehensive toolset for rapid development |
+| mission-migrate | database-staging | Safe database migration with read/write access |
+| mission-optimize | core | Performance analysis and improvement |
+| mission-security | database-production | Read-only production database review |
+| mission-integrate | varies | Depends on integration type (payments, deployment, etc.) |
+| mission-release | deployment | Deployment and release coordination |
+| operation-genesis | core | Intelligence gathering and analysis |
+| operation-recon | core | Design reconnaissance |
+
+**Profile Switching**:
+```bash
+ln -sf .mcp-profiles/[profile].json .mcp.json
+# Restart Claude Code
+```
+
+See [MCP Profile Guide](../../docs/MCP-GUIDE.md) for complete profile reference.
+
 ### Project Setup Missions
 
 #### 🚀 DEV-SETUP - Greenfield Project Initialization
@@ -186,6 +219,45 @@ To create a new mission:
 - Track progress in project-plan.md
 - Document learnings in progress.md
 - Iterate based on outcomes
+
+---
+
+## Post-Mission Cleanup Decision
+
+After completing this mission, decide on cleanup approach based on project status:
+
+### ✅ Milestone Transition (Every 2-4 weeks)
+**When**: This mission completes a major project milestone, but more work remains.
+
+**Actions** (30-60 min):
+1. Extract lessons to `lessons/[category]/` from progress.md
+2. Archive current handoff-notes.md to `archives/handoffs/milestone-X/`
+3. Clean agent-context.md (retain essentials, archive historical details)
+4. Create fresh handoff-notes.md for next milestone
+5. Update project-plan.md with next milestone tasks
+
+**See**: `templates/cleanup-checklist.md` Section A for detailed steps
+
+### 🎯 Project Completion (Mission accomplished!)
+**When**: All project objectives achieved, ready for new mission.
+
+**Actions** (1-2 hours):
+1. Extract ALL lessons from entire progress.md to `lessons/`
+2. Create mission archive in `archives/missions/mission-[name]-YYYY-MM-DD/`
+3. Update CLAUDE.md with system-level learnings
+4. Archive all tracking files (project-plan.md, progress.md, etc.)
+5. Prepare fresh start for next mission
+
+**See**: `templates/cleanup-checklist.md` Section B for detailed steps
+
+### 🔄 Continue Active Work (No cleanup needed)
+**When**: Mission complete but continuing active development in same phase.
+
+**Actions**: Update progress.md and project-plan.md, continue working.
+
+---
+
+**Reference**: See `project/field-manual/project-lifecycle-guide.md` for complete lifecycle management procedures.
 
 ---
 

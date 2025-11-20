@@ -91,87 +91,22 @@ Systematically integrate external services, APIs, or systems into your applicati
 - Fallback mechanisms ready
 
 ### Phase 5: Testing and Validation (60-90 minutes)
-**Lead**: @tester
-**Support**: @developer
-**Objective**: Thoroughly test integration functionality and resilience
+**Lead**: @tester  
+**Support**: @developer  
+**Objective**: Thoroughly test integration functionality
 
-**@tester Actions**:
-1. **Analyze Integration Implementation** (Read tool)
-   - Review API client code and error handling
-   - Identify test scenarios (happy paths, error cases, edge cases)
-   - Create comprehensive test plan with security focus
-   - Document performance and reliability requirements
-
-2. **Delegate Test Creation** (Task tool to @developer)
-   - Provide detailed test specifications
-   - List security test requirements (auth, token refresh, credential handling)
-   - Specify resilience tests (retry logic, circuit breaker, rate limiting)
-   - Include performance benchmarks (response times, timeout handling)
-
-3. **Execute Integration Tests** (Bash + mcp__playwright if web integration)
-   - Run unit tests for integration logic: `npm test tests/integration/`
-   - Execute E2E tests for web-based integrations
-   - Test authentication and authorization flows
-   - Validate error scenarios and edge cases
-   - Test rate limiting and retry behavior
-   - Capture results and evidence (logs, network traces)
-
-4. **Document Test Results** (progress.md)
-   - Bug reports with reproduction steps
-   - Integration test results (pass/fail, coverage)
-   - Performance metrics (API response times, retry behavior)
-   - Security validation results (auth flows, token management)
-   - Quality gate decision (approve/block deployment)
-
-**Testing Scenarios**:
-
-**Authentication & Security**:
-- ✅ Valid credentials authenticate successfully
-- ✅ Invalid credentials rejected with proper error
-- ✅ Token refresh works when tokens expire
-- ✅ Expired tokens handled gracefully
-- ✅ Credentials stored securely (not in logs/responses)
-- ✅ HTTPS/TLS enforced for all API calls
-
-**API Functionality**:
-- ✅ Successful API calls return expected data
-- ✅ Data transformation works correctly
-- ✅ Pagination handles large datasets
-- ✅ Batch operations process multiple items
-- ✅ Response format parsing (JSON/XML) works
-
-**Error Handling & Resilience**:
-- ✅ Network failures trigger retry logic
-- ✅ Exponential backoff implemented correctly
-- ✅ Circuit breaker opens after repeated failures
-- ✅ Circuit breaker closes after recovery
-- ✅ Rate limit errors handled with backoff
-- ✅ Fallback mechanisms activate when needed
-- ✅ Timeouts don't leave hanging connections
-
-**Edge Cases**:
-- ✅ Empty responses handled
-- ✅ Malformed responses don't crash system
-- ✅ Large payloads processed successfully
-- ✅ Special characters in data handled
-- ✅ Concurrent requests don't cause issues
-- ✅ Service downtime handled gracefully
-
-**Performance**:
-- ✅ Response times < 2 seconds for API calls
-- ✅ No memory leaks on repeated calls
-- ✅ Connection pooling works efficiently
-- ✅ Caching reduces redundant API calls
+**Tasks**:
+- Create unit tests for integration logic
+- Test authentication and authorization flows
+- Test error scenarios and edge cases
+- Validate data transformation accuracy
+- Test rate limiting and retry behavior
 
 **Success Criteria**:
-- Comprehensive test suite created by @developer
-- All integration scenarios tested by @tester
-- Security validation passed (auth, credentials, encryption)
-- Error handling validated (retry, circuit breaker, fallback)
-- Edge cases covered and documented
-- Performance benchmarks met
-- Test results documented in progress.md
-- Quality gate: PASS (ready for monitoring setup)
+- Comprehensive test suite created
+- All integration scenarios tested
+- Error handling validated
+- Edge cases covered
 
 ### Phase 6: Monitoring and Documentation (30-45 minutes)
 **Lead**: @developer  
@@ -327,3 +262,42 @@ Systematically integrate external services, APIs, or systems into your applicati
 **Mission Command**: `/coord integrate [integration-requirements] [api-documentation] [auth-details]`
 
 *"Integration is where isolated systems become powerful ecosystems."*
+
+---
+
+## Post-Mission Cleanup Decision
+
+After completing this mission, decide on cleanup approach based on project status:
+
+### ✅ Milestone Transition (Every 2-4 weeks)
+**When**: This mission completes a major project milestone, but more work remains.
+
+**Actions** (30-60 min):
+1. Extract lessons to `lessons/[category]/` from progress.md
+2. Archive current handoff-notes.md to `archives/handoffs/milestone-X/`
+3. Clean agent-context.md (retain essentials, archive historical details)
+4. Create fresh handoff-notes.md for next milestone
+5. Update project-plan.md with next milestone tasks
+
+**See**: `templates/cleanup-checklist.md` Section A for detailed steps
+
+### 🎯 Project Completion (Mission accomplished!)
+**When**: All project objectives achieved, ready for new mission.
+
+**Actions** (1-2 hours):
+1. Extract ALL lessons from entire progress.md to `lessons/`
+2. Create mission archive in `archives/missions/mission-[name]-YYYY-MM-DD/`
+3. Update CLAUDE.md with system-level learnings
+4. Archive all tracking files (project-plan.md, progress.md, etc.)
+5. Prepare fresh start for next mission
+
+**See**: `templates/cleanup-checklist.md` Section B for detailed steps
+
+### 🔄 Continue Active Work (No cleanup needed)
+**When**: Mission complete but continuing active development in same phase.
+
+**Actions**: Update progress.md and project-plan.md, continue working.
+
+---
+
+**Reference**: See `project/field-manual/project-lifecycle-guide.md` for complete lifecycle management procedures.

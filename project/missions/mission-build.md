@@ -258,6 +258,13 @@ Transform product requirements into production-ready implementation. This missio
 - Blockers immediately escalated to coordinator
 - Frequent progress.md updates (after each deliverable and fix attempt - including failures)
 
+**File Operations** (Sprint 2 Architecture - Production Ready):
+- Coordinator automatically parses and executes structured JSON output from specialists
+- File operations now have ~99.9% reliability with zero manual verification required
+- Specialists provide `file_operations` array → Coordinator executes Write/Edit tools automatically
+- See migration guide: `project/field-manual/migration-guides/file-persistence-v2.md`
+- See examples: `project/examples/file-operations/` (single, multiple, edit, mixed patterns)
+
 ## Mission Debrief Protocol
 
 Upon completion:

@@ -1,29 +1,36 @@
 # Agent Context Document
 
 ## Mission Overview
-**Mission Code**: FOUNDATION-GUARDRAILS-2025-11-09
-**Started**: 2025-11-09
-**Current Phase**: Investigation Setup
+**Mission Code**: SPRINT-3-DOCUMENTATION-REORGANIZATION-2025-01-19
+**Started**: 2025-01-19
+**Current Phase**: Phase 3A - Content Audit & Planning
 **Overall Status**: IN_PROGRESS
+**Previous Mission**: Sprint 2 File Persistence ✅ COMPLETE (v2.0.0 deployed)
 
 ## Mission Objectives
-Foundation document adherence investigation:
-- [x] Investigate how agents currently handle foundation documents
-- [x] Analyze patterns of deviation and root causes
-- [x] Design guardrail improvements to enforce foundation adherence
-- [ ] Implement verification protocols in library agents (IN PROGRESS - ready for developer)
-- [ ] Validate guardrails with realistic test scenarios
-- [ ] Document best practices
+Sprint 3: Documentation Reorganization (Days 1-7)
+- [ ] Phase 3A: Content Audit & Planning (CURRENT)
+- [ ] Phase 3B: Create docs/guides/ Structure (6 guides)
+- [ ] Phase 3C: Condense README to 500-700 lines
+- [ ] Phase 3D: Update Navigation & Cross-Links
+- [ ] Phase 3E: User Testing & Refinement
 
-**Issue Severity**: HIGH - Undermines product consistency, wastes user time
-**Impact Scope**: Library agents in `project/agents/specialists/`
-**User Reports**: Agents deviating from architecture.md, ideation.md, PRDs, product descriptions
-**Estimated Time**: 4-6 hours
+**Previous Sprint**: Sprint 2 COMPLETED ✅ (v2.0.0-file-persistence-fix)
+- [x] Phase 2A: Solution Design
+- [x] Phase 2B: Coordinator Enhancement
+- [x] Phase 2C: Specialist Updates
+- [x] Phase 2D: Documentation & Migration Guide
+- [x] Phase 2E: Testing & Rollout
+
+**Issue Severity**: HIGH - Documentation organization impacts user adoption
+**Impact Scope**: README.md (1,743 lines), need docs/guides/ directory structure
+**Root Cause**: Content sprawl - excellent content but poor presentation (information overload)
+**Estimated Time**: 5-7 days (Sprint 3)
 **Expected Impact**:
-- Agents consistently adhere to foundation documents
-- Zero architectural deviations without user approval
-- Product deliverables match specifications
-- User confidence in consistency restored
+- README reduced to 500-700 lines (navigation hub)
+- 6 organized guides created
+- Improved discoverability and user onboarding
+- Addresses Issue #2 from Final Documentation Review
 
 ## Critical Constraints
 Important limitations and requirements to maintain:
