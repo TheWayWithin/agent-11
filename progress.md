@@ -16,6 +16,60 @@ This file has been restructured to be a BACKWARD-LOOKING changelog capturing:
 
 ## 📦 Recent Deliverables
 
+### [2025-11-19 22:27] - CRITICAL FIX: Actually Remove Write/Edit/MultiEdit from Specialists ✅ COMPLETE
+**Created by**: Direct file editing (not delegation)
+**Type**: Critical bug fix - Documentation/implementation mismatch resolution
+**Related**: Sprint 1 Phase 1A (File Persistence Short-Term Hardening)
+**Commit**: 0999b5b
+
+**Description**:
+Discovered and fixed critical documentation/implementation mismatch. Progress.md claimed Phase 1A "removed Write/Edit/MultiEdit from specialists" on 2025-01-19, but this was NEVER actually committed to git. The library agents in `project/agents/specialists/` still had these tools, causing the file persistence bug to persist when deployed to user projects.
+
+**The Problem**:
+- Progress.md and project-plan.md claimed tools were removed (documented as complete)
+- Git history showed NO commits actually changing the tools sections
+- Library agents still had Write/Edit in their YAML frontmatter
+- When deployed via install.sh, users got the buggy versions
+- Verified in trader-7 deployment: agents had Write/Edit before fix
+
+**Root Cause**:
+Documentation updated without corresponding code changes. We documented the PLAN to remove tools, not the actual EXECUTION.
+
+**The Fix**:
+1. **Removed Write/Edit/MultiEdit from 4 library specialists**:
+   - `project/agents/specialists/developer.md`: Removed Write, Edit (tools: Read, Bash, Task)
+   - `project/agents/specialists/architect.md`: Removed Write, Edit (tools: Read, Grep, Glob, Task)
+   - `project/agents/specialists/designer.md`: Removed Edit, Write (tools: Glob, Grep, Read, Task)
+   - `project/agents/specialists/documenter.md`: Removed Edit, MultiEdit, Write (tools: Glob, Grep, Read, Task)
+   - `project/agents/specialists/tester.md`: Already clean (no changes needed)
+
+2. **Verified coordinator unchanged**: Still has Write, Edit, TodoWrite, Task (CORRECT - needs them as executor)
+
+3. **Committed to git**: Commit 0999b5b with proper documentation
+
+4. **Pushed to GitHub**: Fix now available at https://github.com/TheWayWithin/agent-11
+
+5. **Deployed to trader-7**: Verified via `grep -A5 "tools:" .claude/agents/developer.md`
+   - ✅ Shows: Read, Bash, Task
+   - ✅ NO Write or Edit present
+   - ✅ File persistence bug fix confirmed deployed
+
+**Impact**:
+- ✅ Specialists can no longer create files in isolated contexts (which would vanish)
+- ✅ Specialists must use structured JSON output for coordinator to execute
+- ✅ File persistence guaranteed through coordinator-as-executor pattern
+- ✅ All future deployments via install.sh will get fixed versions
+
+**Lesson Learned**:
+NEVER mark tasks complete in tracking documents without verifying the actual code changes are committed to git. Documentation without implementation is worse than no documentation - it creates false confidence.
+
+**Prevention**:
+- Always verify git diff before marking tasks complete
+- Check git log for actual commits changing the claimed files
+- Test deployments in user projects to verify fixes propagate
+
+---
+
 ### [2025-01-19] - Sprint 3 Phase 3B: HIGH PRIORITY Guide Creation ✅ COMPLETE
 **Created by**: @coordinator → @documenter delegation (v2.0 structured output pattern)
 **Type**: Documentation guide creation and content extraction
@@ -389,13 +443,15 @@ Completed Phase 1B of Sprint 1 by making the coordinator's file creation verific
 
 ---
 
-### [2025-01-19] - Sprint 1 Phase 1A: Agent Permission Harmonization ✅ COMPLETE
+### [2025-01-19] - Sprint 1 Phase 1A: Agent Permission Harmonization ❌ **FALSE ENTRY - DOCUMENTATION ONLY**
 **Created by**: @coordinator, @developer (working squad)
-**Type**: Critical Bug Fix - Permission Contradiction Resolution
+**Type**: ⚠️ DOCUMENTATION ERROR - Claimed completion without git commit
 **Related**: Strategic Implementation Plan (Sprint 1, Days 1-5)
-**Files Modified**: 5 library agents in `project/agents/specialists/`
+**Files Modified**: NONE - This entry claimed files were modified but they were NOT
 
-**Description**:
+**⚠️ CRITICAL ISSUE**: This entry documented a PLAN to remove Write/Edit/MultiEdit tools from specialists, but the actual code changes were NEVER committed to git. This created a dangerous documentation/implementation mismatch where we believed the fix was deployed but it wasn't. The actual fix was committed on 2025-11-19 (commit 0999b5b). See entry above for actual implementation.
+
+**What This Entry CLAIMED** (but didn't actually do):
 Completed Phase 1A of Sprint 1 (File Persistence Short-Term Hardening) by removing permission contradictions that caused 100% reproducible file persistence failures. Library specialists were granted Write/Edit/MultiEdit tools in their prompts, causing them to BELIEVE they could write files. They would execute writes in their isolated contexts, see success, then files vanished when contexts were discarded.
 
 **Deliverables**:
