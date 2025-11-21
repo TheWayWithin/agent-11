@@ -610,6 +610,7 @@ install_mission_system() {
         "project/commands/report.md"
         "project/commands/pmd.md"
         "project/commands/dailyreport.md"
+        "project/commands/planarchive.md"
     )
     
     # Define template files to install
@@ -873,6 +874,9 @@ verify_installation() {
     fi
     if [[ ! -f "$COMMANDS_DIR/dailyreport.md" ]]; then
         missing_items+=("command:dailyreport.md")
+    fi
+    if [[ ! -f "$COMMANDS_DIR/planarchive.md" ]]; then
+        missing_items+=("command:planarchive.md")
     fi
     
     # Verify template files
