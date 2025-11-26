@@ -156,3 +156,131 @@ Successfully implemented comprehensive foundation document adherence system acro
 4. Monitor foundation adherence metrics (target: >90%)
 
 **Confidence Level**: HIGH (95%) - Comprehensive validation, zero issues found
+
+---
+
+# Archive: Strategic Fix Implementation Plan - Completed Sprints
+
+> **Archived**: 2025-11-22
+> **Source**: project-plan.md
+> **Reason**: Sprints 1 and 3 complete, Sprint 2 Phases 2A-2D complete
+> **Lines Archived**: ~740 lines
+
+## Archive Index (This Section)
+
+| Date | Sprint | Phases | Status |
+|------|--------|--------|--------|
+| 2025-11-22 | Sprint 1 | 1A-1D | ✅ All Complete |
+| 2025-11-22 | Sprint 2 | 2A-2D | ✅ Complete (2E pending) |
+| 2025-11-22 | Sprint 3 | 3A-3E | ✅ All Complete |
+
+---
+
+## SPRINT 1: File Persistence Short-Term Hardening ✅ ARCHIVED
+
+**Timeline**: Days 1-5 (Completed 2025-11-19)
+**Goal**: Make current workaround more reliable while permanent fix is developed
+**Result**: >80% failure reduction achieved
+
+### Phase 1A: Agent Permission Harmonization ✅ COMPLETE
+- Removed Write/Edit/MultiEdit from 5 library specialists (developer, architect, designer, documenter, tester)
+- Added FILE CREATION LIMITATION notices to all affected specialists
+- Commit 0999b5b (2025-11-19) - actual implementation
+
+### Phase 1B: Coordinator Protocol Enhancement ✅ COMPLETE
+- Created FILE CREATION LIMITATION & MANDATORY DELEGATION PROTOCOL section (~130 lines)
+- Enhanced Pre-Handoff Checklist with File Operation Verification checkpoint
+- Added 8-step recovery procedure for protocol violations
+
+### Phase 1C: Documentation Updates ✅ COMPLETE
+- Updated CLAUDE.md with FILE PERSISTENCE LIMITATION & WORKAROUNDS
+- Created troubleshooting-file-persistence.md guide
+- Updated mission documentation (mission-build.md, mission-fix.md, mission-mvp.md)
+
+### Phase 1D: Testing & Validation ✅ COMPLETE
+- Test design complete for coordinator delegation protocol
+- Specialist compliance verification matrix created
+- Regression test suite: project/tests/file-persistence-regression-tests.md (605 lines)
+
+**Sprint 1 Success Criteria**: ALL MET
+- ✅ Zero Write/Edit/MultiEdit in specialists (except coordinator)
+- ✅ Mandatory verification protocol language added
+- ✅ >80% file persistence rate achieved
+- ✅ Clear documentation of limitations
+
+---
+
+## SPRINT 2: File Persistence Architectural Solution - Phases 2A-2D ✅ ARCHIVED
+
+**Timeline**: Days 6-12 (Design and implementation complete)
+**Goal**: Eliminate prompt dependency with architectural change
+
+### Phase 2A: Solution Design ✅ COMPLETE
+- Coordinator-as-executor pattern designed
+- JSON schema for structured output finalized
+- Execution engine logic documented
+- Architecture decision document: project/field-manual/architecture-decisions/file-persistence-solution.md (591 lines)
+
+### Phase 2B: Coordinator Enhancement ✅ COMPLETE
+- STRUCTURED OUTPUT PARSING PROTOCOL added (line 2227)
+- FILE OPERATION EXECUTION ENGINE added (line 2323)
+- Delegation templates updated with structured output
+
+### Phase 2C: Specialist Updates ✅ COMPLETE
+- 5 file-creating specialists: Full STRUCTURED OUTPUT FORMAT subsection (~75 lines each)
+- 5 other specialists: FILE OPERATIONS note added
+- Working squad unchanged
+
+### Phase 2D: Documentation & Migration Guide ✅ COMPLETE
+- Migration guide: project/field-manual/migration-guides/file-persistence-v2.md (1153 lines)
+- 4 examples in project/examples/file-operations/
+- CLAUDE.md updated with Sprint 2 production status
+
+---
+
+## SPRINT 3: Documentation Reorganization ✅ ARCHIVED
+
+**Timeline**: Days 1-7 (parallel track)
+**Goal**: Transform README from 1,743 lines to navigation hub
+**Result**: README condensed to 1,168 lines (34% reduction)
+
+### Phase 3A: Content Audit & Planning ✅ COMPLETE
+- sprint3-content-audit.md (663 lines, 25KB)
+- sprint3-structure-plan.md (658 lines, 19KB)
+
+### Phase 3B: HIGH PRIORITY Guides ✅ COMPLETE
+- docs/guides/essential-setup.md (259 lines, 6.6KB)
+- docs/guides/common-workflows.md (433 lines, 11KB)
+
+### Phase 3C: MEDIUM PRIORITY Guides ✅ COMPLETE
+- docs/guides/progress-tracking.md (399 lines, 12KB)
+- docs/guides/mission-architecture.md (670 lines, 19KB)
+
+### Phase 3D: ADVANCED PRIORITY Guides ✅ COMPLETE
+- docs/guides/troubleshooting.md (333 lines, 11KB)
+- docs/guides/advanced-customization.md (570 lines, 19KB)
+
+### Phase 3E: README Condensation ✅ COMPLETE
+- README.md: 1,771 → 1,168 lines (34% reduction)
+- Backup: README.md.backup-phase3e
+
+**Sprint 3 Achievements**:
+- 8 files created, 3,685 lines, 142.6KB documentation
+- Hub-and-spoke navigation architecture implemented
+- Zero information loss (all detail preserved in guides)
+
+---
+
+## Deferred Phases (From Original Sprint 3 Plan)
+
+### Phase 3D: Update Navigation & Cross-Links [DEFERRED]
+- Navigation already functional through guide implementations
+- Not required for current milestone
+
+### Phase 3E: User Testing & Refinement [DEFERRED]
+- Planned for Sprint 4 or ongoing maintenance
+- User scenarios to test: beginner setup, feature search, troubleshooting
+
+---
+
+*Archive complete. Active work continues in Sprint 2 Phase 2E (Testing & Rollout).*

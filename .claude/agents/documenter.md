@@ -8,13 +8,10 @@ tags:
   - content
 tools:
   primary:
-    - Edit
     - Glob
     - Grep
-    - MultiEdit
     - Read
     - Task
-    - Write
 verification_required: true
 self_verification: true
 ---

@@ -92,8 +92,15 @@ Parse the arguments to determine:
 
 ### 🔧 COORDINATION RULES - NO WAITING PROTOCOL [TASK TOOL MANDATORY]
 
-- You orchestrate but do NOT implement
-- ALL technical work MUST be delegated to specialists
+**Sprint 2 Architecture (File Operations)**:
+- Specialists provide structured JSON output with file specifications
+- **Coordinator EXECUTES Write/Edit tools** using specialist's JSON output
+- This ensures file persistence (specialists don't have Write/Edit tools)
+- See coordinator agent's "STRUCTURED OUTPUT PARSING PROTOCOL" and "FILE OPERATION EXECUTION ENGINE" sections
+
+**General Coordination**:
+- You orchestrate logic/design but DO implement file operations (Write/Edit from JSON)
+- Technical design/logic MUST be delegated to specialists for JSON output
 - **DELEGATE IMMEDIATELY** - use Task tool with subagent_type='agent_name' parameter
 - **NO AWAITING CONFIRMATIONS** - call Task tool and wait for actual responses
 - **MANDATORY project-plan.md UPDATES**: Update before each phase and after each completion
@@ -116,6 +123,29 @@ Parse the arguments to determine:
 
 **RIGHT**: "Calling Task tool with subagent_type='developer' for environment variable debugging..."
 **WRONG**: "Planning to have developer work on environment issues" or "@developer begin..."
+
+### 🔧 AFTER TASK DELEGATION - FILE OPERATION EXECUTION [SPRINT 2]
+
+**If specialist returns file_operations JSON**:
+1. **Parse JSON**: Extract file_operations array from response
+2. **Execute Write/Edit**: For each operation, call Write() or Edit() tool with specialist's parameters
+3. **Verify Files**: Use `ls -la` and Read tool to confirm files exist with correct content
+4. **Log to progress.md**: Document files created with verification timestamp
+5. **Mark Complete**: Only mark task [x] after filesystem verification
+
+**Example**:
+```
+# Developer returns: {"file_operations": [{"operation": "create", "file_path": "/path/to/auth.ts", "content": "..."}]}
+
+# Coordinator executes:
+Write(file_path="/path/to/auth.ts", content="...specialist's content...")
+# Verify: ls -la /path/to/auth.ts
+# Verify: head -n 10 /path/to/auth.ts
+# Log to progress.md: "✅ Files verified on filesystem: auth.ts (2.3KB) - 2025-11-20 06:45"
+# Mark task [x] in project-plan.md
+```
+
+**Critical**: Skipping Write/Edit execution causes file persistence bug - work appears complete but nothing persists.
 
 ### 🔧 TROUBLESHOOTING NON-RESPONSIVE AGENTS [TASK TOOL SOLUTIONS]
 

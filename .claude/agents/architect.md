@@ -12,8 +12,6 @@ thinking:
 tools:
   primary:
     - Read
-    - Write
-    - Edit
     - Grep
     - Glob
     - Task
