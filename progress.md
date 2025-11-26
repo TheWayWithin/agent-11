@@ -17,13 +17,21 @@ This file has been restructured to be a BACKWARD-LOOKING changelog capturing:
 ## 📦 Recent Deliverables
 
 ### [2025-11-26 16:45] - install.sh YAML Validation Bug Fix ✅ CRITICAL FIX
-**Discovered by**: User deployment failure investigation
+**Discovered by**: User deployment failure on JamieWatters project
 **Type**: Critical bug fix - installation validation
 **Severity**: HIGH - Prevented all deployments with agent files containing `---` separators
-**Commit**: 55ab126
+**Commits**: 55ab126 (fix), 148d975 (docs)
 
 **Description**:
 Fixed critical bug in install.sh validation function that caused false-positive "Missing 'description' field" errors during agent deployment. The sed command for extracting YAML frontmatter was matching ALL `---` markers in agent files (including visual separators used throughout the content), not just the opening/closing YAML delimiters.
+
+**Discovery Timeline**:
+1. User reported deployment failure: `/Users/jamiewatters/DevProjects/JamieWatters`
+2. Error: `[ERROR] Missing 'description' field in YAML header: coordinator.md`
+3. Verified coordinator.md on GitHub HAS description field (line 3)
+4. Downloaded file directly - confirmed field exists
+5. Tested sed extraction - found it was extracting 1,174 lines instead of 20
+6. Identified root cause: sed matching multiple `---` ranges throughout file
 
 **Root Cause**:
 The sed pattern `/^---$/,/^---$/p` matches ALL ranges of `---` markers in a file. Agent files like coordinator.md use `---` as visual separators throughout the content (lines 402, 596, 815, etc.). When validation extracted the "YAML section", it was getting 1,174 lines instead of the expected 20-line frontmatter, causing the grep for `^description:` to fail due to parsing the wrong content.
@@ -38,15 +46,32 @@ yaml_section=$(sed -n '/^---$/,/^---$/p' "$agent_file")
 yaml_section=$(head -n 30 "$agent_file" | sed -n '/^---$/,/^---$/p')
 ```
 
+**Testing**:
+```bash
+# Before fix: 1,174 lines extracted (wrong)
+sed -n '/^---$/,/^---$/p' coordinator.md | wc -l
+# Result: 1174
+
+# After fix: 20 lines extracted (correct)
+head -n 30 coordinator.md | sed -n '/^---$/,/^---$/p' | wc -l
+# Result: 20
+
+# Validation test
+head -n 30 coordinator.md | sed -n '/^---$/,/^---$/p' | grep -q "^description:"
+# Result: ✓ VALIDATION PASSES
+```
+
 **Impact**:
 - **Before**: All deployments to user projects failing with "Missing 'description' field" error
 - **After**: YAML validation correctly identifies frontmatter, deployments succeed
 - **Affected Files**: All 11 library agent files (any file with `---` content separators)
+- **User Impact**: Blocks installation on trader-7, JamieWatters, and all other deployment targets
 
 **Prevention**:
 - Add test case for agent files with multiple `---` markers
 - Document that YAML frontmatter should always be within first 30 lines
 - Consider more robust YAML parsing (e.g., using yq or proper YAML parser)
+- Add integration test that validates all library agents before release
 
 ---
 
