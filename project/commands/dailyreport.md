@@ -20,7 +20,68 @@ DailyReport is a progress consolidation command that generates structured daily 
 - **Issue Documentation**: Captures root cause analysis and prevention strategies
 - **Incremental Updates**: Appends new progress when run multiple times same day
 - **Blog-Ready Output**: Generates markdown optimized for daily update posts
+- **AI Enhancement** (Optional): Transforms structured data into engaging narrative posts
 - **Transparency**: Documents both wins and problems encountered
+
+## AI ENHANCEMENT FEATURE
+
+When `OPENAI_API_KEY` is configured, `/dailyreport` automatically generates TWO versions:
+
+1. **Structured Report** (`YYYY-MM-DD.md`) - Raw data with checkboxes and sections
+2. **Blog-Ready Post** (`YYYY-MM-DD-blog.md`) - AI-enhanced narrative version
+
+### What AI Enhancement Does
+
+- Transforms task lists into engaging stories
+- Makes technical concepts accessible to non-technical readers
+- Adds narrative flow and emotional connection
+- Highlights "why it matters" for each accomplishment
+- Structures challenges as problem → solution journeys
+
+### Cost & Performance
+
+- **Per report**: ~$0.001 (less than a penny)
+- **Processing time**: ~5 seconds
+- **Model**: gpt-4.1-mini (configurable via `DAILYREPORT_MODEL`)
+
+### Configuration
+
+Add to your `.env.mcp` file:
+
+```bash
+# Required for AI enhancement
+OPENAI_API_KEY=your_openai_key_here
+
+# Optional: Choose model (default: gpt-4.1-mini)
+DAILYREPORT_MODEL=gpt-4.1-mini    # Recommended (balanced)
+# DAILYREPORT_MODEL=gpt-4.1-nano  # Faster/cheaper
+# DAILYREPORT_MODEL=gemini-2.5-flash  # Alternative
+
+# Optional: Disable enhancement
+DAILYREPORT_ENABLE_ENHANCEMENT=true
+```
+
+### Setup Instructions
+
+```bash
+# 1. Copy environment template
+cp .env.mcp.template .env.mcp
+
+# 2. Edit and add your OpenAI API key
+vim .env.mcp
+
+# 3. Get an API key from: https://platform.openai.com/api-keys
+
+# 4. Run dailyreport - enhancement happens automatically
+/dailyreport
+```
+
+### Fallback Behavior
+
+If `OPENAI_API_KEY` is not set or the enhancement fails:
+- ✅ Standard structured report is still created
+- ℹ️ User is notified that enhancement is unavailable
+- 📝 Instructions provided for enabling enhancement
 
 ## SCOPE
 
@@ -32,9 +93,12 @@ DailyReport is a progress consolidation command that generates structured daily 
 
 ```
 /progress/
-  2025-11-19.md
+  2025-11-19.md          # Structured report (always created)
+  2025-11-19-blog.md     # Blog-ready narrative (created if OPENAI_API_KEY set)
   2025-11-20.md
+  2025-11-20-blog.md
   2025-11-21.md
+  2025-11-21-blog.md
   ...
 ```
 
@@ -56,6 +120,10 @@ DailyReport is a progress consolidation command that generates structured daily 
 6. Summarize completed tasks into meaningful milestones (not raw checkboxes)
 7. Extract issues with root cause analysis and fixes
 8. Add impact statement and next steps
+9. **If OPENAI_API_KEY is set**: Call enhancement script to generate blog-ready version
+   - Run: `python3 project/commands/scripts/enhance_dailyreport.py /progress/YYYY-MM-DD.md`
+   - Creates: `/progress/YYYY-MM-DD-blog.md` with narrative version
+   - If enhancement fails: Log error but continue (structured report already created)
 
 ### Subsequent Runs Same Day
 
@@ -202,7 +270,27 @@ Try these methods in order:
 
 ## OUTPUT TO USER
 
-### After First Run
+### After First Run (With AI Enhancement)
+
+```
+✅ Daily report created: /progress/2025-11-19.md
+📊 Captured 5 milestones across 3 categories
+🐛 Documented 2 issues with root cause analysis
+🤖 Generating blog-ready version...
+✨ Blog post created: /progress/2025-11-19-blog.md
+📝 Ready to publish!
+
+Preview:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# When Docs Lie: Hunting Down a Ghost Bug – Day 42 of AGENT-11
+
+> TL;DR: I uncovered a sneaky bug hiding behind perfect documentation
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 Tip: Use /progress/2025-11-19-blog.md for your daily update post
+```
+
+### After First Run (Without AI Enhancement)
 
 ```
 ✅ Daily report created: /progress/2025-11-19.md
@@ -210,6 +298,10 @@ Try these methods in order:
 🐛 Documented 2 issues with root cause analysis
 💡 Run again today to append additional progress
 📝 Use this file for daily update generation
+
+ℹ️  AI Enhancement Available:
+   Add OPENAI_API_KEY to .env.mcp to generate blog-ready posts automatically
+   See: https://platform.openai.com/api-keys
 ```
 
 ### After Update
@@ -219,6 +311,7 @@ Try these methods in order:
 📊 Added 2 new milestones
 🐛 Added 1 new issue analysis
 💡 Last updated: 3:45 PM
+🤖 Blog version regenerated: /progress/2025-11-19-blog.md
 ```
 
 ## INTEGRATION WITH DAILY UPDATE SYSTEM

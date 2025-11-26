@@ -675,9 +675,9 @@ install_mission_system() {
     for command_file in "${command_files[@]}"; do
         ((current++))
         show_progress "$current" "$total_files" "Installing $(basename "$command_file")"
-        
+
         local dest_file="$COMMANDS_DIR/$(basename "$command_file")"
-        
+
         if [[ "$execution_mode" == "local" ]]; then
             local source_file="$PROJECT_ROOT/$command_file"
             if [[ -f "$source_file" ]]; then
@@ -698,9 +698,32 @@ install_mission_system() {
                 failed_files+=("$command_file")
             fi
         fi
-        
+
         sleep 0.1
     done
+
+    # Install command scripts (enhancement scripts, utilities, etc.)
+    log "Installing command support scripts..."
+    mkdir -p "$COMMANDS_DIR/scripts"
+
+    if [[ "$execution_mode" == "local" ]]; then
+        if [[ -f "$PROJECT_ROOT/project/commands/scripts/enhance_dailyreport.py" ]]; then
+            if cp "$PROJECT_ROOT/project/commands/scripts/enhance_dailyreport.py" "$COMMANDS_DIR/scripts/"; then
+                chmod +x "$COMMANDS_DIR/scripts/enhance_dailyreport.py"
+                log "Installed: enhance_dailyreport.py script"
+            else
+                warn "Could not install enhance_dailyreport.py script"
+            fi
+        fi
+    else
+        # Remote installation
+        if download_file_from_github "project/commands/scripts/enhance_dailyreport.py" "$COMMANDS_DIR/scripts/enhance_dailyreport.py"; then
+            chmod +x "$COMMANDS_DIR/scripts/enhance_dailyreport.py"
+            log "Installed: enhance_dailyreport.py script"
+        else
+            warn "Could not download enhance_dailyreport.py script"
+        fi
+    fi
     
     # Install template files
     for template_file in "${template_files[@]}"; do
