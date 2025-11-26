@@ -133,23 +133,46 @@ Completion Prompt: Have you copied the files? Ready to continue?
 
 **✅ MODIFY THESE**: When enhancing agent capabilities for end users
 
+### Working Commands (`.claude/commands/`)
+**Purpose**: Internal slash commands for AGENT-11 development work
+**Location**: `/Users/jamiewatters/DevProjects/agent-11/.claude/commands/`
+**Use Case**: Commands used while building the AGENT-11 framework itself
+**Commands Include**: Internal development utilities (NOT deployed)
+
+**⚠️ DO NOT MODIFY UNLESS**: You are improving the AGENT-11 development process itself
+
+### Library Commands (`project/commands/`)
+**Purpose**: Deployable slash commands for end users
+**Location**: `/Users/jamiewatters/DevProjects/agent-11/project/commands/`
+**Use Case**: Commands that get deployed to user projects via install.sh
+**Commands Include**: coord, meeting, design-review, recon, report, pmd, dailyreport, planarchive
+
+**✅ MODIFY THESE**: When enhancing command capabilities for end users
+
 ## DEFAULT WORK TARGET
 
-**When in doubt, work on**: `project/agents/specialists/` (Library Agents)
+**When in doubt, work on**:
+- `project/agents/specialists/` (Library Agents)
+- `project/commands/` (Library Commands)
 
 **Reason**: Most work involves improving what users get when they deploy AGENT-11, not our internal development tools.
 
 ## VERIFICATION PROTOCOL
 
-Before modifying ANY agent file, ask yourself:
+Before modifying ANY agent or command file, ask yourself:
 
 1. **Am I improving the AGENT-11 library for end users?**
-   - YES → Work on `project/agents/specialists/`
+   - YES → Work on `project/agents/specialists/` OR `project/commands/`
    - NO → Continue to question 2
 
 2. **Am I improving the AGENT-11 development process?**
-   - YES → Work on `.claude/agents/`
+   - YES → Work on `.claude/agents/` OR `.claude/commands/`
    - NO → Ask user for clarification
+
+3. **Quick check**: Always verify with the deployment script
+   - Run: `grep -n "your-file" project/deployment/scripts/install.sh`
+   - If found → it's deployed (library file)
+   - If not found → it's internal (working squad file)
 
 ## COMMON SCENARIOS
 
@@ -158,6 +181,12 @@ Before modifying ANY agent file, ask yourself:
 
 ### Scenario: "Add new agent capability"
 **Target**: `project/agents/specialists/` (users benefit)
+
+### Scenario: "Fix bug in /planarchive command"
+**Target**: `project/commands/planarchive.md` (users benefit)
+
+### Scenario: "Enhance /coord command features"
+**Target**: `project/commands/coord.md` (users benefit)
 
 ### Scenario: "Optimize agent performance"
 **Target**: `project/agents/specialists/` (users benefit)
@@ -168,6 +197,9 @@ Before modifying ANY agent file, ask yourself:
 ### Scenario: "Improve our internal code review process"
 **Target**: `.claude/agents/` (development process)
 
+### Scenario: "Add internal dev utility command"
+**Target**: `.claude/commands/` (internal tool, not deployed)
+
 ### Scenario: "Add agent-optimizer capabilities"
 **Target**: `.claude/agents/agent-optimizer.md` (internal tool, not deployed)
 
@@ -176,30 +208,35 @@ Before modifying ANY agent file, ask yourself:
 ```
 agent-11/
 ├── .claude/
-│   ├── agents/           ← WORKING SQUAD (12 agents, internal use)
-│   ├── commands/         ← Slash commands (also deployed)
+│   ├── agents/           ← WORKING SQUAD (12 agents, internal use ONLY)
+│   ├── commands/         ← Internal slash commands (NOT deployed)
 │   └── claude.md         ← This file (project guardrails)
 │
 └── project/
     ├── agents/
     │   └── specialists/  ← LIBRARY AGENTS (11 agents, DEPLOYED TO USERS)
+    ├── commands/         ← LIBRARY COMMANDS (DEPLOYED TO USERS)
     ├── missions/         ← Mission templates (deployed)
     ├── field-manual/     ← User documentation (deployed)
     └── deployment/
         └── scripts/
-            └── install.sh ← Deploys library agents to user projects
+            └── install.sh ← Deploys library to user projects
 ```
 
 ## DEPLOYMENT SYSTEM
 
-**What Gets Deployed**:
+**What Gets Deployed** (see install.sh lines 604-775):
 - `project/agents/specialists/*.md` → user's `.claude/agents/`
-- `project/missions/*.md` → user's `missions/` (optional)
-- `.claude/commands/*.md` → user's `.claude/commands/` (optional)
+- `project/commands/*.md` → user's `.claude/commands/`
+- `project/missions/*.md` → user's `missions/`
+- `templates/*.md` → user's `templates/`
+- `project/field-manual/*.md` → user's `field-manual/`
+- `CLAUDE.md` → user's `CLAUDE-AGENT11-TEMPLATE.md`
 
-**What Stays Internal**:
+**What Stays Internal** (NOT deployed):
 - `.claude/agents/*.md` (working squad)
-- Development documentation
+- `.claude/commands/*.md` (internal commands)
+- Development documentation (project-plan.md, progress.md)
 - Internal tools and utilities
 
 ## PHASE 1 & 2 MODERNIZATION CONTEXT
@@ -236,8 +273,11 @@ If you realize you've been working on the wrong agent directory:
 | Fix agent bugs | `project/agents/specialists/` |
 | Update agent protocols | `project/agents/specialists/` |
 | Optimize agent performance | `project/agents/specialists/` |
+| **Fix command bugs** | `project/commands/` |
+| **Add command features** | `project/commands/` |
+| **Improve command UX** | `project/commands/` |
 | Improve internal dev process | `.claude/agents/` |
-| Add internal-only tools | `.claude/agents/` |
+| Add internal-only tools | `.claude/agents/` OR `.claude/commands/` |
 
 ## COORDINATION RULES
 

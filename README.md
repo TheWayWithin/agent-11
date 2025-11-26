@@ -851,7 +851,7 @@ Pattern: `/coord [mission] [input-file.md]` or `@agent` for direct access. Examp
 
 ## 🎮 Command Reference
 
-AGENT-11 provides 7 powerful slash commands for different workflows:
+AGENT-11 provides 8 powerful slash commands for different workflows:
 
 ### 🎖️ `/coord` - Mission Orchestration
 **Orchestrate multi-agent missions with automatic specialist coordination**
@@ -1042,6 +1042,96 @@ AGENT-11 provides 7 powerful slash commands for different workflows:
 
 ---
 
+### 📦 `/planarchive` - Intelligent Context Management
+**Automatically archive completed work from tracking files using semantic analysis and smart triggers**
+
+```bash
+# Pattern: /planarchive [options]
+/planarchive                        # Interactive mode with analysis
+/planarchive --analyze              # Show what would be archived with reasoning
+/planarchive --aggressive           # Archive ALL completed work
+/planarchive --target-lines=1200    # Archive until reaching specific size
+/planarchive --check-duplicates     # Find duplicated content
+```
+
+**What it analyzes** (5 intelligent triggers):
+1. **Completed Sprint Rule** - Sprints marked COMPLETE + >7 days old
+2. **Size-Based Rule** - Sections >500 lines that are complete
+3. **Dated Phase Rule** - Phases with COMPLETE status + old dates
+4. **Duplication Rule** - Content duplicated in .env.example, architecture.md
+5. **Historical Detail Rule** - Code snippets/guides from completed work
+
+**Archival Scoring System**:
+```
+Score = (age_days × 0.3) + (size_lines × 0.2) + (completion_status × 0.5)
+```
+- Score ≥0.8: High priority (archive immediately)
+- Score 0.5-0.8: Medium priority
+- Score <0.5: Low priority (keep active)
+
+**What gets archived**:
+- **project-plan.md**: Completed sprints, resolved risks, locked decisions
+- **progress.md**: Entries older than threshold (default: 14 days), resolved issues
+
+**What stays active**:
+- Executive summary and current objectives
+- Active work (pending tasks, unresolved issues)
+- Last 7 entries minimum
+- Content from last 7 days (unless --aggressive)
+
+**Key Features**:
+- **Semantic Analysis** - Understands completion status, dates, section hierarchy
+- **Auto-Summaries** - Generates 2-3 sentence summaries for archived content
+- **Token Optimization** - Reports estimated token savings
+- **Safety First** - Automatic backups, reversible operations, validation checks
+
+**Token Budget Levels**:
+- ✅ **Optimal**: <15,000 tokens
+- ⚠️ **Warning**: 25,000-35,000 tokens (should archive)
+- 🚨 **Critical**: >35,000 tokens (mandatory archival)
+
+**Command Options**:
+- `--analyze` - Show archival analysis with scores and reasoning (dry run)
+- `--aggressive` - Archive ALL completed work regardless of age
+- `--target-lines=N` - Archive until reaching specific line count
+- `--check-duplicates` - Identify content duplicated across files
+- `--days=N` - Archive entries older than N days (default: 14)
+- `--no-summaries` - Keep full content instead of generating summaries
+
+**Output**:
+```
+📊 Archive Analysis Complete
+
+project-plan.md:
+- Sprint 1: 692 lines, age 25d, score 0.92 → ARCHIVE
+- Sprint 2: 487 lines, age 18d, score 0.85 → ARCHIVE
+Total: 1,179 lines (61% reduction)
+
+progress.md:
+- 28 entries >14 days (890 lines) → ARCHIVE
+Total: 890 lines (47% reduction)
+
+Estimated token savings: ~4,250 tokens (63% reduction)
+```
+
+**Archive Locations**:
+- `project-plan-archive.md` - Archived phases, sprints, completed tasks
+- `progress-archive.md` - Archived progress entries, resolved issues
+
+**Use when**:
+- End of sprint/phase (natural archive point)
+- Before major mission (start with clean context)
+- Files exceed 25,000 tokens (context overhead)
+- Monthly maintenance (regular hygiene)
+
+**Benefits**:
+- Keeps tracking files lean and efficient (<1,200 lines ideal)
+- Reduces token overhead for faster agent reads
+- Preserves complete history in archive files
+- Zero data loss - all content preserved
+
+---
+
 ### Command Comparison
 
 | Command | Purpose | Duration | Output | Best For |
@@ -1053,6 +1143,7 @@ AGENT-11 provides 7 powerful slash commands for different workflows:
 | `/report` | Stakeholder updates | 5-10 min | Progress report | Communication, tracking |
 | `/pmd` | Failure analysis | 30-60 min | Root cause analysis | Learning from mistakes |
 | `/dailyreport` | Daily progress summaries | 2-5 min | Daily progress file | Build-in-public updates |
+| `/planarchive` | Intelligent tracking file cleanup | 2-5 min | Archive files | Token optimization, context management |
 
 ---
 
