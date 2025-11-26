@@ -1029,15 +1029,31 @@ install_mcp_system() {
         fi
     fi
 
-    # Copy .env.mcp.template
+    # Copy .env.mcp.template (NEVER copy .env.mcp to protect user's API keys)
+    # SECURITY: We only deploy the template, never the actual .env.mcp file
     if [[ "$execution_mode" == "local" ]]; then
         if [[ -f "$PROJECT_ROOT/.env.mcp.template" ]]; then
+            # Always update template to latest version
             cp "$PROJECT_ROOT/.env.mcp.template" "$TARGET_DIR/"
             success "MCP environment template installed"
+
+            # Warn if .env.mcp exists to prevent accidental overwrites
+            if [[ -f "$TARGET_DIR/.env.mcp" ]]; then
+                log "Existing .env.mcp preserved (contains your API keys)"
+            else
+                log "Next step: Copy .env.mcp.template to .env.mcp and add your API keys"
+            fi
         fi
     else
         if download_file_from_github ".env.mcp.template" "$TARGET_DIR/.env.mcp.template"; then
             success "MCP environment template downloaded"
+
+            # Provide guidance for .env.mcp setup
+            if [[ -f "$TARGET_DIR/.env.mcp" ]]; then
+                log "Existing .env.mcp preserved (contains your API keys)"
+            else
+                log "Next step: Copy .env.mcp.template to .env.mcp and add your API keys"
+            fi
         fi
     fi
 
