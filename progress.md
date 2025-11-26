@@ -16,6 +16,40 @@ This file has been restructured to be a BACKWARD-LOOKING changelog capturing:
 
 ## 📦 Recent Deliverables
 
+### [2025-11-26 16:45] - install.sh YAML Validation Bug Fix ✅ CRITICAL FIX
+**Discovered by**: User deployment failure investigation
+**Type**: Critical bug fix - installation validation
+**Severity**: HIGH - Prevented all deployments with agent files containing `---` separators
+**Commit**: TBD
+
+**Description**:
+Fixed critical bug in install.sh validation function that caused false-positive "Missing 'description' field" errors during agent deployment. The sed command for extracting YAML frontmatter was matching ALL `---` markers in agent files (including visual separators used throughout the content), not just the opening/closing YAML delimiters.
+
+**Root Cause**:
+The sed pattern `/^---$/,/^---$/p` matches ALL ranges of `---` markers in a file. Agent files like coordinator.md use `---` as visual separators throughout the content (lines 402, 596, 815, etc.). When validation extracted the "YAML section", it was getting 1,174 lines instead of the expected 20-line frontmatter, causing the grep for `^description:` to fail due to parsing the wrong content.
+
+**Fix**:
+Modified line 429 of install.sh to limit sed extraction to first 30 lines only:
+```bash
+# Old (buggy):
+yaml_section=$(sed -n '/^---$/,/^---$/p' "$agent_file")
+
+# New (fixed):
+yaml_section=$(head -n 30 "$agent_file" | sed -n '/^---$/,/^---$/p')
+```
+
+**Impact**:
+- **Before**: All deployments to user projects failing with "Missing 'description' field" error
+- **After**: YAML validation correctly identifies frontmatter, deployments succeed
+- **Affected Files**: All 11 library agent files (any file with `---` content separators)
+
+**Prevention**:
+- Add test case for agent files with multiple `---` markers
+- Document that YAML frontmatter should always be within first 30 lines
+- Consider more robust YAML parsing (e.g., using yq or proper YAML parser)
+
+---
+
 ### [2025-11-26] - AI-Powered Daily Report Enhancement ✅ COMPLETE
 **Created by**: Direct implementation and integration
 **Type**: Feature enhancement - AI-powered blog post generation

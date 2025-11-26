@@ -424,8 +424,9 @@ validate_agent_file() {
     fi
     
     # Check required YAML fields
+    # Extract only first 30 lines to avoid matching --- separators later in file
     local yaml_section
-    yaml_section=$(sed -n '/^---$/,/^---$/p' "$agent_file")
+    yaml_section=$(head -n 30 "$agent_file" | sed -n '/^---$/,/^---$/p')
     
     if ! echo "$yaml_section" | grep -q "^name:"; then
         error "Missing 'name' field in YAML header: $agent_file"
