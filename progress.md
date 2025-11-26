@@ -20,7 +20,7 @@ This file has been restructured to be a BACKWARD-LOOKING changelog capturing:
 **Discovered by**: User deployment failure investigation
 **Type**: Critical bug fix - installation validation
 **Severity**: HIGH - Prevented all deployments with agent files containing `---` separators
-**Commit**: TBD
+**Commit**: 55ab126
 
 **Description**:
 Fixed critical bug in install.sh validation function that caused false-positive "Missing 'description' field" errors during agent deployment. The sed command for extracting YAML frontmatter was matching ALL `---` markers in agent files (including visual separators used throughout the content), not just the opening/closing YAML delimiters.
