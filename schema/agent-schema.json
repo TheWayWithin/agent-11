@@ -1,8 +1,8 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://agent-11.dev/schemas/agent-v3.json",
+  "$id": "https://agent-11.dev/schemas/agent-v4.json",
   "title": "AGENT-11 Agent Definition Schema",
-  "description": "JSON Schema for validating AGENT-11 agent YAML frontmatter (v3.0)",
+  "description": "JSON Schema for validating AGENT-11 agent YAML frontmatter (v4.0 - Opus 4.5 Integration)",
   "type": "object",
   "required": ["name", "description"],
 
@@ -40,6 +40,20 @@
       "description": "Agent maturity and stability level",
       "enum": ["stable", "beta", "experimental", "deprecated"],
       "default": "stable"
+    },
+
+    "model": {
+      "type": "string",
+      "description": "Default Claude model for this agent (Opus 4.5 integration)",
+      "enum": ["opus", "sonnet", "haiku"],
+      "examples": ["opus", "sonnet", "haiku"]
+    },
+
+    "model_recommendation": {
+      "type": "string",
+      "description": "Advisory field for when to use different model tiers",
+      "enum": ["opus_for_complex", "sonnet_default", "haiku_for_simple"],
+      "examples": ["opus_for_complex", "sonnet_default", "haiku_for_simple"]
     },
 
     "color": {
@@ -180,8 +194,9 @@
     {
       "name": "coordinator",
       "description": "Mission commander orchestrating multi-agent operations",
-      "version": "3.0.0",
+      "version": "4.0.0",
       "status": "stable",
+      "model": "opus",
       "color": "green",
       "tags": ["core", "coordination"],
       "thinking": {
@@ -200,8 +215,9 @@
     {
       "name": "developer",
       "description": "Full-stack implementation specialist",
-      "version": "3.0.0",
+      "version": "4.0.0",
       "status": "stable",
+      "model_recommendation": "sonnet_default",
       "color": "blue",
       "tags": ["core", "technical"],
       "thinking": {
@@ -220,8 +236,9 @@
     {
       "name": "architect",
       "description": "Elite system design specialist",
-      "version": "3.0.0",
+      "version": "4.0.0",
       "status": "stable",
+      "model_recommendation": "opus_for_complex",
       "color": "yellow",
       "tags": ["core", "technical", "design"],
       "thinking": {

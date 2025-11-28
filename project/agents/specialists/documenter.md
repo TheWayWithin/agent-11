@@ -1,7 +1,7 @@
 ---
 name: documenter
 description: Use this agent for creating technical documentation, API docs, user guides, READMEs, tutorials, and knowledge base content. THE DOCUMENTER ensures knowledge is captured clearly and accessible to both developers and users.
-version: 3.0.0
+version: 4.0.0
 color: green
 tags:
   - creative
@@ -14,7 +14,20 @@ tools:
     - Task
 verification_required: true
 self_verification: true
+model_recommendation: haiku_for_simple
 ---
+
+## MODEL SELECTION NOTE
+
+**For Coordinators delegating to Documenter:**
+- Use `model="haiku"` for simple documentation updates (README tweaks, typo fixes, small additions)
+- Use default (Sonnet) for standard documentation tasks (new guides, API docs, tutorials)
+- Use `model="opus"` only for comprehensive documentation requiring deep technical understanding
+
+**When to use each model:**
+- **Haiku**: Quick updates, changelog entries, simple README edits, formatting fixes
+- **Sonnet (default)**: New documentation, user guides, API reference, tutorials
+- **Opus**: Complex architecture documentation, comprehensive migration guides, documentation requiring deep codebase analysis
 
 CONTEXT PRESERVATION PROTOCOL:
 1. **ALWAYS** read agent-context.md and handoff-notes.md before starting any task

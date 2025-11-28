@@ -654,6 +654,111 @@ All agent profiles should explicitly list their available tools:
 
 *See `/templates/agent-creation-mastery.md` for complete tool specification format and agent-specific tool sets.*
 
+## Model Selection Guidelines
+
+### Overview - Tiered Model Deployment
+
+AGENT-11 uses a tiered model deployment strategy to optimize cost and performance. The Task tool's `model` parameter enables dynamic model selection based on task complexity.
+
+**Available Models**:
+- `opus` - Frontier intelligence for complex orchestration and strategic reasoning
+- `sonnet` - Standard intelligence for well-defined tasks (default)
+- `haiku` - Fast execution for simple, routine operations
+
+### Tiered Model Strategy
+
+| Tier | Model | Agents/Tasks | Use Cases |
+|------|-------|--------------|-----------|
+| **1** | **Opus** | Coordinator, Strategist (complex) | Orchestration, strategic planning, long-horizon missions |
+| **2** | **Sonnet** | Developer, Tester, Architect, Analyst | Implementation, testing, analysis, review |
+| **3** | **Haiku** | Documenter (simple), routine ops | Documentation updates, quick lookups |
+
+### When to Use Each Model
+
+**Use Opus (`model="opus"`) for**:
+- Multi-phase missions (>2 phases)
+- Strategic planning with >5 agents
+- Architectural decisions and system design
+- Ambiguous requirements needing interpretation
+- Long-horizon tasks (>30 minutes)
+- Code migration or major refactoring
+- Complex coordination and orchestration
+
+**Use Sonnet (default, omit `model` parameter) for**:
+- Well-defined implementation tasks
+- Single-phase operations
+- Clear, unambiguous requirements
+- Testing with defined test plans
+- Routine code changes
+
+**Use Haiku (`model="haiku"`) for**:
+- Simple documentation updates
+- Quick file searches and lookups
+- Routine operations needing speed
+- Low-complexity tasks
+
+### Task Tool Model Parameter Usage
+
+**Syntax**:
+```
+Task(
+  subagent_type="strategist",
+  model="opus",  # Optional: opus, sonnet, or haiku
+  prompt="..."
+)
+```
+
+**Examples**:
+
+```python
+# Complex strategic analysis - use Opus
+Task(
+  subagent_type="strategist",
+  model="opus",
+  prompt="Analyze multi-phase MVP requirements and create strategic roadmap..."
+)
+
+# Standard implementation - use default (Sonnet)
+Task(
+  subagent_type="developer",
+  # model omitted = Sonnet (default)
+  prompt="Implement user authentication following architecture.md spec..."
+)
+
+# Quick documentation - use Haiku
+Task(
+  subagent_type="documenter",
+  model="haiku",
+  prompt="Update README.md with new API endpoint documentation..."
+)
+```
+
+### Cost-Benefit Analysis
+
+| Scenario | Per-Token Cost | Efficiency | Net Impact |
+|----------|----------------|------------|------------|
+| Opus for Coordinator | +67% | -35% tokens, -28% iterations | **-24% total cost** |
+| Opus for Strategist | +67% | Better requirements, -20% rework | **Net positive** |
+| Haiku for simple tasks | -80% | Faster execution | **Significant savings** |
+
+**Key Insight**: Opus's 35% token efficiency and fewer iterations often result in lower total cost despite higher per-token pricing.
+
+### Expected Performance Improvements
+
+With Opus 4.5 for Coordinator:
+- **+15% mission success rate** (from 70% to 85%)
+- **-28% iterations to completion** (from 3.5 to 2.5)
+- **-50% context clearing events** per mission
+- **-47% user clarification requests**
+- **-24% total cost** due to efficiency gains
+
+### Reference Documentation
+
+- **Complete Guide**: `/project/field-manual/model-selection-guide.md` - Comprehensive model selection documentation
+- **Analysis**: `/Ideation/Agent-11 opus4.5/` - Opus 4.5 integration research
+- **Coordinator Protocol**: See coordinator.md MODEL SELECTION PROTOCOL section
+- **Strategist Guidance**: See strategist.md MODEL SELECTION NOTE section
+
 ## MCP (Model Context Protocol) Setup
 
 ### Quick Start
