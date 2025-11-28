@@ -1016,7 +1016,7 @@ install_mcp_system() {
         log "Downloading MCP profiles from GitHub..."
         mkdir -p "$TARGET_DIR/.mcp-profiles"
 
-        local profiles=("core" "testing" "database-staging" "database-production" "payments" "deployment" "fullstack")
+        local profiles=("core" "testing" "database-staging" "database-production" "payments" "deployment" "fullstack" "minimal-core" "research-only" "frontend-deploy" "backend-deploy" "db-read" "db-write")
         for profile in "${profiles[@]}"; do
             if download_file_from_github ".mcp-profiles/${profile}.json" "$TARGET_DIR/.mcp-profiles/${profile}.json"; then
                 log "Downloaded profile: ${profile}.json"
@@ -1232,7 +1232,7 @@ show_post_install_instructions() {
     echo
 
     echo -e "${BLUE}🔧 MCP Profile System Installed!${NC}"
-    echo "  ✓ 7 specialized profiles in .mcp-profiles/"
+    echo "  ✓ 13 specialized profiles in .mcp-profiles/"
     echo "  ✓ MCP documentation in docs/"
     echo "  ✓ Environment template: .env.mcp.template"
     echo

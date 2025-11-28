@@ -48,6 +48,7 @@ Completed Sprint 5, implementing comprehensive MCP context optimization to reduc
 3. **Updated Files**:
    - `CLAUDE.md` - Added MCP Context Optimization section
    - `project/deployment/scripts/install.sh` - Added mcp-optimization-guide.md to deployment
+   - `project/deployment/scripts/install.sh` - Added 6 Sprint 5 profiles to deployment (minimal-core, research-only, frontend-deploy, backend-deploy, db-read, db-write)
 
 **Token Reduction Achieved**:
 
