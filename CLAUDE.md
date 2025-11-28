@@ -786,6 +786,40 @@ With Opus 4.5 for Coordinator:
 - Verify API keys in `.env.mcp` are correct
 - Run `grep "mcp__"` to see available MCP tools
 
+## MCP Context Optimization (Sprint 5)
+
+### Overview
+MCP tools consume significant context (~50-60K tokens). Use lean profiles for better efficiency.
+
+### Token Targets by Profile
+
+| Profile | Tokens | Use When |
+|---------|--------|----------|
+| **minimal-core** | ~5K | File operations only |
+| **research-only** | ~15K | Documentation lookup |
+| **frontend-deploy** | ~15K | Netlify deployments |
+| **backend-deploy** | ~15K | Railway deployments |
+| **db-read/db-write** | ~15-18K | Database operations |
+| **core** | ~50K | Standard development |
+| **testing** | ~62K | Playwright automation |
+
+### Profile Switching
+
+```bash
+# Switch to minimal profile (fastest startup)
+ln -sf .mcp-profiles/minimal-core.json .mcp.json
+
+# Switch to research profile
+ln -sf .mcp-profiles/research-only.json .mcp.json
+
+# Restart Claude Code after switching
+```
+
+### Reference Documentation
+- **Complete Guide**: `/project/field-manual/mcp-optimization-guide.md`
+- **Consolidated Tools Spec**: `/project/mcp/mcp-agent11-optimized.md`
+- **Profile Directory**: `/.mcp-profiles/`
+
 ## Available Commands
 
 ### Mission Orchestration

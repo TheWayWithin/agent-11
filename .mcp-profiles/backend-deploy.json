@@ -1,0 +1,24 @@
+{
+  "_description": "Backend deployment MCP profile with Railway. Token footprint: ~12-15K.",
+  "_metadata": {
+    "profile_name": "backend-deploy",
+    "purpose": "API and backend service deployments via Railway",
+    "estimated_tokens": "12-15K",
+    "created": "2025-11-28",
+    "version": "1.0",
+    "sprint": "Sprint 5 - MCP Context Optimization"
+  },
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-filesystem", "${HOME}/DevProjects"]
+    },
+    "railway": {
+      "command": "npx",
+      "args": ["-y", "@railway/mcp-server"],
+      "env": {
+        "RAILWAY_API_TOKEN": "${RAILWAY_API_TOKEN}"
+      }
+    }
+  }
+}

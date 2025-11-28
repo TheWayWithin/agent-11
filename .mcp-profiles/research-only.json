@@ -1,0 +1,27 @@
+{
+  "_description": "Research-focused MCP profile for documentation lookup and web research. Token footprint: ~12-15K.",
+  "_metadata": {
+    "profile_name": "research-only",
+    "purpose": "Documentation lookup and web research",
+    "estimated_tokens": "12-15K",
+    "created": "2025-11-28",
+    "version": "1.0",
+    "sprint": "Sprint 5 - MCP Context Optimization"
+  },
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["@context7/mcp-server"],
+      "env": {
+        "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"
+      }
+    },
+    "firecrawl": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-server-firecrawl"],
+      "env": {
+        "FIRECRAWL_API_KEY": "${FIRECRAWL_API_KEY}"
+      }
+    }
+  }
+}

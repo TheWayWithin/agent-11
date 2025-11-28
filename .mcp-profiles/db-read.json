@@ -1,0 +1,22 @@
+{
+  "_description": "Database read-only MCP profile. Token footprint: ~12-15K.",
+  "_metadata": {
+    "profile_name": "db-read",
+    "purpose": "Read-only database operations (safe queries)",
+    "estimated_tokens": "12-15K",
+    "created": "2025-11-28",
+    "version": "1.0",
+    "sprint": "Sprint 5 - MCP Context Optimization"
+  },
+  "mcpServers": {
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "@supabase/mcp-server",
+        "--access-token", "${SUPABASE_ACCESS_TOKEN}",
+        "--project-ref", "${SUPABASE_PROJECT_REF}",
+        "--read-only"
+      ]
+    }
+  }
+}

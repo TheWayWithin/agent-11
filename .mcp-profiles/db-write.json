@@ -1,0 +1,26 @@
+{
+  "_description": "Database read-write MCP profile with safeguards. Token footprint: ~15-18K.",
+  "_metadata": {
+    "profile_name": "db-write",
+    "purpose": "Full database operations with write access",
+    "estimated_tokens": "15-18K",
+    "created": "2025-11-28",
+    "version": "1.0",
+    "sprint": "Sprint 5 - MCP Context Optimization",
+    "warning": "Has write access - use with caution"
+  },
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-filesystem", "${HOME}/DevProjects"]
+    },
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "@supabase/mcp-server",
+        "--access-token", "${SUPABASE_ACCESS_TOKEN}",
+        "--project-ref", "${SUPABASE_PROJECT_REF}"
+      ]
+    }
+  }
+}

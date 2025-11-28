@@ -636,6 +636,7 @@ install_mission_system() {
         "project/field-manual/architecture-sop.md"
         "project/field-manual/project-lifecycle-guide.md"
         "project/field-manual/model-selection-guide.md"
+        "project/field-manual/mcp-optimization-guide.md"
     )
     
     local total_files=$((${#mission_files[@]} + ${#command_files[@]} + ${#template_files[@]} + ${#field_manual_files[@]}))

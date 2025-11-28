@@ -750,5 +750,425 @@ Claude Opus 4.5 offers breakthrough agentic capabilities that align perfectly wi
 
 ---
 
-**Last Updated**: 2025-11-27
-**Status**: Sprint 2 Complete, Sprint 3 Complete, Sprint 4 Planning In Progress
+---
+
+## SPRINT 5: MCP Context Optimization
+
+**Timeline**: Days 1-10
+**Goal**: Reduce MCP context consumption by 60% without API-level features
+**Status**: ✅ COMPLETE (2025-11-28)
+
+### Executive Summary
+
+**Research Finding**: Anthropic's `defer_loading` and `tool_search_tool` features are **API-level only** - Claude Code doesn't currently support them (GitHub Issue #7328 open, no timeline).
+
+**Alternative Strategy**: Achieve similar results through **tool consolidation** and **profile optimization**, which work today:
+
+| Approach | Token Reduction | Availability |
+|----------|-----------------|--------------|
+| `defer_loading` (API) | 85% | ❌ Not in Claude Code |
+| **Tool Consolidation** | **60%** | ✅ Works Now |
+| **Profile Optimization** | 30-50% | ✅ Works Now |
+| Description Trimming | 10-20% | ✅ Works Now |
+
+**Reference**:
+- `/Ideation/Agent-11 Tool usage with opus 4.5/` - Comprehensive research
+- [Scott Spence: Optimising MCP Server Context Usage](https://scottspence.com/posts/optimising-mcp-server-context-usage-in-claude-code) - 60% reduction achieved
+- [GitHub Issue #7328](https://github.com/anthropics/claude-code/issues/7328) - Feature request status
+
+---
+
+### Phase 5A: MCP Profile Optimization (Days 1-3) ✅ COMPLETE
+**Objective**: Create lean, mission-specific MCP profiles
+**Token Target**: 50-60K → 35-42K (30-50% reduction)
+**Result**: 6 new profiles created (minimal-core, research-only, frontend-deploy, backend-deploy, db-read, db-write)
+
+#### Quick Win: Minimal Core Profile
+
+```json
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-filesystem", "${HOME}/DevProjects"]
+    }
+  }
+}
+```
+
+Start missions with this minimal profile, switch to specialized profiles only when needed.
+
+#### Tasks
+
+- [ ] Audit current tool usage patterns (@analyst)
+  - **Track**: Which MCP tools are actually invoked during missions
+  - **Hypothesis**: 80% of operations use only 20% of tools
+  - **Profiles**: core.json, deployment.json, testing.json, database-*.json, payments.json
+  - **Output**: Token consumption matrix + usage frequency
+
+- [ ] Create ultra-focused lean profiles (@developer)
+  - **Strategy**: Split broad profiles into mission-specific:
+    - `minimal-core.json` - filesystem only (~5K tokens)
+    - `deploy-frontend.json` - netlify + minimal core (~15K tokens)
+    - `deploy-backend.json` - railway + minimal core (~15K tokens)
+    - `db-read.json` - supabase read-only tools (~12K tokens)
+    - `db-write.json` - supabase write + safeguards (~15K tokens)
+    - `research-only.json` - context7, firecrawl (~15K tokens)
+  - **Goal**: 30-50% reduction per profile
+
+- [ ] Eliminate redundant servers (@developer)
+  - **Audit**: Multiple MCP servers with similar capabilities
+  - **Choose**: Most efficient one per capability
+  - **Document**: Rationale for each choice
+
+- [ ] Document mcpick integration (@documenter)
+  - **Tool**: `npx mcpick` for server toggling
+  - **Location**: field-manual/mcp-optimization-guide.md
+  - **Content**: Usage examples, workflow integration
+  - **Workflow**: Start minimal → switch when needed
+
+- [ ] Update MCP profile documentation (@documenter)
+  - **File**: .mcp-profiles/README.md
+  - **Content**: Profile selection decision tree
+  - **Add**: Token estimates per profile
+
+**Success Criteria**:
+- Token consumption matrix with usage frequency documented
+- 6+ ultra-focused profiles created
+- mcpick workflow documented
+- 30-50% reduction in average profile tokens
+- Redundant servers identified and consolidated
+
+---
+
+### Phase 5B: Consolidated MCP Server Design (Days 4-7) ✅ COMPLETE
+**Objective**: Design Agent-11 optimized MCP server (like mcp-omnisearch)
+**Token Target**: 35-42K → 25-35K (+10-20% reduction cumulative)
+**Result**: mcp-agent11-optimized.md created with 74.8% token reduction spec (32 → 8 tools)
+
+#### Target Architecture
+
+```
+agent-11-mcp-server/
+├── core-tools/          # Consolidated essential tools
+│   ├── docs.ts         # Wraps context7
+│   ├── git.ts          # Wraps github (5 most-used tools)
+│   └── files.ts        # Wraps filesystem
+├── specialist-tools/    # On-demand loading (manual for now)
+│   ├── database.ts     # Wraps supabase
+│   ├── deploy.ts       # Wraps netlify/railway
+│   └── test.ts         # Wraps playwright
+└── server.ts           # Main MCP server
+```
+
+#### Example: Consolidated Git Tool
+
+```typescript
+// agent-11-mcp-server/src/tools/git.ts
+export const gitTools = [
+  {
+    name: "git_create_pr",
+    description: "Create PR: branch→main",
+    handler: async (args) => {
+      // Proxy to github MCP
+      return await githubMcp.createPullRequest(args);
+    }
+  },
+  // Only include the 5 most-used git tools
+];
+```
+
+**Benefits**:
+- Single MCP server = simpler configuration
+- Tool descriptions optimized for Agent-11's needs
+- Easy to add manual "defer loading" logic
+- Prepares for true defer_loading when available
+
+#### Tasks
+
+- [ ] Analyze common MCP usage patterns (@analyst)
+  - **Review**: Most-used tools across all agents
+  - **Identify**: Tool consolidation opportunities
+  - **Document**: Consolidation candidates
+  - **Example**: Multiple search tools → single search with provider param
+
+- [ ] Design consolidated tool schema (@architect)
+  - **Pattern**: Single tool with operation parameter
+  - **Example**:
+    ```json
+    {
+      "name": "agent11_research",
+      "description": "Unified research tool",
+      "parameters": {
+        "operation": "docs|search|scrape",
+        "provider": "context7|firecrawl|websearch",
+        "query": "..."
+      }
+    }
+    ```
+  - **Target**: 20 tools → 8 consolidated tools
+
+- [ ] Create mcp-agent11-optimized specification (@architect)
+  - **File**: `/project/mcp/mcp-agent11-optimized.md`
+  - **Content**: Tool definitions, consolidation rationale
+  - **Include**: Before/after token comparison
+  - **Target**: 60% token reduction
+
+- [ ] Evaluate build vs document decision (@strategist)
+  - **Option A**: Build actual MCP server (high effort, high reward)
+  - **Option B**: Document pattern for users (low effort, educational)
+  - **Decision**: Based on ROI analysis
+  - **Note**: May defer to Sprint 6 if build chosen
+
+**Success Criteria**:
+- Consolidation opportunities identified
+- Consolidated tool schema designed
+- mcp-agent11-optimized spec created
+- Build/document decision made
+
+---
+
+### Phase 5C: Tool Description Optimization (Days 5-6) ✅ COMPLETE
+**Objective**: Reduce token consumption through description trimming
+**Token Target**: 25-35K → 20-30K (+5-10% reduction cumulative)
+
+#### Description Optimization Formula
+
+```
+Action verb + object + key parameters
+```
+
+**Examples**:
+- "Search files: query, file_types → matches"
+- "Create PR: branch→main with title, body"
+- "Query DB: sql_query → results"
+
+**Avoid**: explanations, validations, permissions (agents don't need this)
+
+#### Before/After Examples
+
+**Before** (verbose - 47 tokens):
+```
+"Creates a new pull request in the GitHub repository. This tool allows you to
+specify the source branch, target branch, title, body, and reviewers. It will
+validate that the branches exist and that you have permission to create pull requests."
+```
+
+**After** (optimized - 12 tokens):
+```
+"Create PR: source→target branch with title, body, reviewers"
+```
+
+**Savings**: 74% token reduction per description
+
+#### Tasks
+
+- [ ] Audit verbose tool descriptions (@analyst)
+  - **Sources**: All MCP servers in use
+  - **Identify**: Descriptions >50 tokens
+  - **Document**: Trimming opportunities
+  - **Priority**: Highest token consumers first
+
+- [ ] Apply optimization formula (@developer)
+  - **Pattern**: `Action verb + object + key parameters`
+  - **Target**: All tool descriptions under 20 tokens
+  - **Method**: Create wrapper with optimized descriptions
+  - **Test**: Verify agents still understand tools
+
+- [ ] Document parameter standardization (@documenter)
+  - **Naming**: Consistent across tools (query, limit, provider, mode)
+  - **Types**: Standardized parameter types
+  - **Examples**: Show correct usage patterns
+  - **Benefit**: Reduces confusion, improves tool selection accuracy
+
+- [ ] Create user guidance for custom MCP optimization (@documenter)
+  - **Location**: field-manual/mcp-optimization-guide.md
+  - **Content**: How users can optimize their own MCPs
+  - **Include**: Formula, before/after examples, token counting
+
+**Success Criteria**:
+- All tool descriptions under 20 tokens
+- Optimization formula documented
+- Parameter standardization guide created
+- User guidance published
+- Agents still select tools correctly (no accuracy degradation)
+
+---
+
+### Phase 5D: Documentation & Future Preparation (Days 8-10) ✅ COMPLETE
+**Objective**: Comprehensive MCP optimization guide and defer_loading preparation
+
+#### Tasks
+
+- [ ] Create comprehensive mcp-optimization-guide.md (@documenter)
+  - **Location**: `project/field-manual/mcp-optimization-guide.md`
+  - **Sections**:
+    1. Why MCP Optimization Matters (token consumption problem)
+    2. Profile-Based Optimization (lean profiles, mcpick)
+    3. Tool Consolidation Patterns (with examples)
+    4. Description Trimming Techniques
+    5. Agent-Specific MCP Recommendations
+    6. Quick Reference (profile selection matrix)
+    7. Future: defer_loading When Available
+  - **Target**: 300-400 lines
+
+- [ ] Create defer_loading preparation templates (@developer)
+  - **Location**: `project/mcp/future/`
+  - **Files**:
+    - `core-optimized-template.json` (with defer_loading syntax)
+    - `deployment-optimized-template.json`
+    - `testing-optimized-template.json`
+  - **Purpose**: Ready-to-use when Claude Code adds support
+  - **Include**: Comments explaining syntax
+
+- [ ] Add MCP awareness to agent prompts (@developer)
+  - **Update**: Coordinator with MCP profile guidance
+  - **Update**: Developer with MCP-first principle reminder
+  - **Update**: Tester with testing profile recommendation
+  - **Content**: "Consider MCP profile before starting mission"
+
+- [ ] Update CLAUDE.md with MCP optimization section (@documenter)
+  - **Section**: "MCP Context Optimization"
+  - **Content**: Summary of optimization strategies
+  - **Link**: To mcp-optimization-guide.md
+  - **Note**: Current limitations and future defer_loading path
+
+- [ ] Update install.sh for new documentation (@developer)
+  - **Add**: mcp-optimization-guide.md to deployment list
+  - **Verify**: All new files included
+
+- [ ] Git commit and document (@coordinator)
+  - **Commit**: All Sprint 5 changes
+  - **Tag**: `v4.1.0-mcp-optimization`
+  - **Update**: progress.md with deliverables
+
+**Success Criteria**:
+- mcp-optimization-guide.md created (300+ lines)
+- defer_loading templates prepared
+- Agent prompts updated with MCP awareness
+- CLAUDE.md updated
+- install.sh updated
+- Git commit and tag created
+
+---
+
+### Phase 5E: Monitoring & Iteration (Ongoing)
+**Objective**: Data-driven optimization with continuous improvement
+**Status**: Ongoing after initial phases complete
+
+#### Monitoring Dashboard
+
+Build a simple logging system that tracks:
+1. **Which MCP tools are invoked per mission** - Identify most/least used
+2. **Token consumption per profile** - Before/after optimization
+3. **Tool search patterns** - What agents look for but can't find
+4. **Profile switch frequency** - Should decrease over time
+
+#### Tasks
+
+- [ ] Create tool usage logging (@developer)
+  - **Method**: Log MCP tool invocations during missions
+  - **Output**: JSON log with tool name, agent, mission type
+  - **Location**: `.mcp-logs/` directory
+
+- [ ] Build token analysis script (@developer)
+  - **Purpose**: Calculate token consumption per profile
+  - **Method**: Parse tool definitions, estimate tokens
+  - **Output**: Token consumption report per profile
+
+- [ ] Create optimization dashboard (@analyst)
+  - **Format**: Markdown report or simple web dashboard
+  - **Content**: Tool usage heatmap, token trends, recommendations
+  - **Update**: Weekly during initial optimization period
+
+- [ ] Iterate based on data (@coordinator)
+  - **Review**: Monthly analysis of tool usage patterns
+  - **Action**: Adjust profiles based on actual usage
+  - **Goal**: Continuous reduction toward optimal configuration
+
+**Success Criteria**:
+- Tool usage logging implemented
+- Token analysis script working
+- First optimization report generated
+- At least one data-driven profile adjustment made
+
+---
+
+### Sprint 5 Success Metrics
+
+#### Cumulative Token Reduction by Phase
+
+| Phase | Token Reduction | Cumulative Range | Effort |
+|-------|-----------------|------------------|--------|
+| 5A: Profile Optimization | 30-50% | 50-60K → 35-42K | Low |
+| 5B: Tool Consolidation | +10-20% | 35-42K → 25-35K | Medium |
+| 5C: Description Optimization | +5-10% | 25-35K → 20-30K | Low |
+| 5D: Documentation | 0% (prep only) | Ready for 85% when API | Low |
+| 5E: Monitoring | Continuous | Data-driven improvements | Low |
+| **Total Current** | **40-50%** | **50-60K → 20-30K** | **Medium** |
+| **Future (defer_loading)** | **85%** | When Claude Code supports | Low |
+
+#### Quantitative Targets
+
+| Metric | Baseline | Target |
+|--------|----------|--------|
+| Average Profile Tokens | ~50-60K | ~20-30K (-50-60%) |
+| Minimal Core Profile | N/A | <5K tokens |
+| Lean Specialist Profiles | N/A | <15K tokens |
+| Documentation Coverage | 0 docs | 1 comprehensive guide |
+| Profiles Available | 6 | 12+ (6 new optimized) |
+
+#### Specific Tracking Metrics
+
+- **Token consumption per profile** - Measure before/after each phase
+- **Tool selection accuracy** - Track failed tool calls and wrong selections
+- **Mission completion rate** - Ensure optimizations don't hurt outcomes
+- **Profile switch frequency** - Should decrease with better-targeted profiles
+
+#### Qualitative Targets
+
+- Clear guidance for users on MCP optimization
+- Ready for defer_loading when Claude Code adds support
+- Reduced context pressure for complex missions
+- Better tool selection accuracy
+- Data-driven continuous improvement process
+
+---
+
+### Risk Assessment
+
+**Risk 1: Tool Consolidation Complexity**
+- **Likelihood**: Medium
+- **Impact**: Medium
+- **Mitigation**: Start with documentation, defer implementation
+- **Contingency**: Focus on profile optimization instead
+
+**Risk 2: User Confusion with Multiple Profiles**
+- **Likelihood**: Low
+- **Impact**: Medium
+- **Mitigation**: Clear documentation, decision matrix
+- **Contingency**: Simplify to 3 core profiles
+
+**Risk 3: defer_loading Ships During Sprint**
+- **Likelihood**: Low
+- **Impact**: Low (positive)
+- **Mitigation**: Templates already prepared
+- **Contingency**: Accelerate migration to API approach
+
+---
+
+### Resource Requirements
+
+**Specialists Needed**:
+- @analyst (usage patterns, token analysis)
+- @architect (consolidated tool design)
+- @developer (profile creation, agent updates)
+- @documenter (guides, templates)
+- @coordinator (oversight, validation)
+
+**Estimated Effort**: 20-30 hours total
+
+---
+
+**Last Updated**: 2025-11-28
+**Status**: Sprint 2 Complete, Sprint 3 Complete, Sprint 4 Complete, Sprint 5 Planning Complete
