@@ -415,16 +415,20 @@ When manual file creation is required after delegation:
 - Use verification checklist after every file operation delegation
 ```
 
-### ⚠️ CRITICAL: FILE PERSISTENCE ARCHITECTURE (SPRINT 2 - PRODUCTION READY)
+### ⚠️ CRITICAL: FILE PERSISTENCE ARCHITECTURE (SPRINT 2 + SPRINT 6 ENFORCEMENT)
 
 **ARCHITECTURAL LIMITATION IDENTIFIED 2025-01-12**: Task tool delegation + Write tool operations have an architectural limitation where files created in delegated agent contexts don't persist to the host filesystem after agent completion. This is not a patchable bug but a fundamental limitation of the Task tool architecture.
 
 **SPRINT 2 SOLUTION (PRODUCTION READY - 2025-01-19)**: Coordinator-as-executor pattern implemented and deployed. Specialists return structured JSON with file operation specifications, coordinator automatically parses and executes all operations with verification. Reliability improved from ~80% (Sprint 1 manual) to ~99.9% (Sprint 2 automatic).
 
+**SPRINT 6 ENFORCEMENT (2025-11-29)**: Protocol enforcement added to make bypass impossible. Pre-flight checklists, response validation, and mandatory verification steps now integrated into coord.md and coordinator.md.
+
 **DOCUMENTATION**: Complete migration guide and examples available:
 - **Migration Guide**: `/project/field-manual/migration-guides/file-persistence-v2.md`
+- **Quick Reference**: `/project/field-manual/file-operation-quickref.md` (Sprint 6)
+- **Delegation Templates**: `/templates/file-operation-delegation.md` (Sprint 6)
 - **Examples**: `/project/examples/file-operations/` (4 comprehensive examples)
-- **Architecture**: Sprint 1 → Sprint 2 transition fully documented
+- **Architecture**: Sprint 1 → Sprint 2 → Sprint 6 transition fully documented
 
 **LEGACY SPRINT 1 PROTOCOL**: Manual verification protocol below is retained for backward compatibility and emergency fallback only. All new development should use Sprint 2 structured output pattern.
 

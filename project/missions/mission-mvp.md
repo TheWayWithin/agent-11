@@ -265,12 +265,19 @@ After launch:
 - Track velocity
 - Celebrate launch!
 
-**File Operations** (Sprint 2 Architecture - Production Ready):
+**File Operations** (Sprint 2 Architecture + Sprint 6 Enforcement):
 - Coordinator automatically parses and executes structured JSON output from specialists
 - File operations now have ~99.9% reliability with zero manual verification required
 - Specialists provide `file_operations` array → Coordinator executes Write/Edit tools automatically
 - See migration guide: `project/field-manual/migration-guides/file-persistence-v2.md`
 - See examples: `project/examples/file-operations/` (single, multiple, edit, mixed patterns)
+
+**⚠️ Sprint 6 Enforcement Protocol** (After EACH delegation with file operations):
+1. **Validate Response**: Check for `file_operations` JSON (not completion claims)
+2. **Execute Operations**: Use coordinator's Write/Edit tools with JSON parameters
+3. **Verify Files**: `ls -la [path]` and `head -n 5 [path]` for content
+4. **Log to progress.md**: "✅ Files verified: [names] - [timestamp]"
+5. **Mark Complete**: Only after steps 1-4 pass
 
 ---
 

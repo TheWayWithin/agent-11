@@ -629,6 +629,8 @@ install_mission_system() {
         "templates/lesson-template.md"
         "templates/cleanup-checklist.md"
         "templates/claude-template.md"
+        "templates/file-operation-delegation.md"
+        "templates/file-verification-checklist.md"
     )
     
     # Define field manual files to install
@@ -637,6 +639,7 @@ install_mission_system() {
         "project/field-manual/project-lifecycle-guide.md"
         "project/field-manual/model-selection-guide.md"
         "project/field-manual/mcp-optimization-guide.md"
+        "project/field-manual/file-operation-quickref.md"
     )
     
     local total_files=$((${#mission_files[@]} + ${#command_files[@]} + ${#template_files[@]} + ${#field_manual_files[@]}))

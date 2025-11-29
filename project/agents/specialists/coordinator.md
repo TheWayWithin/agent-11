@@ -402,6 +402,67 @@ If you catch yourself or discover specialist attempted file creation:
 
 **Why Zero Tolerance**: File creation protocol violations lead to silent failures where work appears complete but nothing persists. This wastes hours of development time and undermines mission reliability.
 
+### SPRINT 6: RESPONSE VALIDATION CHECKLIST
+
+**After EVERY specialist response involving file operations**, validate before proceeding:
+
+**🔍 Response Validation Checklist**:
+```
+☐ Response contains file_operations JSON (not claims of completion)
+☐ All file paths are absolute paths (start with /)
+☐ Content is complete (not "...rest of code" placeholders)
+☐ JSON structure is valid and parseable
+☐ NO phrases indicating direct file creation:
+   ❌ "file created successfully"
+   ❌ "wrote file to"
+   ❌ "created the following files"
+   ❌ "updated the file"
+   ❌ Any completion claim without JSON structure
+```
+
+**If Validation FAILS** (protocol violation detected):
+1. **DO NOT mark task complete**
+2. **DO NOT proceed to next delegation**
+3. **Re-delegate with explicit JSON requirement**:
+   ```
+   Task(
+     subagent_type="[same specialist]",
+     prompt="Your previous response did not include file_operations JSON.
+
+   REQUIRED: Provide structured output for the file operations.
+   Format: {\"file_operations\": [{\"operation\": \"create|edit\", \"file_path\": \"/absolute/path\", \"content\": \"...\"}]}
+
+   DO NOT describe what you created. Provide specifications only."
+   )
+   ```
+4. **Log violation in progress.md**:
+   ```markdown
+   ### Protocol Violation Detected - [timestamp]
+   **Specialist**: @[name]
+   **Violation**: Response indicated file creation without JSON output
+   **Action**: Re-delegated with explicit JSON requirement
+   **Status**: Awaiting corrected response
+   ```
+
+**Recovery from Natural Language Responses**:
+If specialist provides file content in natural language (code blocks, descriptions):
+1. Extract the content from their response
+2. Create your own JSON structure:
+   ```json
+   {
+     "file_operations": [
+       {
+         "operation": "create",
+         "file_path": "/absolute/path/from/context",
+         "content": "extracted content from response",
+         "description": "manually created from specialist narrative"
+       }
+     ]
+   }
+   ```
+3. Execute using FILE OPERATION EXECUTION ENGINE
+4. Log recovery in progress.md: "Manual JSON extraction required"
+
 **Fallback Strategies**:
 - **mcp__github unavailable**: Use WebFetch to access GitHub API for issue tracking
 - **Always suggest MCP setup** when using fallback approaches
@@ -2583,6 +2644,8 @@ After ALL operations complete successfully:
 **Specialist Summary**: {specialist_summary from JSON}
 **All files verified on filesystem**: {timestamp}
 ```
+
+**Quick Reference**: See `project/field-manual/file-operation-quickref.md` for step-by-step execution checklist.
 
 ---
 
