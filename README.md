@@ -43,7 +43,7 @@ AGENT-11 is the **technical execution arm** of the BOS-AI ecosystem. BOS-AI hand
 
 ---
 
-## 🎉 What's New in v2.0
+## 🎉 What's New (v2.0 → v4.1)
 
 **CRITICAL FIX: 100% File Persistence Guaranteed**
 
@@ -64,6 +64,37 @@ v2.0 eliminates the file persistence bug with an architectural solution that mak
 **Files Auto-Created**: Configuration files, documentation, code, tests - everything persists reliably.
 
 **Migration**: Fully backward compatible. See [Migration Guide](project/field-manual/migration-guides/file-persistence-v2.md) for structured output pattern.
+
+### Sprint 4 (v4.0.0): Opus 4.5 Dynamic Model Selection
+
+**Intelligent model selection** based on task complexity:
+
+- **Coordinator runs on Opus 4.5** - Frontier intelligence for mission orchestration
+- **Task tool `model` parameter** - Select `opus`, `sonnet`, or `haiku` per delegation
+- **Tiered strategy**: Opus (complex) → Sonnet (standard) → Haiku (simple)
+
+**Results**:
+- ✅ **+15% mission success rate** (better orchestration decisions)
+- ✅ **-28% iterations** (fewer retry cycles)
+- ✅ **-24% total cost** (efficiency offsets higher per-token cost)
+
+[→ Model Selection Guide](project/field-manual/model-selection-guide.md)
+
+### Sprint 5 (v4.1.0): MCP Context Optimization
+
+**60-90% context token reduction** with mission-specific MCP profiles:
+
+| Profile | Tokens | Use Case |
+|---------|--------|----------|
+| **minimal-core** | ~5K | File-only operations |
+| **research-only** | ~15K | Documentation lookup |
+| **frontend-deploy** | ~15K | Netlify deployments |
+| **backend-deploy** | ~15K | Railway deployments |
+| **db-read / db-write** | ~15-18K | Database operations |
+
+**13 total profiles** available. Switch with `/mcp-switch [profile]`.
+
+[→ MCP Optimization Guide](project/field-manual/mcp-optimization-guide.md)
 
 ---
 
@@ -275,19 +306,25 @@ Instead of loading all 8 MCPs every session (15,000 tokens of context), profiles
 - ✅ **Task-appropriate tools** - Testing profile for tests, deployment for deploys
 - ✅ **Production safety** - Read-only database profiles prevent accidents
 
-**What are profiles?** Pre-configured sets of MCP servers for different tasks. Instead of loading all 8 servers, load just the 3-5 you need:
+**What are profiles?** Pre-configured sets of MCP servers for different tasks. **13 profiles** available - from ultra-lean (5K tokens) to full-stack (50K+):
 
-| Profile | MCPs | Context | Reduction | Use Case |
-|---------|------|---------|-----------|----------|
-| **core** | 3 | 3,000 | 80% | General development |
-| **testing** | 4 | 5,500 | 63% | Playwright automation |
-| **database-staging** | 4 | 8,000 | 47% | Database development |
-| **database-production** | 4 | 8,000 | 47% | Production queries (read-only) |
-| **payments** | 4 | 7,000 | 53% | Stripe integration |
-| **deployment** | 5 | 9,000 | 40% | Netlify + Railway |
-| **fullstack** | 8 | 15,000 | 0% | All development MCPs |
+| Profile | Tokens | Reduction | Use Case |
+|---------|--------|-----------|----------|
+| **minimal-core** | ~5K | 90% | File-only operations |
+| **research-only** | ~15K | 70% | Documentation lookup |
+| **core** | ~3K | 80% | General development |
+| **testing** | ~5.5K | 63% | Playwright automation |
+| **frontend-deploy** | ~15K | 70% | Netlify deployment |
+| **backend-deploy** | ~15K | 70% | Railway deployment |
+| **db-read** | ~15K | 70% | Read-only database |
+| **db-write** | ~18K | 64% | Full database access |
+| **database-staging** | ~8K | 47% | Database development |
+| **database-production** | ~8K | 47% | Production (read-only) |
+| **payments** | ~7K | 53% | Stripe integration |
+| **deployment** | ~9K | 40% | Netlify + Railway |
+| **fullstack** | ~50K | 0% | All development MCPs |
 
-**Start with `core`** - works for 90% of development. Switch to specialized profiles only when needed.
+**Start with `minimal-core`** for max context. Use `core` for 90% of development.
 
 **Quick Setup:**
 
@@ -700,12 +737,14 @@ Extended thinking modes (Ultrathink/Think harder/Think hard/Think - 39% effectiv
 
 | Capability | Measurement | Impact |
 |------------|-------------|--------|
+| **Mission Success** | +15% (v4.0) | Opus 4.5 coordinator intelligence |
+| **Cost Efficiency** | -24% total cost | Opus iterations offset token cost |
 | **Agent Effectiveness** | 39% improvement | Extended thinking + self-verification |
 | **Token Efficiency** | 84% reduction | Context editing + memory optimization |
+| **MCP Context** | 60-90% reduction | Lean profile system (v4.1) |
 | **Autonomous Operation** | 30+ hours | Multi-day missions without intervention |
 | **Rework Reduction** | 50% fewer errors | Pre-handoff verification catches issues |
 | **Context Retention** | 100% persistence | Zero knowledge loss across sessions |
-| **Security Model** | 64% read-only agents | Least-privilege tool permissions |
 | **Time to MVP** | 2-4 weeks | vs 3-6 months traditional |
 | **Cost per Feature** | <$500 | vs $10-50k traditional |
 
@@ -805,8 +844,9 @@ AGENT-11 is powerful but not unlimited. Understanding these constraints helps yo
 ### 🏗️ Architecture & Planning
 - [Architecture SOP](project/field-manual/architecture-sop.md) | [Architecture Template](templates/architecture.md) | [Getting Started](project/field-manual/getting-started.md) | [BOS-AI Integration](project/field-manual/bos-ai-integration-guide.md)
 
-### 🆕 v2.0 Modernization Guides
+### 🆕 Modernization Guides (v2.0-v4.1)
 - [Memory Management](project/field-manual/memory-management.md) | [Bootstrap Guide](project/field-manual/bootstrap-guide.md) | [Context Editing](project/field-manual/context-editing-guide.md) | [Extended Thinking](project/field-manual/extended-thinking-guide.md) | [Tool Permissions](project/field-manual/tool-permissions-guide.md) | [Enhanced Prompting](project/field-manual/enhanced-prompting-guide.md)
+- **v4.0+**: [Model Selection Guide](project/field-manual/model-selection-guide.md) | [MCP Optimization Guide](project/field-manual/mcp-optimization-guide.md)
 
 ### 🎨 Quality & Design
 - [UI Doctrine](project/field-manual/ui-doctrine.md) | [Testing & QA](#-testing--quality-assurance) | [Design Review](#-design-review-system-new)
@@ -1039,6 +1079,8 @@ AGENT-11 provides 8 powerful slash commands for different workflows:
 - Shows both wins and challenges
 - Documents learnings for future reference
 - Multi-project workflow support
+
+**AI Enhancement** (Optional): Auto-transform to engaging blog narratives via OpenAI integration (~$0.36/year). See [AI Enhancement Setup](project/commands/dailyreport.md#ai-enhancement).
 
 ---
 

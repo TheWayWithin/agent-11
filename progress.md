@@ -16,6 +16,43 @@ This file has been restructured to be a BACKWARD-LOOKING changelog capturing:
 
 ## 📦 Recent Deliverables
 
+### [2025-11-29] - README Documentation Update for Sprints 4-5 ✅
+**Created by**: Direct implementation
+**Type**: Documentation - GitHub README enhancement
+**Related**: Sprint 4 (Opus 4.5) and Sprint 5 (MCP Optimization)
+
+**Description**:
+Updated GitHub README.md to document Sprints 4 and 5 enhancements that were missing from public documentation. Changes placed in appropriate existing sections to maintain information ergonomics.
+
+**Changes Made**:
+
+1. **"What's New" Section** (lines 46-97):
+   - Renamed to "What's New (v2.0 → v4.1)"
+   - Added Sprint 4 (v4.0.0): Opus 4.5 Dynamic Model Selection
+   - Added Sprint 5 (v4.1.0): MCP Context Optimization with profile table
+   - Links to new guides
+
+2. **MCP Profile Table** (lines 309-327):
+   - Expanded from 7 → 13 profiles
+   - Added all Sprint 5 lean profiles
+   - Updated recommendation to "Start with `minimal-core`"
+
+3. **Performance Metrics Table** (lines 738-750):
+   - Added Mission Success: +15% (Opus 4.5)
+   - Added Cost Efficiency: -24% (iterations offset token cost)
+   - Added MCP Context: 60-90% reduction
+
+4. **/dailyreport Command** (line 1082):
+   - Added AI Enhancement note with cost and link
+
+5. **Documentation Links** (lines 847-849):
+   - Renamed to "Modernization Guides (v2.0-v4.1)"
+   - Added v4.0+ links to Model Selection and MCP Optimization guides
+
+**Net Impact**: ~45 lines added, maintained README ergonomics by updating existing sections rather than creating new top-level structure.
+
+---
+
 ### [2025-11-29] - Sprint 6: Persistence Protocol Enforcement - COMPLETE ✅
 **Created by**: Coordinator direct implementation
 **Type**: Feature enhancement - Protocol enforcement
