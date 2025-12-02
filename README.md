@@ -1029,11 +1029,11 @@ AGENT-11 provides 8 powerful slash commands for different workflows:
 
 ---
 
-### 📅 `/dailyreport` - Daily Progress Reports
-**Generate consolidated daily summaries for build-in-public updates**
+### 📅 `/dailyreport` - Daily Progress Reports + Social Media Posts
+**Generate consolidated daily summaries with AI-enhanced blog and social media posts for build-in-public updates**
 
 ```bash
-/dailyreport    # Extract today's work from progress.md
+/dailyreport    # Extract today's work from progress.md + generate social posts
 ```
 
 **Report includes**:
@@ -1042,31 +1042,41 @@ AGENT-11 provides 8 powerful slash commands for different workflows:
 - **Impact Summary** - 2-3 sentence summary of achievements
 - **Next Steps** - Key priorities for tomorrow
 
-**Output Structure** (blog-ready):
-```markdown
-# Progress Report - [Date]
-## Project: [Name]
-
-### ✅ Completed
-- [Milestone descriptions in past tense]
-
-### 🐛 Issues & Learnings
-#### Issue: [Description]
-- **Root Cause**: [Analysis]
-- **Fix**: [Solution]
-- **Prevention**: [Strategy]
-- **Time Impact**: [Duration]
-
-## Impact Summary
-[What was achieved and why it matters]
-
-## Next Steps
-- [Priorities]
+**Output Files** (4 files per day):
+```
+progress/
+├── 2025-11-19.md           # Raw daily report (source of truth)
+├── 2025-11-19-blog.md      # Blog post (AI-enhanced narrative)
+├── 2025-11-19-twitter.md   # Twitter/X post (280 char, copy-paste ready)
+└── 2025-11-19-linkedin.md  # LinkedIn post (800-1000 char, copy-paste ready)
 ```
 
-**File Location**: Creates `/progress/YYYY-MM-DD.md` in project root
+**Social Media Features**:
+- **Twitter/X**: 280 char limit, optimized 71-100 chars, hashtags (#buildinpublic, #solofounder)
+- **LinkedIn**: 800-1000 char sweet spot, hook-optimized first 140 chars, engagement question
+- **Copy-paste ready**: Character count validated, ready to publish
+- **Platform-optimized tone**: Authentic developer/founder voice
 
-**Incremental Updates**: Run multiple times per day to append new progress
+**Example Output**:
+```
+✅ Daily report created: /progress/2025-11-19.md
+🤖 Generating blog-ready version...
+✨ Blog post created: /progress/2025-11-19-blog.md
+🐦 Generating social media posts...
+✨ Twitter post created: /progress/2025-11-19-twitter.md
+✨ LinkedIn post created: /progress/2025-11-19-linkedin.md
+
+Twitter Preview (copy-paste ready):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Shipped bulletproof file persistence today 🚀
+
+Learned that agents can silently fail - fixed it for good.
+
+Full writeup: jamiewatters.work/progress/2025-11-19
+
+#buildinpublic
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
 
 **Use when**:
 - End of work day for daily update blog posts
@@ -1076,11 +1086,12 @@ AGENT-11 provides 8 powerful slash commands for different workflows:
 
 **Benefits**:
 - Blog-ready markdown format
+- Platform-optimized social posts (Twitter/X + LinkedIn)
 - Shows both wins and challenges
 - Documents learnings for future reference
-- Multi-project workflow support
+- ~$0.002 per complete report (blog + social)
 
-**AI Enhancement** (Optional): Auto-transform to engaging blog narratives via OpenAI integration (~$0.36/year). See [AI Enhancement Setup](project/commands/dailyreport.md#ai-enhancement).
+**AI Enhancement** (Required for social posts): Add `OPENAI_API_KEY` to `.env.mcp`. See [Full Setup](project/commands/dailyreport.md#ai-enhancement).
 
 ---
 
@@ -1184,7 +1195,7 @@ Estimated token savings: ~4,250 tokens (63% reduction)
 | `/recon` | Quick design analysis | 30-45 min | Design insights | Understanding existing UI |
 | `/report` | Stakeholder updates | 5-10 min | Progress report | Communication, tracking |
 | `/pmd` | Failure analysis | 30-60 min | Root cause analysis | Learning from mistakes |
-| `/dailyreport` | Daily progress summaries | 2-5 min | Daily progress file | Build-in-public updates |
+| `/dailyreport` | Daily progress + social posts | 2-5 min | Blog + Twitter + LinkedIn | Build-in-public updates |
 | `/planarchive` | Intelligent tracking file cleanup | 2-5 min | Archive files | Token optimization, context management |
 
 ---
