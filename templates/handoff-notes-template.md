@@ -1,5 +1,11 @@
 # Handoff Notes
 
+**Last Updated**: [YYYY-MM-DD HH:MM] by @[agent_name]
+**Current Phase**: [Phase X]
+**Mission Status**: [In Progress | Phase Complete | Mission Complete]
+
+---
+
 ## For Next Agent: @[agent_name]
 
 ### Your Immediate Task
@@ -102,6 +108,18 @@ If critical information is missing or unclear:
 - Check: `agent-context.md` for mission-wide context
 - Review: `progress.md` for issue history
 - Escalate: Flag to coordinator if blocked
+
+---
+
+## ⚠️ MANDATORY UPDATE PROTOCOL
+
+**Before completing your task, you MUST update this file with:**
+1. Your findings and decisions in the relevant sections above
+2. The "Last Updated" timestamp at the top of this file
+3. Current phase status
+4. Context for the next specialist
+
+**Failure to update this file = incomplete handoff = potential repeated work**
 
 ---
 *Last updated by @[your_agent_name] at [timestamp]*

@@ -2,7 +2,21 @@
 
 **Mission**: [Mission Name]
 **Started**: [YYYY-MM-DD]
-**Last Updated**: [YYYY-MM-DD]
+**Last Updated**: [YYYY-MM-DD HH:MM]
+**Current Phase**: [Phase X]
+
+---
+
+## ⚠️ TIMESTAMP REQUIREMENTS
+
+**ALL entries in this file MUST include timestamps in format: YYYY-MM-DD HH:MM**
+
+- Entry headers: `### [YYYY-MM-DD HH:MM] - Entry Title`
+- Phase completions: `### Phase X Complete - [YYYY-MM-DD HH:MM]`
+- Issue discoveries: `**Discovered**: [YYYY-MM-DD HH:MM]`
+- Fix attempts: `**Date**: [YYYY-MM-DD HH:MM]`
+
+**Entries without timestamps are INCOMPLETE and trigger staleness detection.**
 
 ---
 
@@ -355,6 +369,39 @@ Specific actionable changes to process, architecture, or approach
 **Temporal Distinction**:
 - project-plan.md = FORWARD-LOOKING (what we're planning to do)
 - progress.md = BACKWARD-LOOKING (what we did and learned)
+
+---
+
+## 🏁 Phase Completion Entry [MANDATORY]
+
+**At the end of EVERY phase, add this entry (required for phase gate to pass):**
+
+```markdown
+### Phase [X] Complete - [YYYY-MM-DD HH:MM]
+
+**Tasks Completed**: [count] tasks marked [x] in project-plan.md
+**Files Created**: [count] files verified on filesystem
+**Files Modified**: [count] edits applied and verified
+**Verification**: ls -la / head -n X confirmed all files
+**Handoff Updated**: ✅ handoff-notes.md current
+**Context Updated**: ✅ agent-context.md merged
+**Gate Status**: ✅ ALL CHECKS PASS - Proceeding to Phase [X+1]
+
+**Key Deliverables**:
+- [Deliverable 1 with path]
+- [Deliverable 2 with path]
+
+**Decisions Made**:
+- [Key decision 1 and rationale]
+- [Key decision 2 and rationale]
+
+**Issues Encountered**: [count] issues ([count] resolved, [count] carried forward)
+
+**Lessons Learned**:
+- [Pattern or insight from this phase]
+```
+
+**Without this entry, the Phase Gate check will FAIL and work cannot proceed to the next phase.**
 
 ---
 

@@ -170,6 +170,30 @@ The ideation file is a centralized document containing all requirements, context
 **For CLAUDE.md** (The System):
 3. ⚡ Record permanent process improvements and system-level learnings
 
+### Session Resumption Protocol [PREVENTS REPEATED WORK]
+
+**When starting a new session or resuming work**, Claude MUST check for file staleness before doing any new work:
+
+1. **Read tracking files**: project-plan.md, progress.md, handoff-notes.md
+2. **Compare timestamps**: Do they tell a consistent story?
+3. **Check for staleness indicators**:
+   - Tasks marked [ ] but handoff says "completed"
+   - progress.md timestamp older than handoff-notes.md
+   - Phase X tasks [ ] but "Phase X Complete" entry in progress.md
+4. **If staleness detected**: Update stale files FIRST, then proceed
+
+**Why This Matters**: Without this check, Claude may read outdated project-plan.md showing [ ] tasks and attempt to repeat work that was already completed in a previous session.
+
+### Phase Gate Enforcement [MANDATORY]
+
+**Before transitioning between phases**, coordinators MUST verify:
+- ALL current phase tasks marked [x] with timestamps in project-plan.md
+- Phase completion entry EXISTS in progress.md with timestamp
+- handoff-notes.md updated with "Last Updated: [timestamp]"
+- agent-context.md has phase findings merged
+
+**Cannot proceed to next phase if ANY gate check fails.** Update files first, then re-run gate.
+
 ## Design Review System
 
 For UI/UX projects, AGENT-11 includes design review capabilities:
