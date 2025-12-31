@@ -1,0 +1,118 @@
+# Stack Profile: Next.js + Supabase
+# The most popular modern full-stack SaaS configuration
+
+name: "nextjs-supabase"
+display_name: "Next.js + Supabase"
+description: |
+  Modern full-stack TypeScript stack optimized for rapid MVP development.
+  Supabase provides auth, database (PostgreSQL), storage, and real-time out of the box.
+  Next.js App Router with server components for optimal performance.
+
+  Best for: MVPs, SaaS, real-time applications, small-to-medium scale.
+
+version: "1.0.0"
+
+recommended_for:
+  - mvp
+  - saas
+  - real_time
+  - content_heavy
+
+# ============================================
+# FRONTEND
+# ============================================
+frontend:
+  framework: nextjs
+  framework_version: "14"
+  routing: app_router
+  rendering: hybrid
+  styling: tailwindcss
+  component_library: shadcn
+  state_management: zustand
+  form_handling: react_hook_form
+  validation: zod
+
+# ============================================
+# BACKEND
+# ============================================
+backend:
+  runtime: edge
+  api_style: rest
+  server_framework: nextjs_api
+  database: supabase
+  orm: supabase_client
+  auth_provider: supabase_auth
+  cache: none
+
+# ============================================
+# SERVICES
+# ============================================
+services:
+  payments: stripe
+  email: resend
+  email_marketing: none
+  file_storage: supabase_storage
+  analytics: posthog
+  error_tracking: sentry
+  search: none
+  realtime: supabase_realtime
+  ai: none
+  feature_flags: none
+  cms: none
+
+# ============================================
+# DEPLOYMENT
+# ============================================
+deployment:
+  frontend: vercel
+  backend: same_as_frontend
+  ci_cd: github_actions
+  domain_registrar: cloudflare
+  cdn: none  # Vercel includes edge caching
+
+# ============================================
+# DEVELOPMENT
+# ============================================
+development:
+  language: typescript
+  package_manager: pnpm
+  linting: eslint
+  formatting: prettier
+  testing:
+    unit: vitest
+    e2e: playwright
+    component: testing_library
+  monorepo: none
+
+# ============================================
+# CUSTOM INTERPOLATION VALUES
+# ============================================
+interpolation:
+  # These values can be referenced in skills as {{stack.interpolation.X}}
+  # Update these with your project-specific values
+  project_name: "MyApp"
+  supabase_url: "https://your-project.supabase.co"
+  supabase_anon_key: "your-anon-key"
+
+# ============================================
+# METADATA
+# ============================================
+metadata:
+  author: "AGENT-11"
+  source: template
+  tags:
+    - typescript
+    - serverless
+    - baas
+    - rapid-development
+  notes: |
+    This stack is optimized for speed of development and time-to-market.
+    Trade-offs:
+    - Supabase is a managed service (less control, but less ops burden)
+    - Edge runtime has some Node.js API limitations
+    - Vercel has usage-based pricing (watch for scale costs)
+
+    When to consider alternatives:
+    - Need full Node.js compatibility → Use Railway/Render instead of edge
+    - Need self-hosted database → Use Neon or Railway PostgreSQL
+    - Enterprise compliance requirements → Consider Auth0 instead of Supabase Auth

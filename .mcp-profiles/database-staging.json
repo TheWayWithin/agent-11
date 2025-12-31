@@ -21,7 +21,8 @@
     "supabase-staging": {
       "command": "npx",
       "args": [
-        "@supabase/mcp-server",
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
         "--access-token", "${SUPABASE_STAGING_TOKEN}",
         "--project-ref", "${SUPABASE_STAGING_REF}"
       ]

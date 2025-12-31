@@ -1,0 +1,265 @@
+# Gate Type Definitions
+# AGENT-11 Quality Gate System
+#
+# This file defines the standard gate types available in AGENT-11.
+# Each gate type has default configurations that can be overridden
+# in project-specific gate configurations.
+
+version: "1.0"
+
+# =============================================================================
+# GATE TYPE DEFINITIONS
+# =============================================================================
+
+gate_types:
+  # ---------------------------------------------------------------------------
+  # BUILD GATE
+  # Ensures code compiles/builds without errors
+  # ---------------------------------------------------------------------------
+  build:
+    description: "Verifies code compiles and builds successfully"
+    default_severity: blocking
+    default_timeout: 300  # 5 minutes
+
+    # Framework-specific command templates
+    commands:
+      nodejs: "npm run build"
+      typescript: "npm run build && npm run type-check"
+      python: "python -m py_compile $(find . -name '*.py' -not -path './venv/*')"
+      go: "go build ./..."
+      rust: "cargo build --release"
+      generic: "make build"
+
+    # Success criteria
+    success_criteria:
+      exit_code: 0
+
+    # Remediation guidance
+    remediation:
+      title: "Build Failed"
+      steps:
+        - "Check the error output above for specific compilation errors"
+        - "Ensure all dependencies are installed (npm install / pip install -r requirements.txt)"
+        - "Verify environment variables are set correctly"
+        - "Run the build command locally to reproduce and debug"
+
+  # ---------------------------------------------------------------------------
+  # TEST GATE
+  # Ensures tests pass and coverage thresholds are met
+  # ---------------------------------------------------------------------------
+  test:
+    description: "Runs test suite and verifies coverage thresholds"
+    default_severity: blocking
+    default_timeout: 600  # 10 minutes
+    default_coverage_threshold: 70  # percent
+
+    commands:
+      nodejs: "npm test -- --coverage --passWithNoTests"
+      jest: "npx jest --coverage --passWithNoTests"
+      vitest: "npx vitest run --coverage"
+      pytest: "pytest --cov=. --cov-report=term-missing --cov-fail-under=${coverage_threshold}"
+      go: "go test -cover ./..."
+      generic: "make test"
+
+    success_criteria:
+      exit_code: 0
+      coverage_minimum: "${coverage_threshold}"
+
+    remediation:
+      title: "Tests Failed"
+      steps:
+        - "Run tests locally: npm test (or pytest) to see failures"
+        - "Check for flaky tests that may pass on retry"
+        - "If coverage is below threshold, add tests for uncovered code"
+        - "Review test output for specific assertion failures"
+
+  # ---------------------------------------------------------------------------
+  # LINT GATE
+  # Ensures code style compliance and catches common issues
+  # ---------------------------------------------------------------------------
+  lint:
+    description: "Checks code style and catches common issues"
+    default_severity: blocking
+    default_timeout: 120  # 2 minutes
+
+    commands:
+      nodejs: "npm run lint"
+      eslint: "npx eslint . --ext .js,.jsx,.ts,.tsx"
+      prettier: "npx prettier --check ."
+      python: "ruff check . && ruff format --check ."
+      black: "black --check ."
+      go: "golangci-lint run"
+      generic: "make lint"
+
+    success_criteria:
+      exit_code: 0
+
+    remediation:
+      title: "Lint Errors Found"
+      steps:
+        - "Run auto-fix if available: npm run lint:fix or ruff check --fix ."
+        - "For non-auto-fixable issues, review each error and fix manually"
+        - "Consider updating .eslintrc or pyproject.toml for rule adjustments"
+        - "Use // eslint-disable-next-line sparingly for intentional violations"
+
+  # ---------------------------------------------------------------------------
+  # SECURITY GATE
+  # Scans for vulnerabilities in dependencies and code
+  # ---------------------------------------------------------------------------
+  security:
+    description: "Scans for security vulnerabilities"
+    default_severity: blocking
+    default_timeout: 300  # 5 minutes
+    default_audit_level: high  # critical, high, moderate, low
+
+    commands:
+      nodejs: "npm audit --audit-level=${audit_level}"
+      yarn: "yarn audit --level ${audit_level}"
+      python: "pip-audit && bandit -r . -ll"
+      pip_audit: "pip-audit"
+      bandit: "bandit -r . -ll"
+      snyk: "snyk test"
+      generic: "make security-scan"
+
+    success_criteria:
+      exit_code: 0
+      max_vulnerabilities:
+        critical: 0
+        high: 0  # Configurable per project
+
+    remediation:
+      title: "Security Vulnerabilities Found"
+      steps:
+        - "Run npm audit fix to auto-fix compatible vulnerabilities"
+        - "For breaking changes, manually update package versions"
+        - "Review npm audit --json for detailed vulnerability info"
+        - "Consider npm audit fix --force for major updates (test thoroughly)"
+        - "For Python: pip-audit --fix or manually update requirements.txt"
+
+  # ---------------------------------------------------------------------------
+  # REVIEW GATE
+  # Requires manual human approval before proceeding
+  # ---------------------------------------------------------------------------
+  review:
+    description: "Requires manual review and approval"
+    default_severity: blocking
+    default_timeout: null  # No timeout - waits for human
+
+    commands:
+      # No command - this is a human checkpoint
+      generic: "echo 'Awaiting manual review approval'"
+
+    success_criteria:
+      approval_required: true
+      approvers:
+        minimum: 1
+        from: ["team-lead", "tech-lead", "maintainer"]
+
+    remediation:
+      title: "Review Required"
+      steps:
+        - "This gate requires manual approval before proceeding"
+        - "Request review from designated approvers"
+        - "Address any feedback from reviewers"
+        - "Once approved, re-run the gate to proceed"
+
+  # ---------------------------------------------------------------------------
+  # DEPLOY GATE
+  # Verifies deployment succeeds to target environment
+  # ---------------------------------------------------------------------------
+  deploy:
+    description: "Verifies deployment to target environment"
+    default_severity: blocking
+    default_timeout: 600  # 10 minutes
+
+    commands:
+      netlify: "netlify deploy --prod"
+      netlify_preview: "netlify deploy"
+      vercel: "vercel --prod"
+      railway: "railway up"
+      docker: "docker compose up -d --build"
+      generic: "make deploy"
+
+    success_criteria:
+      exit_code: 0
+      health_check:
+        enabled: true
+        endpoint: "/health"
+        expected_status: 200
+
+    remediation:
+      title: "Deployment Failed"
+      steps:
+        - "Check deployment logs for specific errors"
+        - "Verify all environment variables are configured"
+        - "Ensure build artifacts exist and are valid"
+        - "Check network connectivity and service health"
+        - "Review platform-specific deployment documentation"
+
+# =============================================================================
+# SEVERITY DEFINITIONS
+# =============================================================================
+
+severity_levels:
+  blocking:
+    description: "Must pass to proceed. Phase transition blocked on failure."
+    exit_behavior: halt
+    notification: error
+
+  warning:
+    description: "Logged and reported, but does not block progression."
+    exit_behavior: continue
+    notification: warning
+
+  info:
+    description: "Status-only reporting. Never blocks."
+    exit_behavior: continue
+    notification: info
+
+# =============================================================================
+# DEFAULT PHASE GATES
+# =============================================================================
+# These are the recommended gates for each phase type.
+# Projects can override in their project-plan.yaml
+
+phase_defaults:
+  foundation:
+    gates:
+      - type: lint
+        severity: blocking
+      - type: security
+        severity: blocking
+
+  implementation:
+    gates:
+      - type: build
+        severity: blocking
+      - type: test
+        severity: blocking
+      - type: lint
+        severity: warning
+
+  integration:
+    gates:
+      - type: build
+        severity: blocking
+      - type: test
+        severity: blocking
+      - type: security
+        severity: blocking
+
+  pre_deploy:
+    gates:
+      - type: build
+        severity: blocking
+      - type: test
+        severity: blocking
+      - type: security
+        severity: blocking
+      - type: review
+        severity: blocking
+
+  deploy:
+    gates:
+      - type: deploy
+        severity: blocking

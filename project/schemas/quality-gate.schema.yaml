@@ -1,0 +1,203 @@
+# quality-gate.schema.yaml
+# Quality Enforcement at Phase Transitions
+# Version: 1.0.0
+# Purpose: Define gate types, checks, and remediation
+
+---
+gate_id:
+  description: "Unique identifier for this gate definition"
+  type: string
+  required: true
+  pattern: "[a-z_]+"     # e.g., "build_foundation", "test_core"
+
+type:
+  description: "Category of quality gate"
+  type: enum
+  values:
+    - build     # Compilation/bundling verification
+    - test      # Test suite execution
+    - lint      # Code quality and style
+    - security  # Vulnerability scanning
+    - review    # Human approval checkpoint
+    - deploy    # Deployment health verification
+  required: true
+
+name:
+  description: "Human-readable gate name"
+  type: string
+  example: "Foundation Build Gate"
+
+description:
+  description: "What this gate verifies"
+  type: string
+
+checks:
+  description: "Array of validation criteria"
+  type: array
+  required: true
+  item_fields:
+    check_id: string      # Unique within gate
+    name: string          # Human-readable check name
+    type: enum            # command | file_exists | api_health | manual
+    command: string       # Shell command to run (for command type)
+    path: string          # File path (for file_exists type)
+    url: string           # Health check URL (for api_health type)
+    expected:
+      exit_code: integer  # Expected exit code (default: 0)
+      contains: string    # Output must contain this
+      not_contains: string # Output must not contain this
+    timeout: integer      # Seconds before timeout (default: 300)
+    retry: integer        # Retry attempts on failure (default: 0)
+
+blocking:
+  description: "Whether failure prevents phase transition"
+  type: boolean
+  default: true
+  guidance:
+    blocking_true: "Phase cannot complete until gate passes"
+    blocking_false: "Warning logged but progress continues"
+
+severity:
+  description: "Impact level of gate failure"
+  type: enum
+  values:
+    - critical  # Must fix immediately, blocks all work
+    - high      # Must fix before next phase
+    - medium    # Should fix, tracked as tech debt
+    - low       # Nice to fix, informational
+  default: high
+
+remediation:
+  description: "Guidance for fixing failures"
+  fields:
+    hints: [string]       # Quick fix suggestions
+    common_causes: [string]  # Why this usually fails
+    documentation: string # Link to relevant docs
+    escalation: string    # Who to contact if stuck
+
+automation:
+  description: "Automatic remediation options"
+  fields:
+    auto_fix_command: string  # Command to attempt fix
+    auto_retry: boolean       # Retry after auto-fix
+    create_task_on_fail: boolean  # Create fix task automatically
+
+trigger:
+  description: "When this gate should run"
+  type: enum
+  values:
+    - phase_complete    # Run when phase marked complete
+    - task_complete     # Run after specific task
+    - manual            # Run on demand only
+    - continuous        # Run on every change
+  default: phase_complete
+
+# --- Gate Type Templates ---
+templates:
+  build:
+    checks:
+      - check_id: compile
+        name: "Build compilation"
+        type: command
+        command: "npm run build"
+        expected:
+          exit_code: 0
+    blocking: true
+    severity: critical
+    remediation:
+      hints:
+        - "Check for TypeScript errors in IDE"
+        - "Run 'npm run build' locally to see full output"
+      common_causes:
+        - "Missing type definitions"
+        - "Import/export mismatches"
+
+  test:
+    checks:
+      - check_id: unit_tests
+        name: "Unit test suite"
+        type: command
+        command: "npm test"
+        expected:
+          exit_code: 0
+          not_contains: "FAIL"
+    blocking: true
+    severity: high
+    remediation:
+      hints:
+        - "Run 'npm test -- --verbose' for details"
+        - "Check test file matches implementation"
+
+  lint:
+    checks:
+      - check_id: eslint
+        name: "ESLint check"
+        type: command
+        command: "npm run lint"
+        expected:
+          exit_code: 0
+    blocking: false
+    severity: medium
+    remediation:
+      hints:
+        - "Run 'npm run lint -- --fix' for auto-fixes"
+
+  security:
+    checks:
+      - check_id: audit
+        name: "Dependency audit"
+        type: command
+        command: "npm audit --audit-level=high"
+        expected:
+          exit_code: 0
+    blocking: true
+    severity: critical
+    remediation:
+      hints:
+        - "Run 'npm audit fix' for automatic fixes"
+        - "Review GHSA advisories for manual patches"
+
+  deploy:
+    checks:
+      - check_id: health
+        name: "Health endpoint"
+        type: api_health
+        url: "${DEPLOY_URL}/api/health"
+        expected:
+          contains: "ok"
+        timeout: 60
+        retry: 3
+    blocking: true
+    severity: critical
+
+# --- Example Custom Gate ---
+example:
+  gate_id: "test_core_features"
+  type: test
+  name: "Core Features Test Gate"
+  description: "Validates Stripe integration and subscription flow"
+  checks:
+    - check_id: stripe_tests
+      name: "Stripe integration tests"
+      type: command
+      command: "npm test -- stripe"
+      expected:
+        exit_code: 0
+    - check_id: subscription_flow
+      name: "Subscription E2E test"
+      type: command
+      command: "npm run test:e2e -- subscription"
+      expected:
+        exit_code: 0
+      timeout: 120
+  blocking: true
+  severity: high
+  remediation:
+    hints:
+      - "Check STRIPE_SECRET_KEY is set in .env.local"
+      - "Verify test mode webhook secret matches"
+    common_causes:
+      - "Missing Stripe test API keys"
+      - "Webhook endpoint not configured"
+    documentation: "docs/testing/stripe.md"
+  trigger: phase_complete

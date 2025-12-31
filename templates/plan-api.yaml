@@ -1,0 +1,336 @@
+# Template: API-First Project Plan
+# Version: 1.0
+# Compatible with: /bootstrap command
+# Purpose: Generate project plans for headless APIs, developer tools, and backend services
+
+template:
+  type: api
+  description: "API-first development for headless backends, developer tools, and integrations"
+  target_audience: "Developer tools, integrations, headless backends, microservices"
+  typical_timeline: "6-16 weeks"
+  philosophy: "Contract-first design, developer experience is product experience"
+
+defaults:
+  phase_count: 4
+  schema_version: "1.0"
+  quality_gates:
+    - build
+    - test
+    - lint
+    - api-contract
+  agent_distribution:
+    architect: 25
+    developer: 50
+    designer: 5
+    tester: 15
+    documenter: 5
+  context_preservation:
+    - file: project-plan.md
+      update_frequency: phase-start
+    - file: progress.md
+      update_frequency: daily
+    - file: handoff-notes.md
+      update_frequency: task-completion
+    - file: agent-context.md
+      update_frequency: phase-completion
+    - file: api-changelog.md
+      update_frequency: version-release
+
+phase_templates:
+  - id: phase-1
+    name: "API Design & Architecture"
+    description: "Contract-first API design, OpenAPI specification, architecture decisions"
+    typical_duration: "1-3 weeks"
+    typical_tasks:
+      - name: "API specification design"
+        agent: architect
+        priority: p0
+        estimated_effort: large
+        typical_acceptance_criteria:
+          - "OpenAPI 3.0+ specification complete"
+          - "Resource naming conventions established"
+          - "Error response schema defined"
+          - "Pagination/filtering patterns documented"
+      - name: "Authentication strategy"
+        agent: architect
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Auth mechanism defined (API keys, OAuth, JWT)"
+          - "Scopes and permissions designed"
+          - "Rate limiting strategy defined"
+          - "API key management flow designed"
+      - name: "Architecture documentation"
+        agent: architect
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "System architecture documented"
+          - "Data model defined"
+          - "Caching strategy documented"
+          - "Scalability considerations addressed"
+      - name: "Project scaffolding"
+        agent: developer
+        priority: p0
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "Repository initialized"
+          - "CI/CD pipeline configured"
+          - "Development environment documented"
+      - name: "API contract testing setup"
+        agent: tester
+        priority: p1
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "Contract testing framework configured"
+          - "Mock server from OpenAPI spec"
+          - "Spec validation in CI"
+    deliverables:
+      - "OpenAPI specification"
+      - "architecture.md"
+      - "API design guidelines"
+      - "Project scaffold"
+    quality_gates:
+      - gate: lint
+        command: "npm run lint"
+        required: true
+      - gate: api-contract
+        command: "npm run validate:openapi"
+        required: true
+
+  - id: phase-2
+    name: "Core API Implementation"
+    description: "Implement core endpoints, authentication, and data layer"
+    typical_duration: "3-6 weeks"
+    typical_tasks:
+      - name: "Authentication implementation"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "API key generation and validation"
+          - "OAuth flow if applicable"
+          - "Token refresh mechanism"
+          - "Auth middleware complete"
+      - name: "Core resource endpoints"
+        agent: developer
+        priority: p0
+        estimated_effort: large
+        typical_acceptance_criteria:
+          - "All CRUD operations functional"
+          - "Conforms to OpenAPI spec"
+          - "Proper HTTP status codes"
+          - "Request validation complete"
+      - name: "Database layer"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Database schema implemented"
+          - "Migrations configured"
+          - "Query optimization"
+          - "Connection pooling"
+      - name: "Rate limiting and quotas"
+        agent: developer
+        priority: p1
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Rate limiting middleware"
+          - "Quota tracking per API key"
+          - "429 responses with retry headers"
+          - "Rate limit headers in responses"
+      - name: "API testing"
+        agent: tester
+        priority: p0
+        estimated_effort: large
+        typical_acceptance_criteria:
+          - "Contract tests passing"
+          - "Integration tests for all endpoints"
+          - "Authentication tests"
+          - "Edge case coverage"
+    deliverables:
+      - "Functional API"
+      - "Authentication system"
+      - "Test suite"
+    quality_gates:
+      - gate: build
+        command: "npm run build"
+        required: true
+      - gate: test
+        command: "npm run test"
+        required: true
+      - gate: api-contract
+        command: "npm run validate:openapi && npm run test:contract"
+        required: true
+
+  - id: phase-3
+    name: "Documentation & SDKs"
+    description: "Developer documentation, SDK generation, and developer portal"
+    typical_duration: "1-3 weeks"
+    typical_tasks:
+      - name: "API reference documentation"
+        agent: documenter
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Generated from OpenAPI spec"
+          - "Example requests/responses"
+          - "Authentication guide"
+          - "Interactive API explorer"
+      - name: "Getting started guides"
+        agent: documenter
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Quick start tutorial"
+          - "Authentication walkthrough"
+          - "Common use cases documented"
+          - "Code examples in multiple languages"
+      - name: "SDK generation"
+        agent: developer
+        priority: p1
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "TypeScript/JavaScript SDK"
+          - "Python SDK if applicable"
+          - "SDKs generated from OpenAPI spec"
+          - "SDK published to package managers"
+      - name: "Developer portal setup"
+        agent: designer
+        priority: p2
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "Documentation site deployed"
+          - "API key management UI"
+          - "Usage dashboard if applicable"
+      - name: "Documentation testing"
+        agent: tester
+        priority: p1
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "All code examples verified"
+          - "SDK tests passing"
+          - "Documentation accuracy review"
+    deliverables:
+      - "API reference documentation"
+      - "Developer guides"
+      - "Client SDKs"
+      - "Developer portal"
+    quality_gates:
+      - gate: build
+        command: "npm run build"
+        required: true
+      - gate: test
+        command: "npm run test && npm run test:sdk"
+        required: true
+      - gate: api-contract
+        command: "npm run validate:openapi"
+        required: true
+
+  - id: phase-4
+    name: "Deploy & Operations"
+    description: "Production deployment, versioning strategy, and operational readiness"
+    typical_duration: "1-2 weeks"
+    typical_tasks:
+      - name: "Production deployment"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Production environment configured"
+          - "Auto-scaling enabled"
+          - "CDN/caching configured"
+          - "SSL/TLS configured"
+      - name: "API versioning implementation"
+        agent: developer
+        priority: p0
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "Version prefix in URLs (/v1)"
+          - "Version header support"
+          - "Deprecation header support"
+          - "Version documentation"
+      - name: "Monitoring and observability"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Request/response logging"
+          - "Latency metrics"
+          - "Error rate tracking"
+          - "Usage analytics per API key"
+      - name: "Production verification"
+        agent: tester
+        priority: p0
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "Production smoke tests"
+          - "Load testing results"
+          - "Failover testing"
+          - "SDK compatibility verified"
+      - name: "Operational documentation"
+        agent: documenter
+        priority: p1
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "Runbook for common issues"
+          - "Incident response process"
+          - "On-call documentation"
+    deliverables:
+      - "Production API"
+      - "Monitoring dashboard"
+      - "Operational runbooks"
+      - "Changelog and versioning"
+    quality_gates:
+      - gate: build
+        command: "npm run build"
+        required: true
+      - gate: test
+        command: "npm run test"
+        required: true
+      - gate: api-contract
+        command: "npm run validate:openapi"
+        required: true
+
+risk_templates:
+  - risk: "Breaking API changes"
+    probability: high
+    impact: high
+    mitigation: "Contract-first development, versioning strategy, deprecation policy"
+  - risk: "Poor developer adoption"
+    probability: medium
+    impact: high
+    mitigation: "Invest heavily in documentation, SDKs, and developer experience"
+  - risk: "Performance at scale"
+    probability: medium
+    impact: high
+    mitigation: "Load testing, caching strategy, database optimization"
+  - risk: "API key/auth security"
+    probability: medium
+    impact: critical
+    mitigation: "Secure key storage, key rotation support, anomaly detection"
+  - risk: "Rate limiting abuse"
+    probability: high
+    impact: medium
+    mitigation: "Tiered rate limits, IP-based limiting, abuse detection"
+  - risk: "Schema drift from implementation"
+    probability: high
+    impact: medium
+    mitigation: "Contract tests in CI, automated schema validation"
+
+customization_hints:
+  - "Add Phase 0 for extensive API discovery/design workshops"
+  - "Extend SDK phase for multiple language support"
+  - "Add webhooks phase for event-driven APIs"
+  - "Include GraphQL support if required alongside REST"
+  - "Add real-time/WebSocket phase if live updates needed"
+  - "Extend monitoring phase for usage-based billing"
+  - "Add sandbox/testing environment phase for developer testing"
+
+anti_patterns:
+  - "Implementation before API contract finalized"
+  - "Skipping SDK generation for developer tools"
+  - "Poor error messages and inconsistent error formats"
+  - "Undocumented rate limits and quotas"
+  - "No versioning strategy leading to breaking changes"
+  - "Insufficient examples in documentation"

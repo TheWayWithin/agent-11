@@ -848,13 +848,102 @@ ln -sf .mcp-profiles/research-only.json .mcp.json
 - **Consolidated Tools Spec**: `/project/mcp/mcp-agent11-optimized.md`
 - **Profile Directory**: `/.mcp-profiles/`
 
+## Sprint 9: Plan-Driven Development
+
+### Overview
+
+Sprint 9 introduces **Plan-Driven Development** where `project-plan.md` is the single source of truth for mission state. This enables stateless resumption after `/clear`, autonomous execution via `/coord continue`, and vision integrity checking.
+
+### New Commands (Sprint 9)
+
+| Command | Purpose |
+|---------|---------|
+| `/foundations init` | Create vision and PRD documents |
+| `/bootstrap [template]` | Generate project-plan.md from templates |
+| `/plan status` | View current mission state |
+| `/plan phase [N]` | Show phase details |
+| `/coord continue` | Autonomous execution until blocked |
+| `/skills` | List available skills |
+| `/skills match [task]` | Find matching skills for a task |
+
+### Plan-Driven Workflow
+
+```bash
+# 1. Initialize foundations
+/foundations init
+
+# 2. Bootstrap with template
+/bootstrap saas-mvp
+
+# 3. Start autonomous execution
+/coord continue
+
+# After phase complete:
+/coord complete phase 1    # Generate next phase context
+/clear                     # Clear context
+/coord continue            # Resume from project-plan.md
+```
+
+### Quality Gates
+
+Quality gates enforce at phase transitions:
+
+```bash
+# Run gates manually
+python project/gates/run-gates.py --config .quality-gates.json --phase implementation
+
+# Gates run automatically during /coord continue at phase transitions
+```
+
+**Gate Severity**:
+- `blocking` - Must pass to proceed
+- `warning` - Logged, continues
+- `info` - Informational only
+
+### Skills System
+
+Skills auto-load based on task keywords:
+
+| Skill | Triggers | Tokens |
+|-------|----------|--------|
+| saas-auth | auth, login, oauth | ~3,800 |
+| saas-payments | stripe, checkout | ~4,200 |
+| saas-multitenancy | tenant, rls | ~4,100 |
+| saas-billing | billing, plan | ~3,900 |
+| saas-email | email, resend | ~3,200 |
+| saas-onboarding | onboarding, wizard | ~3,500 |
+| saas-analytics | analytics, tracking | ~3,600 |
+
+### Stack Profiles
+
+Set your stack in `.stack-profile.yaml`:
+
+```yaml
+extends: nextjs-supabase  # or remix-railway, sveltekit-supabase
+```
+
+### Documentation
+
+- [Plan-Driven Development Guide](./project/field-manual/plan-driven-development.md)
+- [Quality Gates Guide](./project/field-manual/quality-gates-guide.md)
+- [Skills Guide](./project/field-manual/skills-guide.md)
+- [Architectural Principles](./project/field-manual/architectural-principles.md)
+
 ## Available Commands
 
 ### Mission Orchestration
 - `/coord [mission] [files]` - Orchestrate multi-agent missions
+- `/coord continue` - Autonomous execution until blocked (Sprint 9)
 - `/design-review` - Comprehensive UI/UX audit (delegates to @designer)
 - `/recon` - Design reconnaissance
 - `/meeting [agenda]` - Facilitate structured meetings
+
+### Project Setup (Sprint 9)
+- `/foundations init` - Create vision and PRD documents
+- `/bootstrap [template]` - Generate project-plan.md (templates: saas-mvp, saas-full, api)
+- `/plan status` - View current mission state
+- `/plan phase [N]` - Show phase details
+- `/skills` - List and match skills
 
 ### Reporting & Analysis
 - `/report [since_date]` - Generate progress reports for stakeholders

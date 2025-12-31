@@ -145,15 +145,20 @@ Parse the arguments to determine:
 
 **Core Missions**:
 - `build` - Build new service/feature from PRD
-- `fix` - Emergency bug fix with root cause analysis  
+- `fix` - Emergency bug fix with root cause analysis
 - `refactor` - Code improvement and optimization
 - `deploy` - Production deployment preparation
 - `document` - Comprehensive documentation creation
 - `migrate` - System/database migration
-- `optimize` - Performance optimization  
+- `optimize` - Performance optimization
 - `security` - Security audit and fixes
 - `integrate` - Third-party integration
 - `mvp` - Rapid MVP development from concept
+
+**Plan-Driven Commands** (Sprint 9):
+- `continue` - Autonomous execution: read plan, find next task, delegate, repeat until blocked
+- `complete phase N` - Mark phase N complete, generate phase-(N+1)-context.yaml
+- `vision-check` - Verify current work aligns with original vision
 
 **View detailed mission briefings**: Check `/missions/mission-[name].md`
 
@@ -300,6 +305,71 @@ ls -la [expected-file-paths]
 - ANY file verification failed
 
 **If gate fails**: STOP. Update the missing files. Re-run gate check. Only then proceed.
+
+### 🔧 QUALITY GATE EXECUTION [SPRINT 9]
+
+**Quality gates** provide automated validation at phase transitions, ensuring code quality and security standards are met before proceeding.
+
+**Gate Configuration:**
+```bash
+# Copy appropriate template to project root
+cp project/gates/templates/nodejs-saas.json .quality-gates.json   # Node.js/React SaaS
+cp project/gates/templates/python-api.json .quality-gates.json    # Python API
+cp project/gates/templates/minimal.json .quality-gates.json       # Basic gates
+```
+
+**Running Quality Gates:**
+```bash
+# Run all gates for a phase
+python project/gates/run-gates.py --config .quality-gates.json --phase implementation
+
+# Run specific gate
+python project/gates/run-gates.py --config .quality-gates.json --gate pre-deploy
+
+# List available gates
+python project/gates/run-gates.py --config .quality-gates.json --list
+
+# Generate markdown report for progress.md
+python project/gates/run-gates.py --config .quality-gates.json --report-only >> progress.md
+```
+
+**Gate Exit Codes:**
+- `0` = All blocking gates PASSED - proceed
+- `1` = Gate(s) BLOCKED - halt, remediate, retry
+- `2` = Configuration error - fix config first
+
+**Phase Transition with Gates:**
+```
+1. Complete all phase tasks
+2. Run PHASE GATE ENFORCEMENT (file updates)
+3. Run quality gate: python project/gates/run-gates.py --phase {phase}
+4. IF exit 0: Mark phase complete, proceed
+5. IF exit 1: Address failing checks, re-run gate
+```
+
+**Gate Failure Handling:**
+When a gate returns exit code 1 (BLOCKED):
+1. **Review output** - Note which checks failed
+2. **Execute remediation** - Follow remediation steps in output
+3. **Re-run gate** - Verify fixes resolved the issues
+4. **Log to progress.md** - Document gate passage with timestamp
+
+**Emergency Override** (use sparingly):
+```bash
+# EMERGENCY ONLY - bypasses quality validation
+# Document justification in progress.md
+/coord build requirements.md --skip-gates
+```
+
+**Gate Types Available:**
+- `build` - Compilation/bundling verification
+- `test` - Test suite execution with coverage
+- `lint` - Code quality and style compliance
+- `security` - Vulnerability scanning
+- `review` - Manual approval checkpoint
+- `deploy` - Deployment health verification
+
+See `project/gates/README.md` for full documentation.
 
 ### 🔧 IMMEDIATE DELEGATION EXAMPLES [TASK TOOL REQUIRED]
 

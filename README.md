@@ -96,6 +96,47 @@ v2.0 eliminates the file persistence bug with an architectural solution that mak
 
 [→ MCP Optimization Guide](project/field-manual/mcp-optimization-guide.md)
 
+### Sprint 9 (v5.0.0): SaaS Boilerplate Killer Architecture
+
+**Plan-Driven Development** with autonomous execution, quality gates, and SaaS skills:
+
+```bash
+# Complete workflow from idea to execution:
+/foundations init          # Create vision + PRD
+/bootstrap saas-mvp        # Generate project plan
+/coord continue            # Autonomous execution until blocked
+```
+
+**New Commands**:
+| Command | Purpose |
+|---------|---------|
+| `/foundations init` | Create vision and PRD documents |
+| `/bootstrap [template]` | Generate project-plan.md (saas-mvp, saas-full, api) |
+| `/plan status` | View current mission state |
+| `/coord continue` | Autonomous execution until blocked |
+| `/skills` | List and match SaaS skills |
+
+**7 Production-Ready SaaS Skills** (auto-loaded based on task keywords):
+- `saas-auth` - Authentication with OAuth, email/password, magic links
+- `saas-payments` - Stripe checkout, subscriptions, webhooks
+- `saas-multitenancy` - RLS, tenant isolation, workspace management
+- `saas-billing` - Plans, quotas, trials, usage tracking
+- `saas-email` - Transactional email with Resend
+- `saas-onboarding` - User onboarding wizards
+- `saas-analytics` - PostHog integration, event tracking
+
+**Quality Gates** enforce at phase transitions:
+```bash
+python project/gates/run-gates.py --phase implementation
+```
+
+**Stack Profiles** for multi-framework support:
+- `nextjs-supabase` - Next.js 14 + Supabase
+- `remix-railway` - Remix + Railway + PostgreSQL
+- `sveltekit-supabase` - SvelteKit + Supabase
+
+[→ Plan-Driven Development Guide](project/field-manual/plan-driven-development.md) · [→ Skills Guide](project/field-manual/skills-guide.md)
+
 ---
 
 ## Is AGENT-11 Right for You?

@@ -1,7 +1,7 @@
 ---
 name: support
 description: Use this agent for customer support, issue resolution, bug triage, user feedback analysis, and turning complaints into product improvements. THE SUPPORT is the voice of the customer and guardian of user satisfaction.
-version: 3.0.0
+version: 5.0.0
 color: cyan
 tags:
   - support

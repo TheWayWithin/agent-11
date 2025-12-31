@@ -8,6 +8,104 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Nothing yet
+
+## [5.0.0] - 2025-12-31 - SaaS Boilerplate Killer Architecture
+
+### Added
+
+#### Plan-Driven Development System
+- **`/foundations init`** - Create vision and PRD documents from BOS-AI handoff
+- **`/bootstrap [template]`** - Generate project-plan.md from templates (saas-mvp, saas-full, api)
+- **`/plan status`** - View current mission state from project-plan.md
+- **`/plan phase [N]`** - Show phase details
+- **`/coord continue`** - Autonomous execution until blocked (phase complete, gate failure, blocker)
+- **`/skills`** - List and match SaaS skills
+
+#### 7 Production-Ready SaaS Skills
+Skills auto-load based on task keywords in project-plan.md:
+- `saas-auth` - Authentication with OAuth, email/password, magic links (~3,800 tokens)
+- `saas-payments` - Stripe checkout, subscriptions, webhooks (~4,200 tokens)
+- `saas-multitenancy` - RLS, tenant isolation, workspace management (~4,100 tokens)
+- `saas-billing` - Plans, quotas, trials, usage tracking (~3,900 tokens)
+- `saas-email` - Transactional email with Resend (~3,200 tokens)
+- `saas-onboarding` - User onboarding wizards (~3,500 tokens)
+- `saas-analytics` - PostHog integration, event tracking (~3,600 tokens)
+
+#### Quality Gates System
+- Gate enforcement at phase transitions
+- Python gate runner (`python gates/run-gates.py --phase implementation`)
+- 6 gate types: build, test, lint, security, review, deploy
+- 3 severity levels: blocking, warning, info
+- 3 gate templates: nodejs-saas, python-api, minimal
+
+#### Stack Profiles
+Multi-framework support via `.stack-profile.yaml`:
+- `nextjs-supabase` - Next.js 14 + Supabase
+- `remix-railway` - Remix + Railway + PostgreSQL
+- `sveltekit-supabase` - SvelteKit + Supabase
+
+#### Coordinator Enhancements
+- Plan-Driven Orchestration Protocol (project-plan.md as source of truth)
+- Smart Delegation Routing (10-path routing table with skill injection)
+- Vision Integrity Verification (ALIGNED, MINOR_DRIFT, MAJOR_DRIFT, OUT_OF_SCOPE)
+- Phase Context Management (`/clear` workflow support)
+
+#### Documentation
+- `plan-driven-development.md` - Complete workflow guide
+- `quality-gates-guide.md` - Gate configuration and usage
+- `skills-guide.md` - Skill system documentation
+- `architectural-principles.md` - 7 design principles from LLM consensus
+
+### Changed
+- All agent versions updated to 5.0.0
+- README updated with Sprint 9 features
+- CLAUDE.md updated with Sprint 9 section
+- install.sh updated to deploy skills, schemas, gates, and stack-profiles
+
+### Migration Guide
+
+1. **Run install.sh** to get new files:
+   ```bash
+   ./install.sh
+   ```
+
+2. **Set your stack profile**:
+   ```bash
+   echo "extends: nextjs-supabase" > .stack-profile.yaml
+   ```
+
+3. **Use the new workflow**:
+   ```bash
+   /foundations init          # Create vision + PRD
+   /bootstrap saas-mvp        # Generate project plan
+   /coord continue            # Autonomous execution
+   ```
+
+---
+
+## [4.1.0] - 2025-11-28 - MCP Context Optimization
+
+### Added
+- 13 MCP profiles for context optimization
+- `/mcp-switch [profile]` command
+- Profile-based token reduction (60-90%)
+
+---
+
+## [4.0.0] - 2025-11-27 - Opus 4.5 Dynamic Model Selection
+
+### Added
+- Opus 4.5 for Coordinator orchestration
+- Task tool `model` parameter (opus, sonnet, haiku)
+- Tiered model strategy documentation
+- +15% mission success rate, -28% iterations
+
+---
+
+## [Previous Releases]
+
+### Added
 - Mission-driven coordination system with `/coord` command
 - Comprehensive brownfield implementation guide
 - Update management system with automatic version checking

@@ -1,7 +1,7 @@
 ---
 name: developer
 description: Use this agent for implementing features, writing code, fixing bugs, building APIs, creating user interfaces, and technical prototyping. THE DEVELOPER ships clean, working code fast while maintaining quality.
-version: 4.0.0
+version: 5.0.0
 color: blue
 tags:
   - core

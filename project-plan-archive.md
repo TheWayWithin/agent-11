@@ -284,3 +284,183 @@ Successfully implemented comprehensive foundation document adherence system acro
 ---
 
 *Archive complete. Active work continues in Sprint 2 Phase 2E (Testing & Rollout).*
+
+---
+
+## [2025-12-30] Archive: Sprints 4-8 Completion
+
+> **Archived**: 2025-12-30
+> **Source**: project-plan.md
+> **Reason**: Sprints 4-8 complete, Sprint 9 active
+> **Lines Archived**: ~1,350 lines
+
+### Archive Index
+
+| Date | Sprint | Version | Status |
+|------|--------|---------|--------|
+| 2025-12-30 | Sprint 4 | v4.0.0 | ✅ Opus 4.5 Integration Complete |
+| 2025-12-30 | Sprint 5 | v4.1.0 | ✅ MCP Context Optimization Complete |
+| 2025-12-30 | Sprint 6 | v4.2.0 | ✅ Persistence Protocol Enforcement Complete |
+| 2025-12-30 | Sprint 7 | v4.3.0 | ✅ Social Media Post Generation Complete |
+| 2025-12-30 | Sprint 8 | v4.4.0 | ✅ Phase Gate Enforcement Complete |
+
+---
+
+## SPRINT 4: Opus 4.5 Integration ✅ ARCHIVED
+
+**Timeline**: Days 1-7 (Completed 2025-11-27)
+**Goal**: Leverage Claude Opus 4.5 for superior orchestration
+**Tag**: `v4.0.0-opus-integration`
+
+### Key Deliverables
+- Coordinator upgraded to `model: opus` in YAML frontmatter
+- MODEL SELECTION PROTOCOL section added to coordinator.md (~95 lines)
+- Tiered model strategy: Opus/Sonnet/Haiku based on task complexity
+- Dynamic model selection guidance in 7 key agents
+- `project/field-manual/model-selection-guide.md` (450+ lines)
+- CLAUDE.md updated with Model Selection Guidelines
+
+### Phases Summary
+- **4A**: Coordinator upgrade to Opus 4.5 ✅
+- **4B**: Dynamic model selection triggers defined ✅
+- **4C**: Documentation and field manual guide ✅
+- **4D**: YAML validation and testing ✅
+- **4E**: Deployment (deferred to 4D completion)
+
+### Success Metrics
+| Metric | Target | Status |
+|--------|--------|--------|
+| Mission Success Rate | +15% | Expected |
+| Iterations to Completion | -28% | Expected |
+| Context Clearing Events | -50% | Expected |
+| Total Cost per Mission | -24% | Expected |
+
+---
+
+## SPRINT 5: MCP Context Optimization ✅ ARCHIVED
+
+**Timeline**: Days 1-10 (Completed 2025-11-28)
+**Goal**: Reduce MCP context consumption by 60%
+**Tag**: `v4.1.0-mcp-optimization`
+
+### Key Deliverables
+- 6 lean MCP profiles created:
+  - `minimal-core.json` (~5K tokens)
+  - `research-only.json` (~15K tokens)
+  - `frontend-deploy.json` (~15K tokens)
+  - `backend-deploy.json` (~15K tokens)
+  - `db-read.json` (~15K tokens)
+  - `db-write.json` (~18K tokens)
+- `.mcp-profiles/README.md` - Profile selection guide
+- `project/field-manual/mcp-optimization-guide.md` (272 lines)
+- `project/mcp/mcp-agent11-optimized.md` - Consolidated server spec (74.8% reduction)
+- CLAUDE.md MCP Context Optimization section
+
+### Phases Summary
+- **5A**: Profile optimization - 6 lean profiles ✅
+- **5B**: Consolidated MCP server design (32→8 tools) ✅
+- **5C**: Tool description optimization formula ✅
+- **5D**: Documentation and future prep ✅
+- **5E**: Monitoring (ongoing)
+
+### Token Reduction Achieved
+| Profile Type | Before | After | Reduction |
+|--------------|--------|-------|-----------|
+| Minimal tasks | 50-60K | 5K | 90% |
+| Research | 50-60K | 15K | 70% |
+| Deployment | 78K | 15K | 81% |
+| Database | 72K | 15K | 79% |
+
+---
+
+## SPRINT 6: Persistence Protocol Enforcement ✅ ARCHIVED
+
+**Timeline**: Days 1-5 (Completed 2025-11-29)
+**Goal**: Make structured output enforcement automatic
+**Tag**: `v4.2.0-persistence-enforcement`
+
+### Key Deliverables
+- `templates/file-operation-delegation.md` (6.5KB, 243 lines)
+- `templates/file-verification-checklist.md` (4.4KB, 176 lines)
+- `project/field-manual/file-operation-quickref.md` (7.4KB, 311 lines)
+- coord.md FILE OPERATION DELEGATION PROTOCOL section
+- coordinator.md SPRINT 6: RESPONSE VALIDATION CHECKLIST
+- 3 mission files updated with Sprint 6 Enforcement Protocol
+
+### Phases Summary
+- **6A**: Coordinator prompt hardening (pre-flight checklist) ✅
+- **6B**: Response validation system (red flag detection) ✅
+- **6C**: Automatic execution enhancement ✅
+- **6D**: Verification enforcement (mandatory verification) ✅
+- **6E**: Testing and deployment ✅
+
+### Success Metrics
+| Metric | Before | After |
+|--------|--------|-------|
+| Protocol Bypass Rate | High | 0% |
+| Verification Completion | Often Skipped | 100% |
+| JSON Format Compliance | Variable | 100% |
+| File Persistence | ~80% | 100% |
+
+---
+
+## SPRINT 7: Social Media Post Generation ✅ ARCHIVED
+
+**Timeline**: Days 1-5 (Completed 2025-12-01)
+**Goal**: Add Twitter/X and LinkedIn posts to /dailyreport
+**Tag**: `v4.3.0-social-media-posts`
+
+### Key Deliverables
+- `enhance_dailyreport.py` extended with social media generation
+- New output files: `YYYY-MM-DD-twitter.md`, `YYYY-MM-DD-linkedin.md`
+- Platform-optimized content (Twitter: 280 chars, LinkedIn: 800-1000 chars)
+- Copy-paste ready format with character counts
+- Environment variable `DAILYREPORT_ENABLE_SOCIAL`
+
+### Phases Summary
+- **7A**: Script enhancement (social media prompts) ✅
+- **7B**: Command documentation update ✅
+- **7C**: Output template definition ✅
+- **7D**: Testing and deployment ✅
+
+### Platform Specifications
+| Platform | Char Limit | Optimal | Features |
+|----------|------------|---------|----------|
+| Twitter/X | 280 | 71-100 | 1-2 hashtags, hook + CTA |
+| LinkedIn | 3,000 | 800-1000 | 140 char hook, engagement question |
+
+---
+
+## SPRINT 8: Phase Gate Enforcement ✅ ARCHIVED
+
+**Timeline**: Day 1 (Completed 2025-12-05)
+**Goal**: Prevent stale tracking files from causing repeated work
+**Tag**: `v4.4.0-phase-gate-enforcement`
+
+### Key Deliverables
+- SESSION RESUMPTION PROTOCOL (staleness check at session start)
+- PHASE GATE ENFORCEMENT (blocking gates at phase transitions)
+- PRE-CLEAR GATE (mandatory updates before /clear)
+- MISSION COMPLETION GATE (final verification)
+- 12 mission files updated with Phase Gate Protocol
+
+### Files Modified
+| File | Changes |
+|------|---------|
+| `project/commands/coord.md` | +4 gate sections (~150 lines) |
+| `project/agents/specialists/coordinator.md` | +SESSION RESUMPTION, +PRE-CLEAR, +PHASE GATE (~100 lines) |
+| `CLAUDE.md` | +Session Resumption Protocol, +Phase Gate Enforcement |
+| `templates/handoff-notes-template.md` | +Timestamp header, +Update protocol |
+| `templates/progress-template.md` | +Timestamp requirements |
+| 12x `missions/mission-*.md` | +Phase Gate Protocol section |
+
+### Success Metrics
+| Metric | Before | After |
+|--------|--------|-------|
+| Update compliance | ~70% | 99.9%+ |
+| Missed phase transitions | Common | Near-zero |
+| Repeated work incidents | Frequent | Rare |
+
+---
+
+*Archive complete. Sprint 9 (SaaS Boilerplate Killer) active in project-plan.md.*

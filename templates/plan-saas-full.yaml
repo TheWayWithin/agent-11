@@ -1,0 +1,458 @@
+# Template: Full SaaS Project Plan
+# Version: 1.0
+# Compatible with: /bootstrap command
+# Purpose: Generate comprehensive project plans for enterprise-ready SaaS products
+
+template:
+  type: saas-full
+  description: "Enterprise-ready SaaS with compliance, multi-tenancy, and team features"
+  target_audience: "Funded startups, enterprise products, B2B SaaS"
+  typical_timeline: "12-24 weeks"
+  philosophy: "Build for scale, security, and compliance from the start"
+
+defaults:
+  phase_count: 6
+  schema_version: "1.0"
+  quality_gates:
+    - build
+    - test
+    - lint
+    - security
+    - a11y
+  agent_distribution:
+    architect: 15
+    developer: 40
+    designer: 15
+    tester: 20
+    documenter: 10
+  context_preservation:
+    - file: project-plan.md
+      update_frequency: phase-start
+    - file: progress.md
+      update_frequency: daily
+    - file: handoff-notes.md
+      update_frequency: task-completion
+    - file: agent-context.md
+      update_frequency: phase-completion
+    - file: security-log.md
+      update_frequency: weekly
+    - file: compliance-checklist.md
+      update_frequency: phase-completion
+
+phase_templates:
+  - id: phase-1
+    name: "Foundation & Architecture"
+    description: "Comprehensive architecture design, infrastructure setup, security foundations"
+    typical_duration: "2-3 weeks"
+    typical_tasks:
+      - name: "Architecture design and documentation"
+        agent: architect
+        priority: p0
+        estimated_effort: large
+        typical_acceptance_criteria:
+          - "System architecture documented with diagrams"
+          - "Multi-tenant strategy defined"
+          - "Security architecture documented"
+          - "Scalability considerations addressed"
+      - name: "Infrastructure provisioning"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Cloud infrastructure configured (IaC)"
+          - "Environments: dev, staging, production"
+          - "Network security configured"
+          - "Secrets management setup"
+      - name: "CI/CD pipeline with security scanning"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Automated build and deploy"
+          - "Security scanning in pipeline"
+          - "Dependency vulnerability checks"
+          - "Code quality gates"
+      - name: "Database architecture"
+        agent: architect
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Multi-tenant data isolation strategy"
+          - "Backup and recovery plan"
+          - "Data encryption at rest"
+          - "Migration strategy documented"
+      - name: "Design system foundation"
+        agent: designer
+        priority: p1
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Component library initialized"
+          - "Design tokens defined"
+          - "Accessibility guidelines established"
+    deliverables:
+      - "architecture.md with diagrams"
+      - "Infrastructure as Code"
+      - "CI/CD pipeline"
+      - "Design system foundation"
+    quality_gates:
+      - gate: build
+        command: "npm run build"
+        required: true
+      - gate: lint
+        command: "npm run lint"
+        required: true
+      - gate: security
+        command: "npm audit && npm run security-scan"
+        required: true
+
+  - id: phase-2
+    name: "Authentication & Authorization"
+    description: "Enterprise-grade identity management with SSO and RBAC"
+    typical_duration: "2-3 weeks"
+    typical_tasks:
+      - name: "Core authentication system"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Email/password authentication"
+          - "Email verification flow"
+          - "Password reset with security controls"
+          - "Session management with security"
+      - name: "SSO integration"
+        agent: developer
+        priority: p1
+        estimated_effort: large
+        typical_acceptance_criteria:
+          - "SAML 2.0 support"
+          - "OAuth/OIDC support"
+          - "Google/Microsoft SSO"
+          - "SSO configuration per tenant"
+      - name: "Role-based access control (RBAC)"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Role definitions (admin, member, viewer)"
+          - "Permission system implemented"
+          - "Role assignment UI"
+          - "API authorization middleware"
+      - name: "Multi-factor authentication"
+        agent: developer
+        priority: p1
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "TOTP authenticator support"
+          - "Recovery codes"
+          - "MFA enforcement options"
+      - name: "Authentication testing"
+        agent: tester
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Security test cases for auth flows"
+          - "Penetration testing for auth"
+          - "Session security tests"
+    deliverables:
+      - "Enterprise authentication system"
+      - "SSO integration"
+      - "RBAC system"
+      - "Security test report"
+    quality_gates:
+      - gate: build
+        command: "npm run build"
+        required: true
+      - gate: test
+        command: "npm run test"
+        required: true
+      - gate: security
+        command: "npm run security-scan"
+        required: true
+
+  - id: phase-3
+    name: "Core Features & Multi-tenancy"
+    description: "Primary product features with proper tenant isolation"
+    typical_duration: "4-6 weeks"
+    typical_tasks:
+      - name: "Organization/workspace management"
+        agent: developer
+        priority: p0
+        estimated_effort: large
+        typical_acceptance_criteria:
+          - "Organization CRUD operations"
+          - "Workspace/team structure"
+          - "Member invitation flow"
+          - "Tenant data isolation verified"
+      - name: "Primary feature implementation"
+        agent: developer
+        priority: p0
+        estimated_effort: large
+        typical_acceptance_criteria:
+          - "Core user journeys functional"
+          - "Multi-tenant data handling"
+          - "Performance benchmarks met"
+          - "Error handling comprehensive"
+      - name: "UI implementation"
+        agent: designer
+        priority: p0
+        estimated_effort: large
+        typical_acceptance_criteria:
+          - "All core screens implemented"
+          - "Design system components used"
+          - "Responsive across breakpoints"
+          - "WCAG 2.1 AA compliance"
+      - name: "API development"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "RESTful/GraphQL API complete"
+          - "API documentation (OpenAPI)"
+          - "Rate limiting implemented"
+          - "Versioning strategy applied"
+      - name: "Comprehensive testing"
+        agent: tester
+        priority: p0
+        estimated_effort: large
+        typical_acceptance_criteria:
+          - "Unit test coverage >80%"
+          - "Integration tests for APIs"
+          - "E2E tests for critical paths"
+          - "Load testing performed"
+    deliverables:
+      - "Multi-tenant core features"
+      - "Complete API with documentation"
+      - "Test suite with coverage report"
+    quality_gates:
+      - gate: build
+        command: "npm run build"
+        required: true
+      - gate: test
+        command: "npm run test -- --coverage"
+        required: true
+      - gate: lint
+        command: "npm run lint"
+        required: true
+      - gate: a11y
+        command: "npm run test:a11y"
+        required: true
+
+  - id: phase-4
+    name: "Billing & Subscription Management"
+    description: "Enterprise billing with usage-based pricing and invoicing"
+    typical_duration: "2-3 weeks"
+    typical_tasks:
+      - name: "Subscription management"
+        agent: developer
+        priority: p0
+        estimated_effort: large
+        typical_acceptance_criteria:
+          - "Plan management (tiers)"
+          - "Upgrade/downgrade flows"
+          - "Trial period handling"
+          - "Seat-based pricing support"
+      - name: "Payment integration"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Stripe integration complete"
+          - "Multiple payment methods"
+          - "Webhook handlers reliable"
+          - "Failed payment handling"
+      - name: "Invoice and billing portal"
+        agent: developer
+        priority: p1
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Invoice generation"
+          - "Billing history access"
+          - "Self-service billing portal"
+          - "Usage tracking if applicable"
+      - name: "Billing UI"
+        agent: designer
+        priority: p1
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "Plan comparison UI"
+          - "Checkout flow"
+          - "Billing management screens"
+      - name: "Payment testing"
+        agent: tester
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "All payment scenarios tested"
+          - "Webhook reliability verified"
+          - "Edge cases covered"
+    deliverables:
+      - "Enterprise billing system"
+      - "Self-service billing portal"
+      - "Payment test coverage"
+    quality_gates:
+      - gate: build
+        command: "npm run build"
+        required: true
+      - gate: test
+        command: "npm run test"
+        required: true
+
+  - id: phase-5
+    name: "Security & Compliance"
+    description: "Enterprise security hardening and compliance certifications"
+    typical_duration: "2-3 weeks"
+    typical_tasks:
+      - name: "Security hardening"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Security headers configured"
+          - "Input validation comprehensive"
+          - "SQL injection prevention"
+          - "XSS prevention verified"
+      - name: "Audit logging"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "All sensitive actions logged"
+          - "Audit trail immutable"
+          - "Log retention policy"
+          - "Admin audit log viewer"
+      - name: "Data privacy compliance"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "GDPR data export"
+          - "Account deletion flow"
+          - "Data retention policies"
+          - "Privacy policy integration"
+      - name: "Security penetration testing"
+        agent: tester
+        priority: p0
+        estimated_effort: large
+        typical_acceptance_criteria:
+          - "Third-party pentest completed"
+          - "Vulnerabilities remediated"
+          - "Security report generated"
+      - name: "Compliance documentation"
+        agent: documenter
+        priority: p1
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "SOC 2 evidence collection"
+          - "Security policies documented"
+          - "Incident response plan"
+    deliverables:
+      - "Security-hardened application"
+      - "Audit logging system"
+      - "Compliance documentation"
+      - "Penetration test report"
+    quality_gates:
+      - gate: security
+        command: "npm run security-scan && npm audit"
+        required: true
+      - gate: test
+        command: "npm run test"
+        required: true
+
+  - id: phase-6
+    name: "Launch & Operations"
+    description: "Production deployment with enterprise monitoring and support"
+    typical_duration: "1-2 weeks"
+    typical_tasks:
+      - name: "Production deployment"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Production environment live"
+          - "Auto-scaling configured"
+          - "CDN configured"
+          - "DDoS protection enabled"
+      - name: "Monitoring and observability"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "APM integration"
+          - "Log aggregation"
+          - "Custom dashboards"
+          - "Alert runbooks"
+      - name: "Documentation"
+        agent: documenter
+        priority: p0
+        estimated_effort: large
+        typical_acceptance_criteria:
+          - "User documentation complete"
+          - "Admin documentation"
+          - "API reference published"
+          - "Integration guides"
+      - name: "Launch verification"
+        agent: tester
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Production smoke tests"
+          - "Performance baseline established"
+          - "Disaster recovery tested"
+          - "Rollback procedure verified"
+    deliverables:
+      - "Production application"
+      - "Monitoring infrastructure"
+      - "Complete documentation"
+      - "Operations runbooks"
+    quality_gates:
+      - gate: build
+        command: "npm run build"
+        required: true
+      - gate: test
+        command: "npm run test"
+        required: true
+      - gate: security
+        command: "npm run security-scan"
+        required: true
+
+risk_templates:
+  - risk: "Multi-tenant data leakage"
+    probability: medium
+    impact: critical
+    mitigation: "Row-level security, tenant isolation testing, security review"
+  - risk: "SSO integration complexity"
+    probability: high
+    impact: medium
+    mitigation: "Use established identity libraries, extensive testing with IdPs"
+  - risk: "Compliance certification delays"
+    probability: medium
+    impact: high
+    mitigation: "Start evidence collection early, engage compliance consultant"
+  - risk: "Performance at scale"
+    probability: medium
+    impact: high
+    mitigation: "Load testing each phase, performance budgets, caching strategy"
+  - risk: "Enterprise customer requirements"
+    probability: high
+    impact: medium
+    mitigation: "Customer discovery, flexible architecture, feature flags"
+  - risk: "Security vulnerabilities"
+    probability: medium
+    impact: critical
+    mitigation: "Automated scanning, penetration testing, bug bounty program"
+
+customization_hints:
+  - "Add HIPAA compliance phase for healthcare products"
+  - "Extend Phase 3 significantly for complex domain logic"
+  - "Add SOC 2 Type II preparation phase if required"
+  - "Consider PCI DSS compliance phase for direct payment handling"
+  - "Add data migration phase when replacing existing systems"
+  - "Extend documentation phase for developer-facing products"
+  - "Add internationalization phase for global deployment"
+
+anti_patterns:
+  - "Skipping security phases to meet launch deadlines"
+  - "Building without tenant isolation from the start"
+  - "Deferring compliance considerations until after launch"
+  - "Under-investing in testing for enterprise reliability"
+  - "Ignoring accessibility requirements"

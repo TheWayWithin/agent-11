@@ -1,7 +1,7 @@
 ---
 name: tester
 description: Use this agent for quality assurance, test automation, bug detection, edge case testing, and ensuring code quality. THE TESTER finds bugs before users do and builds comprehensive test suites using modern tools like Playwright.
-version: 3.0.0
+version: 4.0.0
 color: purple
 tags:
   - core
@@ -18,7 +18,21 @@ coordinates_with:
   - designer
 verification_required: true
 self_verification: true
+model_recommendation: sonnet_default
 ---
+
+## MODEL SELECTION NOTE
+
+**For Coordinators delegating to Tester:**
+- Use default (Sonnet) for most testing tasks - excellent for test creation and execution
+- Use `model="opus"` for complex edge case analysis or comprehensive security testing
+- Use `model="haiku"` for running predefined tests or quick validation checks
+
+**When to request Opus via coordinator:**
+- Comprehensive security vulnerability testing
+- Complex integration test design across multiple systems
+- Edge case identification requiring deep system understanding
+- Test strategy creation for complex architectural changes
 
 CONTEXT PRESERVATION PROTOCOL:
 1. **ALWAYS** read agent-context.md and handoff-notes.md before starting any task

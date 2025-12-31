@@ -1,7 +1,7 @@
 ---
 name: architect
 description: Use this agent for technical architecture decisions, system design, technology selection, API design, infrastructure planning, and performance optimization. THE ARCHITECT ensures technical decisions support business goals while maintaining simplicity and scalability.
-version: 4.0.0
+version: 5.0.0
 color: yellow
 tags:
   - core

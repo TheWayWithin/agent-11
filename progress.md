@@ -16,805 +16,523 @@ This file has been restructured to be a BACKWARD-LOOKING changelog capturing:
 
 ## 📦 Recent Deliverables
 
-### [2025-12-05 13:55] - Sprint 8: Phase Gate Enforcement System ✅
-**Created by**: Coordinator investigation and direct implementation
-**Type**: Process Enhancement - File update protocol enforcement
-**Related**: Sprint 8 (v4.4.0)
-
-**Description**:
-Implemented comprehensive Phase Gate Enforcement System to prevent stale tracking files from causing Claude to repeat completed work. Transforms advisory update protocols into structural enforcement that makes missed updates nearly impossible.
-
-**Problem Addressed**:
-Users experienced Claude attempting to repeat already-completed work when resuming sessions because project-plan.md, progress.md, or handoff-notes.md were not updated after completion.
-
-**Root Cause Analysis**:
-1. Phase transitions were advisory, not blocking
-2. No session resumption staleness check
-3. Pre-clear updates often skipped
-4. No timestamp discipline for staleness detection
-5. Handoff updates not mandatory
-
-**Files Created/Modified**:
-
-1. **`project/commands/coord.md`** (+~150 lines):
-   - SESSION RESUMPTION PROTOCOL - Mandatory staleness check before any action
-   - PHASE GATE ENFORCEMENT - Blocking gate with 5 verification checkpoints
-   - PRE-CLEAR GATE - Mandatory file updates before /clear
-   - MISSION COMPLETION GATE - Final verification checklist
-
-2. **`project/agents/specialists/coordinator.md`** (+~100 lines):
-   - SESSION RESUMPTION PROTOCOL at file top
-   - Enhanced PRE-CLEAR GATE with mandatory checklist
-   - PHASE GATE ENFORCEMENT after project-plan.md updates section
-
-3. **`CLAUDE.md`**:
-   - Added Session Resumption Protocol subsection
-   - Added Phase Gate Enforcement subsection
-   - Added staleness indicators checklist
-
-4. **`templates/handoff-notes-template.md`**:
-   - Added mandatory timestamp header (Last Updated, Current Phase, Mission Status)
-   - Added MANDATORY UPDATE PROTOCOL section at end
-
-5. **`templates/progress-template.md`**:
-   - Added TIMESTAMP REQUIREMENTS section
-   - Added Phase Completion Entry format (mandatory)
-
-6. **12x Mission Files** (`missions/mission-*.md`):
-   - Added PHASE GATE PROTOCOL section to all multi-phase missions
-   - Files: build, mvp, fix, deploy, document, refactor, optimize, migrate, integrate, security, release, architecture, product-description
-
-**Key Enforcement Mechanisms**:
-
-| Mechanism | Location | Purpose |
-|-----------|----------|---------|
-| Staleness Check | Session start | Prevents repeating completed work |
-| Phase Gate | Phase transitions | Blocks proceeding without updates |
-| Pre-Clear Gate | Before /clear | Ensures state saved before clearing |
-| Timestamp Requirement | All files | Enables staleness detection |
-| Verification Commands | coord.md | Quick grep commands to check state |
-
-**Expected Reliability Improvement**:
-
-| Metric | Before | After |
-|--------|--------|-------|
-| Update compliance | ~70% | 99.9%+ |
-| Missed phase transitions | Common | Near-zero |
-| Repeated work incidents | Frequent | Rare |
-
-**Verification**:
-- ✅ All changes in library files (project/, templates/, CLAUDE.md)
-- ✅ Working squad files (.claude/) NOT modified
-- ✅ coord.md verified: 23,433 bytes at 13:48
-- ✅ coordinator.md verified: 115,129 bytes at 13:49
-- ✅ All 12 mission files updated
-
----
-
-### [2025-12-01] - Sprint 7: Social Media Post Generation for Daily Reports ✅
-**Created by**: Coordinator orchestration with Developer and Documenter specialists
-**Type**: Feature Enhancement - /dailyreport command extension
-**Related**: Sprint 7 (v4.3.0)
-**Git Commit**: `3381ba5`
-**Tag**: `v4.3.0-social-media-posts`
-
-**Description**:
-Extended the `/dailyreport` AI enhancement to automatically generate platform-optimized social media posts (Twitter/X and LinkedIn) alongside the blog content. Enables seamless build-in-public workflow with copy-paste ready posts.
-
-**Files Created/Modified**:
-
-1. **`project/commands/scripts/enhance_dailyreport.py`** (602 lines, 19.8KB):
-   - Added `generate_social_media_prompt()` - Creates LLM prompt for both platforms
-   - Added `generate_social_content()` - Generates and validates social posts
-   - Added `format_twitter_output()` - Formats Twitter post with char count validation
-   - Added `format_linkedin_output()` - Formats LinkedIn post with hook validation
-   - Updated `process_file()` to generate social media files
-   - New environment variables: `DAILYREPORT_ENABLE_SOCIAL`, `DAILYREPORT_BASE_URL`
-
-2. **`project/commands/dailyreport.md`** (335 lines, 10.8KB):
-   - Added "SOCIAL MEDIA POST GENERATION" section
-   - Updated KEY FEATURES with social media capabilities
-   - Added platform specifications (Twitter/X, LinkedIn)
-   - Added configuration documentation
-   - Added publishing workflow guide
-   - Added troubleshooting section
-
-**New Output Files**:
-- `YYYY-MM-DD-twitter.md` - Twitter/X post (280 char limit, 71-100 optimal)
-- `YYYY-MM-DD-linkedin.md` - LinkedIn post (800-1000 char sweet spot)
-
-**Platform Specifications**:
-
-| Platform | Char Limit | Optimal | Features |
-|----------|------------|---------|----------|
-| Twitter/X | 280 | 71-100 | 1-2 hashtags, hook + CTA pattern |
-| LinkedIn | 3,000 | 800-1000 | 140 char hook, engagement question |
-
-**Environment Variables**:
-```bash
-DAILYREPORT_ENABLE_SOCIAL=true    # Enable/disable (default: true)
-DAILYREPORT_BASE_URL=jamiewatters.work  # For progress links
-```
-
-**Cost & Performance**:
-- Per report: ~$0.002 total (blog + social)
-- Processing time: ~5 seconds
-- Model: gpt-4o-mini
-
-**Deployment**:
-- Library files updated in `project/commands/`
-- Local deployment to `.claude/commands/` completed
-- install.sh already configured for both files
-
-**Verification**:
-- ✅ Script syntax validated
-- ✅ Documentation complete with examples
-- ✅ project-plan.md Sprint 7 tasks marked complete
-- ✅ Git commit and tag created
-- ✅ Deployed to this project
-
----
-
-### [2025-11-29] - README Documentation Update for Sprints 4-5 ✅
-**Created by**: Direct implementation
-**Type**: Documentation - GitHub README enhancement
-**Related**: Sprint 4 (Opus 4.5) and Sprint 5 (MCP Optimization)
-
-**Description**:
-Updated GitHub README.md to document Sprints 4 and 5 enhancements that were missing from public documentation. Changes placed in appropriate existing sections to maintain information ergonomics.
-
-**Changes Made**:
-
-1. **"What's New" Section** (lines 46-97):
-   - Renamed to "What's New (v2.0 → v4.1)"
-   - Added Sprint 4 (v4.0.0): Opus 4.5 Dynamic Model Selection
-   - Added Sprint 5 (v4.1.0): MCP Context Optimization with profile table
-   - Links to new guides
-
-2. **MCP Profile Table** (lines 309-327):
-   - Expanded from 7 → 13 profiles
-   - Added all Sprint 5 lean profiles
-   - Updated recommendation to "Start with `minimal-core`"
-
-3. **Performance Metrics Table** (lines 738-750):
-   - Added Mission Success: +15% (Opus 4.5)
-   - Added Cost Efficiency: -24% (iterations offset token cost)
-   - Added MCP Context: 60-90% reduction
-
-4. **/dailyreport Command** (line 1082):
-   - Added AI Enhancement note with cost and link
-
-5. **Documentation Links** (lines 847-849):
-   - Renamed to "Modernization Guides (v2.0-v4.1)"
-   - Added v4.0+ links to Model Selection and MCP Optimization guides
-
-**Net Impact**: ~45 lines added, maintained README ergonomics by updating existing sections rather than creating new top-level structure.
-
----
-
-### [2025-11-29] - Sprint 6: Persistence Protocol Enforcement - COMPLETE ✅
-**Created by**: Coordinator direct implementation
-**Type**: Feature enhancement - Protocol enforcement
-**Sprint**: Sprint 6 - Persistence Protocol Enforcement
-
-**Description**:
-Completed Sprint 6, implementing comprehensive protocol enforcement to make file persistence bypass impossible during `/coord` missions. This sprint addresses the post-mortem finding that Sprint 2's architecture was sound but not consistently enforced under cognitive load.
-
-**Phases Completed**:
-- ✅ Phase 6A: Coordinator Prompt Hardening - Pre-flight checklist in coord.md
-- ✅ Phase 6B: Response Validation System - Violation detection in coordinator.md
-- ✅ Phase 6C: Automatic Execution Enhancement - Quick reference guide created
-- ✅ Phase 6D: Verification Enforcement - Mandatory verification with templates
-- ✅ Phase 6E: Testing and Deployment - All files verified, install.sh updated
-
-**Deliverables Created**:
-
-1. **New Files** (3 files verified on filesystem):
-   - `templates/file-operation-delegation.md` (6572 bytes, 243 lines) ✅
-   - `templates/file-verification-checklist.md` (4363 bytes, 176 lines) ✅
-   - `project/field-manual/file-operation-quickref.md` (7427 bytes, 311 lines) ✅
-
-2. **Updated Files**:
-   - `project/commands/coord.md` - Added FILE OPERATION DELEGATION PROTOCOL section
-   - `project/agents/specialists/coordinator.md` - Added SPRINT 6: RESPONSE VALIDATION CHECKLIST
-   - `project/missions/mission-build.md` - Added Sprint 6 Enforcement Protocol
-   - `project/missions/mission-mvp.md` - Added Sprint 6 Enforcement Protocol
-   - `project/missions/mission-fix.md` - Added Sprint 6 Enforcement Protocol
-   - `CLAUDE.md` - Updated FILE PERSISTENCE ARCHITECTURE section
-   - `project/deployment/scripts/install.sh` - Added new files to deployment
-
-**Key Enforcement Mechanisms**:
-- Pre-flight checklist: "If file operation: includes JSON output requirement"
-- Response validation: Red flags for natural language completion claims
-- Mandatory verification: Cannot mark phase complete without ls/head verification
-- Copy-paste templates: Ready-to-use delegation prompts
-
-**Files Verified**: ✅ 2025-11-29 07:25
-```bash
-ls -la templates/file-operation-delegation.md templates/file-verification-checklist.md project/field-manual/file-operation-quickref.md
-# All 3 files confirmed present with non-zero sizes
-```
-
----
-
-### [2025-11-28] - Sprint 5: MCP Context Optimization - COMPLETE ✅
-**Created by**: Coordinator orchestration with specialists
-**Type**: Feature enhancement - MCP token optimization
-**Sprint**: Sprint 5 - MCP Context Optimization
-
-**Description**:
-Completed Sprint 5, implementing comprehensive MCP context optimization to reduce token consumption by 60%+ without API-level features (defer_loading not available in Claude Code).
-
-**Phases Completed**:
-- ✅ Phase 5A: MCP Profile Optimization - Created 6 new lean profiles
-- ✅ Phase 5B: Consolidated MCP Server Design - 74.8% token reduction spec
-- ✅ Phase 5C: Tool Description Optimization - Formula documented
-- ✅ Phase 5D: Documentation & Future Preparation - Guide created
-
-**Deliverables Created**:
-
-1. **New MCP Profiles** (6 files):
-   - `.mcp-profiles/minimal-core.json` (~5K tokens)
-   - `.mcp-profiles/research-only.json` (~15K tokens)
-   - `.mcp-profiles/frontend-deploy.json` (~15K tokens)
-   - `.mcp-profiles/backend-deploy.json` (~15K tokens)
-   - `.mcp-profiles/db-read.json` (~15K tokens)
-   - `.mcp-profiles/db-write.json` (~18K tokens)
-
-2. **Documentation**:
-   - `.mcp-profiles/README.md` - Profile selection guide
-   - `project/field-manual/mcp-optimization-guide.md` - Comprehensive optimization guide
-   - `project/mcp/mcp-agent11-optimized.md` - Consolidated MCP server specification
-
-3. **Updated Files**:
-   - `CLAUDE.md` - Added MCP Context Optimization section
-   - `project/deployment/scripts/install.sh` - Added mcp-optimization-guide.md to deployment
-   - `project/deployment/scripts/install.sh` - Added 6 Sprint 5 profiles to deployment (minimal-core, research-only, frontend-deploy, backend-deploy, db-read, db-write)
-
-**Token Reduction Achieved**:
-
-| Profile Type | Before | After | Reduction |
-|--------------|--------|-------|-----------|
-| Minimal tasks | 50-60K | 5K | 90% |
-| Research | 50-60K | 15K | 70% |
-| Deployment | 78K | 15K | 81% |
-| Database | 72K | 15K | 79% |
-| Standard dev | N/A | 50K | baseline |
-
-**Consolidated Tool Specification**:
-- 32 fragmented tools → 8 consolidated tools
-- Total token reduction: 55.5K → 14K = **74.8%**
-- Strategy: Document-first (server implementation deferred)
-
----
-
-### [2025-11-28] - Sprint 5: MCP Context Optimization - Planning Enhanced ✅
-**Created by**: Research and strategic analysis
-**Type**: Strategic planning with tactical implementation guidance
-**Sprint**: Sprint 5 - MCP Context Optimization
-
-**Description**:
-Evolved Sprint 5 plan with tactical implementation guidance, concrete examples, and Phase 5E (Monitoring).
-
-**Enhancements Added**:
-- **Phase 5E: Monitoring & Iteration** - Data-driven optimization with logging and dashboards
-- **Quick Win examples**: Minimal core profile JSON, TypeScript consolidated server architecture
-- **Description optimization formula**: `Action verb + object + key parameters`
-- **Cumulative savings table**: Phase-by-phase token reduction targets
-- **Specific tracking metrics**: 4 quantifiable success measures
-- **Before/after examples**: 47 tokens → 12 tokens (74% reduction per description)
-
-**Updated Token Targets**:
-| Phase | Cumulative Range | Effort |
-|-------|------------------|--------|
-| 5A | 50-60K → 35-42K | Low |
-| 5B | 35-42K → 25-35K | Medium |
-| 5C | 25-35K → 20-30K | Low |
-| 5E | Data-driven | Low |
-| **Total** | **50-60% reduction** | **Medium** |
-
-**Research Findings**:
-
-| Feature | Status in Claude Code |
-|---------|----------------------|
-| `defer_loading` (API-level) | ❌ Not supported (GitHub #7328) |
-| `tool_search_tool` | ❌ Not supported (API only) |
-| Tool consolidation | ✅ Works today |
-| Profile optimization | ✅ Works today |
-| mcpick CLI | ✅ Works today |
-
-**Key Discovery**:
-- Anthropic's defer_loading achieves 85% token reduction but requires API-level access
-- Claude Code loads ALL tools from configured MCP servers without filtering
-- **Alternative approach**: Tool consolidation achieves 60% reduction (proven by mcp-omnisearch)
-- **Verified**: Scott Spence achieved 20 tools → 8 tools = 14,214 → 5,663 tokens
-
-**Sprint 5 Plan Added to project-plan.md** (Lines 755-1014):
-
-| Phase | Objective | Days |
-|-------|-----------|------|
-| 5A | MCP Profile Optimization | 1-3 |
-| 5B | Consolidated MCP Server Design | 4-7 |
-| 5C | Tool Description Optimization | 5-6 |
-| 5D | Documentation & Future Prep | 8-10 |
-
-**Target Metrics**:
-- Profile tokens: 50-60K → 25-35K (-40-50%)
-- Lean profiles: <15K tokens
-- Ready for defer_loading when Claude Code adds support
-
-**References**:
-- Research docs: `/Ideation/Agent-11 Tool usage with opus 4.5/`
-- GitHub Issue #7328: Confirms defer_loading not in Claude Code
-- Scott Spence guide: Optimising MCP Server Context Usage
-
----
-
-### [2025-11-27] - Sprint 4: Opus 4.5 Integration - Phase 4D Complete ✅
-**Created by**: Direct validation
-**Type**: Testing and Validation
-**Sprint**: Sprint 4 - Opus 4.5 Integration for Enhanced Orchestration
-
-**Description**:
-Completed Phase 4D validation testing for Sprint 4. All changes verified and ready for deployment.
-
-**Phase 4D Validation Results**:
-
-| Test | Result | Details |
+### [2025-12-31] - Sprint 9 Phase 9I: Deployment and Rollout - IN PROGRESS 🔄
+**Created by**: Coordinator with direct implementation
+**Type**: Deployment - Install script updates and version bump
+**Related**: Sprint 9 Phase 9I
+**Status**: 🔄 IN PROGRESS (3/5 tasks complete, 2 awaiting user action)
+
+**Deliverables Created** (verified on filesystem):
+
+| File | Change | Purpose |
 |------|--------|---------|
-| YAML Frontmatter | ✅ PASS | All 11 agents valid, 7 at v4.0.0 |
-| Model Field | ✅ PASS | Coordinator has `model: opus` |
-| MODEL SELECTION Sections | ✅ PASS | 7 agents have sections |
-| model_recommendation Fields | ✅ PASS | 6 agents have fields |
-| coord.md Updates | ✅ PASS | MODEL SELECTION section present |
-| Field Manual Guide | ✅ PASS | 447 lines, 14.8KB |
-| CLAUDE.md References | ✅ PASS | Guide referenced correctly |
-| File Structure | ✅ PASS | 11 agents, 8 commands, 24 docs |
+| `project/deployment/scripts/install.sh` | +100 lines | Sprint 9 file deployments |
+| `project/agents/specialists/*.md` | version: 5.0.0 | All 11 agents updated |
+| `CHANGELOG.md` | +80 lines | v5.0.0 release notes |
 
-**Git Changes Summary**:
-- 7 library agents modified (+190 lines total)
-- 1 new file created (model-selection-guide.md)
-- coord.md and CLAUDE.md updated
-- Working squad coordinator updated
+**install.sh Updates**:
+- Added 4 new commands: foundations.md, bootstrap.md, plan.md, skills.md
+- Added 5 new templates: foundation-prd.md, foundation-vision.md, plan-*.yaml
+- Added 4 new field manual guides
+- Added skills deployment to `.claude/skills/`
+- Added schemas deployment to `schemas/`
+- Added gates deployment to `gates/`
+- Added stack-profiles deployment to `stack-profiles/`
 
-**Ready for Phase 4E**: Git commit and tag v4.0.0
+**Version Updates**:
+- All 11 agents updated from 3.0.0/4.0.0 → 5.0.0
 
----
+**CHANGELOG.md**:
+- Added v5.0.0 section with full feature list
+- Added migration guide
+- Added v4.1.0 and v4.0.0 stubs
 
-### [2025-11-27] - Sprint 4: Opus 4.5 Integration - Phase 4C Complete ✅
-**Created by**: Direct implementation
-**Type**: Documentation - Comprehensive model selection guide
-**Sprint**: Sprint 4 - Opus 4.5 Integration for Enhanced Orchestration
-
-**Description**:
-Completed Phase 4C of Sprint 4, creating comprehensive documentation for model selection.
-
-**Phase 4C Deliverables** (COMPLETED):
-
-1. **Created model-selection-guide.md** (`project/field-manual/model-selection-guide.md`):
-   - 450+ lines of comprehensive documentation
-   - Tiered model strategy explanation
-   - Task tool model parameter syntax and examples
-   - Complexity decision framework with checklists
-   - Agent-specific recommendations for all 11 agents
-   - Cost-benefit analysis with ROI calculations
-   - Mission type model mapping
-   - Troubleshooting section
-   - Best practices (DO/DON'T)
-   - Quick reference card
-
-2. **Updated CLAUDE.md**:
-   - Added reference to model-selection-guide.md in Reference Documentation section
-
-**Files Created**:
-- `project/field-manual/model-selection-guide.md` (NEW - 450+ lines)
-
-**Files Modified**:
-- `CLAUDE.md` - Added guide reference
-- `project-plan.md` - Marked Phase 4C complete
-
-**Remaining Phases**:
-- Phase 4D: Testing and validation (optional - can skip to 4E)
-- Phase 4E: Final deployment (git commit, tag v4.0.0)
+**Awaiting User Action**:
+1. Create git commit and tag v5.0.0
+2. Verify deployment in fresh project
 
 ---
 
-### [2025-11-27] - Sprint 4: Opus 4.5 Integration - Phase 4B Complete ✅
-**Created by**: Direct implementation
-**Type**: Feature enhancement - Dynamic model selection
-**Sprint**: Sprint 4 - Opus 4.5 Integration for Enhanced Orchestration
+### [2025-12-31] - Sprint 9 Phase 9H: Testing and Documentation - COMPLETE ✅
+**Created by**: Coordinator with direct implementation
+**Type**: Documentation - User guides and validation
+**Related**: Sprint 9 Phase 9H
+**Status**: ✅ COMPLETE (6/6 tasks)
 
-**Description**:
-Completed Phase 4B of Sprint 4, implementing dynamic model selection guidance across all key specialists and the coord.md command.
+**Deliverables Created** (verified on filesystem):
 
-**Phase 4B Deliverables** (COMPLETED):
+| File | Size | Purpose |
+|------|------|---------|
+| `project/field-manual/plan-driven-development.md` | 7.1KB | Complete user guide for plan-driven workflow |
+| `project/field-manual/quality-gates-guide.md` | 8.4KB | Configuring and using quality gates |
+| `project/field-manual/skills-guide.md` | 8.5KB | Using and creating SaaS skills |
+| `project/field-manual/architectural-principles.md` | 9.0KB | 7 architectural principles from LLM consensus |
+| `CLAUDE.md` | (modified) | Sprint 9 section with new commands |
+| `README.md` | (modified) | Sprint 9 (v5.0.0) section |
 
-1. **coord.md Command Updates** (`project/commands/coord.md`):
-   - Added `model parameter selected` to PRE-DELEGATION CHECKLIST
-   - Added "MODEL SELECTION FOR DELEGATIONS" section with:
-     - Model selection table (Opus/Sonnet/Haiku)
-     - Complexity triggers checklist
-     - Delegation examples with model parameter
+**Test Results**:
+- All 5 Sprint 9 commands exist and are properly formatted
+- All 7 schemas validate (YAML syntax correct)
+- All 7 skills have proper YAML frontmatter
+- Quality gate runner (run-gates.py) passes Python syntax check
+- All 3 stack profiles exist and are valid
 
-2. **Architect Updates** (`project/agents/specialists/architect.md`):
-   - Updated version to 4.0.0
-   - Added `model_recommendation: opus_for_complex`
-   - Added MODEL SELECTION NOTE section for complex architectural decisions
+**Documentation Summary**:
+- 4 new field manual guides (~4,600 words total)
+- CLAUDE.md updated with Sprint 9 section (~80 lines)
+- README.md updated with Sprint 9 (v5.0.0) section (~40 lines)
 
-3. **Analyst Updates** (`project/agents/specialists/analyst.md`):
-   - Updated version to 4.0.0
-   - Added `model_recommendation: sonnet_default`
-   - Added MODEL SELECTION NOTE section with Opus/Haiku guidance
-
-4. **Documenter Updates** (`project/agents/specialists/documenter.md`):
-   - Updated version to 4.0.0
-   - Added `model_recommendation: haiku_for_simple`
-   - Added MODEL SELECTION NOTE emphasizing Haiku for simple tasks
-
-5. **Developer Updates** (`project/agents/specialists/developer.md`):
-   - Updated version to 4.0.0
-   - Added `model_recommendation: sonnet_default`
-   - Added MODEL SELECTION NOTE for complex refactoring guidance
-
-6. **Tester Updates** (`project/agents/specialists/tester.md`):
-   - Updated version to 4.0.0
-   - Added `model_recommendation: sonnet_default`
-   - Added MODEL SELECTION NOTE for security testing guidance
-
-**Files Modified**:
-- `project/commands/coord.md` - Added model selection section
-- `project/agents/specialists/architect.md` - v4.0.0, model recommendations
-- `project/agents/specialists/analyst.md` - v4.0.0, model recommendations
-- `project/agents/specialists/documenter.md` - v4.0.0, model recommendations
-- `project/agents/specialists/developer.md` - v4.0.0, model recommendations
-- `project/agents/specialists/tester.md` - v4.0.0, model recommendations
-
-**Model Recommendation Summary**:
-| Agent | Default Model | Opus When | Haiku When |
-|-------|---------------|-----------|------------|
-| Coordinator | Opus | Always (configured) | N/A |
-| Strategist | Sonnet | Complex/ambiguous requirements | N/A |
-| Architect | Sonnet | System-wide design, migrations | N/A |
-| Developer | Sonnet | Complex refactoring, migrations | Simple fixes |
-| Tester | Sonnet | Security testing, edge case analysis | Quick validation |
-| Analyst | Sonnet | Multi-dimensional analysis | Quick lookups |
-| Documenter | Sonnet | Architecture docs | Simple updates |
-
-**Remaining Phases**:
-- Phase 4C: Create field-manual/model-selection-guide.md (comprehensive guide)
-- Phase 4D: Testing and validation
-- Phase 4E: Final deployment (git commit, tag v4.0.0)
-
----
-
-### [2025-11-27] - Sprint 4: Opus 4.5 Integration - Phase 4A Complete ✅
-**Created by**: Direct implementation based on `/Ideation/Agent-11 opus4.5/` analysis
-**Type**: Feature enhancement - Model selection optimization
-**Sprint**: Sprint 4 - Opus 4.5 Integration for Enhanced Orchestration
-
-**Description**:
-Initiated Sprint 4 to integrate Claude Opus 4.5 for improved mission orchestration. Based on comprehensive analysis in the Ideation folder, this sprint implements tiered model deployment to optimize cost and performance.
-
-**Phase 4A Deliverables** (COMPLETED):
-
-1. **Updated project-plan.md with Sprint 4**:
-   - Added complete Sprint 4 plan (276 lines)
-   - 5 phases: 4A (Coordinator), 4B (Dynamic Selection), 4C (Documentation), 4D (Testing), 4E (Deployment)
-   - Expected ROI: -24% cost, +15% mission success rate
-
-2. **Library Coordinator Updates** (`project/agents/specialists/coordinator.md`):
-   - Added `model: opus` to YAML frontmatter
-   - Updated version to 4.0.0
-   - Added MODEL SELECTION PROTOCOL section (~95 lines) with:
-     - Tiered model strategy (Opus/Sonnet/Haiku)
-     - Dynamic model selection examples
-     - Complexity triggers checklist
-     - Cost-benefit awareness table
-
-3. **Working Squad Coordinator Updates** (`.claude/agents/coordinator.md`):
-   - Added `model: opus` to YAML frontmatter
-   - Updated version to 4.0.0
-   - Maintains consistency with library version
-
-4. **Strategist Updates** (`project/agents/specialists/strategist.md`):
-   - Added `model_recommendation: opus_for_complex` to YAML
-   - Updated version to 4.0.0
-   - Added MODEL SELECTION NOTE section explaining when Opus should be used
-
-5. **CLAUDE.md Updates**:
-   - Added "Model Selection Guidelines" section (~100 lines)
-   - Includes tiered model strategy table
-   - Task tool model parameter usage examples
-   - Cost-benefit analysis
-   - Expected performance improvements
-
-6. **install.sh Validation**:
-   - Verified YAML validation handles optional `model` field correctly
-   - No changes needed - validation already passes
-
-**Key Metrics from Analysis**:
-| Metric | Baseline | Target | Expected Impact |
-|--------|----------|--------|-----------------|
-| Mission Success Rate | 70% | 85% | +15% |
-| Iterations to Completion | 3.5 | 2.5 | -28% |
-| Context Clearing Events | 2/mission | 1/mission | -50% |
-| Total Cost per Mission | $0.45 | $0.34 | -24% |
-
-**Files Modified**:
-- `project-plan.md` - Added Sprint 4 (276 lines)
-- `project/agents/specialists/coordinator.md` - Added model + MODEL SELECTION PROTOCOL
-- `.claude/agents/coordinator.md` - Added model specification
-- `project/agents/specialists/strategist.md` - Added model recommendation
-- `CLAUDE.md` - Added Model Selection Guidelines section
-
-**Next Steps (Phases 4B-4E)**:
-- Phase 4B: Define complexity triggers, update delegation examples
-- Phase 4C: Create field-manual/model-selection-guide.md
-- Phase 4D: Testing and validation
-- Phase 4E: Final deployment and tagging
-
-**Reference**: `/Ideation/Agent-11 opus4.5/` contains full analysis research
-
----
-
-### [2025-11-27 10:30] - Plan Archive Operation ✅ COMPLETE
-**Created by**: /planarchive command
-**Type**: Maintenance - Token optimization and file cleanup
-
-**Description**:
-Archived completed/stale content from progress.md to reduce token overhead while preserving complete project history.
-
-**Results**:
-
-| File | Before | After | Reduction |
-|------|--------|-------|-----------|
-| project-plan.md | 446 lines | 446 lines | 0% (already optimal) |
-| progress.md | 1,123 lines | ~370 lines | **67%** |
-
-**Content Archived to progress-archive.md**:
-- 11 entries from 2025-01-19 to 2025-11-19
-- Sprint 1-3 implementation details
-- File persistence bug documentation
-- Foundation guardrails implementation
-- Phantom document bug fix
-
-**Estimated Token Savings**: ~9,060 tokens
-
----
-
-### [2025-11-26 16:45] - install.sh YAML Validation Bug Fix ✅ CRITICAL FIX
-**Discovered by**: User deployment failure on JamieWatters project
-**Type**: Critical bug fix - installation validation
-**Severity**: HIGH - Prevented all deployments with agent files containing `---` separators
-**Commits**: 55ab126 (fix), 148d975 (docs)
-
-**Description**:
-Fixed critical bug in install.sh validation function that caused false-positive "Missing 'description' field" errors during agent deployment. The sed command for extracting YAML frontmatter was matching ALL `---` markers in agent files (including visual separators used throughout the content), not just the opening/closing YAML delimiters.
-
-**Discovery Timeline**:
-1. User reported deployment failure: `/Users/jamiewatters/DevProjects/JamieWatters`
-2. Error: `[ERROR] Missing 'description' field in YAML header: coordinator.md`
-3. Verified coordinator.md on GitHub HAS description field (line 3)
-4. Downloaded file directly - confirmed field exists
-5. Tested sed extraction - found it was extracting 1,174 lines instead of 20
-6. Identified root cause: sed matching multiple `---` ranges throughout file
-
-**Root Cause**:
-The sed pattern `/^---$/,/^---$/p` matches ALL ranges of `---` markers in a file. Agent files like coordinator.md use `---` as visual separators throughout the content (lines 402, 596, 815, etc.). When validation extracted the "YAML section", it was getting 1,174 lines instead of the expected 20-line frontmatter, causing the grep for `^description:` to fail due to parsing the wrong content.
-
-**Fix**:
-Modified line 429 of install.sh to limit sed extraction to first 30 lines only:
+**Verification**:
 ```bash
-# Old (buggy):
-yaml_section=$(sed -n '/^---$/,/^---$/p' "$agent_file")
-
-# New (fixed):
-yaml_section=$(head -n 30 "$agent_file" | sed -n '/^---$/,/^---$/p')
+ls -la project/field-manual/*.md | wc -l  # 28 guides total
+grep -c "Sprint 9" CLAUDE.md              # 5 mentions
+grep -c "saas-auth" README.md             # 1 mention
 ```
 
-**Testing**:
+---
+
+### [2025-12-30] - Sprint 9 Phase 9G: Coordinator Plan-Driven Orchestration - COMPLETE ✅
+**Created by**: Coordinator with @developer delegation
+**Type**: Feature - Plan-Driven Autonomous Coordination
+**Related**: Sprint 9 Phase 9G
+**Status**: ✅ COMPLETE (6/6 tasks)
+
+**Files Modified** (verified on filesystem):
+
+| File | Change | Purpose |
+|------|--------|---------|
+| `project/agents/specialists/coordinator.md` | +290 lines | PLAN-DRIVEN ORCHESTRATION PROTOCOL |
+| `project/commands/coord.md` | +10 lines | Plan-Driven Commands section |
+
+**Key Sections Added to coordinator.md**:
+1. **PLAN-DRIVEN ORCHESTRATION PROTOCOL** (~line 498)
+   - Mission Start Protocol: READ → PARSE → LOAD → IDENTIFY → ROUTE
+   - `project-plan.md` as single source of truth
+
+2. **`/coord continue` - Autonomous Continue Mode** (~line 523)
+   - Execution loop with 6 stopping conditions
+   - Gate-aware phase transitions
+   - Automatic plan updates after each task
+
+3. **Phase Context Management** (~line 569)
+   - `/clear` workflow support
+   - `phase-N-context.yaml` generation
+   - Stateless resumption capability
+
+4. **SMART DELEGATION ROUTING** (~line 649)
+   - 10-path routing table (auth, ui, api, test, deploy, docs, data, architecture, strategy, content)
+   - Automatic skill injection based on path
+
+5. **VISION INTEGRITY VERIFICATION** (~line 695)
+   - 4 drift categories: ALIGNED, MINOR_DRIFT, MAJOR_DRIFT, OUT_OF_SCOPE
+   - Trigger points for verification
+   - Drift response protocols
+
+**Changes to coord.md**:
+- Added Plan-Driven Commands section (~line 158)
+- New commands: `continue`, `complete phase N`, `vision-check`
+
+**Verification**:
 ```bash
-# Before fix: 1,174 lines extracted (wrong)
-sed -n '/^---$/,/^---$/p' coordinator.md | wc -l
-# Result: 1174
-
-# After fix: 20 lines extracted (correct)
-head -n 30 coordinator.md | sed -n '/^---$/,/^---$/p' | wc -l
-# Result: 20
-
-# Validation test
-head -n 30 coordinator.md | sed -n '/^---$/,/^---$/p' | grep -q "^description:"
-# Result: ✓ VALIDATION PASSES
+grep -n "PLAN-DRIVEN ORCHESTRATION" project/agents/specialists/coordinator.md  # Line 498
+grep -n "/coord continue" project/agents/specialists/coordinator.md             # Line 523
+grep -n "SMART DELEGATION ROUTING" project/agents/specialists/coordinator.md    # Line 649
+grep -n "VISION INTEGRITY" project/agents/specialists/coordinator.md            # Line 695
+grep -n "Plan-Driven Commands" project/commands/coord.md                        # Line 158
 ```
 
-**Impact**:
-- **Before**: All deployments to user projects failing with "Missing 'description' field" error
-- **After**: YAML validation correctly identifies frontmatter, deployments succeed
-- **Affected Files**: All 11 library agent files (any file with `---` content separators)
-- **User Impact**: Blocks installation on trader-7, JamieWatters, and all other deployment targets
-
-**Prevention**:
-- Add test case for agent files with multiple `---` markers
-- Document that YAML frontmatter should always be within first 30 lines
-- Consider more robust YAML parsing (e.g., using yq or proper YAML parser)
-- Add integration test that validates all library agents before release
+**Integration Points**:
+- Coordinator now reads project-plan.md at mission start
+- Autonomous execution via `/coord continue` until blocked
+- Phase transitions verified with quality gates
+- Skills auto-loaded based on task routing
+- Vision alignment checked before major decisions
 
 ---
 
-### [2025-11-26] - AI-Powered Daily Report Enhancement ✅ COMPLETE
-**Created by**: Direct implementation and integration
-**Type**: Feature enhancement - AI-powered blog post generation
-**Related**: Daily report workflow improvement
-**Commits**: 2461d97, 7f856d2
+### [2025-12-30] - Sprint 9 Phase 9F: SaaS Skills Library - COMPLETE ✅
+**Created by**: Coordinator with direct implementation
+**Type**: Feature - SaaS Domain Expertise Library
+**Related**: Sprint 9 Phase 9F
+**Status**: ✅ COMPLETE (6/6 tasks)
 
-**Description**:
-Integrated LLM-based enhancement into the `/dailyreport` command to automatically transform structured progress reports into engaging, narrative-driven blog posts. Users can now generate two versions of their daily reports: a structured technical version and a blog-ready narrative version optimized for build-in-public audiences.
+**Deliverables Created** (verified on filesystem):
 
-**Deliverables**:
-1. **enhance_dailyreport.py Script** (264 lines, 9.4KB):
-   - Purpose: AI transformation of raw progress data into engaging narratives
-   - Location: `project/commands/scripts/enhance_dailyreport.py`
-   - Features: OpenAI integration, regex-based parsing, structured JSON input, graceful error handling
-   - Models supported: gpt-4.1-mini (default), gpt-4.1-nano, gemini-2.5-flash
-   - Cost: ~$0.001 per report (~$0.36/year for daily use)
-   - Processing time: ~5 seconds per report
+| File | Size | Purpose |
+|------|------|---------|
+| `project/schemas/skill.schema.yaml` | 15.2KB | Skill specification schema (SKILL.md format) |
+| `project/schemas/stack-profile.schema.yaml` | 17.1KB | Stack profile configuration schema |
+| `project/schemas/skill-loading.schema.yaml` | 10.8KB | Skill loading and trigger matching config |
+| `templates/stack-profiles/nextjs-supabase.yaml` | 3.2KB | Next.js + Supabase stack profile |
+| `templates/stack-profiles/remix-railway.yaml` | 3.1KB | Remix + Railway + PostgreSQL profile |
+| `templates/stack-profiles/sveltekit-supabase.yaml` | 3.1KB | SvelteKit + Supabase profile |
+| `templates/stack-profiles/README.md` | 5.7KB | Stack profile documentation |
+| `project/skills/saas-auth/SKILL.md` | 17.9KB | Authentication patterns & code |
+| `project/skills/saas-payments/SKILL.md` | 20.0KB | Stripe payments integration |
+| `project/skills/saas-multitenancy/SKILL.md` | 8.5KB | Multi-tenant RLS patterns |
+| `project/skills/saas-billing/SKILL.md` | 10.1KB | Subscription management |
+| `project/skills/saas-email/SKILL.md` | 9.3KB | Transactional email (Resend) |
+| `project/skills/saas-onboarding/SKILL.md` | 12.4KB | User onboarding flows |
+| `project/skills/saas-analytics/SKILL.md` | 12.4KB | Product analytics (PostHog) |
+| `project/commands/skills.md` | 6.2KB | Skill discovery command (/skills) |
+| `project/agents/specialists/coordinator.md` | (modified) | Added SKILL LOADING PROTOCOL section |
 
-2. **Updated dailyreport.md Command** (384 insertions):
-   - Added comprehensive AI Enhancement section with setup instructions
-   - Documented configuration via OPENAI_API_KEY in .env.mcp
-   - Updated file structure to show both output versions
-   - Enhanced command behavior to call enhancement script automatically
-   - Added output examples for both enhanced and fallback modes
-   - Documented cost, performance metrics, and model options
+**Key Design Decisions**:
+1. **SKILL.md Format**: YAML frontmatter + markdown body for skill definitions
+2. **Trigger-Based Loading**: Keywords auto-load relevant skills into delegations
+3. **Stack Profiles**: `{{stack.*}}` interpolation for multi-stack support
+4. **3 Stack Profiles**: nextjs-supabase, remix-railway, sveltekit-supabase
+5. **7 SaaS Skills**: Core patterns covering auth→analytics pipeline
+6. **Token Budgets**: Each skill declares estimated_tokens for context management
+7. **Quality Checklists**: Built-in verification for each skill domain
 
-3. **Environment Configuration** (.env.mcp.template):
-   - Added OPENAI_API_KEY documentation
-   - Included setup instructions and API key source
-   - Marked as optional (graceful fallback without it)
+**Skill Summary**:
+| Skill | Triggers | Specialist | Tokens |
+|-------|----------|------------|--------|
+| saas-auth | auth, login, oauth, password | @developer | ~3800 |
+| saas-payments | stripe, checkout, subscription | @developer | ~4200 |
+| saas-multitenancy | tenant, org, rls, workspace | @architect | ~4100 |
+| saas-billing | billing, plan, quota, trial | @developer | ~3900 |
+| saas-email | email, resend, notification | @developer | ~3200 |
+| saas-onboarding | onboarding, wizard, activation | @developer | ~3500 |
+| saas-analytics | analytics, tracking, posthog | @analyst | ~3600 |
 
-4. **Deployment Integration** (install.sh):
-   - Added enhancement script deployment to `.claude/commands/scripts/`
-   - Creates scripts directory automatically during installation
-   - Sets executable permissions on enhancement script
-   - Supports both local and remote (GitHub) installation modes
+**Verification**:
+```bash
+ls project/skills/*/SKILL.md | wc -l  # Output: 7
+ls project/schemas/*.yaml | wc -l    # Output: 7 (including existing)
+ls templates/stack-profiles/*.yaml   # Output: 3 profiles
+```
 
-**Security Enhancements**:
-- ✅ .env.mcp.template always deployed (safe, has placeholders)
-- ✅ .env.mcp NEVER deployed (contains actual API keys)
-- ✅ .env.mcp protected in .gitignore (line 22)
-- ✅ Install script explicitly documents security protections
-- ✅ User messaging when .env.mcp exists: "Existing .env.mcp preserved (contains your API keys)"
+**Integration Points**:
+- Coordinator reads skill triggers and auto-loads into Task delegations
+- Stack profiles enable code generation for specific tech stacks
+- /skills command provides discovery and matching capabilities
+
+---
+
+### [2025-12-30] - Sprint 9 Phase 9E: Quality Gates System - COMPLETE ✅
+**Created by**: Coordinator with @architect, @developer delegation
+**Type**: Feature - Automated Quality Enforcement
+**Related**: Sprint 9 Phase 9E
+**Status**: ✅ COMPLETE (5/5 tasks)
+
+**Deliverables Created** (verified on filesystem):
+
+| File | Size | Purpose |
+|------|------|---------|
+| `project/gates/README.md` | 6.1KB | Quality gate system documentation |
+| `project/gates/gate-types.yaml` | 8.6KB | Gate type definitions with framework-specific commands |
+| `project/gates/run-gates.py` | 20KB | Pure Python gate runner (~550 lines) |
+| `project/gates/templates/nodejs-saas.json` | 6.9KB | Node.js SaaS quality gates (4 gates) |
+| `project/gates/templates/python-api.json` | 7.9KB | Python API quality gates (4 gates) |
+| `project/gates/templates/minimal.json` | 2.3KB | Minimal gates for any project (2 gates) |
+| `project/commands/coord.md` | (modified) | Added QUALITY GATE EXECUTION section |
+
+**Key Design Decisions**:
+1. **6 Gate Types**: build, test, lint, security, review, deploy
+2. **3 Severity Levels**: blocking (critical), warning, info
+3. **Gate Triggers**: phase_exit, phase_entry (check before/after transitions)
+4. **Exit Codes**: 0 (pass), 1 (blocked), 2 (config error)
+5. **Pure Python**: No pip dependencies for cross-platform compatibility
+6. **JSON Templates**: Easy customization per project type
+
+**Gate Templates**:
+- **nodejs-saas**: foundation-exit, implementation-exit, integration-exit, pre-deploy
+- **python-api**: foundation-exit, implementation-exit, integration-exit, pre-deploy
+- **minimal**: implementation-exit, pre-deploy (basic checks only)
+
+**Verification**:
+```bash
+ls -lh project/gates/
+# README.md          6.1KB ✅
+# gate-types.yaml    8.6KB ✅
+# run-gates.py       20KB  ✅
+# templates/         (dir) ✅
+
+ls -lh project/gates/templates/
+# minimal.json       2.3KB ✅
+# nodejs-saas.json   6.9KB ✅
+# python-api.json    7.9KB ✅
+```
+
+**Integration with coord.md**:
+```markdown
+### QUALITY GATE EXECUTION [SPRINT 9]
+**Gate Configuration**: cp project/gates/templates/nodejs-saas.json .quality-gates.json
+**Running Gates**: python project/gates/run-gates.py --config .quality-gates.json --phase implementation
+**Exit Codes**: 0=proceed, 1=blocked, 2=config error
+```
+
+**Next Phase**: Phase 9F - SaaS Skills Library
+
+---
+
+### [2025-12-30 17:18] - Sprint 9 Phase 9D: Plan Command - COMPLETE ✅
+**Created by**: Coordinator with @strategist, @tester delegation
+**Type**: Feature - Project State Management
+**Related**: Sprint 9 Phase 9D
+**Status**: ✅ COMPLETE (5/5 tasks)
+
+**Deliverables Created** (verified on filesystem):
+
+| File | Size | Lines | Purpose |
+|------|------|-------|---------|
+| `project/commands/plan.md` | 30KB | 1,176 | /plan command (status, next, phase, gate, update, archive) |
+
+**Key Design Decisions**:
+1. 6 subcommands: status, next, phase [N], gate [N], update [field] [value], archive
+2. Schema-aligned with project-plan.schema.yaml and phase-context.schema.yaml
+3. Visual output with emoji indicators (📊 📍 📋 🎯 ✅ 🟡 ❌ ⏸️)
+4. Progress calculation: overall % and phase-specific %
+5. Gate structure aligned with per-phase gate object (not array)
+6. Edge cases documented: malformed YAML, missing fields, circular dependencies
 
 **Testing Results**:
-- ✅ Script runs correctly from library location
-- ✅ Generates high-quality blog posts from progress data
-- ✅ Proper error handling when API key not configured
-- ✅ Graceful fallback to standard report format
-- ✅ File output verified: Both versions created successfully
-- ✅ Edge case tested: Empty report transformed into engaging "reflection day" post
+- Command structure validation: ✅ PASS
+- Schema integration: ✅ PASS (after fix for gate object structure)
+- Output format: ✅ PASS
+- Integration with /bootstrap, /foundations: ✅ PASS
+- Edge case handling: ✅ PASS
 
-**Impact**:
-- Solves the "brain dump" problem with daily reports
-- Makes build-in-public documentation more engaging
-- Reduces time spent manually crafting blog posts
-- Improves content quality with consistent narrative structure
-- Accessible to non-technical audiences while maintaining technical accuracy
+**Verification**:
+```bash
+ls -lh project/commands/plan.md
+# -rw------- 30K Dec 30 17:18 project/commands/plan.md ✅
+```
+
+**Next Phase**: Phase 9E - Quality Gates System
 
 ---
 
-### [2025-11-22] - Plan Archive Operation ✅ COMPLETE
-**Created by**: /planarchive command
-**Type**: Maintenance - Token optimization and file cleanup
+### [2025-12-30 17:15] - Sprint 9 Phase 9C: Bootstrap Command - COMPLETE ✅
+**Created by**: Coordinator with @strategist, @developer, @tester delegation
+**Type**: Feature - Plan Generation System
+**Related**: Sprint 9 Phase 9C
+**Status**: ✅ COMPLETE (5/5 tasks)
+
+**Deliverables Created** (verified on filesystem):
+
+| File | Size | Purpose |
+|------|------|---------|
+| `project/commands/bootstrap.md` | 15KB | /bootstrap command (plan generation) |
+| `templates/plan-saas-mvp.yaml` | 8.4KB | SaaS MVP project plan template |
+| `templates/plan-saas-full.yaml` | 15KB | Full SaaS project plan template |
+| `templates/plan-api.yaml` | 11KB | API-first project plan template |
+
+**Key Design Decisions**:
+1. Rolling wave planning: Phase 1 fully detailed, later phases outlined
+2. Project type inference from PRD with confidence levels
+3. Type-specific quality gates (saas-mvp: minimal, saas-full: comprehensive, api: contract-focused)
+4. Agent distribution varies by type (API has 25% architect, saas-mvp has 55% developer)
+5. Templates include phase_templates, risk_templates, customization_hints, anti_patterns
+
+**Template Specifications**:
+- **saas-mvp**: 4 phases, 4-12 weeks, build/test/lint gates
+- **saas-full**: 6 phases, 12-24 weeks, build/test/lint/security/a11y gates
+- **api**: 4 phases, 6-16 weeks, build/test/lint/api-contract gates
+
+**Verification**:
+```bash
+ls -lh project/commands/bootstrap.md templates/plan-*.yaml
+# All files verified present ✅
+```
+
+**Test Results**:
+- YAML syntax validation: ✅ ALL PASS
+- Agent distributions: ✅ ALL sum to 100%
+- Phase counts: ✅ ALL match defaults
+- Schema compliance: ✅ PASS
+- Integration points: ✅ PASS
+- Error handling: ✅ PASS
+
+**Minor Issues** (non-blocking):
+1. No dedicated Troubleshooting section header
+2. Schema validation failure recovery not explicitly documented
+
+**Next Phase**: Phase 9D - Plan Command Implementation
+
+---
+
+### [2025-12-30 16:35] - Sprint 9 Phase 9B: Foundations Command - COMPLETE ✅
+**Created by**: Coordinator with @strategist, @developer, @tester delegation
+**Type**: Feature - BOS-AI Handoff System
+**Related**: Sprint 9 Phase 9B
+**Status**: ✅ COMPLETE (7/7 tasks)
+
+**Deliverables Created** (verified on filesystem):
+
+| File | Size | Purpose |
+|------|------|---------|
+| `project/commands/foundations.md` | 11.4KB | /foundations command (init, status, refresh, validate) |
+| `templates/foundation-vision.md` | 3.4KB | Vision/mission template for non-BOS-AI users |
+| `templates/foundation-prd.md` | 7.6KB | PRD template for non-BOS-AI users |
+| `.claude/commands/scripts/validate_foundations.py` | 7.8KB | Validation helper script |
+
+**Key Design Decisions**:
+1. Token budgets proportional to information density (PRD:600, Vision:200, ICP:200, Brand:100, Marketing:100 = 1200 total)
+2. Document category matching by filename patterns (case-insensitive)
+3. Required vs Advisable distinction: PRD + Vision required, ICP/Brand/Marketing advisable
+4. Subcommands: init (full scan), status (current state), refresh (update changed), validate (check completeness)
+5. Templates enable standalone use without BOS-AI
+
+**Verification**:
+```bash
+ls -la project/commands/foundations.md templates/foundation-*.md .claude/commands/scripts/validate_foundations.py
+# All files verified present ✅
+```
+
+**Test Results**:
+- Command structure validation: ✅ PASS
+- Schema compliance: ✅ PASS
+- Document matching: ✅ PASS
+- Template quality: ✅ PASS
+- Error handling: ✅ PASS
+- E2E mock project validation: ✅ PASS (required docs detected correctly)
+
+**Next Phase**: Phase 9C - Bootstrap Command Implementation
+
+---
+
+### [2025-12-29 22:48] - Sprint 9 Phase 9A: Schema Design - COMPLETE ✅
+**Created by**: Coordinator with @architect delegation
+**Type**: Architecture - Schema Design
+**Related**: Sprint 9 Phase 9A
+**Status**: ✅ COMPLETE (4/4 tasks)
+
+**Deliverables Created** (verified on filesystem):
+
+| File | Size | Lines | Purpose |
+|------|------|-------|---------|
+| `project/schemas/project-plan.schema.yaml` | 3.7KB | 100 | Core plan DNA |
+| `project/schemas/phase-context.schema.yaml` | 4.2KB | 110 | Rolling wave context |
+| `project/schemas/quality-gate.schema.yaml` | 5.7KB | 160 | Gate definitions |
+| `project/examples/saas-mvp-plan.yaml` | 12.5KB | 371 | Full SaaS example |
+
+**Key Design Decisions**:
+1. YAML over JSON Schema for human/LLM readability
+2. Token budgets embedded (200 for summary, 1000 for full context)
+3. Gate templates included (build, test, lint, security, deploy)
+4. Consistent status enums across all schemas
+5. Context accumulation fields for session persistence
+6. Complete SaaS MVP example ("SubTrack") with all schema features
+
+**Verification**:
+```bash
+ls -la project/schemas/ project/examples/saas-mvp-plan.yaml
+# project-plan.schema.yaml   3728 bytes ✅
+# phase-context.schema.yaml  4228 bytes ✅
+# quality-gate.schema.yaml   5662 bytes ✅
+# saas-mvp-plan.yaml        12483 bytes ✅
+```
+
+**Next Phase**: Phase 9B - Bootstrap Command Implementation
+
+---
+
+### [2025-12-29 10:30] - Sprint 9: SaaS Boilerplate Killer - PLANNING COMPLETE ✅
+**Created by**: Coordinator orchestration
+**Type**: Major Architecture Upgrade - Plan-driven orchestration system
+**Related**: `/Ideation/Agent-11: The SaaS Boilerplate Killer.md`
+**Status**: Planning Complete, Implementation Starting
 
 **Description**:
-Archived completed/stale content from tracking files to reduce token overhead while preserving complete project history.
+Initiated Sprint 9 to transform AGENT-11 into a "SaaS Boilerplate Killer" - a plan-driven orchestration system where `project-plan.md` becomes the central control layer. Based on consensus from 30 LLM reviews (6 models × 5 rounds), the architecture is complete and implementation-ready.
 
-**Results**:
+**The Vision - "Tuesday Morning" Workflow**:
+1. Open VS Code with your project
+2. Type `/plan status` - See current phase, task, and vision alignment
+3. Type `/coord continue` - Agent resumes work autonomously
+4. Repeat
 
-| File | Before | After | Reduction |
-|------|--------|-------|-----------|
-| project-plan.md | 1,254 lines | 418 lines | **67%** |
-| progress.md | 3,250 lines | 953 lines | **71%** |
-| **TOTAL** | 4,504 lines | 1,371 lines | **70%** |
+**Key Components to Build**:
 
-**Archive Files Created/Updated**:
-- `project-plan-archive.md` - Added Sprint 1, Sprint 2 (2A-2D), Sprint 3 summaries (+128 lines)
-- `progress-archive.md` - Created with 11 October 2025 entries (208 lines)
+| Component | Implementation | Purpose |
+|-----------|----------------|---------|
+| **Project Plan Schema** | `schemas/project-plan.schema.yaml` | DNA of the entire system |
+| **Bootstrap Command** | `commands/bootstrap.md` | Generate initial plan from vision docs |
+| **Plan Command** | `commands/plan.md` | User interface to project state |
+| **Rolling Wave Planning** | `phase-N-context.yaml` | Context-efficient phase management |
+| **Quality Gates** | `gates/phase-N.json` | Enforce quality at transitions |
+| **SaaS Skills** | `skills/saas-*/SKILL.md` | Encapsulated domain expertise |
 
-**Content Archived**:
-- Sprint 1 all phases (complete)
-- Sprint 2 Phases 2A-2D (complete, 2E remains active)
-- Sprint 3 all phases (complete)
-- Progress entries from 2025-10-09 to 2025-10-26 (11 entries)
+**Sprint 9 Phases**:
 
-**Estimated Token Savings**: ~8,000-10,000 tokens per context load
+| Phase | Objective | Days | Priority |
+|-------|-----------|------|----------|
+| 9A | Project Plan Schema Design | 1-3 | P0 |
+| 9B | Bootstrap Command Implementation | 4-7 | P0 |
+| 9C | Plan Command Implementation | 8-11 | P1 |
+| 9D | Quality Gates System | 12-14 | P1 |
+| 9E | SaaS Skills Library | 15-17 | P1 |
+| 9F | Coordinator Plan-Driven Orchestration | 18-19 | P0 |
+| 9G | Testing and Documentation | 20 | P1 |
+| 9H | Deployment and Rollout | 21 | P0 |
 
----
+**Expected Deliverables**:
+- 3 schema files (`project-plan.schema.yaml`, `phase-context.schema.yaml`, `quality-gate.schema.yaml`)
+- 2 new commands (`/bootstrap`, `/plan`)
+- 7 SaaS skills (auth, payments, multitenancy, billing, email, onboarding, analytics)
+- 3 project type templates (saas-mvp, saas-full, api)
+- 3 gate templates (nodejs-saas, python-api, minimal)
+- 4 field manual guides
+- Updated coordinator.md with plan-driven orchestration
+- Updated install.sh for new directories
 
-### [2025-11-19 22:27] - CRITICAL FIX: Actually Remove Write/Edit/MultiEdit from Specialists ✅ COMPLETE
-**Created by**: Direct file editing (not delegation)
-**Type**: Critical bug fix - Documentation/implementation mismatch resolution
-**Related**: Sprint 1 Phase 1A (File Persistence Short-Term Hardening)
-**Commit**: 0999b5b
+**Target Release**: v5.0.0-saas-boilerplate-killer
 
-**Description**:
-Discovered and fixed critical documentation/implementation mismatch. Progress.md claimed Phase 1A "removed Write/Edit/MultiEdit from specialists" on 2025-01-19, but this was NEVER actually committed to git. The library agents in `project/agents/specialists/` still had these tools, causing the file persistence bug to persist when deployed to user projects.
+**Success Metrics**:
+- `/bootstrap` success rate >95%
+- `/plan status` accuracy 100%
+- `/coord continue` success >80%
+- "Tuesday Morning" test: <30 minutes from vision.md to Phase 1 complete
 
-**The Problem**:
-- Progress.md and project-plan.md claimed tools were removed (documented as complete)
-- Git history showed NO commits actually changing the tools sections
-- Library agents still had Write/Edit in their YAML frontmatter
-- When deployed via install.sh, users got the buggy versions
-- Verified in trader-7 deployment: agents had Write/Edit before fix
+**Files Updated**:
+- `project-plan.md` - Added complete Sprint 9 plan (~700 lines)
 
-**Root Cause**:
-Documentation updated without corresponding code changes. We documented the PLAN to remove tools, not the actual EXECUTION.
-
-**The Fix**:
-1. **Removed Write/Edit/MultiEdit from 4 library specialists**:
-   - `project/agents/specialists/developer.md`: Removed Write, Edit (tools: Read, Bash, Task)
-   - `project/agents/specialists/architect.md`: Removed Write, Edit (tools: Read, Grep, Glob, Task)
-   - `project/agents/specialists/designer.md`: Removed Edit, Write (tools: Glob, Grep, Read, Task)
-   - `project/agents/specialists/documenter.md`: Removed Edit, MultiEdit, Write (tools: Glob, Grep, Read, Task)
-   - `project/agents/specialists/tester.md`: Already clean (no changes needed)
-
-2. **Verified coordinator unchanged**: Still has Write, Edit, TodoWrite, Task (CORRECT - needs them as executor)
-
-3. **Committed to git**: Commit 0999b5b with proper documentation
-
-4. **Pushed to GitHub**: Fix now available at https://github.com/TheWayWithin/agent-11
-
-5. **Deployed to trader-7**: Verified via `grep -A5 "tools:" .claude/agents/developer.md`
-   - ✅ Shows: Read, Bash, Task
-   - ✅ NO Write or Edit present
-   - ✅ File persistence bug fix confirmed deployed
-
-**Impact**:
-- ✅ Specialists can no longer create files in isolated contexts (which would vanish)
-- ✅ Specialists must use structured JSON output for coordinator to execute
-- ✅ File persistence guaranteed through coordinator-as-executor pattern
-- ✅ All future deployments via install.sh will get fixed versions
-
-**Lesson Learned**:
-NEVER mark tasks complete in tracking documents without verifying the actual code changes are committed to git. Documentation without implementation is worse than no documentation - it creates false confidence.
-
-**Prevention**:
-- Always verify git diff before marking tasks complete
-- Check git log for actual commits changing the claimed files
-- Test deployments in user projects to verify fixes propagate
+**Next Actions**: Begin Phase 9A - Schema Design with @architect
 
 ---
 
-## 📦 ARCHIVED ENTRIES
+## 📦 ARCHIVED ENTRIES (Sprints 4-8)
 
 > **Archive Location**: `progress-archive.md`
-> **Last Archive**: 2025-11-27
-> **Total Archived**: 22 entries (October 2025 + November 2025 Sprint entries)
+> **Last Archive**: 2025-12-30
+> **Total Archived**: 34 entries
+
+**December 2025 Archive** (12 entries, 2025-12-30):
+- [2025-12-05] Sprint 8: Phase Gate Enforcement System v4.4.0
+- [2025-12-01] Sprint 7: Social Media Post Generation v4.3.0
+- [2025-11-29] README Documentation Update
+- [2025-11-29] Sprint 6: Persistence Protocol Enforcement v4.2.0
+- [2025-11-28] Sprint 5: MCP Context Optimization v4.1.0
+- [2025-11-28] Sprint 5: Planning Enhanced
+- [2025-11-27] Sprint 4: Phases 4A-4D v4.0.0
+- [2025-11-27] Plan Archive Operation
+- [2025-11-26] install.sh YAML Validation Bug Fix (CRITICAL)
+- [2025-11-26] AI-Powered Daily Report Enhancement
+- [2025-11-22] Plan Archive Operation
+- [2025-11-19] CRITICAL FIX: Remove Write/Edit from Specialists
 
 **November 2025 Archive** (11 entries):
-- [2025-11-19] Strategic Implementation Plan for Critical Issues
-- [2025-11-12] File Persistence Bug Documentation & Safeguards
-- [2025-11-10] Task Tool File Creation Verification System
+- [2025-11-19] Strategic Implementation Plan
+- [2025-11-12] File Persistence Bug Documentation
+- [2025-11-10] Task Tool File Creation Verification
 - [2025-11-09] Foundation Document Adherence Guardrails
 - [2025-11-09] Phantom Document Creation Bug Fix
-- [2025-01-19] Sprint 3 Phases 3A-3D (Guide Creation)
-- [2025-01-19] Sprint 2 Phase 2E (Testing & Rollout)
-- [2025-01-19] Sprint 2 Phase 2C-2D (Specialist Updates & Documentation)
-- [2025-01-19] Sprint 1 Phases 1A-1B (Permission & Protocol)
+- [2025-01-19] Sprint 3 Phases 3A-3D
+- [2025-01-19] Sprint 2 Phase 2E
+- [2025-01-19] Sprint 2 Phases 2C-2D
+- [2025-01-19] Sprint 1 Phases 1A-1B
 
 **October 2025 Archive** (11 entries):
 - [2025-10-26] Coordination Process Improvement Planning
 - [2025-10-21] MCP Profile System Testing
-- [2025-10-19] GitHub Documentation Refresh Mission
-- [2025-10-18] ERROR RECOVERY: Template Extraction
-- [2025-10-18] Context Optimization Implementation
-- [2025-10-18] Agent Review Mission
+- [2025-10-19] GitHub Documentation Refresh
+- [2025-10-18] Template Extraction + Context Optimization
 - [2025-10-11] BOS-AI Enhancement Plan
-- [2025-10-09] OpsDev Integration Plan
 - [2025-10-09] Progress Tracking System Transformation
-- [2025-10-09] Project Plan Updated
-- [2025-10-09] Documentation & Template Updates
 
-See `progress-archive.md` for complete entries with full details.
+See `progress-archive.md` for complete entries.
 
 ---

@@ -52,10 +52,7 @@
     "railway": {
       "type": "stdio",
       "command": "npx",
-      "args": ["@railway/mcp-server"],
-      "env": {
-        "RAILWAY_API_TOKEN": "${RAILWAY_API_TOKEN}"
-      }
+      "args": ["-y", "@railway/mcp-server"]
     },
     "stripe": {
       "command": "npx",

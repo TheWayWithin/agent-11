@@ -1,0 +1,137 @@
+# handoff-manifest.schema.yaml
+# BOS-AI to Agent-11 Foundation Document Handoff
+# Version: 1.0.0
+# Purpose: Track foundation documents and their summaries
+
+---
+meta:
+  description: "Manifest metadata and initialization info"
+  fields:
+    initialized_at: datetime   # ISO 8601 timestamp of /foundations init
+    last_refreshed: datetime   # Last time summaries were regenerated
+    source_project: string     # Name of the project (from BOS-AI or user)
+    agent11_version: semver    # Version of Agent-11 that created this
+
+documents:
+  description: "Array of foundation documents and their summaries"
+  type: array
+  required: true
+  item_fields:
+    filename: string           # Original filename (e.g., "prd.md")
+    path: string               # Relative path to document
+    checksum: string           # SHA256 hash for change detection
+    last_modified: datetime    # File modification timestamp
+    category: enum             # Document category for token budgeting
+    summary_path: string       # Path to generated summary
+    provides: [string]         # What this document provides (e.g., ["features", "requirements"])
+    token_budget: integer      # Allocated token budget for summary
+    status: enum               # present | missing | outdated | error
+
+document_categories:
+  description: "Document types with token budget allocations"
+  values:
+    prd:
+      budget: 600
+      description: "Product Requirements Document - highest information density"
+      provides: ["features", "requirements", "tech_constraints", "mvp_scope", "priorities"]
+      required: true
+    vision:
+      budget: 200
+      description: "Vision, mission, and strategic goals"
+      provides: ["vision", "mission", "goals", "success_criteria"]
+      required: true
+    icp:
+      budget: 200
+      description: "Ideal Customer Profile and personas"
+      provides: ["icp", "personas", "pain_points", "jobs_to_be_done"]
+      required: false
+    brand:
+      budget: 100
+      description: "Brand guidelines and style"
+      provides: ["colors", "fonts", "tone", "voice", "logo_usage"]
+      required: false
+    marketing:
+      budget: 100
+      description: "Marketing messaging and positioning"
+      provides: ["positioning", "messaging", "taglines", "channels"]
+      required: false
+
+status_values:
+  description: "Document status definitions"
+  values:
+    present: "Document exists and summary is current"
+    missing: "Document referenced but not found"
+    outdated: "Document changed since last summary generation"
+    error: "Error processing document"
+
+validation:
+  description: "Validation rules for /foundations validate"
+  rules:
+    required_documents:
+      - category: prd
+        fallback_filenames: ["prd.md", "requirements.md", "product-requirements.md"]
+      - category: vision
+        fallback_filenames: ["vision-mission.md", "vision.md", "strategic-plan.md"]
+    advisable_documents:
+      - category: icp
+        filenames: ["client-success-blueprint.md", "icp.md", "personas.md"]
+      - category: brand
+        filenames: ["brand-style-guidelines.md", "brand.md", "style-guide.md"]
+      - category: marketing
+        filenames: ["marketing-bible.md", "marketing.md", "positioning.md"]
+
+token_budget_summary:
+  description: "Total token allocation for foundation summaries"
+  breakdown:
+    prd: 600
+    vision: 200
+    icp: 200
+    brand: 100
+    marketing: 100
+  total: 1200
+  rationale: "Proportional to information density - PRD gets 3x budget"
+
+# --- Example ---
+example:
+  meta:
+    initialized_at: "2025-12-30T14:30:00Z"
+    last_refreshed: "2025-12-30T14:30:00Z"
+    source_project: "SoloCRM"
+    agent11_version: "5.0.0"
+  documents:
+    - filename: "prd.md"
+      path: "documents/foundations/prd.md"
+      checksum: "sha256:abc123def456..."
+      last_modified: "2025-12-29T10:00:00Z"
+      category: prd
+      summary_path: ".context/summaries/prd-summary.md"
+      provides: ["features", "requirements", "tech_constraints", "mvp_scope"]
+      token_budget: 600
+      status: present
+    - filename: "vision-mission.md"
+      path: "documents/foundations/vision-mission.md"
+      checksum: "sha256:789ghi012jkl..."
+      last_modified: "2025-12-28T09:00:00Z"
+      category: vision
+      summary_path: ".context/summaries/vision-summary.md"
+      provides: ["vision", "mission", "goals"]
+      token_budget: 200
+      status: present
+    - filename: "client-success-blueprint.md"
+      path: "documents/foundations/client-success-blueprint.md"
+      checksum: "sha256:mno345pqr678..."
+      last_modified: "2025-12-27T15:00:00Z"
+      category: icp
+      summary_path: ".context/summaries/icp-summary.md"
+      provides: ["icp", "personas", "pain_points"]
+      token_budget: 200
+      status: present
+    - filename: "brand-style-guidelines.md"
+      path: "documents/foundations/brand-style-guidelines.md"
+      checksum: "sha256:stu901vwx234..."
+      last_modified: "2025-12-26T12:00:00Z"
+      category: brand
+      summary_path: ".context/summaries/brand-summary.md"
+      provides: ["colors", "fonts", "tone"]
+      token_budget: 100
+      status: present

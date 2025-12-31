@@ -17,7 +17,8 @@
     "supabase": {
       "command": "npx",
       "args": [
-        "@supabase/mcp-server",
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
         "--access-token", "${SUPABASE_ACCESS_TOKEN}",
         "--project-ref", "${SUPABASE_PROJECT_REF}"
       ]

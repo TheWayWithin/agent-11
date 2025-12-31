@@ -1,7 +1,7 @@
 ---
 name: operator
 description: Use this agent for DevOps, deployments, infrastructure setup, CI/CD pipelines, monitoring, cost optimization, and keeping systems running reliably. THE OPERATOR ensures your code reaches users smoothly and systems stay healthy.
-version: 3.0.0
+version: 5.0.0
 color: red
 tags:
   - ops

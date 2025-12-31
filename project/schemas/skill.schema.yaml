@@ -1,0 +1,511 @@
+# Skill Specification Schema
+# Defines the structure for AGENT-11 skill files (SKILL.md pattern)
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://agent-11.dev/schemas/skill"
+version: "1.0.0"
+
+title: Skill Specification
+description: |
+  Skills are encapsulated SaaS domain expertise that provide reusable patterns,
+  implementation guidance, and quality checklists. Skills auto-load based on
+  task context triggers and adapt to the user's tech stack via interpolation.
+
+type: object
+required:
+  - name
+  - version
+  - category
+  - triggers
+  - specialist
+  - capability
+  - patterns
+  - quality_checklist
+
+properties:
+  # ============================================
+  # FRONTMATTER (YAML header in SKILL.md files)
+  # ============================================
+
+  name:
+    type: string
+    description: Unique skill identifier (kebab-case)
+    pattern: "^[a-z0-9-]+$"
+    minLength: 3
+    maxLength: 50
+    examples:
+      - "auth-email-password"
+      - "payments-stripe-subscriptions"
+      - "database-row-level-security"
+
+  version:
+    type: string
+    pattern: "^\\d+\\.\\d+\\.\\d+$"
+    description: Semantic version of the skill
+    examples:
+      - "1.0.0"
+      - "1.2.3"
+
+  category:
+    type: string
+    enum:
+      - authentication
+      - payments
+      - database
+      - infrastructure
+      - communication
+      - analytics
+      - storage
+      - search
+      - realtime
+      - security
+    description: |
+      Primary skill category:
+      - authentication: User auth, sessions, OAuth, MFA
+      - payments: Stripe, billing, subscriptions, invoicing
+      - database: Schema design, migrations, RLS, optimization
+      - infrastructure: Deployment, CI/CD, monitoring, scaling
+      - communication: Email, SMS, push notifications, webhooks
+      - analytics: Tracking, dashboards, reporting, metrics
+      - storage: File uploads, CDN, media processing
+      - search: Full-text search, filtering, indexing
+      - realtime: WebSockets, live updates, presence
+      - security: CSRF, XSS prevention, rate limiting, encryption
+
+  subcategory:
+    type: string
+    description: Optional subcategory for organization
+    pattern: "^[a-z0-9-]+$"
+    examples:
+      - "email-password"
+      - "oauth-social"
+      - "subscriptions"
+
+  triggers:
+    type: array
+    description: |
+      Keywords that trigger auto-loading of this skill.
+      Matched against task descriptions, phase names, and user prompts.
+    minItems: 1
+    maxItems: 20
+    items:
+      type: string
+      minLength: 2
+      maxLength: 50
+    examples:
+      - ["authentication", "auth", "login", "signup", "session", "password"]
+      - ["stripe", "payment", "subscription", "billing", "checkout"]
+      - ["supabase", "postgres", "rls", "row level security"]
+
+  specialist:
+    type: string
+    description: Primary agent responsible for this skill domain
+    pattern: "^@[a-z]+$"
+    enum:
+      - "@developer"
+      - "@architect"
+      - "@tester"
+      - "@operator"
+      - "@designer"
+      - "@analyst"
+      - "@strategist"
+    examples:
+      - "@developer"
+      - "@architect"
+
+  supporting_specialists:
+    type: array
+    description: Additional agents who may use this skill
+    items:
+      type: string
+      pattern: "^@[a-z]+$"
+    examples:
+      - ["@tester", "@operator"]
+
+  stack_aware:
+    type: boolean
+    default: true
+    description: |
+      Whether this skill adapts to the user's tech stack.
+      If true, skill content uses {{stack.*}} interpolation variables.
+
+  complexity:
+    type: string
+    enum: [basic, intermediate, advanced, expert]
+    description: |
+      Skill complexity level:
+      - basic: Straightforward, single-concern implementation
+      - intermediate: Multiple components, some edge cases
+      - advanced: Complex integration, security-critical
+      - expert: Distributed systems, performance-critical
+
+  estimated_tokens:
+    type: integer
+    minimum: 100
+    maximum: 50000
+    description: |
+      Estimated token count when skill is loaded into context.
+      Used for context budget management.
+    examples:
+      - 2500
+      - 5000
+      - 12000
+
+  dependencies:
+    type: array
+    description: Other skills this skill depends on
+    items:
+      type: string
+      pattern: "^[a-z0-9-]+$"
+    examples:
+      - ["auth-email-password"]
+      - ["database-schema-design", "security-input-validation"]
+
+  conflicts:
+    type: array
+    description: Skills that cannot be used together with this skill
+    items:
+      type: string
+      pattern: "^[a-z0-9-]+$"
+    examples:
+      - ["auth-passwordless"]  # Conflicts with email-password auth
+
+  stack_requirements:
+    type: object
+    description: Stack profile requirements for this skill to be applicable
+    properties:
+      frontend:
+        type: object
+        properties:
+          frameworks:
+            type: array
+            items:
+              type: string
+            description: Supported frontend frameworks
+      backend:
+        type: object
+        properties:
+          runtimes:
+            type: array
+            items:
+              type: string
+            description: Supported backend runtimes
+          databases:
+            type: array
+            items:
+              type: string
+            description: Supported databases
+      services:
+        type: array
+        items:
+          type: string
+        description: Required external services
+    examples:
+      - frontend:
+          frameworks: ["nextjs", "remix", "nuxt"]
+        backend:
+          databases: ["supabase", "postgres"]
+        services: ["stripe"]
+
+  # ============================================
+  # CONTENT SECTIONS (Markdown body in SKILL.md)
+  # ============================================
+
+  capability:
+    type: string
+    description: What this skill enables (1-3 sentences)
+    minLength: 20
+    maxLength: 500
+    examples:
+      - "Enables secure email/password authentication with session management, password reset flows, and account verification."
+
+  use_cases:
+    type: array
+    description: Common scenarios where this skill applies
+    items:
+      type: string
+    examples:
+      - ["User registration with email verification", "Secure login with rate limiting", "Password reset via email link"]
+
+  patterns:
+    type: array
+    description: Implementation patterns provided by this skill
+    minItems: 1
+    items:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+          description: Pattern name
+        description:
+          type: string
+          description: What this pattern accomplishes
+        when_to_use:
+          type: string
+          description: Conditions when this pattern is appropriate
+        code_template:
+          type: string
+          description: Code template with {{stack.*}} interpolation
+    examples:
+      - - name: "Email/Password Signup"
+          description: "User registration with email verification"
+          when_to_use: "Standard user signups requiring email verification"
+
+  stack_implementations:
+    type: object
+    description: Stack-specific implementation guidance
+    additionalProperties:
+      type: object
+      description: Implementation for a specific stack combination
+      properties:
+        setup:
+          type: string
+          description: Setup/configuration steps
+        code_examples:
+          type: array
+          items:
+            type: object
+            properties:
+              file:
+                type: string
+                description: Suggested filename
+              description:
+                type: string
+              code:
+                type: string
+                description: Code with interpolation variables
+        dependencies:
+          type: array
+          items:
+            type: string
+          description: Package dependencies to install
+        environment_variables:
+          type: array
+          items:
+            type: string
+          description: Required environment variables
+        gotchas:
+          type: array
+          items:
+            type: string
+          description: Stack-specific pitfalls to avoid
+
+  quality_checklist:
+    type: array
+    description: Verification checklist for implementation quality
+    minItems: 1
+    items:
+      type: object
+      required:
+        - check
+      properties:
+        check:
+          type: string
+          description: What to verify
+        category:
+          type: string
+          enum: [security, functionality, performance, ux, testing]
+        required:
+          type: boolean
+          default: true
+        automated:
+          type: boolean
+          default: false
+          description: Can this check be automated?
+    examples:
+      - - check: "Passwords are hashed with bcrypt or argon2"
+          category: security
+          required: true
+        - check: "Rate limiting on auth endpoints"
+          category: security
+          required: true
+        - check: "Email verification flow works"
+          category: functionality
+          required: true
+
+  integration_points:
+    type: array
+    description: How this skill connects with other skills/systems
+    items:
+      type: object
+      properties:
+        skill:
+          type: string
+          description: Related skill or system
+        relationship:
+          type: string
+          enum: [requires, enhances, triggers, provides]
+        description:
+          type: string
+    examples:
+      - - skill: "database-row-level-security"
+          relationship: enhances
+          description: "RLS policies depend on authenticated user ID"
+        - skill: "email-transactional"
+          relationship: requires
+          description: "Password reset requires email sending capability"
+
+  anti_patterns:
+    type: array
+    description: What NOT to do - common mistakes
+    items:
+      type: object
+      required:
+        - pattern
+        - why_bad
+      properties:
+        pattern:
+          type: string
+          description: The anti-pattern
+        why_bad:
+          type: string
+          description: Why this is problematic
+        instead:
+          type: string
+          description: What to do instead
+    examples:
+      - - pattern: "Storing passwords in plain text"
+          why_bad: "Exposes all users if database is compromised"
+          instead: "Use bcrypt or argon2 with proper salt"
+        - pattern: "Using JWT for sessions without refresh tokens"
+          why_bad: "No way to revoke access, tokens live until expiry"
+          instead: "Use httpOnly cookies or implement refresh token rotation"
+
+  references:
+    type: array
+    description: Links to official documentation and resources
+    items:
+      type: object
+      required:
+        - title
+        - url
+      properties:
+        title:
+          type: string
+        url:
+          type: string
+          format: uri
+        type:
+          type: string
+          enum: [official_docs, tutorial, security_guide, api_reference]
+    examples:
+      - - title: "Supabase Auth Documentation"
+          url: "https://supabase.com/docs/guides/auth"
+          type: official_docs
+        - title: "OWASP Authentication Cheat Sheet"
+          url: "https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html"
+          type: security_guide
+
+  metadata:
+    type: object
+    description: Additional skill metadata
+    properties:
+      author:
+        type: string
+        description: Skill author or maintainer
+      created:
+        type: string
+        format: date-time
+      updated:
+        type: string
+        format: date-time
+      status:
+        type: string
+        enum: [draft, stable, deprecated]
+        default: stable
+      tags:
+        type: array
+        items:
+          type: string
+        description: Additional categorization tags
+
+# Example skill specification (YAML frontmatter + content structure)
+examples:
+  - name: "auth-email-password"
+    version: "1.0.0"
+    category: authentication
+    subcategory: email-password
+    triggers:
+      - "authentication"
+      - "auth"
+      - "login"
+      - "signup"
+      - "sign up"
+      - "password"
+      - "session"
+      - "email login"
+    specialist: "@developer"
+    supporting_specialists:
+      - "@tester"
+    stack_aware: true
+    complexity: intermediate
+    estimated_tokens: 3500
+    dependencies: []
+    stack_requirements:
+      backend:
+        databases: ["supabase", "postgres", "mysql"]
+    capability: "Enables secure email/password authentication with session management, password reset flows, and email verification."
+    use_cases:
+      - "User registration with email verification"
+      - "Secure login with rate limiting"
+      - "Password reset via email link"
+      - "Session management with secure cookies"
+    patterns:
+      - name: "Email/Password Signup"
+        description: "User registration with email verification flow"
+        when_to_use: "Standard SaaS user registration"
+      - name: "Secure Login"
+        description: "Login with rate limiting and session creation"
+        when_to_use: "All user authentication scenarios"
+      - name: "Password Reset"
+        description: "Secure password reset via email token"
+        when_to_use: "Users who forgot their password"
+    quality_checklist:
+      - check: "Passwords hashed with bcrypt (cost factor >= 10) or argon2"
+        category: security
+        required: true
+      - check: "Rate limiting on /auth/* endpoints (max 5 attempts/minute)"
+        category: security
+        required: true
+      - check: "Email verification required before full access"
+        category: security
+        required: true
+      - check: "Session tokens are httpOnly and secure cookies"
+        category: security
+        required: true
+      - check: "Password reset tokens expire within 1 hour"
+        category: security
+        required: true
+      - check: "Auth flow has test coverage"
+        category: testing
+        required: true
+    anti_patterns:
+      - pattern: "Storing passwords in plain text or with weak hashing (MD5, SHA1)"
+        why_bad: "Exposes all user passwords if database is compromised"
+        instead: "Use bcrypt with cost factor >= 10 or argon2id"
+      - pattern: "Using localStorage for session tokens"
+        why_bad: "Vulnerable to XSS attacks, tokens accessible to any JavaScript"
+        instead: "Use httpOnly secure cookies for session storage"
+    integration_points:
+      - skill: "email-transactional"
+        relationship: requires
+        description: "Password reset and verification require email sending"
+      - skill: "database-row-level-security"
+        relationship: enhances
+        description: "RLS policies use auth.uid() for user-scoped data"
+    references:
+      - title: "Supabase Auth Documentation"
+        url: "https://supabase.com/docs/guides/auth"
+        type: official_docs
+      - title: "OWASP Authentication Cheat Sheet"
+        url: "https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html"
+        type: security_guide
+    metadata:
+      author: "AGENT-11"
+      status: stable
+      tags:
+        - "security-critical"
+        - "core-saas"

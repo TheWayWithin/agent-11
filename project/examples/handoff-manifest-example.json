@@ -1,0 +1,94 @@
+{
+  "meta": {
+    "initialized_at": "2025-01-22T10:30:00Z",
+    "last_refreshed": "2025-01-22T10:30:00Z",
+    "source_project": "SubTrack",
+    "agent11_version": "5.0.0"
+  },
+  "documents": [
+    {
+      "filename": "prd.md",
+      "path": "documents/foundations/prd.md",
+      "checksum": "sha256:a1b2c3d4e5f6789012345678901234567890abcdef",
+      "last_modified": "2025-01-20T09:00:00Z",
+      "category": "prd",
+      "summary_path": ".context/summaries/prd-summary.md",
+      "provides": [
+        "features",
+        "requirements",
+        "tech_constraints",
+        "mvp_scope",
+        "priorities"
+      ],
+      "token_budget": 600,
+      "status": "present"
+    },
+    {
+      "filename": "vision-mission.md",
+      "path": "documents/foundations/vision-mission.md",
+      "checksum": "sha256:b2c3d4e5f67890123456789012345678901234abc",
+      "last_modified": "2025-01-18T14:00:00Z",
+      "category": "vision",
+      "summary_path": ".context/summaries/vision-summary.md",
+      "provides": [
+        "vision",
+        "mission",
+        "goals",
+        "success_criteria"
+      ],
+      "token_budget": 200,
+      "status": "present"
+    },
+    {
+      "filename": "client-success-blueprint.md",
+      "path": "documents/foundations/client-success-blueprint.md",
+      "checksum": "sha256:c3d4e5f678901234567890123456789012345bcde",
+      "last_modified": "2025-01-15T11:00:00Z",
+      "category": "icp",
+      "summary_path": ".context/summaries/icp-summary.md",
+      "provides": [
+        "icp",
+        "personas",
+        "pain_points",
+        "jobs_to_be_done"
+      ],
+      "token_budget": 200,
+      "status": "present"
+    },
+    {
+      "filename": "brand-style-guidelines.md",
+      "path": "documents/foundations/brand-style-guidelines.md",
+      "checksum": null,
+      "last_modified": null,
+      "category": "brand",
+      "summary_path": ".context/summaries/brand-summary.md",
+      "provides": [
+        "colors",
+        "fonts",
+        "tone",
+        "voice"
+      ],
+      "token_budget": 100,
+      "status": "missing"
+    }
+  ],
+  "token_budget_summary": {
+    "allocated": {
+      "prd": 600,
+      "vision": 200,
+      "icp": 200,
+      "brand": 100,
+      "marketing": 100
+    },
+    "total_allocated": 1200,
+    "total_used": 1000,
+    "notes": "Brand document missing - using 1000 of 1200 tokens"
+  },
+  "validation": {
+    "required_present": true,
+    "required_documents": ["prd", "vision"],
+    "missing_advisable": ["brand"],
+    "outdated_count": 0,
+    "last_validated": "2025-01-22T10:30:00Z"
+  }
+}

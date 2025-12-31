@@ -612,6 +612,11 @@ install_mission_system() {
         "project/commands/pmd.md"
         "project/commands/dailyreport.md"
         "project/commands/planarchive.md"
+        # Sprint 9: Plan-Driven Development commands
+        "project/commands/foundations.md"
+        "project/commands/bootstrap.md"
+        "project/commands/plan.md"
+        "project/commands/skills.md"
     )
     
     # Define template files to install
@@ -631,6 +636,12 @@ install_mission_system() {
         "templates/claude-template.md"
         "templates/file-operation-delegation.md"
         "templates/file-verification-checklist.md"
+        # Sprint 9: Foundation and Plan templates
+        "templates/foundation-prd.md"
+        "templates/foundation-vision.md"
+        "templates/plan-saas-mvp.yaml"
+        "templates/plan-saas-full.yaml"
+        "templates/plan-api.yaml"
     )
     
     # Define field manual files to install
@@ -640,6 +651,11 @@ install_mission_system() {
         "project/field-manual/model-selection-guide.md"
         "project/field-manual/mcp-optimization-guide.md"
         "project/field-manual/file-operation-quickref.md"
+        # Sprint 9: Plan-Driven Development guides
+        "project/field-manual/plan-driven-development.md"
+        "project/field-manual/quality-gates-guide.md"
+        "project/field-manual/skills-guide.md"
+        "project/field-manual/architectural-principles.md"
     )
     
     local total_files=$((${#mission_files[@]} + ${#command_files[@]} + ${#template_files[@]} + ${#field_manual_files[@]}))
@@ -793,7 +809,111 @@ install_mission_system() {
         
         sleep 0.1
     done
-    
+
+    # Sprint 9: Install skills to .claude/skills/
+    log "Installing SaaS skills library..."
+    local SKILLS_DIR="$CLAUDE_DIR/skills"
+    mkdir -p "$SKILLS_DIR"
+
+    local skill_dirs=("saas-auth" "saas-payments" "saas-multitenancy" "saas-billing" "saas-email" "saas-onboarding" "saas-analytics")
+    for skill in "${skill_dirs[@]}"; do
+        if [[ "$execution_mode" == "local" ]]; then
+            if [[ -d "$PROJECT_ROOT/project/skills/$skill" ]]; then
+                mkdir -p "$SKILLS_DIR/$skill"
+                if cp -r "$PROJECT_ROOT/project/skills/$skill"/* "$SKILLS_DIR/$skill/" 2>/dev/null; then
+                    log "Installed skill: $skill"
+                else
+                    warn "Could not install skill: $skill"
+                fi
+            fi
+        else
+            # Remote: Download SKILL.md for each skill
+            mkdir -p "$SKILLS_DIR/$skill"
+            if download_file_from_github "project/skills/$skill/SKILL.md" "$SKILLS_DIR/$skill/SKILL.md"; then
+                log "Installed skill: $skill"
+            else
+                warn "Could not download skill: $skill"
+            fi
+        fi
+    done
+
+    # Sprint 9: Install schemas
+    log "Installing schemas..."
+    local SCHEMAS_DIR="$(pwd)/schemas"
+    mkdir -p "$SCHEMAS_DIR"
+
+    local schema_files=("skill.schema.yaml" "stack-profile.schema.yaml" "skill-loading.schema.yaml" "quality-gate.schema.yaml" "project-plan.schema.yaml" "phase-context.schema.yaml" "handoff-manifest.schema.yaml")
+    for schema in "${schema_files[@]}"; do
+        if [[ "$execution_mode" == "local" ]]; then
+            if [[ -f "$PROJECT_ROOT/project/schemas/$schema" ]]; then
+                if cp "$PROJECT_ROOT/project/schemas/$schema" "$SCHEMAS_DIR/$schema"; then
+                    log "Installed schema: $schema"
+                fi
+            fi
+        else
+            if download_file_from_github "project/schemas/$schema" "$SCHEMAS_DIR/$schema"; then
+                log "Installed schema: $schema"
+            fi
+        fi
+    done
+
+    # Sprint 9: Install quality gates
+    log "Installing quality gates..."
+    local GATES_DIR="$(pwd)/gates"
+    mkdir -p "$GATES_DIR/templates"
+
+    if [[ "$execution_mode" == "local" ]]; then
+        if [[ -f "$PROJECT_ROOT/project/gates/run-gates.py" ]]; then
+            cp "$PROJECT_ROOT/project/gates/run-gates.py" "$GATES_DIR/"
+            chmod +x "$GATES_DIR/run-gates.py"
+            log "Installed: run-gates.py"
+        fi
+        if [[ -f "$PROJECT_ROOT/project/gates/gate-types.yaml" ]]; then
+            cp "$PROJECT_ROOT/project/gates/gate-types.yaml" "$GATES_DIR/"
+            log "Installed: gate-types.yaml"
+        fi
+        if [[ -f "$PROJECT_ROOT/project/gates/README.md" ]]; then
+            cp "$PROJECT_ROOT/project/gates/README.md" "$GATES_DIR/"
+            log "Installed: gates README.md"
+        fi
+        # Gate templates
+        for template in "nodejs-saas.json" "python-api.json" "minimal.json"; do
+            if [[ -f "$PROJECT_ROOT/project/gates/templates/$template" ]]; then
+                cp "$PROJECT_ROOT/project/gates/templates/$template" "$GATES_DIR/templates/"
+                log "Installed gate template: $template"
+            fi
+        done
+    else
+        download_file_from_github "project/gates/run-gates.py" "$GATES_DIR/run-gates.py" && chmod +x "$GATES_DIR/run-gates.py"
+        download_file_from_github "project/gates/gate-types.yaml" "$GATES_DIR/gate-types.yaml"
+        download_file_from_github "project/gates/README.md" "$GATES_DIR/README.md"
+        for template in "nodejs-saas.json" "python-api.json" "minimal.json"; do
+            download_file_from_github "project/gates/templates/$template" "$GATES_DIR/templates/$template"
+        done
+    fi
+
+    # Sprint 9: Install stack profiles
+    log "Installing stack profiles..."
+    local STACK_PROFILES_DIR="$(pwd)/stack-profiles"
+    mkdir -p "$STACK_PROFILES_DIR"
+
+    local stack_profiles=("nextjs-supabase.yaml" "remix-railway.yaml" "sveltekit-supabase.yaml" "README.md")
+    for profile in "${stack_profiles[@]}"; do
+        if [[ "$execution_mode" == "local" ]]; then
+            if [[ -f "$PROJECT_ROOT/templates/stack-profiles/$profile" ]]; then
+                if cp "$PROJECT_ROOT/templates/stack-profiles/$profile" "$STACK_PROFILES_DIR/$profile"; then
+                    log "Installed stack profile: $profile"
+                fi
+            fi
+        else
+            if download_file_from_github "templates/stack-profiles/$profile" "$STACK_PROFILES_DIR/$profile"; then
+                log "Installed stack profile: $profile"
+            fi
+        fi
+    done
+
+    success "Sprint 9 components installed successfully!"
+
     if [[ ${#failed_files[@]} -eq 0 ]]; then
         success "Mission system installed successfully!"
         return 0
