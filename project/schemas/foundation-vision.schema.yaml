@@ -1,0 +1,191 @@
+# Vision & Mission Extraction Schema
+# Purpose: Structured strategic direction for agents
+# Usage: /foundations init extracts source docs to this format
+
+$schema: "http://json-schema.org/draft-07/schema#"
+type: object
+description: "Structured vision and mission for strategic alignment"
+
+required:
+  - vision
+  - mission
+
+properties:
+  vision:
+    type: object
+    required: [statement]
+    properties:
+      statement:
+        type: string
+        description: "The vision statement - future state we're creating"
+      elaboration:
+        type: string
+        description: "Extended explanation of the vision"
+
+  mission:
+    type: object
+    required: [statement]
+    properties:
+      statement:
+        type: string
+        description: "The mission statement - how we achieve the vision"
+      elaboration:
+        type: string
+        description: "Extended explanation of the mission"
+
+  hedgehog_concept:
+    type: object
+    description: "Jim Collins hedgehog concept"
+    properties:
+      passionate_about:
+        type: string
+        description: "What we're deeply passionate about"
+      best_at:
+        type: string
+        description: "What we can be best in the world at"
+      economic_engine:
+        type: string
+        description: "What drives our economic engine"
+      strategic_sweet_spot:
+        type: string
+        description: "The intersection of all three"
+
+  philosophy:
+    type: object
+    properties:
+      core_principle:
+        type: string
+        description: "Core operating principle (e.g., AI-native)"
+      key_beliefs:
+        type: array
+        items:
+          type: string
+
+  value_proposition:
+    type: object
+    properties:
+      for_whom:
+        type: string
+        description: "Target audience"
+      who_struggle_with:
+        type: string
+        description: "Their core struggle"
+      we_provide:
+        type: string
+        description: "What we offer"
+      that_delivers:
+        type: string
+        description: "The outcome/benefit"
+      unlike:
+        type: string
+        description: "Competitive alternatives"
+      because:
+        type: string
+        description: "Why we're different"
+
+  competitive_position:
+    type: object
+    properties:
+      market_position:
+        type: string
+        description: "How we position in the market"
+      category:
+        type: string
+        description: "Category we're creating or competing in"
+      competitors:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            why_they_fail:
+              type: string
+      differentiators:
+        type: array
+        items:
+          type: string
+        description: "Our unique advantages"
+
+  goals:
+    type: object
+    properties:
+      bhag:
+        type: string
+        description: "Big Hairy Audacious Goal"
+      year_1:
+        type: object
+        properties:
+          customers:
+            type: string
+          revenue:
+            type: string
+          key_milestone:
+            type: string
+      year_3:
+        type: object
+        properties:
+          customers:
+            type: string
+          revenue:
+            type: string
+          key_milestone:
+            type: string
+      year_5:
+        type: object
+        properties:
+          customers:
+            type: string
+          revenue:
+            type: string
+          key_milestone:
+            type: string
+
+  core_values:
+    type: array
+    items:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        behaviors:
+          type: array
+          items:
+            type: string
+          description: "How this value manifests in actions"
+
+  success_indicators:
+    type: array
+    items:
+      type: object
+      properties:
+        category:
+          type: string
+        metrics:
+          type: array
+          items:
+            type: object
+            properties:
+              metric:
+                type: string
+              target:
+                type: string
+              timeframe:
+                type: string
+
+  validation:
+    type: object
+    description: "How we validate we're on track"
+    properties:
+      smoke_tests:
+        type: array
+        items:
+          type: string
+      kill_criteria:
+        type: array
+        items:
+          type: string
+        description: "When to pivot or stop"

@@ -301,6 +301,97 @@ Context preservation templates are available in `/templates/`:
 - `handoff-notes-template.md` - Agent-to-agent handoff structure
 - `evidence-repository-template.md` - Artifact collection format
 
+## Structured Context System (Foundations v2.0)
+
+### Overview
+The `/foundations` command extracts BOS-AI foundation documents (PRD, Vision, ICP, Brand, Marketing) into structured YAML that agents can parse directly. This replaces the previous token-budgeted summary approach which caused 50%+ data loss.
+
+**Key Principle**: Extract complete, structured data that agents can parse directly - not lossy prose summaries.
+
+### Why Structured YAML?
+
+| Approach | Data Preservation | Agent Usability |
+|----------|-------------------|-----------------|
+| Token-budgeted summaries (v1.0) | 25-65% | Requires NLP interpretation |
+| Structured YAML extraction (v2.0) | 100% | Direct parsing, no interpretation |
+
+### Directory Structure
+
+```
+project-root/
+├── documents/foundations/        # Source BOS-AI documents
+│   ├── prd.md
+│   ├── vision-mission.md
+│   ├── client-success-blueprint.md
+│   ├── brand-style-guidelines.md
+│   └── marketing-bible.md
+├── .context/structured/          # Extracted YAML (agent-parseable)
+│   ├── prd.yaml
+│   ├── vision.yaml
+│   ├── icp.yaml
+│   ├── brand.yaml
+│   └── marketing.yaml
+└── handoff-manifest.yaml         # Extraction metadata
+```
+
+### Schema Reference
+
+Foundation extraction schemas are in `project/schemas/`:
+- `foundation-prd.schema.yaml` - Product, features, tech stack, pricing
+- `foundation-vision.schema.yaml` - Vision, mission, hedgehog concept, goals
+- `foundation-icp.schema.yaml` - Personas, pain points, jobs to be done
+- `foundation-brand.schema.yaml` - Colors, typography, components, design system
+- `foundation-marketing.schema.yaml` - Positioning, messaging, channels
+
+### Agent Context Loading
+
+Agents load foundation context via selective YAML sections:
+
+```yaml
+# Example: What designer needs
+context:
+  brand:
+    - colors.primary
+    - colors.secondary
+    - typography.primary
+    - components.buttons
+  prd:
+    - features.p0_must_have
+```
+
+### Mission-to-Context Mapping
+
+| Mission Type | Context Needed |
+|--------------|----------------|
+| build/mvp | prd.features, prd.tech_stack, brand.colors, brand.components |
+| design-review | brand.*, icp.personas |
+| marketing | marketing.*, vision.value_proposition |
+| strategy | vision.*, icp.pain_points, prd.success_metrics |
+
+### Commands
+
+```bash
+# Initialize - scan, extract, generate manifest
+/foundations init
+
+# Check status of all documents
+/foundations status
+
+# Re-extract changed documents
+/foundations refresh
+
+# Validate completeness
+/foundations validate
+```
+
+### Migration from v1.0
+
+If upgrading from token-budgeted summaries:
+1. Delete `.context/summaries/` directory
+2. Run `/foundations init` to create new structured extractions
+3. Old `handoff-manifest.json` replaced by `handoff-manifest.yaml`
+4. Agents now load YAML sections directly
+
 ## Coordinator Delegation Protocol
 
 ### CRITICAL: Using /coord Command

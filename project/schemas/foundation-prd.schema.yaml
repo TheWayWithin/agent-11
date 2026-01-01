@@ -1,0 +1,191 @@
+# PRD (Product Requirements Document) Extraction Schema
+# Purpose: Structured data for agents to implement features correctly
+# Usage: /foundations init extracts source docs to this format
+
+$schema: "http://json-schema.org/draft-07/schema#"
+type: object
+description: "Structured product requirements for agent consumption"
+
+required:
+  - product
+  - problem
+  - users
+  - features
+
+properties:
+  product:
+    type: object
+    required: [name, tagline, type]
+    properties:
+      name:
+        type: string
+        description: "Product name"
+      tagline:
+        type: string
+        description: "One-line description"
+      type:
+        type: string
+        description: "Product type (SaaS, API, Mobile, etc.)"
+      website:
+        type: string
+        description: "Domain or URL"
+      version:
+        type: string
+        description: "Current version if applicable"
+
+  problem:
+    type: object
+    required: [core]
+    properties:
+      core:
+        type: string
+        description: "The core problem being solved"
+      symptoms:
+        type: array
+        items:
+          type: string
+        description: "Observable symptoms of the problem"
+      cycle:
+        type: array
+        items:
+          type: string
+        description: "The negative cycle users experience"
+      cost:
+        type: string
+        description: "What the problem costs users (time, money, frustration)"
+
+  users:
+    type: array
+    items:
+      type: object
+      required: [profile, priority]
+      properties:
+        profile:
+          type: string
+          description: "User profile name"
+        priority:
+          type: integer
+          description: "1=primary, 2=secondary, etc."
+        products:
+          type: string
+          description: "Number of products they manage"
+        mrr_range:
+          type: string
+          description: "Typical MRR range"
+        pain_points:
+          type: array
+          items:
+            type: string
+        success_looks_like:
+          type: string
+
+  features:
+    type: object
+    properties:
+      p0_must_have:
+        type: array
+        description: "Launch blockers - MVP requirements"
+        items:
+          type: object
+          required: [name, acceptance_criteria]
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+            acceptance_criteria:
+              type: array
+              items:
+                type: string
+            success_metric:
+              type: string
+            dependencies:
+              type: array
+              items:
+                type: string
+      p1_should_have:
+        type: array
+        description: "Important but not launch blocking"
+        items:
+          $ref: "#/properties/features/properties/p0_must_have/items"
+      p2_nice_to_have:
+        type: array
+        description: "Future enhancements"
+        items:
+          $ref: "#/properties/features/properties/p0_must_have/items"
+
+  tech_stack:
+    type: object
+    description: "Technology choices"
+    properties:
+      frontend:
+        type: string
+      backend:
+        type: string
+      database:
+        type: string
+      auth:
+        type: string
+      hosting:
+        type: string
+      email:
+        type: string
+      payments:
+        type: string
+      ai:
+        type: string
+      queues:
+        type: string
+      analytics:
+        type: string
+
+  success_metrics:
+    type: array
+    items:
+      type: object
+      required: [metric, target]
+      properties:
+        metric:
+          type: string
+        target:
+          type: string
+        timeframe:
+          type: string
+
+  constraints:
+    type: object
+    properties:
+      technical:
+        type: array
+        items:
+          type: string
+      business:
+        type: array
+        items:
+          type: string
+      timeline:
+        type: string
+      budget:
+        type: string
+
+  pricing:
+    type: object
+    properties:
+      model:
+        type: string
+        description: "Pricing model (subscription, usage, freemium)"
+      tiers:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            price:
+              type: string
+            features:
+              type: array
+              items:
+                type: string
+            limits:
+              type: object

@@ -1,0 +1,259 @@
+# Marketing / Positioning Extraction Schema
+# Purpose: Structured marketing and positioning data for content creation
+# Usage: /foundations init extracts source docs to this format
+
+$schema: "http://json-schema.org/draft-07/schema#"
+type: object
+description: "Structured marketing positioning and strategy for content agents"
+
+properties:
+  positioning:
+    type: object
+    properties:
+      market_position:
+        type: string
+        description: "How we position in the market"
+      category:
+        type: string
+        description: "Category we own or are creating"
+      tagline:
+        type: string
+        description: "Primary marketing tagline"
+      one_liner:
+        type: string
+        description: "One sentence description"
+      elevator_pitch:
+        type: string
+        description: "30-second explanation"
+
+  messaging:
+    type: object
+    properties:
+      overt_benefit:
+        type: string
+        description: "The obvious, primary benefit"
+      dramatic_difference:
+        type: string
+        description: "What makes us dramatically different"
+      real_reasons_to_believe:
+        type: array
+        items:
+          type: string
+        description: "Proof points and credibility"
+      customer_promise:
+        type: string
+        description: "What we promise to deliver"
+
+  value_propositions:
+    type: array
+    description: "Value propositions by audience segment"
+    items:
+      type: object
+      properties:
+        audience:
+          type: string
+        headline:
+          type: string
+        subheadline:
+          type: string
+        benefits:
+          type: array
+          items:
+            type: string
+        proof_point:
+          type: string
+
+  competitive_differentiation:
+    type: object
+    properties:
+      vs_alternatives:
+        type: array
+        items:
+          type: object
+          properties:
+            competitor:
+              type: string
+            their_approach:
+              type: string
+            our_advantage:
+              type: string
+      unique_advantages:
+        type: array
+        items:
+          type: string
+      moat:
+        type: string
+        description: "What makes us hard to copy"
+
+  target_keywords:
+    type: object
+    properties:
+      primary:
+        type: array
+        items:
+          type: string
+        description: "High-intent, conversion keywords"
+      secondary:
+        type: array
+        items:
+          type: string
+        description: "Awareness and discovery keywords"
+      long_tail:
+        type: array
+        items:
+          type: string
+        description: "Specific, lower-competition keywords"
+
+  content_themes:
+    type: array
+    description: "Core content pillars/themes"
+    items:
+      type: object
+      properties:
+        theme:
+          type: string
+        description:
+          type: string
+        topics:
+          type: array
+          items:
+            type: string
+
+  channels:
+    type: object
+    properties:
+      primary:
+        type: array
+        items:
+          type: object
+          properties:
+            channel:
+              type: string
+            purpose:
+              type: string
+            priority:
+              type: integer
+            content_type:
+              type: string
+      secondary:
+        type: array
+        items:
+          $ref: "#/properties/channels/properties/primary/items"
+
+  social_proof:
+    type: object
+    properties:
+      testimonials:
+        type: array
+        items:
+          type: object
+          properties:
+            quote:
+              type: string
+            name:
+              type: string
+            title:
+              type: string
+            company:
+              type: string
+            result:
+              type: string
+      case_studies:
+        type: array
+        items:
+          type: object
+          properties:
+            title:
+              type: string
+            problem:
+              type: string
+            solution:
+              type: string
+            result:
+              type: string
+      metrics:
+        type: array
+        items:
+          type: object
+          properties:
+            metric:
+              type: string
+            value:
+              type: string
+
+  launch_strategy:
+    type: object
+    properties:
+      beachhead:
+        type: string
+        description: "Initial target segment"
+      expansion_path:
+        type: array
+        items:
+          type: string
+        description: "Market expansion sequence"
+      launch_channels:
+        type: array
+        items:
+          type: string
+      launch_tactics:
+        type: array
+        items:
+          type: object
+          properties:
+            tactic:
+              type: string
+            channel:
+              type: string
+            timing:
+              type: string
+            expected_result:
+              type: string
+
+  pricing_marketing:
+    type: object
+    description: "How to present pricing"
+    properties:
+      anchor:
+        type: string
+        description: "What to anchor price against"
+      value_framing:
+        type: string
+        description: "How to frame the value"
+      objection_handling:
+        type: array
+        items:
+          type: object
+          properties:
+            objection:
+              type: string
+            response:
+              type: string
+      guarantees:
+        type: array
+        items:
+          type: string
+
+  copy_guidelines:
+    type: object
+    properties:
+      voice:
+        type: string
+      tone:
+        type: string
+      dos:
+        type: array
+        items:
+          type: string
+      donts:
+        type: array
+        items:
+          type: string
+      power_words:
+        type: array
+        items:
+          type: string
+      banned_words:
+        type: array
+        items:
+          type: string
