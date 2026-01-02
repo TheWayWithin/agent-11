@@ -86,31 +86,218 @@ sha256sum documents/foundations/<filename> | cut -d' ' -f1
 
 For each document category, extract ALL relevant data into the schema structure. Do NOT compress or summarize - transfer complete information.
 
-**Extraction Prompt Template**:
+### Document Type Classification
+
+Before extraction, classify the document type to apply appropriate rules:
+
+| Document | Type | Mode |
+|----------|------|------|
+| PRD | SPECIFICATION | COMPLETENESS MODE |
+| Vision | STRATEGIC | SYNTHESIS MODE |
+| ICP | STRUCTURED | MAPPING MODE |
+| Brand | PRECISION | EXACT MODE |
+| Marketing | STRATEGIC | SYNTHESIS MODE |
+
+### Extraction Mode Rules
+
+**COMPLETENESS MODE** (PRD, Architecture):
 ```
-Extract structured data from this {category} document into the schema format.
+MANDATORY RULES:
+- Extract 100% of ALL list items - NEVER sample, truncate, or summarize lists
+- Preserve EVERY numeric value with its unit and context (e.g., "1,000 users in 3 months")
+- Include ALL sub-components of compound features (every item after commas)
+- Extract ALL timeline/duration information (weeks, dates, phases)
+- Preserve technology version numbers (Next.js 14, not just "Next.js")
+- Include ALL SLAs, thresholds, and performance targets
+- When in doubt, INCLUDE rather than exclude
+```
+
+**EXACT MODE** (Brand, Style Guide):
+```
+MANDATORY RULES:
+- Byte-level precision on ALL values
+- Preserve exact hex codes, RGB values, font names
+- Include units on ALL measurements (px, rem, %)
+- No interpretation - pure transcription
+- Every color, every font weight, every spacing value
+```
+
+**MAPPING MODE** (ICP, Personas):
+```
+MANDATORY RULES:
+- Map ALL personas with ALL fields
+- Include ALL pain points, goals, objections
+- Preserve ALL numeric criteria (revenue ranges, team sizes)
+- Extract ALL quotes verbatim
+```
+
+**SYNTHESIS MODE** (Vision, Marketing):
+```
+MANDATORY RULES:
+- Capture strategic statements fully
+- Preserve numeric goals and timeframes
+- Include emotional/aspirational language
+- Extract ALL success indicators and milestones
+```
+
+### Extraction Prompt Template
+
+**For PRD Documents** (COMPLETENESS MODE):
+```
+Extract structured data from this PRD document into the schema format.
+
+CRITICAL COMPLETENESS RULES - YOU MUST FOLLOW THESE:
+
+1. NUMERIC VALUES - Extract EVERY number with full context:
+   - "1,000 users" → target: 1000, context: "users"
+   - "$10K MRR" → target: 10000, unit: "USD", period: "monthly"
+   - "70% retention" → target: 70, unit: "percent"
+   - Include ALL SLAs: uptime %, response times, concurrent users
+
+2. LISTS - Extract 100% of items, NEVER truncate:
+   - If source has 8 deliverables, output MUST have 8 deliverables
+   - If source has 10 requirements, output MUST have 10 requirements
+   - Count items in source, verify count in output matches
+
+3. FEATURE SUB-COMPONENTS - Extract ALL parts:
+   - "Inline editing, AI rewrite, version comparison" = 3 separate items
+   - Every comma-separated item becomes a sub_feature entry
+   - Don't flatten or combine
+
+4. TIMELINES - Extract ALL temporal information:
+   - Phase ranges: "Weeks 1-6" → start: "Week 1", end: "Week 6"
+   - Durations: "3-5 minutes" → duration: "3-5 minutes"
+   - Deadlines: "by Q2" → deadline: "Q2"
+
+5. TECHNOLOGY SPECIFICS - Preserve versions and variants:
+   - "GPT-4, GPT-4o, Claude" = 3 separate AI model entries
+   - "Next.js 14 App Router" → name: "Next.js", version: "14", features: ["App Router"]
+   - "Supabase with RLS" → name: "Supabase", features: ["RLS"]
+
+VALIDATION CHECK: Before completing, verify:
+- Count of list items matches source document
+- All numeric targets have values (not just descriptions)
+- All timeline information is present
+- All technology versions are preserved
+
+Schema reference: project/schemas/foundation-prd.schema.yaml
+```
+
+**For Brand Documents** (EXACT MODE):
+```
+Extract structured data from this Brand document into the schema format.
+
+CRITICAL EXACTNESS RULES:
+
+1. COLORS - Every hex code, exactly as written:
+   - "#6366F1" not "purple" or "primary"
+   - Include RGB if provided
+   - Include usage context
+
+2. TYPOGRAPHY - Every specification:
+   - Font family exact name
+   - All weight values (400, 500, 600, 700)
+   - All size values with units (16px, 1rem)
+   - Line heights as numbers (1.5, 1.6)
+
+3. SPACING - Every token:
+   - Base unit (8px)
+   - All scale values
+   - Named spacing values
+
+4. COMPONENTS - Full specifications:
+   - Button styles with all states
+   - Card styles with padding/radius/shadow
+   - Input styles with all states
+
+Schema reference: project/schemas/foundation-brand.schema.yaml
+```
+
+**For Vision Documents** (SYNTHESIS MODE):
+```
+Extract structured data from this Vision document into the schema format.
 
 CRITICAL RULES:
-1. Extract ALL information - do not summarize or compress
-2. Preserve exact values (colors, fonts, sizes, prices)
-3. Include all items in lists (features, personas, etc.)
-4. Maintain relationships and hierarchies
-5. Use direct quotes where available
-6. If information doesn't fit a schema field, include it in the closest logical field
+1. Preserve vision and mission statements in full
+2. Extract ALL goals with numeric targets and timeframes
+3. Include ALL success indicators by year/period
+4. Capture core values with their principles
+5. Preserve aspirational language and emotional context
 
-Schema reference: project/schemas/foundation-{category}.schema.yaml
+Schema reference: project/schemas/foundation-vision.schema.yaml
+```
 
-Output YAML that can be parsed directly by agents.
-Include ALL data from the source document.
+**For ICP Documents** (MAPPING MODE):
+```
+Extract structured data from this ICP document into the schema format.
+
+CRITICAL RULES:
+1. Extract ALL personas with ALL fields
+2. Include ALL pain points with severity levels
+3. Extract ALL jobs-to-be-done with context
+4. Preserve ALL numeric criteria (revenue, team size, etc.)
+5. Include ALL quotes verbatim
+6. Extract ALL anti-personas
+
+Schema reference: project/schemas/foundation-icp.schema.yaml
+```
+
+**For Marketing Documents** (SYNTHESIS MODE):
+```
+Extract structured data from this Marketing document into the schema format.
+
+CRITICAL RULES:
+1. Extract positioning statements fully
+2. Include ALL value propositions by audience
+3. Preserve ALL messaging frameworks
+4. Extract ALL channel strategies
+5. Include ALL competitive differentiators
+
+Schema reference: project/schemas/foundation-marketing.schema.yaml
 ```
 
 **Output files**: `.context/structured/{category}.yaml`
 
-**Validation**: After extraction, verify:
-- YAML is valid and parseable
-- Required schema fields are populated
-- No empty arrays/objects where data should exist
-- Exact values preserved (especially colors, fonts, sizes)
+### Post-Extraction Validation
+
+After extraction, perform these verification checks:
+
+**Numeric Preservation Check**:
+- Count numeric values in source document
+- Verify at least 95% are present in YAML
+- Flag any metrics without target values
+
+**List Completeness Check**:
+- For each major list in source, count items
+- Verify YAML has same count
+- Flag any truncated lists
+
+**Timeline Check**:
+- Verify all phase timelines are extracted
+- Verify all duration estimates are present
+- Verify all deadlines are captured
+
+**Technology Check**:
+- Verify version numbers are preserved
+- Verify all named technologies are listed
+- Verify feature variants are captured
+
+**Validation Output**:
+```
+EXTRACTION VALIDATION REPORT
+============================
+Document: {filename}
+Category: {category}
+Mode: {extraction_mode}
+
+Numeric Values: {source_count} found → {yaml_count} extracted ({percentage}%)
+List Items: {source_lists} → {yaml_lists} (100% required)
+Timelines: {timeline_count} captured
+Technologies: {tech_count} with versions
+
+Status: PASS/FAIL
+Issues: [list any gaps]
+```
 
 ### Phase 4: Generate handoff-manifest.yaml
 

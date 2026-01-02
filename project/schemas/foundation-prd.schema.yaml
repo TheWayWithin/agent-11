@@ -1,6 +1,7 @@
 # PRD (Product Requirements Document) Extraction Schema
 # Purpose: Structured data for agents to implement features correctly
 # Usage: /foundations init extracts source docs to this format
+# Mode: COMPLETENESS MODE - extract 100% of all data
 
 $schema: "http://json-schema.org/draft-07/schema#"
 type: object
@@ -87,12 +88,17 @@ properties:
         description: "Launch blockers - MVP requirements"
         items:
           type: object
-          required: [name, acceptance_criteria]
+          required: [name]
           properties:
             name:
               type: string
             description:
               type: string
+            sub_features:
+              type: array
+              description: "CRITICAL: Extract ALL comma-separated components"
+              items:
+                type: string
             acceptance_criteria:
               type: array
               items:
@@ -114,26 +120,102 @@ properties:
         items:
           $ref: "#/properties/features/properties/p0_must_have/items"
 
+  phases:
+    type: array
+    description: "Development phases with timelines and deliverables"
+    items:
+      type: object
+      required: [name, timeline, deliverables]
+      properties:
+        name:
+          type: string
+          description: "Phase name (e.g., 'MVP Foundation')"
+        number:
+          type: integer
+          description: "Phase number (1, 2, 3, etc.)"
+        timeline:
+          type: object
+          required: [start, end]
+          properties:
+            start:
+              type: string
+              description: "Start week/date (e.g., 'Week 1')"
+            end:
+              type: string
+              description: "End week/date (e.g., 'Week 6')"
+            duration:
+              type: string
+              description: "Duration (e.g., '6 weeks')"
+        deliverables:
+          type: array
+          description: "ALL deliverables - NEVER truncate this list"
+          items:
+            type: string
+        milestone:
+          type: string
+          description: "Key milestone at phase end"
+
   tech_stack:
     type: object
-    description: "Technology choices"
+    description: "Technology choices with versions and features"
     properties:
       frontend:
-        type: string
+        type: object
+        properties:
+          name:
+            type: string
+          version:
+            type: string
+          features:
+            type: array
+            items:
+              type: string
       backend:
-        type: string
+        type: object
+        properties:
+          name:
+            type: string
+          version:
+            type: string
+          features:
+            type: array
+            items:
+              type: string
       database:
-        type: string
+        type: object
+        properties:
+          name:
+            type: string
+          features:
+            type: array
+            items:
+              type: string
+            description: "e.g., ['RLS', 'Edge Functions']"
       auth:
         type: string
       hosting:
-        type: string
+        type: object
+        properties:
+          frontend:
+            type: string
+          backend:
+            type: string
       email:
         type: string
       payments:
         type: string
-      ai:
-        type: string
+      ai_models:
+        type: array
+        description: "ALL supported AI models with providers"
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+              description: "Model name (e.g., 'GPT-4', 'GPT-4o', 'Claude')"
+            provider:
+              type: string
+              description: "Provider (e.g., 'OpenAI', 'Anthropic')"
       queues:
         type: string
       analytics:
@@ -141,6 +223,7 @@ properties:
 
   success_metrics:
     type: array
+    description: "ALL metrics with numeric targets - NEVER omit values"
     items:
       type: object
       required: [metric, target]
@@ -148,8 +231,50 @@ properties:
         metric:
           type: string
         target:
+          oneOf:
+            - type: number
+            - type: string
+          description: "Numeric target value (1000, not 'many')"
+        unit:
           type: string
+          description: "Unit (users, USD, percent, etc.)"
         timeframe:
+          type: string
+          description: "When to achieve (e.g., '3 months')"
+        source_quote:
+          type: string
+          description: "Original text from source document"
+
+  non_functional_requirements:
+    type: object
+    description: "Performance, security, and scalability requirements"
+    properties:
+      performance:
+        type: array
+        description: "ALL performance SLAs with numeric values"
+        items:
+          type: object
+          properties:
+            requirement:
+              type: string
+            target:
+              type: string
+              description: "Exact value (e.g., '99.9%', '<5s', '10K')"
+            unit:
+              type: string
+      security:
+        type: array
+        description: "ALL security requirements"
+        items:
+          type: string
+      scalability:
+        type: array
+        description: "ALL scalability requirements"
+        items:
+          type: string
+      compliance:
+        type: array
+        items:
           type: string
 
   constraints:
@@ -182,7 +307,14 @@ properties:
             name:
               type: string
             price:
-              type: string
+              type: object
+              properties:
+                amount:
+                  type: number
+                period:
+                  type: string
+                currency:
+                  type: string
             features:
               type: array
               items:

@@ -16,6 +16,45 @@ This file has been restructured to be a BACKWARD-LOOKING changelog capturing:
 
 ## 📦 Recent Deliverables
 
+### [2026-01-01] - Sprint 10.1: Extraction Quality Improvements - COMPLETE ✅
+**Created by**: Direct implementation
+**Type**: Core System - Extraction prompt and schema improvements
+**Related**: Fixes PRD extraction quality issues (7/10 → target 10/10)
+**Status**: ✅ COMPLETE
+
+**Problem Solved**:
+Validation testing revealed summarization bias in PRD extraction:
+- Numeric targets being dropped (1000 users → "users")
+- Lists truncated (8 deliverables → 4)
+- Feature sub-components flattened
+- Timeline information omitted
+- Technology versions generalized
+
+**Changes Made**:
+
+1. **foundations.md** - Enhanced extraction protocol:
+   - Added Document Type Classification (SPECIFICATION, STRATEGIC, PRECISION, STRUCTURED)
+   - Added Extraction Mode Rules (COMPLETENESS, EXACT, MAPPING, SYNTHESIS)
+   - Created document-specific extraction prompts with explicit rules
+   - Added Post-Extraction Validation checklist
+
+2. **foundation-prd.schema.yaml** - Enhanced schema:
+   - Added `phases` array with timeline objects (start, end, duration)
+   - Added `sub_features` array for compound features
+   - Added `non_functional_requirements` section (performance, security, scalability)
+   - Enhanced `tech_stack` with version and features objects
+   - Added `ai_models` array with name/provider
+   - Enhanced `success_metrics` with target, unit, timeframe, source_quote
+
+**Key Improvements**:
+- Explicit "NEVER truncate" rules for lists
+- Numeric preservation with context (value + unit + timeframe)
+- Feature decomposition into sub_features
+- Timeline extraction (weeks, durations, milestones)
+- Technology specificity (versions, features)
+
+---
+
 ### [2026-01-01] - Sprint 10: Structured Context System (Foundations v2.0) - COMPLETE ✅
 **Created by**: Direct implementation
 **Type**: Core System - Foundation extraction overhaul
