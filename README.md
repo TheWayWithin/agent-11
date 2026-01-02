@@ -41,6 +41,39 @@ AGENT-11 is the **technical execution arm** of the BOS-AI ecosystem. BOS-AI hand
 
 **You can use AGENT-11 standalone** without BOS-AI. [→ Complete BOS-AI Integration Guide](project/field-manual/bos-ai-integration-guide.md)
 
+### The Complete Workflow: Idea → Shipped Product
+
+```
+BOS-AI Documents → /foundations init → /bootstrap → /coord continue → 🚀 Shipped
+```
+
+| Step | Command | What It Does | Time |
+|------|---------|--------------|------|
+| **1. Process Docs** | `/foundations init` | Extracts PRD, Vision, ICP, Brand into structured YAML | 2-5 min |
+| **2. Generate Plan** | `/bootstrap` | Creates phased project-plan.md with tasks & gates | 1-2 min |
+| **3. Check Status** | `/plan status` | Shows current phase, progress, blockers | Instant |
+| **4. Execute** | `/coord continue` | Autonomous execution until blocked or phase complete | Hours-Days |
+
+**Example Session:**
+```bash
+# 1. Copy your BOS-AI docs to the project
+cp ~/Documents/BOS-AI/*.md ./documents/foundations/
+
+# 2. Process foundation documents
+/foundations init
+
+# 3. Generate project plan
+/bootstrap
+
+# 4. Review what was created
+/plan status
+
+# 5. Start building (autonomous)
+/coord continue
+```
+
+**Skip BOS-AI?** Start directly with `/coord dev-setup vision.md` or `/coord mvp requirements.md`
+
 ---
 
 ## 🆕 Current Version: v5.1.0
@@ -143,6 +176,7 @@ claude
 
 ### First Mission
 
+**From BOS-AI docs**: `/foundations init` → `/bootstrap` → `/coord continue` (full workflow)
 **Existing project**: `/coord dev-alignment` (analyzes codebase, creates docs)
 **New project**: `/coord dev-setup vision.md` (initializes project structure)
 **Build feature**: `/coord build requirements.md`
