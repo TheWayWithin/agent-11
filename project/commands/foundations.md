@@ -54,6 +54,7 @@ If no subcommand provided, default to `status`.
 |----------|------------|------------|------------|
 | **prd** | prd.md | requirements.md | product-requirements.md |
 | **vision** | vision-mission.md | vision.md | strategic-plan.md |
+| **roadmap** | strategic-roadmap.md | roadmap.md | development-plan.md |
 | **icp** | client-success-blueprint.md | icp.md | personas.md |
 | **brand** | brand-style-guidelines.md | brand.md | style-guide.md |
 | **marketing** | marketing-bible.md | marketing.md | positioning.md |
@@ -78,6 +79,7 @@ sha256sum documents/foundations/<filename> | cut -d' ' -f1
 **Schema References** (in `project/schemas/`):
 - `foundation-prd.schema.yaml`
 - `foundation-vision.schema.yaml`
+- `foundation-roadmap.schema.yaml`
 - `foundation-icp.schema.yaml`
 - `foundation-brand.schema.yaml`
 - `foundation-marketing.schema.yaml`
@@ -94,6 +96,7 @@ Before extraction, classify the document type to apply appropriate rules:
 |----------|------|------|
 | PRD | SPECIFICATION | COMPLETENESS MODE |
 | Vision | STRATEGIC | SYNTHESIS MODE |
+| Roadmap | STRATEGIC | SYNTHESIS MODE |
 | ICP | STRUCTURED | MAPPING MODE |
 | Brand | PRECISION | EXACT MODE |
 | Marketing | STRATEGIC | SYNTHESIS MODE |
@@ -194,6 +197,30 @@ CRITICAL EXACTNESS RULES:
    - Include RGB if provided
    - Include usage context
 
+   NEUTRALS (add if not in source - use Tailwind defaults):
+   neutrals:
+     white: "#FFFFFF"
+     gray_50: "#F9FAFB"
+     gray_100: "#F3F4F6"
+     gray_200: "#E5E7EB"
+     gray_300: "#D1D5DB"
+     gray_400: "#9CA3AF"
+     gray_500: "#6B7280"
+     gray_600: "#4B5563"
+     gray_700: "#374151"
+     gray_800: "#1F2937"
+     gray_900: "#111827"
+     black: "#000000"
+
+   COLOR USAGE (add semantic mappings):
+   usage:
+     text_primary: "gray_900"
+     text_secondary: "gray_600"
+     text_muted: "gray_400"
+     border_default: "gray_200"
+     background_page: "white"
+     background_subtle: "gray_50"
+
 2. TYPOGRAPHY - Every specification:
    - Font family exact name
    - All weight values (400, 500, 600, 700)
@@ -209,6 +236,46 @@ CRITICAL EXACTNESS RULES:
    - Button styles with all states
    - Card styles with padding/radius/shadow
    - Input styles with all states
+
+5. SHADOWS (add if not in source - use Tailwind defaults):
+   shadows:
+     sm: "0 1px 2px 0 rgba(0, 0, 0, 0.05)"
+     default: "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)"
+     md: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)"
+     lg: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)"
+     xl: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)"
+   usage:
+     card: "default"
+     dropdown: "lg"
+     modal: "xl"
+
+6. ANIMATIONS (add if not in source - use Tailwind defaults):
+   animations:
+     durations:
+       fast: "150ms"
+       normal: "300ms"
+       slow: "500ms"
+     easings:
+       default: "cubic-bezier(0.4, 0, 0.2, 1)"
+       in: "cubic-bezier(0.4, 0, 1, 1)"
+       out: "cubic-bezier(0, 0, 0.2, 1)"
+
+7. BREAKPOINTS (add if not in source - use Tailwind defaults):
+   breakpoints:
+     sm: "640px"
+     md: "768px"
+     lg: "1024px"
+     xl: "1280px"
+     2xl: "1536px"
+   container_widths:
+     sm: "640px"
+     md: "768px"
+     lg: "1024px"
+     xl: "1280px"
+
+NOTE: For neutrals, shadows, animations, and breakpoints - use Tailwind CSS
+defaults if not specified in source document. Add YAML header comment noting
+industry-standard values were used.
 
 Schema reference: project/schemas/foundation-brand.schema.yaml
 ```
@@ -254,6 +321,59 @@ CRITICAL RULES:
 5. Include ALL competitive differentiators
 
 Schema reference: project/schemas/foundation-marketing.schema.yaml
+```
+
+**For Roadmap Documents** (SYNTHESIS MODE):
+```
+Extract structured data from this Roadmap document into the schema format.
+
+CRITICAL DELIVERABLES_LIST RULES - YOU MUST FOLLOW THESE:
+
+1. For EACH week/period in EACH phase, create a deliverables_list array:
+   - Extract EVERY deliverable as a separate item
+   - Classify type: code, database, integration, infrastructure, design, documentation, test
+   - Add acceptance criteria: "How we know it's done"
+
+   Example:
+   deliverables_list:
+     - item: "Next.js app scaffold"
+       type: "code"
+       acceptance: "App runs on localhost:3000"
+     - item: "PostgreSQL database schema"
+       type: "database"
+       acceptance: "Migrations run successfully"
+     - item: "Authentication system (Clerk)"
+       type: "integration"
+       acceptance: "User can sign up/login"
+
+2. For EACH strategic milestone, expand success_criteria to array:
+   - Extract EACH measurable criterion
+   - Include target (numeric or qualitative)
+   - Include measurement method
+
+   Example:
+   success_criteria:
+     - metric: "Beta users"
+       target: 50
+       measurement: "Signed up accounts with activity"
+     - metric: "Core features"
+       target: "5 P0 features functional"
+       measurement: "QA checklist passed"
+     - metric: "Critical bugs"
+       target: 0
+       measurement: "No P0 bugs in production"
+
+3. Preserve the original comma-separated deliverables string for reference
+
+4. Apply to ALL phases (typically 4) and ALL year milestones (Years 1-5)
+
+VALIDATION CHECK:
+- Every phase week has deliverables_list array (not just string)
+- Every milestone has success_criteria array (not just summary string)
+- Every deliverable has item, type, and acceptance fields
+- Every criterion has metric, target, and measurement fields
+
+Schema reference: project/schemas/foundation-roadmap.schema.yaml
 ```
 
 **Output files**: `.context/structured/{category}.yaml`
@@ -332,6 +452,7 @@ extraction:
   schemas_used:
     - "foundation-prd.schema.yaml"
     - "foundation-vision.schema.yaml"
+    - "foundation-roadmap.schema.yaml"
     - "foundation-icp.schema.yaml"
     - "foundation-brand.schema.yaml"
     - "foundation-marketing.schema.yaml"
@@ -344,6 +465,7 @@ extraction:
 - vision (vision-mission, vision, or strategic-plan)
 
 **Advisable Documents** (should have):
+- roadmap (strategic-roadmap, roadmap, or development-plan)
 - icp (client-success-blueprint, icp, or personas)
 - brand (brand-style-guidelines, brand, or style-guide)
 - marketing (marketing-bible, marketing, or positioning)
@@ -382,15 +504,24 @@ Structured Extraction:
     ✓ mission: statement and elaboration
     ✓ goals: year_1, year_3, year_5 defined
 
+  .context/structured/roadmap.yaml - COMPLETE
+    ✓ mvp.development_timeline: 4 phases extracted
+    ✓ deliverables_list: acceptance criteria for all weeks
+    ✓ strategic_milestones: success_criteria arrays expanded
+    ✓ revenue_projections: year_1, year_3, year_5 defined
+
   .context/structured/icp.yaml - COMPLETE
     ✓ personas: 4 personas extracted
     ✓ pain_points: categorized by severity
     ✓ jobs_to_be_done: 6 jobs defined
 
   .context/structured/brand.yaml - COMPLETE
-    ✓ colors: primary, secondary, neutrals, functional
+    ✓ colors: primary, secondary, neutrals (12 shades), functional
     ✓ typography: primary, scale, weights
     ✓ components: buttons, cards, inputs
+    ✓ shadows: 6 elevation levels with usage guide
+    ✓ animations: durations, easings, presets
+    ✓ breakpoints: 6 responsive breakpoints
 
   .context/structured/marketing.yaml - COMPLETE
     ✓ positioning: tagline, one_liner
@@ -556,6 +687,7 @@ project-root/
 │   └── foundations/
 │       ├── Product Requirements Document.md
 │       ├── Vision and Mission.md
+│       ├── Strategic Roadmap.md
 │       ├── Client Success Blueprint.md
 │       ├── Brand Style Guide.md
 │       └── Marketing Bible.md
@@ -563,8 +695,9 @@ project-root/
 │   └── structured/
 │       ├── prd.yaml          # Full PRD extraction
 │       ├── vision.yaml       # Full vision/mission extraction
+│       ├── roadmap.yaml      # Full roadmap with deliverables_list
 │       ├── icp.yaml          # Full ICP extraction
-│       ├── brand.yaml        # Full brand extraction
+│       ├── brand.yaml        # Full brand extraction (neutrals, shadows, animations, breakpoints)
 │       └── marketing.yaml    # Full marketing extraction
 └── handoff-manifest.yaml
 ```

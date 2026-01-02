@@ -151,6 +151,28 @@ properties:
           description: "ALL deliverables - NEVER truncate this list"
           items:
             type: string
+        deliverables_list:
+          type: array
+          description: "ENHANCED: Structured deliverables with acceptance criteria"
+          items:
+            type: object
+            required: [item, type, acceptance]
+            properties:
+              item:
+                type: string
+                description: "Deliverable name (e.g., 'User authentication system')"
+              type:
+                type: string
+                enum: ["code", "database", "integration", "infrastructure", "design", "documentation", "test"]
+                description: "Deliverable category"
+              acceptance:
+                type: string
+                description: "How we know it's done (e.g., 'User can sign up/login')"
+              dependencies:
+                type: array
+                items:
+                  type: string
+                description: "Other deliverables this depends on"
         milestone:
           type: string
           description: "Key milestone at phase end"

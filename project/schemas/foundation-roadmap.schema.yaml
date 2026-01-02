@@ -1,0 +1,239 @@
+# Roadmap Extraction Schema
+# Purpose: Structured development timeline and milestones for agents
+# Usage: /foundations init extracts source docs to this format
+# Mode: SYNTHESIS MODE - capture essence while maintaining key metrics and timelines
+
+$schema: "http://json-schema.org/draft-07/schema#"
+type: object
+description: "Structured strategic roadmap for project planning and execution"
+
+required:
+  - mvp
+  - strategic_milestones
+
+properties:
+  mvp:
+    type: object
+    description: "MVP development details"
+    required: [development_timeline]
+    properties:
+      name:
+        type: string
+        description: "MVP version name (e.g., 'MVP v1.0')"
+      target_date:
+        type: string
+        description: "Target completion date or quarter"
+      overview:
+        type: string
+        description: "Brief MVP description"
+
+      development_timeline:
+        type: object
+        required: [phases]
+        properties:
+          total_duration:
+            type: string
+            description: "Total timeline (e.g., '24 weeks', '6 months')"
+
+          phases:
+            type: array
+            description: "Development phases with detailed deliverables"
+            items:
+              type: object
+              required: [phase, name, weeks]
+              properties:
+                phase:
+                  type: integer
+                  description: "Phase number (1, 2, 3, etc.)"
+                name:
+                  type: string
+                  description: "Phase name (e.g., 'Foundation', 'Core Features')"
+                duration:
+                  type: string
+                  description: "Duration span (e.g., 'Weeks 1-6')"
+                goal:
+                  type: string
+                  description: "High-level phase goal"
+
+                weeks:
+                  type: array
+                  description: "Week-by-week breakdown with detailed deliverables"
+                  items:
+                    type: object
+                    required: [weeks, focus, deliverables_list]
+                    properties:
+                      weeks:
+                        type: string
+                        description: "Week range (e.g., '1-2', '3-4')"
+                      focus:
+                        type: string
+                        description: "Primary focus area"
+                      deliverables:
+                        type: string
+                        description: "Original comma-separated deliverables (preserve for reference)"
+
+                      deliverables_list:
+                        type: array
+                        description: "CRITICAL: Structured list of ALL deliverables with acceptance criteria"
+                        items:
+                          type: object
+                          required: [item, type, acceptance]
+                          properties:
+                            item:
+                              type: string
+                              description: "Deliverable name (e.g., 'Next.js app scaffold')"
+                            type:
+                              type: string
+                              enum: ["code", "database", "integration", "infrastructure", "design", "documentation", "test"]
+                              description: "Deliverable category"
+                            acceptance:
+                              type: string
+                              description: "How we know it's done (e.g., 'App runs on localhost:3000')"
+                            dependencies:
+                              type: array
+                              items:
+                                type: string
+                              description: "Other deliverables this depends on"
+
+                      milestone:
+                        type: string
+                        description: "Key milestone achieved at end of this period"
+
+  strategic_milestones:
+    type: object
+    description: "Long-term milestones by year with expanded success criteria"
+    properties:
+      year_1_foundation:
+        type: array
+        description: "Year 1 foundation milestones"
+        items:
+          $ref: "#/$defs/milestone_with_criteria"
+
+      year_2_growth:
+        type: array
+        description: "Year 2 growth milestones"
+        items:
+          $ref: "#/$defs/milestone_with_criteria"
+
+      year_3_scale:
+        type: array
+        description: "Year 3 scaling milestones"
+        items:
+          $ref: "#/$defs/milestone_with_criteria"
+
+      year_5_vision:
+        type: array
+        description: "Year 5 vision milestones"
+        items:
+          $ref: "#/$defs/milestone_with_criteria"
+
+  growth_strategy:
+    type: object
+    description: "Growth approach and channels"
+    properties:
+      primary_channels:
+        type: array
+        items:
+          type: string
+      secondary_channels:
+        type: array
+        items:
+          type: string
+      key_tactics:
+        type: array
+        items:
+          type: object
+          properties:
+            tactic:
+              type: string
+            timeline:
+              type: string
+            expected_outcome:
+              type: string
+
+  revenue_projections:
+    type: object
+    properties:
+      model:
+        type: string
+        description: "Revenue model (subscription, usage-based, etc.)"
+      year_1:
+        type: object
+        properties:
+          mrr_target:
+            type: string
+          arr_target:
+            type: string
+          customers:
+            type: string
+      year_3:
+        type: object
+        properties:
+          mrr_target:
+            type: string
+          arr_target:
+            type: string
+          customers:
+            type: string
+      year_5:
+        type: object
+        properties:
+          mrr_target:
+            type: string
+          arr_target:
+            type: string
+          customers:
+            type: string
+
+  risks_and_mitigations:
+    type: array
+    items:
+      type: object
+      properties:
+        risk:
+          type: string
+        probability:
+          type: string
+          enum: ["low", "medium", "high"]
+        impact:
+          type: string
+          enum: ["low", "medium", "high"]
+        mitigation:
+          type: string
+
+$defs:
+  milestone_with_criteria:
+    type: object
+    required: [milestone, target_date]
+    properties:
+      milestone:
+        type: string
+        description: "Milestone name (e.g., 'Beta Launch')"
+      target_date:
+        type: string
+        description: "Target quarter or date (e.g., 'Q1 2026')"
+      success_criteria_summary:
+        type: string
+        description: "Original one-line summary (preserve for reference)"
+
+      success_criteria:
+        type: array
+        description: "CRITICAL: Expanded success criteria with measurable targets"
+        items:
+          type: object
+          required: [metric, target, measurement]
+          properties:
+            metric:
+              type: string
+              description: "What we're measuring (e.g., 'Beta users')"
+            target:
+              oneOf:
+                - type: number
+                - type: string
+              description: "Numeric or qualitative target (e.g., 50, '5 P0 features')"
+            measurement:
+              type: string
+              description: "How we measure this (e.g., 'Signed up accounts with activity')"
+            source_quote:
+              type: string
+              description: "Original text from source document"
