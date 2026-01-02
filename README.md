@@ -880,7 +880,120 @@ Pattern: `/coord [mission] [input-file.md]` or `@agent` for direct access. Examp
 
 ## 🎮 Command Reference
 
-AGENT-11 provides 8 powerful slash commands for different workflows:
+AGENT-11 provides 12 slash commands for the complete development workflow:
+
+### 📋 Planning Commands (BOS-AI → Execution)
+
+These commands transform foundation documents into executable project plans:
+
+---
+
+### 📥 `/foundations` - Document Processing
+**Extract structured data from BOS-AI foundation documents**
+
+```bash
+# Process all docs in documents/foundations/
+/foundations init
+
+# Process specific documents
+/foundations init --prd ideation/PRD.md --vision ideation/vision.md
+
+# Refresh existing summaries
+/foundations refresh
+```
+
+**What it does**:
+- Extracts PRD, Vision, ICP, Brand into structured YAML
+- Uses document-type-aware processing (100% data preservation)
+- Creates `.context/summaries/` with checksums
+- Generates `handoff-manifest.json` for tracking
+
+**Output**: `.context/summaries/*.yaml` files ready for `/bootstrap`
+
+[→ Detailed Spec](project/commands/foundations.md)
+
+---
+
+### 🏗️ `/bootstrap` - Plan Generation
+**Transform foundation summaries into executable project-plan.md**
+
+```bash
+/bootstrap                          # Auto-detect project type
+/bootstrap --type saas-mvp          # Explicit SaaS MVP
+/bootstrap --type api --phases 3    # API project with 3 phases
+/bootstrap --dry-run                # Preview without writing
+```
+
+**What it does**:
+- Auto-detects project type (saas-mvp, saas-full, api)
+- Generates phased project-plan.md with rolling wave detail
+- Phase 1: Fully detailed with tasks & acceptance criteria
+- Phase 2+: Outlined with key milestones
+- Configures quality gates per project type
+
+**Prerequisites**: Run `/foundations init` first
+
+[→ Detailed Spec](project/commands/bootstrap.md)
+
+---
+
+### 📊 `/plan` - Project State Management
+**View and manage project state, phases, and quality gates**
+
+```bash
+/plan status              # Current phase, progress, blockers
+/plan next                # What's coming up
+/plan phase 2             # Deep dive into Phase 2
+/plan gate 2              # Quality gate status for Phase 2
+/plan update task 3 complete   # Mark task complete
+/plan archive             # Archive completed phases
+```
+
+**Subcommands**:
+| Command | Purpose |
+|---------|---------|
+| `status` | Progress overview, blockers, next action |
+| `next` | Upcoming tasks and phase previews |
+| `phase N` | Detailed phase breakdown |
+| `gate N` | Quality gate validation status |
+| `update` | Update task status, add blockers |
+| `archive` | Archive completed phases for context savings |
+
+[→ Detailed Spec](project/commands/plan.md)
+
+---
+
+### 🧰 `/skills` - SaaS Skill Discovery
+**Discover and manage production-ready SaaS code patterns**
+
+```bash
+/skills                           # List all available skills
+/skills saas-auth                 # Show auth skill details
+/skills match "stripe payments"   # Find matching skills
+/skills stack                     # Show current stack profile
+```
+
+**Available Skills** (auto-loaded by Coordinator based on task keywords):
+
+| Skill | Triggers | Tokens |
+|-------|----------|--------|
+| `saas-auth` | auth, login, oauth | ~3,800 |
+| `saas-payments` | stripe, checkout, subscription | ~4,200 |
+| `saas-multitenancy` | tenant, org, rls | ~4,100 |
+| `saas-billing` | billing, plan, quota | ~3,900 |
+| `saas-email` | email, resend, notification | ~3,200 |
+| `saas-onboarding` | onboarding, wizard | ~3,500 |
+| `saas-analytics` | analytics, posthog | ~3,600 |
+
+**How it works**: When task descriptions contain trigger keywords, the Coordinator automatically loads the relevant skill and delegates to the appropriate specialist with production-ready patterns.
+
+[→ Complete Skills Guide](project/field-manual/skills-guide.md)
+
+---
+
+### 🚀 Execution Commands
+
+---
 
 ### 🎖️ `/coord` - Mission Orchestration
 **Orchestrate multi-agent missions with automatic specialist coordination**
@@ -1175,6 +1288,17 @@ Estimated token savings: ~4,250 tokens (63% reduction)
 ---
 
 ### Command Comparison
+
+**Planning Commands** (BOS-AI → Project Plan):
+
+| Command | Purpose | Duration | Output | Best For |
+|---------|---------|----------|--------|----------|
+| `/foundations` | Process BOS-AI documents | 2-5 min | Structured YAML | Starting from BOS-AI |
+| `/bootstrap` | Generate project plan | 1-2 min | project-plan.md | Plan-driven development |
+| `/plan` | View/manage project state | Instant | Status, gates, progress | Tracking & management |
+| `/skills` | Discover SaaS patterns | Instant | Skill details | Finding code patterns |
+
+**Execution Commands** (Building & Shipping):
 
 | Command | Purpose | Duration | Output | Best For |
 |---------|---------|----------|--------|----------|
