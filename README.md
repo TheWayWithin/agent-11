@@ -931,6 +931,14 @@ These commands transform foundation documents into executable project plans:
 - Phase 2+: Outlined with key milestones
 - Configures quality gates per project type
 
+**⚠️ Important limitations**:
+- **No consultation mode** - Generates plan immediately without asking questions
+- **PRD-driven** - Treats your foundation documents as source of truth
+- **No decision checkpoints** - Won't pause to validate assumptions
+- **Use `--dry-run` first** to preview the plan before committing
+
+**Recommendation**: Review your `/foundations init` output carefully before running `/bootstrap`. The generated plan will directly reflect what's in your PRD - garbage in, garbage out.
+
 **Prerequisites**: Run `/foundations init` first
 
 [→ Detailed Spec](project/commands/bootstrap.md)
