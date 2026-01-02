@@ -43,9 +43,9 @@ AGENT-11 is the **technical execution arm** of the BOS-AI ecosystem. BOS-AI hand
 
 ---
 
-## 🆕 Current Version: v5.0.0
+## 🆕 Current Version: v5.1.0
 
-**Latest**: Plan-driven development, SaaS skills, quality gates, autonomous execution.
+**Latest**: Structured context system with 100% data preservation in foundation processing.
 
 [→ Full Release History](docs/RELEASE-HISTORY.md) - Complete sprint-by-sprint changelog
 

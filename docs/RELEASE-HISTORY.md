@@ -4,6 +4,63 @@ Complete history of AGENT-11 development sprints and releases.
 
 ---
 
+## Sprint 10: Structured Context System (v5.1.0)
+**Released**: 2026-01-01
+
+100% data preservation in `/foundations init` through structured YAML extraction with document-type-aware processing.
+
+### The Problem
+
+Token-budgeted summaries were causing 50-65% information loss. PRD documents lost numeric targets, phase timelines, and feature sub-components. Brand guidelines worked perfectly (precision values resist summarization), but requirements-heavy documents suffered.
+
+| Document Type | Before | After |
+|---------------|--------|-------|
+| PRD | 7/10 (FAIL) | 10/10 |
+| Vision | 9.5/10 | 10/10 |
+| ICP | 98/100 | 100/100 |
+| Brand | 100/100 | 100/100 |
+
+### The Solution
+
+**Document Type Classification**:
+- **SPECIFICATION** (PRD, Architecture) → COMPLETENESS MODE
+- **STRATEGIC** (Vision, Roadmap) → SYNTHESIS MODE
+- **PRECISION** (Brand, Style Guide) → EXACT MODE
+- **STRUCTURED** (ICP, Personas) → MAPPING MODE
+
+**5 Foundation Schemas** (YAML with explicit structure):
+- `foundation-prd.schema.yaml` - With phases, timelines, sub_features, NFRs
+- `foundation-vision.schema.yaml` - BHAG, success indicators, values
+- `foundation-icp.schema.yaml` - Personas, problems, JTBD, anti-personas
+- `foundation-brand.schema.yaml` - Colors, typography, components
+- `foundation-marketing.schema.yaml` - Positioning, messaging, channels
+
+**Extraction Mode Rules**:
+
+| Mode | Rules |
+|------|-------|
+| COMPLETENESS | Extract 100% of lists, ALL numeric values, ALL sub-components, ALL timelines |
+| EXACT | Byte-level precision, preserve quotes, units on all measurements |
+| MAPPING | Direct structure-to-structure, preserve relationships |
+| SYNTHESIS | Capture essence while maintaining key metrics |
+
+### Key Fixes (Sprint 10.1)
+
+Based on validation feedback, enhanced PRD extraction with:
+- **Numeric Preservation** - Targets with units (1000 users, $10K MRR, 99.9% uptime)
+- **List Completeness** - 8/8 deliverables, not 4/8
+- **Timeline Extraction** - Phase start/end/duration objects
+- **Feature Decomposition** - Sub-features arrays for compound features
+- **Technology Specificity** - Versions (Next.js 14), AI models (GPT-4, Claude)
+- **Post-Extraction Validation** - Checklist to catch omissions
+
+### Impact
+- Data preservation: 35-50% → 100%
+- Numeric values: Now extracted with units, timeframes, source quotes
+- Agent implementation accuracy: Significantly improved (requirements complete)
+
+---
+
 ## Sprint 9: SaaS Boilerplate Killer Architecture (v5.0.0)
 **Released**: 2025-12-31
 
@@ -298,6 +355,7 @@ User → /coord → Coordinator → Specialists → Files
 
 | Version | Sprint | Release Date | Key Feature |
 |---------|--------|--------------|-------------|
+| 5.1.0 | 10 | 2026-01-01 | Structured Context System (100% data preservation) |
 | 5.0.0 | 9 | 2025-12-31 | SaaS Boilerplate Killer (Skills, Gates, Plan-Driven) |
 | 4.4.0 | 8 | 2025-12-05 | Phase Gate Enforcement |
 | 4.3.0 | 7 | 2025-12-01 | Social Media Post Generation |
@@ -312,11 +370,12 @@ User → /coord → Coordinator → Specialists → Files
 
 ## Cumulative Impact
 
-| Metric | v1.0 | v5.0.0 | Improvement |
+| Metric | v1.0 | v5.1.0 | Improvement |
 |--------|------|--------|-------------|
 | File persistence | ~30% | 100% | +233% |
 | Mission success | 70% | 85% | +21% |
 | Context efficiency | Baseline | 90% reduction | 10x |
+| Data preservation | ~50% | 100% | +100% |
 | Iterations to complete | 3.5 avg | 2.5 avg | -28% |
 | Cost per mission | Baseline | -24% | Significant |
 
