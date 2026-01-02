@@ -50,7 +50,7 @@ BOS-AI Documents → /foundations init → /bootstrap → /coord continue → �
 | Step | Command | What It Does | Time |
 |------|---------|--------------|------|
 | **1. Process Docs** | `/foundations init` | Extracts PRD, Vision, ICP, Brand into structured YAML | 2-5 min |
-| **2. Generate Plan** | `/bootstrap` | Creates phased project-plan.md with tasks & gates | 1-2 min |
+| **2. Generate Plan** | `/bootstrap` | Interactive mode selection → creates project-plan.md | 1-5 min |
 | **3. Check Status** | `/plan status` | Shows current phase, progress, blockers | Instant |
 | **4. Execute** | `/coord continue` | Autonomous execution until blocked or phase complete | Hours-Days |
 
@@ -62,7 +62,7 @@ cp ~/Documents/BOS-AI/*.md ./documents/foundations/
 # 2. Process foundation documents
 /foundations init
 
-# 3. Generate project plan
+# 3. Generate project plan (select Engaged Mode for first time)
 /bootstrap
 
 # 4. Review what was created
@@ -918,26 +918,36 @@ These commands transform foundation documents into executable project plans:
 **Transform foundation summaries into executable project-plan.md**
 
 ```bash
-/bootstrap                          # Auto-detect project type
-/bootstrap --type saas-mvp          # Explicit SaaS MVP
-/bootstrap --type api --phases 3    # API project with 3 phases
-/bootstrap --dry-run                # Preview without writing
+/bootstrap                          # Interactive mode selection (recommended)
+/bootstrap --mode engaged           # Review PRD assumptions with checkpoints
+/bootstrap --mode auto              # Generate immediately (no questions)
+/bootstrap --mode preview           # Preview without writing files
+/bootstrap --mode auto --type api   # Auto mode with explicit project type
 ```
 
-**What it does**:
-- Auto-detects project type (saas-mvp, saas-full, api)
-- Generates phased project-plan.md with rolling wave detail
+**Mode Selection** (when you run `/bootstrap` without flags):
+```
+How would you like to proceed?
+
+  1. Auto Mode - Generate immediately (fast, no questions)
+  2. Engaged Mode - Review assumptions first (recommended for new users)
+  3. Preview Mode - Show what would be generated
+```
+
+**Engaged Mode** (5 checkpoints):
+1. **Foundation Summary** - Verify extracted product info and P0 features
+2. **Tech Stack** - Confirm versions, integrations, AI model selections
+3. **Priority Validation** - Review P0/P1/P2 feature assignments
+4. **Phase Structure** - Approve phase breakdown and task distribution
+5. **Final Confirmation** - Review all decisions before generating
+
+**Auto Mode**: Generates immediately using PRD as source of truth. Best for validated PRDs or regeneration after minor updates.
+
+**What it generates**:
+- Phased project-plan.md with rolling wave detail
 - Phase 1: Fully detailed with tasks & acceptance criteria
 - Phase 2+: Outlined with key milestones
-- Configures quality gates per project type
-
-**⚠️ Important limitations**:
-- **No consultation mode** - Generates plan immediately without asking questions
-- **PRD-driven** - Treats your foundation documents as source of truth
-- **No decision checkpoints** - Won't pause to validate assumptions
-- **Use `--dry-run` first** to preview the plan before committing
-
-**Recommendation**: Review your `/foundations init` output carefully before running `/bootstrap`. The generated plan will directly reflect what's in your PRD - garbage in, garbage out.
+- Quality gates configured per project type
 
 **Prerequisites**: Run `/foundations init` first
 
@@ -1302,7 +1312,7 @@ Estimated token savings: ~4,250 tokens (63% reduction)
 | Command | Purpose | Duration | Output | Best For |
 |---------|---------|----------|--------|----------|
 | `/foundations` | Process BOS-AI documents | 2-5 min | Structured YAML | Starting from BOS-AI |
-| `/bootstrap` | Generate project plan | 1-2 min | project-plan.md | Plan-driven development |
+| `/bootstrap` | Generate project plan (Auto/Engaged/Preview modes) | 1-5 min | project-plan.md | Plan-driven development |
 | `/plan` | View/manage project state | Instant | Status, gates, progress | Tracking & management |
 | `/skills` | Discover SaaS patterns | Instant | Skill details | Finding code patterns |
 

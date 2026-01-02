@@ -1,12 +1,16 @@
 ---
 name: bootstrap
-description: Transform foundation summaries into structured project-plan.md
+description: Transform foundation summaries into structured project-plan.md with interactive mode selection
 arguments:
   vision_file:
     type: string
     required: false
     description: Optional path to vision document (overrides summary)
 flags:
+  --mode:
+    type: string
+    values: [auto, engaged, preview]
+    description: Skip mode selection and use specified mode directly
   --type:
     type: string
     default: auto
@@ -18,10 +22,6 @@ flags:
     min: 2
     max: 6
     description: Number of phases to plan
-  --dry-run:
-    type: boolean
-    default: false
-    description: Preview plan without writing files
 model: opus
 ---
 
@@ -32,6 +32,40 @@ model: opus
 Transform foundation document summaries (created by `/foundations init`) into a valid, schema-compliant `project-plan.md` with rolling wave planning detail.
 
 **Why This Matters**: Foundation documents contain rich context but lack executable structure. Bootstrap bridges the gap between "what we want to build" and "how we'll build it" by generating a phased execution plan.
+
+## MODE SELECTION (First Step)
+
+When you run `/bootstrap` without flags, you'll be asked to choose a mode:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 🏗️ Bootstrap: Project Plan Generation                          │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│ How would you like to proceed?                                  │
+│                                                                 │
+│ ○ Auto Mode (Recommended for complete, validated PRDs)         │
+│   Generates plan immediately from your foundations             │
+│   Fast, no questions asked                                     │
+│                                                                 │
+│ ○ Engaged Mode (Recommended for first-time users)              │
+│   Reviews PRD assumptions with you first                       │
+│   Validates tech stack, phases, priorities                     │
+│   Decision checkpoints before generating                       │
+│                                                                 │
+│ ○ Preview Mode                                                  │
+│   Shows what would be generated without writing files          │
+│   Good for reviewing before committing                         │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Skip mode selection**: Use `--mode` flag to go directly to a mode:
+```bash
+/bootstrap --mode auto      # Immediate generation
+/bootstrap --mode engaged   # Interactive consultation
+/bootstrap --mode preview   # Dry run preview
+```
 
 ## PREREQUISITES
 
@@ -49,39 +83,203 @@ Before running `/bootstrap`, ensure:
 3. **No conflicting project-plan.md exists**
    - If exists, command will prompt for confirmation before overwriting
 
-## SUBCOMMANDS
-
-### Default: `/bootstrap`
-
-Auto-detect project type and generate plan with 4 phases.
+## USAGE EXAMPLES
 
 ```bash
-/bootstrap
+/bootstrap                              # Interactive mode selection
+/bootstrap --mode auto                  # Skip to auto mode
+/bootstrap --mode engaged               # Skip to engaged mode
+/bootstrap --mode preview               # Skip to preview mode
+/bootstrap --mode auto --type saas-mvp  # Auto mode with explicit type
+/bootstrap ideation/updated-vision.md   # With vision override
 ```
 
-### With Vision Override: `/bootstrap [vision_file]`
+---
 
-Use a specific vision document instead of cached summary.
+## ENGAGED MODE (Interactive Consultation)
 
-```bash
-/bootstrap ideation/updated-vision.md
+Engaged Mode walks you through your PRD assumptions before generating a plan. This is recommended for:
+- First-time AGENT-11 users
+- Complex projects with many features
+- PRDs that haven't been validated
+- When you want to catch issues before they become problems
+
+### Checkpoint 1: Foundation Summary Review
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 📋 Foundation Summary                                           │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│ From your PRD, I extracted:                                     │
+│                                                                 │
+│ Product: SoloPilot                                              │
+│ Type: SaaS Application                                          │
+│ Target: Solo founders managing multiple products                │
+│                                                                 │
+│ P0 Features (Must Have):                                        │
+│   1. User Authentication (Clerk)                                │
+│   2. Prompt Library Management                                  │
+│   3. AI Model Integration (GPT-4, Claude)                       │
+│   4. Usage Tracking Dashboard                                   │
+│   5. Stripe Subscription Billing                                │
+│                                                                 │
+│ Does this summary look correct? [Yes / Edit / Cancel]           │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-### Explicit Type: `/bootstrap --type saas-full`
+**If "Edit"**: Opens clarification questions for each concern.
 
-Override auto-detection for specific project type.
+### Checkpoint 2: Tech Stack Validation
 
-```bash
-/bootstrap --type api --phases 3
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 🔧 Tech Stack Validation                                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│ Your PRD specifies:                                             │
+│                                                                 │
+│ Frontend: Next.js (version not specified)                       │
+│   → Assuming Next.js 14 with App Router. Correct?               │
+│                                                                 │
+│ Database: Supabase                                              │
+│   → Will use Row Level Security (RLS). Correct?                 │
+│                                                                 │
+│ Auth: Clerk                                                     │
+│   → Social login + email/password. Correct?                     │
+│                                                                 │
+│ Payments: Stripe                                                │
+│   → Subscription model with usage-based add-ons. Correct?       │
+│                                                                 │
+│ AI Models: "GPT-4 and Claude"                                   │
+│   → Which specific models?                                      │
+│     [ ] GPT-4 (standard)                                        │
+│     [ ] GPT-4 Turbo                                             │
+│     [ ] GPT-4o                                                  │
+│     [ ] Claude 3.5 Sonnet                                       │
+│     [ ] Claude 3 Opus                                           │
+│                                                                 │
+│ [Confirm All] [Edit Selections] [Cancel]                        │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-### Preview Mode: `/bootstrap --dry-run`
+### Checkpoint 3: Priority Validation
 
-Generate and display plan without writing files.
-
-```bash
-/bootstrap --dry-run
 ```
+┌─────────────────────────────────────────────────────────────────┐
+│ 🎯 Feature Priority Check                                       │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│ I found 12 features in your PRD. Here's my priority assessment: │
+│                                                                 │
+│ P0 (MVP - Must ship):                                           │
+│   ✓ Authentication                                              │
+│   ✓ Prompt CRUD                                                 │
+│   ✓ Basic AI integration                                        │
+│   ✓ Stripe checkout                                             │
+│   ? Usage tracking - Is this P0 or can it wait?                 │
+│                                                                 │
+│ P1 (Should have):                                               │
+│   ✓ Team collaboration                                          │
+│   ✓ Prompt versioning                                           │
+│   ? Analytics dashboard - Is this P1 or P2?                     │
+│                                                                 │
+│ P2 (Nice to have):                                              │
+│   ✓ Export features                                             │
+│   ✓ API access                                                  │
+│                                                                 │
+│ Questions marked with ? need your input.                        │
+│                                                                 │
+│ [Answer Questions] [Accept As-Is] [Cancel]                      │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Checkpoint 4: Phase Structure
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 📅 Phase Structure                                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│ Based on your PRD timeline and feature count, I suggest:        │
+│                                                                 │
+│ Phase 1: Foundation (Weeks 1-3)                                 │
+│   - Project setup, auth, database schema                        │
+│   - 8 tasks, ~40 hours estimated                                │
+│                                                                 │
+│ Phase 2: Core Features (Weeks 4-6)                              │
+│   - Prompt management, AI integration                           │
+│   - 10 tasks, ~50 hours estimated                               │
+│                                                                 │
+│ Phase 3: Monetization (Weeks 7-8)                               │
+│   - Stripe integration, usage tracking                          │
+│   - 6 tasks, ~30 hours estimated                                │
+│                                                                 │
+│ Phase 4: Polish & Launch (Weeks 9-10)                           │
+│   - Testing, docs, deployment                                   │
+│   - 5 tasks, ~25 hours estimated                                │
+│                                                                 │
+│ Total: 4 phases, 29 tasks, ~145 hours                           │
+│                                                                 │
+│ Does this structure work for you?                               │
+│ [Yes, Generate Plan] [Adjust Phases] [Cancel]                   │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Checkpoint 5: Final Confirmation
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ ✅ Ready to Generate                                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│ Summary of decisions:                                           │
+│                                                                 │
+│ Project: SoloPilot (saas-mvp)                                   │
+│ Stack: Next.js 14, Supabase, Clerk, Stripe                      │
+│ AI: GPT-4o, Claude 3.5 Sonnet                                   │
+│ Features: 5 P0, 3 P1, 2 P2                                      │
+│ Phases: 4 (10 weeks total)                                      │
+│ Quality Gates: build, test, lint                                │
+│                                                                 │
+│ Files to create:                                                │
+│   - project-plan.md (~850 lines)                                │
+│   - .context/phase-1-context.yaml                               │
+│                                                                 │
+│ [Generate Plan] [Start Over] [Cancel]                           │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## AUTO MODE (Immediate Generation)
+
+Auto Mode generates the plan immediately without consultation. Use this when:
+- Your PRD has been thoroughly reviewed
+- You've used `/bootstrap` before and know what to expect
+- You're regenerating after minor PRD updates
+
+**What happens**:
+1. Validates prerequisites
+2. Loads foundation summaries
+3. Infers project type
+4. Generates plan immediately
+5. Writes files
+
+**No questions asked** - the PRD is treated as source of truth.
+
+---
+
+## PREVIEW MODE (Dry Run)
+
+Preview Mode shows exactly what would be generated without writing any files. Use this to:
+- Review the plan structure before committing
+- Compare what would change after PRD updates
+- Validate that extraction worked correctly
+
+**Output**: Full plan content displayed in terminal, no files written.
+
+---
 
 ## EXECUTION FLOW
 
@@ -430,35 +628,100 @@ Retrying generation with explicit constraints...
 
 ## EXAMPLES
 
-### Example 1: Standard MVP Bootstrap
+### Example 1: Interactive Mode Selection (Default)
 
 ```bash
-# After running /foundations init ideation/
+# After running /foundations init
 /bootstrap
 ```
 
 **Output**:
 ```
-Bootstrap: Project Plan Generation
-==================================
+🏗️ Bootstrap: Project Plan Generation
+======================================
 
 Prerequisites:
   [OK] handoff-manifest.json found
   [OK] prd-summary.md (checksum: abc123)
   [OK] vision-summary.md (checksum: def456)
-  [--] icp-summary.md (not found, proceeding without)
+
+How would you like to proceed?
+
+  1. Auto Mode - Generate immediately (fast, no questions)
+  2. Engaged Mode - Review assumptions first (recommended for new users)
+  3. Preview Mode - Show what would be generated
+
+Select mode [1/2/3]:
+```
+
+### Example 2: Engaged Mode Flow
+
+```bash
+/bootstrap --mode engaged
+```
+
+**Output** (abbreviated - see ENGAGED MODE section for full checkpoints):
+```
+🏗️ Bootstrap: Engaged Mode
+===========================
+
+📋 Checkpoint 1/5: Foundation Summary
+-------------------------------------
+From your PRD, I extracted:
+
+Product: SoloPilot
+Type: SaaS Application
+P0 Features: 5 (Auth, Prompts, AI, Tracking, Billing)
+
+Does this look correct? [Yes/Edit/Cancel]: Yes
+
+🔧 Checkpoint 2/5: Tech Stack
+-----------------------------
+Frontend: Next.js (version not specified)
+  → Assuming Next.js 14 with App Router. Correct? [Y/n]: Y
+
+Database: Supabase with RLS. Correct? [Y/n]: Y
+
+AI Models: Your PRD says "GPT-4 and Claude"
+  Which specific models? [select multiple]:
+  [x] GPT-4o
+  [x] Claude 3.5 Sonnet
+
+[...continues through all 5 checkpoints...]
+
+✅ Checkpoint 5/5: Final Confirmation
+-------------------------------------
+Ready to generate with your confirmed settings.
+
+[Generate Plan] selected.
+
+Files Created:
+  [OK] project-plan.md (847 lines)
+  [OK] .context/phase-1-context.yaml (92 lines)
+
+Next: Run /coord continue to start building
+```
+
+### Example 3: Auto Mode (Skip Questions)
+
+```bash
+/bootstrap --mode auto --type saas-mvp
+```
+
+**Output**:
+```
+🏗️ Bootstrap: Auto Mode
+========================
+
+Prerequisites: [OK] All found
 
 Project Analysis:
-  Inferred Type: saas-mvp (confidence: high)
-  Reasoning: 3 MVP features, subscription model, 8-week timeline
-
-Plan Generation:
+  Type: saas-mvp (explicit)
   Phases: 4
   Quality Gates: build, test, lint
 
 Generating Phase 1 (detailed)...
   - 7 tasks with acceptance criteria
-  - Agent assignments: architect (2), developer (4), designer (1)
 
 Generating Phase 2-4 (outlined)...
   - Phase 2: Core Features (4 milestones)
@@ -468,50 +731,15 @@ Generating Phase 2-4 (outlined)...
 Files Created:
   [OK] project-plan.md (847 lines)
   [OK] .context/phase-1-context.yaml (92 lines)
-  [OK] handoff-manifest.json updated
 
-Next Steps:
-  1. Review project-plan.md for accuracy
-  2. Run /coord phase-1 to begin execution
-  3. Or /bootstrap --dry-run to regenerate
+⚠️ Note: Auto mode used PRD as-is without validation.
+   Run /bootstrap --mode engaged to review assumptions.
 ```
 
-### Example 2: API Project with Custom Phases
+### Example 4: Preview Mode
 
 ```bash
-/bootstrap --type api --phases 3
-```
-
-**Output**:
-```
-Bootstrap: Project Plan Generation
-==================================
-
-Prerequisites:
-  [OK] All required summaries found
-
-Project Configuration:
-  Type: api (explicit override)
-  Phases: 3 (custom)
-  Quality Gates: build, test, lint, api-contract
-
-Generating...
-  Phase 1: API Foundation (8 tasks)
-  Phase 2: Core Endpoints (outlined)
-  Phase 3: Documentation & Deploy (outlined)
-
-Files Created:
-  [OK] project-plan.md
-  [OK] .context/phase-1-context.yaml
-
-Note: API projects include api-contract quality gate.
-Ensure OpenAPI spec is maintained during development.
-```
-
-### Example 3: Dry Run Preview
-
-```bash
-/bootstrap --dry-run
+/bootstrap --mode preview
 ```
 
 **Output**:
