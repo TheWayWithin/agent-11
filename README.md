@@ -43,99 +43,11 @@ AGENT-11 is the **technical execution arm** of the BOS-AI ecosystem. BOS-AI hand
 
 ---
 
-## 🎉 What's New (v2.0 → v4.1)
+## 🆕 Current Version: v5.0.0
 
-**CRITICAL FIX: 100% File Persistence Guaranteed**
+**Latest**: Plan-driven development, SaaS skills, quality gates, autonomous execution.
 
-v2.0 eliminates the file persistence bug with an architectural solution that makes silent failures impossible.
-
-### Sprint 2: Coordinator-as-Executor Pattern
-
-**The Problem**: Specialists operating in isolated execution contexts couldn't persist files, causing 100% reproducible silent failures where files would vanish after agent completion.
-
-**The Solution**: Specialists now generate structured JSON output, and the coordinator automatically parses and executes all file operations. This architectural change eliminates prompt dependency entirely.
-
-**Results**:
-- ✅ **100% file persistence** (up from ~30% baseline, ~80% Sprint 1)
-- ✅ **0 silent failures** (guaranteed by architecture, not prompts)
-- ✅ **~5% performance overhead** (under 10% target)
-- ✅ **Zero prompt dependency** (failure architecturally impossible)
-
-**Files Auto-Created**: Configuration files, documentation, code, tests - everything persists reliably.
-
-**Migration**: Fully backward compatible. See [Migration Guide](project/field-manual/migration-guides/file-persistence-v2.md) for structured output pattern.
-
-### Sprint 4 (v4.0.0): Opus 4.5 Dynamic Model Selection
-
-**Intelligent model selection** based on task complexity:
-
-- **Coordinator runs on Opus 4.5** - Frontier intelligence for mission orchestration
-- **Task tool `model` parameter** - Select `opus`, `sonnet`, or `haiku` per delegation
-- **Tiered strategy**: Opus (complex) → Sonnet (standard) → Haiku (simple)
-
-**Results**:
-- ✅ **+15% mission success rate** (better orchestration decisions)
-- ✅ **-28% iterations** (fewer retry cycles)
-- ✅ **-24% total cost** (efficiency offsets higher per-token cost)
-
-[→ Model Selection Guide](project/field-manual/model-selection-guide.md)
-
-### Sprint 5 (v4.1.0): MCP Context Optimization
-
-**60-90% context token reduction** with mission-specific MCP profiles:
-
-| Profile | Tokens | Use Case |
-|---------|--------|----------|
-| **minimal-core** | ~5K | File-only operations |
-| **research-only** | ~15K | Documentation lookup |
-| **frontend-deploy** | ~15K | Netlify deployments |
-| **backend-deploy** | ~15K | Railway deployments |
-| **db-read / db-write** | ~15-18K | Database operations |
-
-**13 total profiles** available. Switch with `/mcp-switch [profile]`.
-
-[→ MCP Optimization Guide](project/field-manual/mcp-optimization-guide.md)
-
-### Sprint 9 (v5.0.0): SaaS Boilerplate Killer Architecture
-
-**Plan-Driven Development** with autonomous execution, quality gates, and SaaS skills:
-
-```bash
-# Complete workflow from idea to execution:
-/foundations init          # Create vision + PRD
-/bootstrap saas-mvp        # Generate project plan
-/coord continue            # Autonomous execution until blocked
-```
-
-**New Commands**:
-| Command | Purpose |
-|---------|---------|
-| `/foundations init` | Create vision and PRD documents |
-| `/bootstrap [template]` | Generate project-plan.md (saas-mvp, saas-full, api) |
-| `/plan status` | View current mission state |
-| `/coord continue` | Autonomous execution until blocked |
-| `/skills` | List and match SaaS skills |
-
-**7 Production-Ready SaaS Skills** (auto-loaded based on task keywords):
-- `saas-auth` - Authentication with OAuth, email/password, magic links
-- `saas-payments` - Stripe checkout, subscriptions, webhooks
-- `saas-multitenancy` - RLS, tenant isolation, workspace management
-- `saas-billing` - Plans, quotas, trials, usage tracking
-- `saas-email` - Transactional email with Resend
-- `saas-onboarding` - User onboarding wizards
-- `saas-analytics` - PostHog integration, event tracking
-
-**Quality Gates** enforce at phase transitions:
-```bash
-python project/gates/run-gates.py --phase implementation
-```
-
-**Stack Profiles** for multi-framework support:
-- `nextjs-supabase` - Next.js 14 + Supabase
-- `remix-railway` - Remix + Railway + PostgreSQL
-- `sveltekit-supabase` - SvelteKit + Supabase
-
-[→ Plan-Driven Development Guide](project/field-manual/plan-driven-development.md) · [→ Skills Guide](project/field-manual/skills-guide.md)
+[→ Full Release History](docs/RELEASE-HISTORY.md) - Complete sprint-by-sprint changelog
 
 ---
 
@@ -172,6 +84,8 @@ The deployment system you just used was built by AGENT-11 itself—from concept 
 [→ See 7+ Real Production Projects](docs/PROJECTS-BUILT-WITH-AGENT-11.md)
 
 ## Why AGENT-11 Works
+
+**The SaaS Boilerplate Killer**: Why pay $300-500 for a static starter kit that still needs customization? AGENT-11 builds your entire application from scratch—authentication, payments, dashboards, APIs—all tailored to your exact requirements. No boilerplate limitations. No template constraints. Just your vision, built to spec.
 
 **Proven Performance** (v2.0 Results):
 - **100% file persistence** - Architectural solution eliminates silent failures completely
