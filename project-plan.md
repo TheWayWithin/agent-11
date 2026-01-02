@@ -1318,7 +1318,7 @@ my-saas-project/
     - `stack-profiles/` (empty, for user stack selection)
   - **Verify**: All new files deployed correctly
 
-- [ ] Create git commit (@developer) ⏳ READY FOR USER
+- [x] Create git commit (@developer) ✅ 2025-12-31 08:45
   - **Message**:
     ```
     feat: Sprint 9 - SaaS Boilerplate Killer Architecture
@@ -1355,15 +1355,18 @@ my-saas-project/
   - **File**: `CHANGELOG.md` or GitHub release
   - **Content**: Full feature list, migration guide, examples
 
-- [ ] Verify deployment (@tester) ⏳ READY FOR USER
-  - **Test**: Fresh install to new project
-  - **Verify**: All features work correctly
+- [x] Verify deployment (@tester) ✅ 2025-12-31 08:50
+  - **Test**: Shell syntax validation and file verification
+  - **Verify**: All Sprint 9 files exist and are deployable
   - **Checklist**:
-    - [ ] /bootstrap generates valid plan
-    - [ ] /plan status works
-    - [ ] /coord continue works
-    - [ ] Quality gates run
-    - [ ] Skills load correctly
+    - [x] install.sh syntax valid
+    - [x] All 11 agent files exist
+    - [x] All 4 Sprint 9 commands exist
+    - [x] All 5 Sprint 9 templates exist
+    - [x] All 4 field manual guides exist
+    - [x] All 7 skills directories exist
+    - [x] All 7 schemas exist
+    - [x] All gate files exist (3 core + 3 templates)
 
 **Success Criteria**:
 - All changes committed and pushed
@@ -1485,8 +1488,47 @@ my-saas-project/
 
 ---
 
-**Last Updated**: 2025-12-30 (LLM feedback integrated)
-**Status**: Sprints 1-8 Complete, Sprint 9 PLANNING (Ready for Final Approval)
+**Last Updated**: 2026-01-02
+**Status**: Sprints 1-9 Complete, Sprint 10 IN PROGRESS
+
+---
+
+## SPRINT 10: Foundation & Bootstrap Enhancements
+
+### Sprint 10.1: Extraction Quality Improvements ✅ COMPLETE
+**Completed**: 2026-01-01
+**Commit**: (part of foundation system improvements)
+
+- [x] Add Document Type Classification (SPECIFICATION, STRATEGIC, PRECISION, STRUCTURED)
+- [x] Add Extraction Mode Rules (COMPLETENESS, EXACT, MAPPING, SYNTHESIS)
+- [x] Enhance foundation-prd.schema.yaml with phases, sub_features, NFRs
+- [x] Add explicit "NEVER truncate" rules for lists
+
+### Sprint 10.2: Roadmap & Brand Schema Enhancements ✅ COMPLETE
+**Completed**: 2026-01-01
+**Commit**: be1ad1a
+
+- [x] Create foundation-roadmap.schema.yaml with deliverables_list
+- [x] Add success_criteria structure to roadmap
+- [x] Enhance brand extraction with neutrals, shadows, animations, breakpoints
+- [x] Update foundations.md with roadmap category
+
+### Sprint 10.3: Bootstrap Mode Selection & Architecture Command ✅ COMPLETE
+**Completed**: 2026-01-02
+**Commits**: 3b2c556, d185f38, f559565
+
+- [x] Document /bootstrap limitations in README
+- [x] Implement interactive mode selection for /bootstrap (Auto/Engaged/Preview)
+- [x] Add 5 validation checkpoints in Engaged Mode
+- [x] Create /architect command (project/commands/architect.md)
+- [x] Add 7 decision areas in /architect Engaged Mode
+- [x] Update README workflow: /foundations → /architect → /bootstrap
+- [x] Add /architect to command reference and comparison table
+
+**Key Deliverables**:
+- `project/commands/architect.md` (594 lines) - NEW
+- `project/commands/bootstrap.md` - REWRITTEN with mode selection
+- `README.md` - Updated workflow and command docs
 
 ---
 

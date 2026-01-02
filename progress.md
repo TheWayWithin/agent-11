@@ -16,6 +16,51 @@ This file has been restructured to be a BACKWARD-LOOKING changelog capturing:
 
 ## 📦 Recent Deliverables
 
+### [2026-01-02] - Sprint 10.3: Bootstrap Mode Selection & /architect Command - COMPLETE ✅
+**Created by**: Direct implementation
+**Type**: Core Commands - Interactive mode selection and new architecture command
+**Related**: Fills architecture gap between PRD extraction and plan generation
+**Status**: ✅ COMPLETE
+**Commits**: 3b2c556, d185f38, f559565
+
+**Problem Solved**:
+1. `/bootstrap` had no consultation mode - blindly consumed PRD without user checkpoints
+2. Architecture gap - no step between `/foundations init` and `/bootstrap` for technical decisions
+
+**Deliverables Created** (verified on filesystem 2026-01-02):
+
+| File | Lines | Purpose |
+|------|-------|---------|
+| `project/commands/architect.md` | 594 | NEW - System design command with 7 decision areas |
+| `project/commands/bootstrap.md` | ~400 | REWRITTEN - Interactive mode selection (Auto/Engaged/Preview) |
+| `README.md` | +60 lines | Updated workflow, command docs, comparison table |
+
+**Key Features Added**:
+
+1. **Bootstrap Mode Selection**:
+   - Auto Mode: Use PRD defaults
+   - Engaged Mode: 5 validation checkpoints
+   - Preview Mode: Dry run without file creation
+
+2. **/architect Command** (NEW):
+   - Auto/Engaged mode selection
+   - 7 decision areas in Engaged Mode:
+     1. Application Architecture
+     2. Frontend Stack
+     3. Backend & Database
+     4. Authentication
+     5. External Integrations
+     6. Infrastructure
+     7. Security & Observability
+   - Generates comprehensive architecture.md
+
+3. **Updated Workflow**:
+   ```
+   /foundations init → /architect → /bootstrap → /coord continue
+   ```
+
+---
+
 ### [2026-01-01] - Sprint 10.1: Extraction Quality Improvements - COMPLETE ✅
 **Created by**: Direct implementation
 **Type**: Core System - Extraction prompt and schema improvements
