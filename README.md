@@ -44,15 +44,16 @@ AGENT-11 is the **technical execution arm** of the BOS-AI ecosystem. BOS-AI hand
 ### The Complete Workflow: Idea → Shipped Product
 
 ```
-BOS-AI Documents → /foundations init → /bootstrap → /coord continue → 🚀 Shipped
+BOS-AI Documents → /foundations init → /architect → /bootstrap → /coord continue → 🚀 Shipped
 ```
 
 | Step | Command | What It Does | Time |
 |------|---------|--------------|------|
 | **1. Process Docs** | `/foundations init` | Extracts PRD, Vision, ICP, Brand into structured YAML | 2-5 min |
-| **2. Generate Plan** | `/bootstrap` | Interactive mode selection → creates project-plan.md | 1-5 min |
-| **3. Check Status** | `/plan status` | Shows current phase, progress, blockers | Instant |
-| **4. Execute** | `/coord continue` | Autonomous execution until blocked or phase complete | Hours-Days |
+| **2. Design System** | `/architect` | Interactive architecture decisions → creates architecture.md | 10-15 min |
+| **3. Generate Plan** | `/bootstrap` | Interactive mode selection → creates project-plan.md | 1-5 min |
+| **4. Check Status** | `/plan status` | Shows current phase, progress, blockers | Instant |
+| **5. Execute** | `/coord continue` | Autonomous execution until blocked or phase complete | Hours-Days |
 
 **Example Session:**
 ```bash
@@ -62,13 +63,16 @@ cp ~/Documents/BOS-AI/*.md ./documents/foundations/
 # 2. Process foundation documents
 /foundations init
 
-# 3. Generate project plan (select Engaged Mode for first time)
+# 3. Design architecture (select Engaged Mode for first time)
+/architect
+
+# 4. Generate project plan (select Engaged Mode for first time)
 /bootstrap
 
-# 4. Review what was created
+# 5. Review what was created
 /plan status
 
-# 5. Start building (autonomous)
+# 6. Start building (autonomous)
 /coord continue
 ```
 
@@ -176,7 +180,7 @@ claude
 
 ### First Mission
 
-**From BOS-AI docs**: `/foundations init` → `/bootstrap` → `/coord continue` (full workflow)
+**From BOS-AI docs**: `/foundations init` → `/architect` → `/bootstrap` → `/coord continue` (full workflow)
 **Existing project**: `/coord dev-alignment` (analyzes codebase, creates docs)
 **New project**: `/coord dev-setup vision.md` (initializes project structure)
 **Build feature**: `/coord build requirements.md`
@@ -914,6 +918,45 @@ These commands transform foundation documents into executable project plans:
 
 ---
 
+### 🏛️ `/architect` - System Design
+**Generate architecture.md with all technical decisions before planning**
+
+```bash
+/architect                      # Interactive mode selection (recommended)
+/architect --mode engaged       # Walk through 7 decision areas
+/architect --mode auto          # Use PRD defaults
+/architect --stack nextjs-supabase  # Use predefined stack profile
+```
+
+**Mode Selection** (when you run `/architect` without flags):
+```
+How would you like to proceed?
+
+  1. Auto Mode - Use PRD defaults
+  2. Engaged Mode - Walk through decisions (recommended)
+```
+
+**Engaged Mode** (7 decision areas):
+1. **Application Architecture** - Monolith vs modular vs microservices
+2. **Frontend Stack** - Framework, rendering strategy, styling, components
+3. **Backend & Database** - Database config, multi-tenancy, API layer
+4. **Authentication** - Provider, auth methods, session strategy, roles
+5. **External Integrations** - Payments, AI models, email, rate limiting
+6. **Infrastructure** - Hosting, CI/CD, environments
+7. **Security & Observability** - API security, error tracking, analytics
+
+**What it generates**:
+- Comprehensive architecture.md (~400 lines)
+- System diagrams and component relationships
+- Decision log with rationale for each choice
+- Integration patterns and security policies
+
+**Prerequisites**: Run `/foundations init` first
+
+[→ Detailed Spec](project/commands/architect.md)
+
+---
+
 ### 🏗️ `/bootstrap` - Plan Generation
 **Transform foundation summaries into executable project-plan.md**
 
@@ -1312,6 +1355,7 @@ Estimated token savings: ~4,250 tokens (63% reduction)
 | Command | Purpose | Duration | Output | Best For |
 |---------|---------|----------|--------|----------|
 | `/foundations` | Process BOS-AI documents | 2-5 min | Structured YAML | Starting from BOS-AI |
+| `/architect` | Design system architecture (Auto/Engaged modes) | 10-15 min | architecture.md | Technical decisions before building |
 | `/bootstrap` | Generate project plan (Auto/Engaged/Preview modes) | 1-5 min | project-plan.md | Plan-driven development |
 | `/plan` | View/manage project state | Instant | Status, gates, progress | Tracking & management |
 | `/skills` | Discover SaaS patterns | Instant | Skill details | Finding code patterns |
