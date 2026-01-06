@@ -1,0 +1,480 @@
+# Pricing Strategy Extraction Schema
+# Purpose: Complete pricing structure for agents to implement payment flows
+# Usage: /foundations init extracts source docs to this format
+# Critical: Developer/Architect needs tier structure, Marketing Physics, upgrade triggers
+
+$schema: "http://json-schema.org/draft-07/schema#"
+type: object
+description: "Complete pricing strategy with Marketing Physics and value ladder"
+
+required:
+  - philosophy
+  - tiers
+
+properties:
+  product:
+    type: object
+    properties:
+      name:
+        type: string
+        description: "Product/business name"
+      website:
+        type: string
+        description: "Website URL"
+      version:
+        type: string
+        description: "Pricing version (e.g., 1.0)"
+
+  philosophy:
+    type: object
+    required: [positioning]
+    properties:
+      positioning:
+        type: string
+        description: "Value-based positioning statement"
+      promise:
+        type: string
+        description: "One compelling statement about value vs. price"
+      principles:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            explanation:
+              type: string
+        description: "Guiding pricing principles (typically 3-5)"
+
+  product_level_marketing_physics:
+    type: object
+    description: "Doug Hall's Marketing Physics at product level"
+    properties:
+      dramatic_difference:
+        type: object
+        properties:
+          category:
+            type: string
+            description: "How you redefine the space"
+          practitioner_advantage:
+            type: string
+            description: "Unique background competitors can't replicate"
+          architecture:
+            type: string
+            description: "How solution is built differently"
+          customer_reality:
+            type: string
+            description: "Understanding competitors don't have"
+          additional:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      overt_benefits:
+        type: object
+        properties:
+          primary:
+            type: string
+            description: "Single most important benefit in customer language"
+          supporting:
+            type: array
+            items:
+              type: string
+            description: "Specific, tangible supporting benefits"
+      real_reasons_to_believe:
+        type: array
+        items:
+          type: object
+          properties:
+            category:
+              type: string
+            evidence:
+              type: string
+              description: "Specific verifiable evidence"
+      fomo_vs_alternatives:
+        type: array
+        items:
+          type: object
+          properties:
+            alternative:
+              type: string
+              description: "Competitor or alternative approach"
+            missing:
+              type: string
+              description: "Specific loss/pain from using alternative"
+
+  tiers:
+    type: array
+    description: "All pricing tiers with complete details"
+    items:
+      type: object
+      required: [name, price]
+      properties:
+        name:
+          type: string
+          description: "Tier name (e.g., Starter, Pro, Enterprise)"
+        price:
+          type: object
+          properties:
+            monthly:
+              type: number
+            annual:
+              type: number
+            currency:
+              type: string
+              default: "USD"
+            billing_note:
+              type: string
+              description: "e.g., 'billed annually' or 'per seat'"
+        primary_metric:
+          type: object
+          properties:
+            name:
+              type: string
+              description: "e.g., 'products', 'seats', 'API calls'"
+            limit:
+              type: string
+              description: "e.g., '5 products', 'unlimited', '10K/month'"
+        target:
+          type: object
+          properties:
+            persona:
+              type: string
+              description: "Specific customer type"
+            stage:
+              type: string
+              description: "Customer journey stage"
+            job_to_be_done:
+              type: string
+              description: "Customer's voice describing need"
+        features:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              included:
+                type: string
+                description: "Yes, No, or specific limit"
+              description:
+                type: string
+        why_exists:
+          type: array
+          items:
+            type: string
+          description: "Strategic reasons for this tier (3-4 reasons)"
+        marketing_physics:
+          type: object
+          description: "Tier-level Marketing Physics"
+          properties:
+            overt_benefits:
+              type: array
+              items:
+                type: object
+                properties:
+                  feature:
+                    type: string
+                  benefit:
+                    type: string
+                    description: "Customer-voice benefit statement"
+            dramatic_difference:
+              type: string
+              description: "Why this tier exists positioning statement"
+            real_reasons_to_believe:
+              type: array
+              items:
+                type: object
+                properties:
+                  proof:
+                    type: string
+                  why_matters:
+                    type: string
+            fomo_missing:
+              type: array
+              items:
+                type: object
+                properties:
+                  feature:
+                    type: string
+                    description: "Feature not included in this tier"
+                  cost:
+                    type: string
+                    description: "Specific pain/loss from not having this"
+        upgrade_trigger:
+          type: object
+          properties:
+            message:
+              type: string
+              description: "Compelling upgrade message"
+            signals:
+              type: array
+              items:
+                type: object
+                properties:
+                  trigger:
+                    type: string
+                  indicator:
+                    type: string
+                    description: "Measurable signal"
+
+  feature_breakdown:
+    type: object
+    properties:
+      core_all_tiers:
+        type: array
+        items:
+          type: object
+          properties:
+            feature:
+              type: string
+            description:
+              type: string
+        description: "Features included in ALL tiers"
+      tier_comparison:
+        type: array
+        items:
+          type: object
+          properties:
+            feature:
+              type: string
+            tiers:
+              type: object
+              additionalProperties:
+                type: string
+              description: "Tier name → value (Yes/No/Limit)"
+        description: "Feature comparison across tiers"
+      risk_reversal:
+        type: object
+        properties:
+          type:
+            type: string
+            description: "Trial, guarantee, refund policy"
+          duration:
+            type: string
+          details:
+            type: string
+
+  value_ladder:
+    type: object
+    properties:
+      progression:
+        type: array
+        items:
+          type: object
+          properties:
+            tier:
+              type: string
+            price:
+              type: number
+            value:
+              type: string
+              description: "Core value at this tier"
+            stage:
+              type: string
+            metric_limit:
+              type: string
+      transitions:
+        type: array
+        items:
+          type: object
+          properties:
+            from:
+              type: string
+            to:
+              type: string
+            primary_driver:
+              type: string
+            secondary_driver:
+              type: string
+      marketing_physics_summary:
+        type: array
+        items:
+          type: object
+          properties:
+            tier:
+              type: string
+            dramatic_difference:
+              type: string
+            overt_benefit:
+              type: string
+            key_proof:
+              type: string
+
+  competitive_comparison:
+    type: object
+    properties:
+      alternatives:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            monthly_cost:
+              type: number
+            what_it_does:
+              type: string
+        description: "What customers pay today (alternative stack)"
+      total_alternative_cost:
+        type: object
+        properties:
+          monthly:
+            type: number
+          annual:
+            type: number
+          time_cost:
+            type: string
+            description: "Hours/week of manual work"
+      your_value:
+        type: object
+        properties:
+          tier_compared:
+            type: string
+            description: "Which tier to compare"
+          monthly_cost:
+            type: number
+          annual_savings:
+            type: number
+          time_savings:
+            type: string
+          key_advantages:
+            type: array
+            items:
+              type: object
+              properties:
+                metric:
+                  type: string
+                alternative:
+                  type: string
+                yours:
+                  type: string
+
+  pricing_psychology:
+    type: object
+    properties:
+      anchoring:
+        type: array
+        items:
+          type: object
+          properties:
+            anchor:
+              type: string
+            presentation:
+              type: string
+      presentation_order:
+        type: array
+        items:
+          type: object
+          properties:
+            tier:
+              type: string
+            price:
+              type: number
+            badge:
+              type: string
+              description: "e.g., 'Most Popular', 'Best Value'"
+            position:
+              type: integer
+      value_framing:
+        type: object
+        properties:
+          avoid:
+            type: string
+            description: "Message to avoid (cost-focused)"
+          use:
+            type: string
+            description: "Message to use (value-focused)"
+
+  upgrade_triggers:
+    type: array
+    items:
+      type: object
+      properties:
+        from:
+          type: string
+        to:
+          type: string
+        triggers:
+          type: array
+          items:
+            type: object
+            properties:
+              trigger:
+                type: string
+              signal:
+                type: string
+                description: "Measurable indicator"
+        upgrade_message:
+          type: string
+
+  objection_handling:
+    type: array
+    items:
+      type: object
+      properties:
+        objection:
+          type: string
+        response:
+          type: string
+          description: "Value-focused reframe"
+
+  pricing_page:
+    type: object
+    description: "Structure for pricing page implementation"
+    properties:
+      hero:
+        type: object
+        properties:
+          headline:
+            type: string
+          subheadline:
+            type: string
+          cta:
+            type: string
+      comparison_callout:
+        type: object
+        properties:
+          alternatives_list:
+            type: array
+            items:
+              type: string
+          total_cost:
+            type: string
+          your_solution:
+            type: string
+      recommended_tier:
+        type: string
+        description: "Which tier to highlight as recommended"
+      trust_elements:
+        type: array
+        items:
+          type: string
+        description: "Credibility statements and risk reversals"
+      faq:
+        type: array
+        items:
+          type: object
+          properties:
+            question:
+              type: string
+            answer:
+              type: string
+
+  metrics:
+    type: array
+    items:
+      type: object
+      properties:
+        metric:
+          type: string
+        target:
+          type: string
+        alert:
+          type: string
+          description: "Threshold that triggers concern"
+    description: "KPIs to track pricing effectiveness"

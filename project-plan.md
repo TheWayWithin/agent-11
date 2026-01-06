@@ -1530,6 +1530,21 @@ my-saas-project/
 - `project/commands/bootstrap.md` - REWRITTEN with mode selection
 - `README.md` - Updated workflow and command docs
 
+### Sprint 10.4: Pricing Strategy Foundation Document ✅ COMPLETE
+**Completed**: 2026-01-05
+
+- [x] Analyze BOS-AI pricing strategy mission and template
+- [x] Create foundation-pricing.schema.yaml (~350 lines)
+- [x] Update foundations.md with pricing category and extraction prompt
+- [x] Add pricing to document type classification (STRUCTURED/MAPPING MODE)
+- [x] Update advisable documents list
+- [x] Update manifest schemas_used
+- [x] Update Mission-to-Context Mapping
+
+**Key Deliverables**:
+- `project/schemas/foundation-pricing.schema.yaml` (~350 lines) - NEW
+- `project/commands/foundations.md` - Updated with pricing support
+
 ---
 
 ## Sprint 9 Summary for Review

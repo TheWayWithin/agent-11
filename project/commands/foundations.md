@@ -58,6 +58,7 @@ If no subcommand provided, default to `status`.
 | **icp** | client-success-blueprint.md | icp.md | personas.md |
 | **brand** | brand-style-guidelines.md | brand.md | style-guide.md |
 | **marketing** | marketing-bible.md | marketing.md | positioning.md |
+| **pricing** | pricing-strategy.md | pricing.md | pricing-tiers.md |
 
 **For each document found**:
 1. Read file content
@@ -83,6 +84,7 @@ sha256sum documents/foundations/<filename> | cut -d' ' -f1
 - `foundation-icp.schema.yaml`
 - `foundation-brand.schema.yaml`
 - `foundation-marketing.schema.yaml`
+- `foundation-pricing.schema.yaml`
 
 **Extraction Approach** (NOT summarization):
 
@@ -100,6 +102,7 @@ Before extraction, classify the document type to apply appropriate rules:
 | ICP | STRUCTURED | MAPPING MODE |
 | Brand | PRECISION | EXACT MODE |
 | Marketing | STRATEGIC | SYNTHESIS MODE |
+| Pricing | STRUCTURED | MAPPING MODE |
 
 ### Extraction Mode Rules
 
@@ -376,6 +379,54 @@ VALIDATION CHECK:
 Schema reference: project/schemas/foundation-roadmap.schema.yaml
 ```
 
+**For Pricing Documents** (MAPPING MODE):
+```
+Extract structured data from this Pricing Strategy document into the schema format.
+
+CRITICAL MAPPING RULES - YOU MUST FOLLOW THESE:
+
+1. PRICING TIERS - Extract EVERY tier with complete details:
+   - Name, monthly price, annual price, currency
+   - Primary metric (name and limit)
+   - Target persona, stage, job-to-be-done
+   - ALL features with included values (Yes/No/Limit)
+   - Why this tier exists (strategic reasons)
+   - Complete tier-level Marketing Physics
+
+2. MARKETING PHYSICS - Extract at BOTH product and tier levels:
+   - Product-level: Dramatic Difference, Overt Benefits, Real Reasons to Believe, FoMo
+   - Tier-level: Same four components per tier
+   - Preserve exact customer-voice language
+
+3. NUMERIC VALUES - Extract ALL pricing data:
+   - Monthly prices, annual prices
+   - Metric limits (5 products, 10K API calls, etc.)
+   - Alternative costs for competitive comparison
+   - Savings calculations (annual savings, time savings)
+
+4. UPGRADE TRIGGERS - Extract for EACH tier transition:
+   - Trigger name and measurable signal
+   - Upgrade message verbatim
+
+5. OBJECTION HANDLING - Extract ALL objections:
+   - Common objection text
+   - Value-focused response
+
+6. COMPETITIVE COMPARISON - Extract complete stack:
+   - Each alternative with monthly cost and function
+   - Total alternative cost (monthly + time)
+   - Your value proposition comparison
+
+VALIDATION CHECK:
+- All tiers have complete Marketing Physics
+- All prices have both monthly and annual values
+- All tier transitions have upgrade triggers
+- All objections have responses
+- Competitive comparison has total cost calculation
+
+Schema reference: project/schemas/foundation-pricing.schema.yaml
+```
+
 **Output files**: `.context/structured/{category}.yaml`
 
 ### Post-Extraction Validation
@@ -456,6 +507,7 @@ extraction:
     - "foundation-icp.schema.yaml"
     - "foundation-brand.schema.yaml"
     - "foundation-marketing.schema.yaml"
+    - "foundation-pricing.schema.yaml"
 ```
 
 ### Phase 5: Validate Completeness
@@ -469,6 +521,7 @@ extraction:
 - icp (client-success-blueprint, icp, or personas)
 - brand (brand-style-guidelines, brand, or style-guide)
 - marketing (marketing-bible, marketing, or positioning)
+- pricing (pricing-strategy, pricing, or pricing-tiers)
 
 **Extraction Validation**:
 For each extracted YAML, verify:
@@ -527,6 +580,14 @@ Structured Extraction:
     ✓ positioning: tagline, one_liner
     ✓ messaging: value props, differentiation
     ✓ channels: primary and secondary defined
+
+  .context/structured/pricing.yaml - COMPLETE
+    ✓ philosophy: positioning, promise, principles
+    ✓ tiers: 4 tiers with Marketing Physics
+    ✓ feature_breakdown: core + tier-exclusive
+    ✓ value_ladder: progression and transitions
+    ✓ competitive_comparison: alternatives vs your solution
+    ✓ upgrade_triggers: signals for each transition
 
 Manifest: handoff-manifest.yaml
 
@@ -633,6 +694,7 @@ Manifest updated: handoff-manifest.yaml
 - icp: Should have at least one of [client-success-blueprint.md, icp.md, personas.md]
 - brand: Should have at least one of [brand-style-guidelines.md, brand.md, style-guide.md]
 - marketing: Should have at least one of [marketing-bible.md, marketing.md, positioning.md]
+- pricing: Should have at least one of [pricing-strategy.md, pricing.md, pricing-tiers.md]
 
 **Extraction Validation**:
 For each extracted YAML:
@@ -690,7 +752,8 @@ project-root/
 │       ├── Strategic Roadmap.md
 │       ├── Client Success Blueprint.md
 │       ├── Brand Style Guide.md
-│       └── Marketing Bible.md
+│       ├── Marketing Bible.md
+│       └── Pricing Strategy.md
 ├── .context/
 │   └── structured/
 │       ├── prd.yaml          # Full PRD extraction
@@ -698,7 +761,8 @@ project-root/
 │       ├── roadmap.yaml      # Full roadmap with deliverables_list
 │       ├── icp.yaml          # Full ICP extraction
 │       ├── brand.yaml        # Full brand extraction (neutrals, shadows, animations, breakpoints)
-│       └── marketing.yaml    # Full marketing extraction
+│       ├── marketing.yaml    # Full marketing extraction
+│       └── pricing.yaml      # Full pricing strategy with Marketing Physics
 └── handoff-manifest.yaml
 ```
 
@@ -780,10 +844,11 @@ The coordinator should:
 **Mission-to-Context Mapping**:
 | Mission Type | Context Needed |
 |--------------|----------------|
-| build/mvp | prd.features, prd.tech_stack, brand.colors, brand.components |
+| build/mvp | prd.features, prd.tech_stack, brand.colors, brand.components, pricing.tiers |
 | design-review | brand.*, icp.personas |
-| marketing | marketing.*, vision.value_proposition |
-| strategy | vision.*, icp.pain_points, prd.success_metrics |
+| marketing | marketing.*, vision.value_proposition, pricing.product_level_marketing_physics |
+| strategy | vision.*, icp.pain_points, prd.success_metrics, pricing.philosophy |
+| payments | pricing.*, prd.tech_stack.payments |
 
 ### Agent Context Requirements
 

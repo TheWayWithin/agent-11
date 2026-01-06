@@ -16,6 +16,45 @@ This file has been restructured to be a BACKWARD-LOOKING changelog capturing:
 
 ## 📦 Recent Deliverables
 
+### [2026-01-05] - Sprint 10.4: Pricing Strategy Foundation Document - COMPLETE ✅
+**Created by**: Direct implementation (Coordinator mission)
+**Type**: Core System - New foundation document category
+**Related**: BOS-AI integration - adds pricing-strategy.md to /foundations init
+**Status**: ✅ COMPLETE
+
+**Problem Solved**:
+BOS-AI now generates a Pricing Strategy document with Marketing Physics, value ladder, upgrade triggers, and competitive comparison. AGENT-11 needed to extract this to structured YAML for agent consumption.
+
+**Deliverables Created** (verified on filesystem 2026-01-05):
+
+| File | Lines | Purpose |
+|------|-------|---------|
+| `project/schemas/foundation-pricing.schema.yaml` | ~350 | NEW - Pricing structure schema with Marketing Physics |
+| `project/commands/foundations.md` | +60 | Updated to process pricing-strategy.md |
+
+**Key Features Added**:
+
+1. **New foundation-pricing.schema.yaml**:
+   - Philosophy: positioning, promise, principles
+   - Product-level Marketing Physics: Dramatic Difference, Overt Benefits, RR2B, FoMo
+   - Tiers: complete tier structure with tier-level Marketing Physics
+   - Feature breakdown: core all-tiers + tier-exclusive comparison
+   - Value ladder: progression and transition drivers
+   - Competitive comparison: alternatives vs your solution
+   - Upgrade triggers: per-tier transition signals
+   - Objection handling: objection + response pairs
+   - Pricing page structure: hero, comparison callout, trust elements
+
+2. **Updated /foundations init**:
+   - New category: pricing (pricing-strategy.md, pricing.md, pricing-tiers.md)
+   - Document type: STRUCTURED / MAPPING MODE
+   - Extraction prompt with Marketing Physics rules
+   - Added to advisable documents list
+   - Added to manifest schemas_used
+   - Added to Mission-to-Context Mapping
+
+---
+
 ### [2026-01-02] - Sprint 10.3: Bootstrap Mode Selection & /architect Command - COMPLETE ✅
 **Created by**: Direct implementation
 **Type**: Core Commands - Interactive mode selection and new architecture command
