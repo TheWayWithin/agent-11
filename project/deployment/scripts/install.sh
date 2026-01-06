@@ -617,6 +617,7 @@ install_mission_system() {
         "project/commands/bootstrap.md"
         "project/commands/plan.md"
         "project/commands/skills.md"
+        "project/commands/architect.md"
     )
     
     # Define template files to install
