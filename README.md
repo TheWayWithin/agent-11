@@ -47,15 +47,134 @@ AGENT-11 is the **technical execution arm** of the BOS-AI ecosystem. BOS-AI hand
 BOS-AI Documents → /foundations init → /architect → /bootstrap → /coord continue → 🚀 Shipped
 ```
 
-| Step | Command | What It Does | Time |
-|------|---------|--------------|------|
-| **1. Process Docs** | `/foundations init` | Extracts PRD, Vision, ICP, Brand into structured YAML | 2-5 min |
-| **2. Design System** | `/architect` | Interactive architecture decisions → creates architecture.md | 10-15 min |
-| **3. Generate Plan** | `/bootstrap` | Interactive mode selection → creates project-plan.md | 1-5 min |
-| **4. Check Status** | `/plan status` | Shows current phase, progress, blockers | Instant |
-| **5. Execute** | `/coord continue` | Autonomous execution until blocked or phase complete | Hours-Days |
+| Step | Command | What It Does | Mode Recommendation | Time |
+|------|---------|--------------|---------------------|------|
+| **1. Process Docs** | `/foundations init` | Extracts PRD, Vision, ICP, Brand into structured YAML | N/A (automatic) | 2-5 min |
+| **2. Design System** | `/architect` | Interactive architecture decisions → creates architecture.md | **Engaged Mode** (first time) | 10-15 min |
+| **3. Generate Plan** | `/bootstrap` | Generates phased project-plan.md with tasks | **Engaged Mode** (first time) | 1-5 min |
+| **4. Check Status** | `/plan status` | Shows current phase, progress, blockers | N/A | Instant |
+| **5. Execute** | `/coord continue` | Autonomous execution until blocked or phase complete | N/A | Hours-Days |
 
-**Example Session:**
+#### Step-by-Step Walkthrough
+
+<details>
+<summary><strong>Step 1: /foundations init</strong> - Process your BOS-AI documents</summary>
+
+```bash
+# First, copy your BOS-AI documents to the foundations directory
+mkdir -p documents/foundations
+cp ~/Documents/BOS-AI/*.md documents/foundations/
+
+# Then run the extraction
+/foundations init
+```
+
+**What happens**: Scans `documents/foundations/` and extracts structured YAML from each document type (PRD → features, tech stack; Vision → goals, mission; Brand → colors, typography, etc.)
+
+**Output**: Creates `.context/structured/*.yaml` files that agents can parse directly
+
+**When to re-run**: After editing any foundation document, run `/foundations refresh` to sync changes
+
+[→ Full /foundations documentation](#-foundations---document-processing)
+</details>
+
+<details>
+<summary><strong>Step 2: /architect</strong> - Design your system architecture</summary>
+
+```bash
+/architect                    # Interactive mode selection (recommended)
+/architect --mode engaged     # Skip selection, go straight to engaged
+/architect --mode auto        # Use PRD defaults (experienced users)
+```
+
+**Mode Selection**:
+- **Engaged Mode** (recommended for new projects): Walks you through 7 decision areas with explanations and trade-offs. Takes 10-15 minutes but prevents costly mistakes.
+- **Auto Mode**: Uses tech stack from PRD + sensible defaults. Best for regenerating after minor changes or when you know exactly what you want.
+
+**The 7 Decision Areas** (Engaged Mode):
+1. **Application Architecture**: Monolith vs modular vs microservices
+2. **Frontend Stack**: Framework version, rendering strategy, styling, component library
+3. **Backend & Database**: Database config, multi-tenancy strategy, API layer approach
+4. **Authentication**: Provider selection, auth methods, session strategy, user roles
+5. **External Integrations**: Payments (billing model, webhooks), AI models, email service
+6. **Infrastructure**: Frontend/backend hosting, CI/CD pipeline, environments
+7. **Security & Observability**: API security, error tracking, analytics, logging
+
+**Output**: Creates comprehensive `architecture.md` (~400 lines) with system diagrams, decision log, and integration patterns
+
+**Prerequisites**: Must run `/foundations init` first
+
+[→ Full /architect documentation](#-architect---system-design)
+</details>
+
+<details>
+<summary><strong>Step 3: /bootstrap</strong> - Generate your project plan</summary>
+
+```bash
+/bootstrap                    # Interactive mode selection (recommended)
+/bootstrap --mode engaged     # Review PRD assumptions with checkpoints
+/bootstrap --mode auto        # Generate immediately (no questions)
+/bootstrap --mode preview     # Preview without writing files
+```
+
+**Mode Selection**:
+- **Engaged Mode** (recommended for new projects): Reviews 5 checkpoints to validate PRD assumptions before generating. Catches misunderstandings early.
+- **Auto Mode**: Trusts your PRD completely and generates immediately. Best for validated PRDs or regeneration.
+- **Preview Mode**: Shows what would be generated without creating files.
+
+**The 5 Checkpoints** (Engaged Mode):
+1. **Foundation Summary**: Verify product info and P0 features extracted correctly
+2. **Tech Stack**: Confirm framework versions, integrations, AI model selections
+3. **Priority Validation**: Review P0/P1/P2 feature assignments
+4. **Phase Structure**: Approve phase breakdown and task distribution
+5. **Final Confirmation**: Review all decisions before generating
+
+**Output**: Creates phased `project-plan.md` with:
+- Phase 1: Fully detailed with tasks, acceptance criteria, and quality gates
+- Phase 2+: Outlined with key milestones (rolling wave planning)
+
+**Prerequisites**: Must run `/foundations init` first
+
+[→ Full /bootstrap documentation](#-bootstrap---plan-generation)
+</details>
+
+<details>
+<summary><strong>Step 4: /plan status</strong> - Check progress</summary>
+
+```bash
+/plan status    # Overview of current state
+/plan phase 1   # Deep dive into specific phase
+/plan next      # What's coming up
+```
+
+**What it shows**: Current phase, completed tasks, blockers, next actions, quality gate status
+
+[→ Full /plan documentation](#-plan---project-state-management)
+</details>
+
+<details>
+<summary><strong>Step 5: /coord continue</strong> - Autonomous execution</summary>
+
+```bash
+/coord continue    # Execute until blocked or phase complete
+```
+
+**What happens**: The Coordinator reads `project-plan.md`, identifies the next task, delegates to the appropriate specialist (Developer, Tester, etc.), verifies completion, and moves to the next task.
+
+**When it stops**: At phase boundaries, when blocked by a question, or when quality gates need verification.
+
+**After phase complete**:
+```bash
+/coord complete phase 1    # Generate next phase context
+/clear                     # Clear conversation context
+/coord continue            # Resume from project-plan.md
+```
+
+[→ Full mission orchestration documentation](#-coord---mission-orchestration)
+</details>
+
+#### Quick Start Command Sequence
+
 ```bash
 # 1. Copy your BOS-AI docs to the project
 cp ~/Documents/BOS-AI/*.md ./documents/foundations/
@@ -63,10 +182,10 @@ cp ~/Documents/BOS-AI/*.md ./documents/foundations/
 # 2. Process foundation documents
 /foundations init
 
-# 3. Design architecture (select Engaged Mode for first time)
+# 3. Design architecture (FIRST TIME: select "Engaged Mode" when prompted)
 /architect
 
-# 4. Generate project plan (select Engaged Mode for first time)
+# 4. Generate project plan (FIRST TIME: select "Engaged Mode" when prompted)
 /bootstrap
 
 # 5. Review what was created
@@ -957,6 +1076,13 @@ cp ~/BOS-AI-output/pricing-strategy.md documents/foundations/
 /architect --stack nextjs-supabase  # Use predefined stack profile
 ```
 
+**When to Use Each Mode**:
+
+| Mode | Best For | Time | Recommended When |
+|------|----------|------|------------------|
+| **Engaged** | New projects, first-time users | 10-15 min | You want to understand trade-offs and make informed decisions |
+| **Auto** | Regeneration, experienced users | 1-2 min | Your PRD is detailed and you trust the defaults |
+
 **Mode Selection** (when you run `/architect` without flags):
 ```
 How would you like to proceed?
@@ -965,29 +1091,54 @@ How would you like to proceed?
   2. Engaged Mode - Walk through decisions (recommended)
 ```
 
-**Engaged Mode** (7 decision areas):
-1. **Application Architecture** - Monolith vs modular vs microservices
-2. **Frontend Stack** - Framework, rendering strategy, styling, components
-3. **Backend & Database** - Database config, multi-tenancy, API layer
-4. **Authentication** - Provider, auth methods, session strategy, roles
-5. **External Integrations** - Payments, AI models, email, rate limiting
-6. **Infrastructure** - Hosting, CI/CD, environments
-7. **Security & Observability** - API security, error tracking, analytics
+**Engaged Mode** - What You'll Decide (7 areas):
+
+| Decision | What You Choose | Example Options |
+|----------|-----------------|-----------------|
+| 1. **Application Architecture** | Overall structure | Monolith (MVP), Modular Monolith, Microservices |
+| 2. **Frontend Stack** | Framework + styling | Next.js 14 + Tailwind + shadcn/ui |
+| 3. **Backend & Database** | Database + API approach | Supabase + RLS, multi-tenancy strategy |
+| 4. **Authentication** | Auth provider + methods | Clerk/Supabase Auth, OAuth providers, roles |
+| 5. **External Integrations** | Services + billing model | Stripe subscription, AI models, email (Resend) |
+| 6. **Infrastructure** | Hosting + CI/CD | Vercel, Railway, GitHub Actions |
+| 7. **Security & Observability** | Monitoring + security | Sentry, PostHog, rate limiting |
 
 **What it generates**:
-- Comprehensive architecture.md (~400 lines)
+- Comprehensive `architecture.md` (~400 lines)
 - System diagrams and component relationships
 - Decision log with rationale for each choice
 - Integration patterns and security policies
 
 **Prerequisites**: Run `/foundations init` first
 
+**Example Engaged Mode Question**:
+```
+🏗️ Decision 1/7: Application Architecture
+
+Your PRD indicates a web application with these features:
+  - User authentication
+  - Dashboard with data visualization
+  - AI-powered features
+
+Options:
+  1. Monolith (Recommended for MVP)
+     Fast to build, easy to deploy, refactor later
+
+  2. Modular Monolith
+     Clear boundaries, easier to split later
+
+  3. Microservices
+     ⚠️ Overkill for MVP - adds operational complexity
+
+Select [1/2/3]:
+```
+
 [→ Detailed Spec](project/commands/architect.md)
 
 ---
 
 ### 🏗️ `/bootstrap` - Plan Generation
-**Transform foundation summaries into executable project-plan.md**
+**Transform foundation documents + architecture.md into executable project-plan.md**
 
 ```bash
 /bootstrap                          # Interactive mode selection (recommended)
@@ -996,6 +1147,14 @@ How would you like to proceed?
 /bootstrap --mode preview           # Preview without writing files
 /bootstrap --mode auto --type api   # Auto mode with explicit project type
 ```
+
+**When to Use Each Mode**:
+
+| Mode | Best For | Time | Recommended When |
+|------|----------|------|------------------|
+| **Engaged** | New projects, first-time users | 3-5 min | You want to validate PRD extraction and priorities |
+| **Auto** | Regeneration, trusted PRDs | 30 sec | Your PRD is validated and you want speed |
+| **Preview** | Inspection | 30 sec | You want to see the plan before committing |
 
 **Mode Selection** (when you run `/bootstrap` without flags):
 ```
@@ -1006,22 +1165,37 @@ How would you like to proceed?
   3. Preview Mode - Show what would be generated
 ```
 
-**Engaged Mode** (5 checkpoints):
-1. **Foundation Summary** - Verify extracted product info and P0 features
-2. **Tech Stack** - Confirm versions, integrations, AI model selections
-3. **Priority Validation** - Review P0/P1/P2 feature assignments
-4. **Phase Structure** - Approve phase breakdown and task distribution
-5. **Final Confirmation** - Review all decisions before generating
+**Engaged Mode** - What You'll Review (5 checkpoints):
 
-**Auto Mode**: Generates immediately using PRD as source of truth. Best for validated PRDs or regeneration after minor updates.
+| Checkpoint | What You Verify | Why It Matters |
+|------------|-----------------|----------------|
+| 1. **Foundation Summary** | Product name, description, P0 features | Catches extraction errors early |
+| 2. **Tech Stack** | Framework versions, integrations | Ensures correct dependencies |
+| 3. **Priority Validation** | P0/P1/P2 feature assignments | Controls MVP scope |
+| 4. **Phase Structure** | Phase breakdown, task count | Validates effort estimates |
+| 5. **Final Confirmation** | All decisions summary | Last chance before generation |
 
 **What it generates**:
-- Phased project-plan.md with rolling wave detail
-- Phase 1: Fully detailed with tasks & acceptance criteria
-- Phase 2+: Outlined with key milestones
-- Quality gates configured per project type
+- Phased `project-plan.md` with rolling wave detail
+- Phase 1: Fully detailed with tasks, acceptance criteria, and quality gates
+- Phase 2+: Outlined with key milestones (detailed when you reach them)
+- Quality gates configured per project type (blocking/warning/info)
 
-**Prerequisites**: Run `/foundations init` first
+**Prerequisites**: Run `/foundations init` and `/architect` first
+
+**Example Engaged Mode Checkpoint**:
+```
+📋 Checkpoint 2/5: Tech Stack Confirmation
+
+From your PRD and architecture.md:
+  Frontend: Next.js 14 (App Router)
+  Styling: Tailwind CSS + shadcn/ui
+  Backend: Supabase (PostgreSQL + RLS)
+  Auth: Clerk
+  Payments: Stripe
+
+Is this correct? [Y/n/edit]:
+```
 
 [→ Detailed Spec](project/commands/bootstrap.md)
 
