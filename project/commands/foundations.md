@@ -641,7 +641,13 @@ fi
 
 ## SUBCOMMAND: refresh
 
-**Re-extract documents that have changed**:
+**Sync foundation documents - detect new, modified, and removed documents**
+
+This command performs a full sync between your `documents/foundations/` directory and the extracted YAML files. Use this after:
+- Editing any foundation document
+- Adding a new foundation document (e.g., adding `pricing-strategy.md`)
+- Removing a foundation document
+- Receiving updated documents from BOS-AI
 
 ### Step 1: Load Manifest
 ```bash
@@ -651,31 +657,126 @@ if [ ! -f handoff-manifest.yaml ]; then
 fi
 ```
 
-### Step 2: Check Each Document
-For each category in manifest:
-1. Compare current checksum to stored checksum
-2. If mismatch, add to refresh queue
+### Step 2: Scan Directory (Full Sync)
 
-### Step 3: Re-extract Changed Documents
-For each document in refresh queue:
-1. Re-extract to structured YAML using schema
-2. Calculate new checksum
-3. Update manifest entry
-4. Update `generated_at` timestamp
+**Scan `documents/foundations/`** using the same category matching as `init`:
 
-### Step 4: Report
+| Category | Priority 1 | Priority 2 | Priority 3 |
+|----------|------------|------------|------------|
+| **prd** | prd.md | requirements.md | product-requirements.md |
+| **vision** | vision-mission.md | vision.md | strategic-plan.md |
+| **roadmap** | strategic-roadmap.md | roadmap.md | development-plan.md |
+| **icp** | client-success-blueprint.md | icp.md | personas.md |
+| **brand** | brand-style-guidelines.md | brand.md | style-guide.md |
+| **marketing** | marketing-bible.md | marketing.md | positioning.md |
+| **pricing** | pricing-strategy.md | pricing.md | pricing-tiers.md |
+
+### Step 3: Compare and Classify
+
+For each document found in directory:
+1. Calculate current SHA256 checksum
+2. Compare to manifest entry (if exists)
+
+**Classification Logic**:
+
+| Condition | Classification | Action |
+|-----------|----------------|--------|
+| In manifest, checksum matches | **UNCHANGED** | Skip (no action needed) |
+| In manifest, checksum differs | **MODIFIED** | Re-extract to YAML |
+| In directory, NOT in manifest | **NEW** | Extract to YAML, add to manifest |
+| In manifest, NOT in directory | **REMOVED** | Warn user, mark in manifest |
+
+### Step 4: Process Documents
+
+**For MODIFIED documents**:
+1. Re-extract using appropriate schema and extraction mode
+2. Overwrite existing `.context/structured/{category}.yaml`
+3. Update checksum in manifest
+4. Log extraction validation
+
+**For NEW documents**:
+1. Extract using appropriate schema and extraction mode
+2. Create new `.context/structured/{category}.yaml`
+3. Add entry to manifest with checksum
+4. Log extraction validation
+
+**For REMOVED documents**:
+1. Keep existing YAML (don't delete - user may have removed accidentally)
+2. Mark as `status: "source_removed"` in manifest
+3. Warn user in output
+
+### Step 5: Update Manifest
+
+Update `handoff-manifest.yaml`:
+- Update `generated_at` timestamp
+- Update checksums for modified documents
+- Add entries for new documents
+- Mark removed documents
+
+### Step 6: Report
+
 ```
 FOUNDATIONS REFRESH COMPLETE
 ============================
 
-Documents checked: 5
-Documents refreshed: 2
+Directory scanned: documents/foundations/
+Documents found: 7
 
-Refreshed:
-  - prd: Product Requirements Document.md (re-extracted)
-  - icp: Client Success Blueprint.md (re-extracted)
+Status Summary:
+  Unchanged: 4 (skipped - checksums match)
+  Modified:  1 (re-extracted)
+  New:       2 (extracted and added)
+  Removed:   0
+
+Modified Documents:
+  ✓ prd: Product Requirements Document.md
+    → .context/structured/prd.yaml updated
+
+New Documents:
+  ✓ pricing: Pricing Strategy.md
+    → .context/structured/pricing.yaml created
+  ✓ roadmap: Strategic Roadmap.md
+    → .context/structured/roadmap.yaml created
+
+Extraction Validation:
+  prd.yaml      - COMPLETE (15 features, 8 metrics)
+  pricing.yaml  - COMPLETE (4 tiers, Marketing Physics)
+  roadmap.yaml  - COMPLETE (4 phases, deliverables_list)
 
 Manifest updated: handoff-manifest.yaml
+Last sync: 2026-01-05T19:30:00Z
+```
+
+### Common Workflows
+
+**After editing a document**:
+```bash
+# Edit your PRD
+vim documents/foundations/prd.md
+
+# Sync changes
+/foundations refresh
+# → Detects PRD modified, re-extracts to prd.yaml
+```
+
+**After adding a new document**:
+```bash
+# Add pricing strategy from BOS-AI
+cp ~/BOS-AI-output/pricing-strategy.md documents/foundations/
+
+# Sync to pick up new document
+/foundations refresh
+# → Detects new pricing document, extracts to pricing.yaml
+```
+
+**After receiving updated documents from BOS-AI**:
+```bash
+# Copy all updated documents
+cp ~/BOS-AI-output/*.md documents/foundations/
+
+# Single command syncs everything
+/foundations refresh
+# → Detects all changes, only re-extracts what changed
 ```
 
 ---

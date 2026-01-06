@@ -16,6 +16,38 @@ This file has been restructured to be a BACKWARD-LOOKING changelog capturing:
 
 ## 📦 Recent Deliverables
 
+### [2026-01-05] - Sprint 10.5: /foundations refresh as Sync Operation - COMPLETE ✅
+**Created by**: Direct implementation
+**Type**: Core Command Enhancement
+**Related**: Addresses gap in /foundations design for document changes
+**Status**: ✅ COMPLETE
+
+**Problem Solved**:
+`/foundations refresh` only checked documents already in manifest - couldn't detect NEW documents added after init or REMOVED documents. This meant users had to re-run full `init` when adding new foundation docs, which re-processed everything.
+
+**Solution Implemented**:
+Enhanced `/foundations refresh` to be a full SYNC operation that:
+1. Scans `documents/foundations/` directory for all current files
+2. Compares against manifest checksums
+3. Classifies each document: UNCHANGED, MODIFIED, NEW, or REMOVED
+4. Only processes changes (efficient - doesn't re-extract unchanged docs)
+
+**Classification Logic**:
+| Condition | Classification | Action |
+|-----------|----------------|--------|
+| In manifest, checksum matches | UNCHANGED | Skip |
+| In manifest, checksum differs | MODIFIED | Re-extract |
+| In directory, NOT in manifest | NEW | Extract, add to manifest |
+| In manifest, NOT in directory | REMOVED | Warn, mark in manifest |
+
+**Deliverables Updated** (verified 2026-01-05):
+| File | Changes | Purpose |
+|------|---------|---------|
+| `project/commands/foundations.md` | +50 lines | Full sync logic with classification |
+| `README.md` | +80 lines | Comprehensive /foundations docs with subcommands |
+
+---
+
 ### [2026-01-05] - Sprint 10.4: Pricing Strategy Foundation Document - COMPLETE ✅
 **Created by**: Direct implementation (Coordinator mission)
 **Type**: Core System - New foundation document category

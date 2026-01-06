@@ -893,26 +893,55 @@ These commands transform foundation documents into executable project plans:
 ---
 
 ### 📥 `/foundations` - Document Processing
-**Extract structured data from BOS-AI foundation documents**
+**Extract structured data from BOS-AI foundation documents into agent-consumable YAML**
 
 ```bash
-# Process all docs in documents/foundations/
-/foundations init
-
-# Process specific documents
-/foundations init --prd ideation/PRD.md --vision ideation/vision.md
-
-# Refresh existing summaries
-/foundations refresh
+/foundations init       # Initial extraction of all documents
+/foundations refresh    # Sync changes (new, modified, removed docs)
+/foundations status     # Show document states and checksums
+/foundations validate   # Verify completeness before building
 ```
 
-**What it does**:
-- Extracts PRD, Vision, ICP, Brand into structured YAML
-- Uses document-type-aware processing (100% data preservation)
-- Creates `.context/summaries/` with checksums
-- Generates `handoff-manifest.json` for tracking
+**Subcommands:**
 
-**Output**: `.context/summaries/*.yaml` files ready for `/bootstrap`
+| Command | When to Use | What It Does |
+|---------|-------------|--------------|
+| `init` | First time setup | Scans `documents/foundations/`, extracts ALL to structured YAML |
+| `refresh` | After any document changes | Syncs directory → detects new, modified, removed documents |
+| `status` | Check current state | Shows all documents with checksums and modification status |
+| `validate` | Before `/bootstrap` | Verifies required docs present and extractions complete |
+
+**Supported Documents** (7 categories):
+
+| Category | Example Filenames | Schema |
+|----------|-------------------|--------|
+| PRD | prd.md, requirements.md | Features, tech stack, metrics |
+| Vision | vision-mission.md, vision.md | Goals, mission, values |
+| Roadmap | strategic-roadmap.md, roadmap.md | Phases, deliverables, milestones |
+| ICP | client-success-blueprint.md, icp.md | Personas, pain points, JTBD |
+| Brand | brand-style-guidelines.md, brand.md | Colors, typography, components |
+| Marketing | marketing-bible.md, marketing.md | Positioning, messaging, channels |
+| Pricing | pricing-strategy.md, pricing.md | Tiers, Marketing Physics, value ladder |
+
+**Common Workflows:**
+
+```bash
+# Initial setup (first time)
+cp ~/BOS-AI-output/*.md documents/foundations/
+/foundations init
+
+# After editing documents
+/foundations refresh    # Only re-extracts what changed
+
+# After adding new document (e.g., pricing)
+cp ~/BOS-AI-output/pricing-strategy.md documents/foundations/
+/foundations refresh    # Detects and extracts new document
+
+# Before building
+/foundations validate   # Ensures everything is ready
+```
+
+**Output**: `.context/structured/*.yaml` files + `handoff-manifest.yaml`
 
 [→ Detailed Spec](project/commands/foundations.md)
 
@@ -1354,7 +1383,7 @@ Estimated token savings: ~4,250 tokens (63% reduction)
 
 | Command | Purpose | Duration | Output | Best For |
 |---------|---------|----------|--------|----------|
-| `/foundations` | Process BOS-AI documents | 2-5 min | Structured YAML | Starting from BOS-AI |
+| `/foundations` | Process & sync BOS-AI documents (init/refresh/status/validate) | 2-5 min | Structured YAML | Starting from BOS-AI |
 | `/architect` | Design system architecture (Auto/Engaged modes) | 10-15 min | architecture.md | Technical decisions before building |
 | `/bootstrap` | Generate project plan (Auto/Engaged/Preview modes) | 1-5 min | project-plan.md | Plan-driven development |
 | `/plan` | View/manage project state | Instant | Status, gates, progress | Tracking & management |

@@ -1530,6 +1530,24 @@ my-saas-project/
 - `project/commands/bootstrap.md` - REWRITTEN with mode selection
 - `README.md` - Updated workflow and command docs
 
+### Sprint 10.5: /foundations refresh as Sync Operation ✅ COMPLETE
+**Completed**: 2026-01-05
+
+- [x] Identify gap: refresh only checked existing manifest entries
+- [x] Design full sync operation (UNCHANGED/MODIFIED/NEW/REMOVED classification)
+- [x] Enhance foundations.md with directory scan + classification logic
+- [x] Add Common Workflows section with practical examples
+- [x] Update README with comprehensive /foundations documentation
+- [x] Add subcommands table (init/refresh/status/validate)
+- [x] Add supported documents table (7 categories including pricing)
+- [x] Update command comparison table
+
+**Key Deliverables**:
+- `project/commands/foundations.md` - Full sync operation with classification
+- `README.md` - Comprehensive /foundations docs with subcommands, workflows
+
+---
+
 ### Sprint 10.4: Pricing Strategy Foundation Document ✅ COMPLETE
 **Completed**: 2026-01-05
 
