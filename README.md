@@ -1680,13 +1680,21 @@ cd /path/to/your/project
 curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
 ```
 
-**🛡️ Your Custom CLAUDE.md is Safe!** The installer:
-- ✅ **Never overwrites** your existing CLAUDE.md file
-- ✅ Creates `CLAUDE-AGENT11-TEMPLATE.md` with latest AGENT-11 features
-- ✅ Creates automatic backup: `CLAUDE.md.backup-[timestamp]`
-- ✅ Provides clear instructions for merging new capabilities
+**🛡️ Your CLAUDE.md is Safe!** AGENT-11 uses a two-file architecture:
 
-**[📋 Complete Update Guide →](project/docs/UPDATING.md)** - Everything you need to know about updating
+```
+Your Project
+├── CLAUDE.md              ← Your personal preferences (NEVER touched)
+└── .claude/
+    └── CLAUDE.md          ← AGENT-11 library instructions (managed by installer)
+```
+
+- ✅ Your root `/CLAUDE.md` is **never modified or overwritten**
+- ✅ AGENT-11 installs to `.claude/CLAUDE.md` only
+- ✅ Existing `.claude/CLAUDE.md` is backed up before updating
+- ✅ Both files are read automatically by Claude Code
+
+**[📋 CLAUDE.md Architecture Guide →](CLAUDE-MD-INTEGRATION-GUIDE.md)** - Full details on the two-file system
 
 ## 🛠️ Troubleshooting
 

@@ -4,113 +4,15 @@
 
 This is the **AGENT-11 framework repository** - a library of AI agents that gets deployed to user projects. When working in this repository, you must understand the critical distinction between two agent directories.
 
-## Project Owner Communication Guidelines
-
-### ADHD-Optimized Interaction Protocol for Working with Jamie
-
-**IMPORTANT**: This section applies ONLY to direct communication with Jamie (the project owner) during development work. This does NOT apply to library documentation written for end users.
-
-**Project Owner Profile**: Jamie has ADHD, gets easily distracted, has poor short-term memory, and is not very technical. When communicating with Jamie during development work, use this structured approach:
-
-**MANDATORY Communication Structure**:
-
-1. **Brief Context** (1-2 sentences max)
-   - Explain what we're doing and why it matters
-   - Example: "We're adding your API key so the tool can connect to GitHub. This enables automatic code deployments."
-
-2. **Exact Instructions** (numbered, specific, sequential)
-   - Start from where the user currently is (e.g., "You should still have the Settings page open from the last step")
-   - Never jump ahead or assume completion unless user confirms
-   - Use plain language: "Click the blue 'Save' button" not "Persist the configuration"
-   - Provide specific locations: "In the left sidebar, click 'Settings'" not "Go to settings"
-
-3. **Completion Prompt** (mandatory after each step)
-   - Ask if they've completed the step
-   - Ask if they want to continue
-   - Example: "Have you clicked Save and seen the success message? Ready to move on?"
-
-**Critical Requirements**:
-- ✅ Always provide closure before moving to next step (reduces anxiety and overwhelm)
-- ✅ Acknowledge current state before giving next instruction (maintains continuity)
-- ✅ Offer 2-3 clear options when decisions needed, with guidance on choosing
-- ✅ Provide simple recaps when user seems lost or after multiple steps
-- ✅ Gently pause and offer breaks if user appears stuck or overwhelmed
-- ❌ Never assume a step is complete unless user confirms
-- ❌ Never skip context about why we're doing something
-- ❌ Never give general suggestions instead of specific instructions
-- ❌ Never overwhelm with too many steps at once (max 3 steps before check-in)
-
-**Example of CORRECT Communication**:
-```
-Brief Context: We're creating a config file so the agents know which tools to use. This takes about 2 minutes.
-
-Instructions:
-1. In the terminal that's currently open, type: cp .env.template .env
-2. Press Enter
-3. You should see no output - that's normal and means it worked
-
-Completion Prompt: Did the command run without errors? Ready to add your API keys to the file?
-```
-
-**Example of INCORRECT Communication**:
-```
-Let's set up the config. Run the setup script and configure your environment variables for the MCP servers. Then we'll proceed with initialization.
-```
-*(Problems: No context for why, assumes terminal is open, uses jargon like "environment variables" and "MCP servers", no specific commands, doesn't check for completion)*
-
-**Agent Responsibility**: Every agent interaction with Jamie (the project owner) MUST follow this structure. This is not optional - it's a core requirement for effective collaboration.
-
-**CRITICAL**: This communication structure is for working with Jamie only. When creating library documentation (files in `project/field-manual/`, `project/missions/`, etc.), write for general technical users with standard documentation style.
+**Personal preferences**: See root `/CLAUDE.md` for Jamie's communication preferences.
 
 ## Library Documentation Standards
 
-**Target Audience**: General technical users deploying AGENT-11 to their projects. These are developers, founders, and teams who will use AGENT-11 in their own work.
-
-**Writing Style for Library Documentation**:
+When creating library documentation (files in `project/field-manual/`, `project/missions/`, etc.), write for general technical users:
 - **Clear, concise technical documentation** - Standard professional tone
 - **Assume competent self-directed users** - They can follow instructions without hand-holding
-- **No completion prompts** - Don't ask "Ready to continue?" or "Did this work?"
-- **No personal communication patterns** - No ADHD-specific structure in public docs
+- **No completion prompts** - Don't ask "Ready to continue?" in public docs
 - **Standard formatting** - Use common technical documentation patterns
-
-**What TO Include in Library Docs**:
-- Clear setup instructions with copy-paste commands
-- Decision trees for different scenarios
-- Troubleshooting common issues
-- Examples and realistic use cases
-- "Why" context where helpful, but concisely
-
-**What NOT to Include in Library Docs**:
-- ❌ Completion check questions ("Have you finished? Ready for the next step?")
-- ❌ Consent prompts between every step
-- ❌ "Brief Context:" and "Completion Prompt:" labels
-- ❌ Excessive explanations between steps
-- ❌ Personal accommodation patterns
-
-**Example of GOOD Library Documentation**:
-```markdown
-## Quick Start
-
-1. Create your project directory and navigate to it
-2. Copy your BOS-AI documents to `ideation/` folder
-3. Initialize AGENT-11: `/coord dev-setup ideation/PRD.md`
-4. Start development: `/coord build` or `/coord mvp`
-
-See troubleshooting section if you encounter issues.
-```
-
-**Example of BAD Library Documentation** (too personal):
-```markdown
-## Quick Start
-
-Brief Context: We're setting up your project so AGENT-11 can help you build your MVP. This takes about 5 minutes.
-
-Instructions:
-1. Create your project directory and navigate to it
-2. Copy your BOS-AI documents to `ideation/` folder
-
-Completion Prompt: Have you copied the files? Ready to continue?
-```
 
 ## ⚠️ CRITICAL ARCHITECTURE DISTINCTION
 
@@ -207,6 +109,9 @@ Before modifying ANY agent or command file, ask yourself:
 
 ```
 agent-11/
+├── CLAUDE.md             ← Jamie's personal preferences (NOT deployed)
+├── library/
+│   └── CLAUDE.md         ← DEPLOYABLE content → user's .claude/CLAUDE.md
 ├── .claude/
 │   ├── agents/           ← WORKING SQUAD (12 agents, internal use ONLY)
 │   ├── commands/         ← Internal slash commands (NOT deployed)
@@ -225,19 +130,28 @@ agent-11/
 
 ## DEPLOYMENT SYSTEM
 
-**What Gets Deployed** (see install.sh lines 604-775):
+**Two-File Architecture** (user's project after deployment):
+```
+user-project/
+├── CLAUDE.md              ← User's personal preferences (NEVER touched)
+└── .claude/
+    └── CLAUDE.md          ← AGENT-11 library instructions (from library/CLAUDE.md)
+```
+
+**What Gets Deployed** (see install.sh):
+- `library/CLAUDE.md` → user's `.claude/CLAUDE.md` (AGENT-11 instructions)
 - `project/agents/specialists/*.md` → user's `.claude/agents/`
 - `project/commands/*.md` → user's `.claude/commands/`
 - `project/missions/*.md` → user's `missions/`
 - `templates/*.md` → user's `templates/`
 - `project/field-manual/*.md` → user's `field-manual/`
-- `CLAUDE.md` → user's `CLAUDE-AGENT11-TEMPLATE.md`
 
 **What Stays Internal** (NOT deployed):
+- `/CLAUDE.md` (root - Jamie's personal preferences)
 - `.claude/agents/*.md` (working squad)
 - `.claude/commands/*.md` (internal commands)
+- `.claude/claude.md` (this file - dev instructions)
 - Development documentation (project-plan.md, progress.md)
-- Internal tools and utilities
 
 ## PHASE 1 & 2 MODERNIZATION CONTEXT
 

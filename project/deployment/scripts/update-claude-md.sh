@@ -17,7 +17,7 @@ NC='\033[0m'
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
-TEMPLATE_FILE="$PROJECT_ROOT/CLAUDE.md"
+TEMPLATE_FILE="$PROJECT_ROOT/library/CLAUDE.md"
 
 # Logging functions
 log() { echo -e "${BLUE}[INFO]${NC} $1"; }
@@ -30,7 +30,8 @@ show_help() {
     cat <<EOF
 AGENT-11 CLAUDE.md Update Script
 
-Updates your project's CLAUDE.md with critical file persistence bug safeguards.
+Updates your project's .claude/CLAUDE.md with critical file persistence bug safeguards.
+(Note: This updates AGENT-11 library instructions, not your personal /CLAUDE.md)
 
 Usage:
   $0 [OPTIONS]
@@ -81,32 +82,28 @@ echo "║     Critical: File Persistence Bug Safeguards            ║"
 echo "╚══════════════════════════════════════════════════════════╝"
 echo ""
 
-# Detect user's CLAUDE.md
-USER_CLAUDE_MD="$(pwd)/CLAUDE.md"
-TEMPLATE_CLAUDE_MD="$(pwd)/CLAUDE-AGENT11-TEMPLATE.md"
+# Detect user's .claude/CLAUDE.md (AGENT-11 library instructions)
+CLAUDE_DIR="$(pwd)/.claude"
+USER_CLAUDE_MD="$CLAUDE_DIR/CLAUDE.md"
 
 if [[ ! -f "$USER_CLAUDE_MD" ]]; then
-    error "No CLAUDE.md found in current directory"
+    error "No .claude/CLAUDE.md found in current directory"
     echo ""
     echo "Please run this script from your project root directory."
-    echo "Example: cd /path/to/your/project && /path/to/agent-11/project/deployment/scripts/update-claude-md.sh"
+    echo "If AGENT-11 is not installed, run the installer first."
+    echo "Example: cd /path/to/your/project && /path/to/agent-11/project/deployment/scripts/install.sh"
     exit 1
 fi
 
-log "Found CLAUDE.md at: $USER_CLAUDE_MD"
+log "Found .claude/CLAUDE.md at: $USER_CLAUDE_MD"
 
-# Check if template available
-if [[ -f "$TEMPLATE_CLAUDE_MD" ]]; then
-    log "Found AGENT-11 template at: $TEMPLATE_CLAUDE_MD"
-    SOURCE_FILE="$TEMPLATE_CLAUDE_MD"
-elif [[ -f "$TEMPLATE_FILE" ]]; then
-    log "Using AGENT-11 repository template"
+# Check if template available (source library)
+if [[ -f "$TEMPLATE_FILE" ]]; then
+    log "Using AGENT-11 library template: $TEMPLATE_FILE"
     SOURCE_FILE="$TEMPLATE_FILE"
 else
     error "Cannot find AGENT-11 template file"
-    echo "Expected locations:"
-    echo "  - $TEMPLATE_CLAUDE_MD (local)"
-    echo "  - $TEMPLATE_FILE (repository)"
+    echo "Expected location: $TEMPLATE_FILE"
     exit 1
 fi
 
