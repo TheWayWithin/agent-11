@@ -333,6 +333,50 @@ Use **Haiku** when ALL of these apply:
 
 **Remember**: Opus's 35% token efficiency often offsets higher per-token cost for complex tasks.
 
+### Explore Agent Model Selection
+
+**CRITICAL**: The built-in `Explore` agent defaults to Haiku for speed, but this is WRONG for complex exploration tasks.
+
+**Use Sonnet for Explore when**:
+- Architecture exploration ("explore signal generator architecture")
+- System design analysis
+- Understanding complex code relationships
+- Multi-file dependency analysis
+- Pattern identification across codebase
+
+**Use Haiku for Explore when**:
+- Simple file pattern searches
+- Quick keyword lookups
+- Counting files or basic statistics
+- Straightforward "find all X" queries
+
+**Explore Model Selection Examples**:
+
+```
+# WRONG - Architecture needs reasoning, not speed
+Task(
+  subagent_type="Explore",
+  # model defaults to haiku - INSUFFICIENT for architecture
+  prompt="Explore signal generator architecture"
+)
+
+# CORRECT - Explicitly use Sonnet for complex exploration
+Task(
+  subagent_type="Explore",
+  model="sonnet",  # Architecture analysis needs deeper reasoning
+  prompt="Explore signal generator architecture..."
+)
+
+# CORRECT - Haiku is fine for simple searches
+Task(
+  subagent_type="Explore",
+  model="haiku",  # Simple pattern search - speed is fine
+  prompt="Find all files matching *.test.ts"
+)
+```
+
+**Rule of Thumb**: If the Explore task involves "architecture", "design", "how does X work", or "understand the relationship between" → use Sonnet.
+
 ## SKILL LOADING PROTOCOL
 
 **Purpose**: Automatically load domain-specific expertise (SaaS patterns, stack-specific code) based on task triggers to enhance specialist effectiveness.
