@@ -19,7 +19,7 @@
 
 *If AGENT-11 has saved you time or helped you ship faster, consider ⭐ [starring the repo](https://github.com/TheWayWithin/agent-11) or [buying me a coffee](https://buymeacoffee.com/jamiewatters) ☕ to support development!*
 
-[🚀 Quick Start](#-quick-start-5-minutes) · [📖 Documentation](#-complete-documentation) · [🎯 Workflows](#-common-workflows) · [💬 Support](#-join-the-elite)
+[🆕 First Time?](#-first-time-start-here) · [🚀 Quick Start](#-quick-start-5-minutes) · [🎯 Workflows](#-common-workflows) · [📖 Docs](#-complete-documentation) · [💬 Support](#-join-the-elite)
 
 </div>
 
@@ -40,6 +40,76 @@ AGENT-11 deploys 11 specialized AI agents to your project, orchestrating them th
 AGENT-11 is the **technical execution arm** of the BOS-AI ecosystem. BOS-AI handles strategic planning (30 business agents) → AGENT-11 handles software development (11 technical agents).
 
 **You can use AGENT-11 standalone** without BOS-AI. [→ Complete BOS-AI Integration Guide](project/field-manual/bos-ai-integration-guide.md)
+
+---
+
+## 🆕 First Time? Start Here
+
+**Complete setup from scratch in 5 minutes.** If you already have a project with git initialized, skip to [Quick Start](#-quick-start-5-minutes).
+
+### Prerequisites
+
+- **Claude Code** installed and running ([Get Claude Code](https://claude.ai/code))
+- **GitHub CLI** for repo creation: `brew install gh` (macOS) or [GitHub CLI install](https://cli.github.com/)
+- **BOS-AI documents** (optional): PRD, Vision, Brand docs from BOS-AI
+
+### Step-by-Step: New Project Setup
+
+```bash
+# 1. Create your project directory
+mkdir my-project && cd my-project
+
+# 2. Initialize git
+git init
+
+# 3. Create GitHub repository (private recommended)
+gh repo create my-project --private --source=. --push
+
+# 4. Install AGENT-11
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s full
+
+# 5. Restart Claude Code
+/exit
+claude
+```
+
+### After Installation: Choose Your Path
+
+**Path A: Using BOS-AI Documents** (recommended for new products)
+```bash
+# Copy your BOS-AI documents
+mkdir -p documents/foundations
+cp ~/path/to/bos-ai-docs/*.md documents/foundations/
+
+# Run the full workflow
+/foundations init    # Process docs into structured YAML
+/architect           # Design system architecture (select "Engaged Mode")
+/bootstrap           # Generate project plan (select "Engaged Mode")
+/plan status         # Verify everything is ready
+/coord continue      # Start autonomous execution
+```
+
+**Path B: Starting from Scratch** (no BOS-AI docs)
+```bash
+# Create a simple vision document
+echo "# My Product\n\nDescription of what I want to build..." > vision.md
+
+# Initialize with dev-setup mission
+/coord dev-setup vision.md
+
+# Or jump straight to MVP
+/coord mvp vision.md
+```
+
+**Path C: Existing Codebase** (adding AGENT-11 to existing project)
+```bash
+# Analyze existing project and create docs
+/coord dev-alignment
+```
+
+[→ Detailed setup guide](docs/guides/new-project-setup.md) | [→ Troubleshooting](docs/guides/essential-setup.md#troubleshooting)
+
+---
 
 ### The Complete Workflow: Idea → Shipped Product
 
