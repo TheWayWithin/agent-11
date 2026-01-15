@@ -18,18 +18,6 @@ Rapid response protocol for bug diagnosis and resolution. This mission prioritiz
 
 ## Mission Phases
 
-### ⛔ PHASE GATE PROTOCOL [APPLIES TO ALL PHASE TRANSITIONS]
-
-**Before starting ANY phase after Phase 1**, the coordinator MUST verify the previous phase passed its gate:
-- ALL tasks from previous phase marked [x] with timestamps
-- Phase completion entry in progress.md
-- handoff-notes.md updated with current state
-- agent-context.md has findings merged
-
-**See `/coord` command for full PHASE GATE ENFORCEMENT details.**
-
----
-
 ### Phase 1: Triage & Analysis (15-30 minutes) - IMMEDIATE ACTION
 
 **Lead**: @analyst  

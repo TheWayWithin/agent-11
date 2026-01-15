@@ -1,0 +1,117 @@
+# Stack Profile: Remix + Railway
+# Full-stack Remix with Railway-hosted PostgreSQL
+
+name: "remix-railway"
+display_name: "Remix + Railway + PostgreSQL"
+description: |
+  Full-stack TypeScript with Remix for excellent DX and progressive enhancement.
+  Railway for simple PostgreSQL hosting with auto-scaling.
+  Better suited for traditional server-rendered applications.
+
+  Best for: MVPs, SaaS, apps needing full Node.js runtime, high traffic.
+
+version: "1.0.0"
+
+recommended_for:
+  - mvp
+  - saas
+  - high_traffic
+  - api_first
+
+# ============================================
+# FRONTEND
+# ============================================
+frontend:
+  framework: remix
+  framework_version: "2"
+  routing: file_based
+  rendering: ssr
+  styling: tailwindcss
+  component_library: radix
+  state_management: none  # Remix handles most state server-side
+  form_handling: native  # Remix has excellent native form handling
+  validation: zod
+
+# ============================================
+# BACKEND
+# ============================================
+backend:
+  runtime: node
+  api_style: rest
+  server_framework: remix_loader
+  database: postgres
+  database_host: railway
+  orm: prisma
+  auth_provider: lucia
+  cache: upstash
+
+# ============================================
+# SERVICES
+# ============================================
+services:
+  payments: stripe
+  email: resend
+  email_marketing: none
+  file_storage: cloudflare_r2
+  analytics: plausible
+  error_tracking: sentry
+  search: none
+  realtime: none
+  ai: none
+  feature_flags: none
+  cms: none
+
+# ============================================
+# DEPLOYMENT
+# ============================================
+deployment:
+  frontend: railway
+  backend: same_as_frontend
+  ci_cd: github_actions
+  domain_registrar: cloudflare
+  cdn: cloudflare
+
+# ============================================
+# DEVELOPMENT
+# ============================================
+development:
+  language: typescript
+  package_manager: pnpm
+  linting: biome
+  formatting: biome
+  testing:
+    unit: vitest
+    e2e: playwright
+    component: testing_library
+  monorepo: none
+
+# ============================================
+# CUSTOM INTERPOLATION VALUES
+# ============================================
+interpolation:
+  project_name: "MyApp"
+  railway_project_id: "your-railway-project"
+  database_url: "postgresql://..."
+
+# ============================================
+# METADATA
+# ============================================
+metadata:
+  author: "AGENT-11"
+  source: template
+  tags:
+    - typescript
+    - traditional-server
+    - progressive-enhancement
+    - prisma
+  notes: |
+    This stack is optimized for developer experience and progressive enhancement.
+    Trade-offs:
+    - Full Node.js runtime (more flexibility, more to manage)
+    - Railway is simpler than AWS but less feature-rich
+    - Lucia auth is lighter-weight than Clerk but requires more setup
+
+    When to consider alternatives:
+    - Need edge runtime → Use Next.js + Supabase stack
+    - Need managed auth → Consider Clerk or Auth0
+    - Need real-time → Add Supabase or Pusher

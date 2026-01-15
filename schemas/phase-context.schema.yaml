@@ -1,0 +1,170 @@
+# phase-context.schema.yaml
+# Rolling Wave Planning Context Management
+# Version: 1.0.0
+# Purpose: Efficient context loading per phase
+
+---
+phase_id:
+  description: "Reference to parent project-plan phase"
+  type: string
+  required: true
+  example: "core-features"
+
+phase_summary:
+  description: "Brief summary for adjacent/distant phase loading"
+  fields:
+    name: string          # Human-readable phase name
+    status: enum          # not_started | in_progress | blocked | complete
+    objective: string     # One-line phase goal
+    tasks_total: integer  # Total task count
+    tasks_complete: integer
+    key_decisions: [string]  # Important decisions made (max 3)
+  token_budget: 200       # Target tokens for summary view
+
+objectives:
+  description: "Detailed phase objectives (full context only)"
+  type: array
+  items:
+    objective: string
+    rationale: string     # Why this matters
+    success_metric: string
+
+tasks:
+  description: "Detailed task breakdown with full context"
+  type: array
+  item_fields:
+    id: string            # Unique task ID
+    description: string
+    status: enum
+    assigned_to: agent
+    dependencies:
+      task_ids: [string]  # Task dependencies
+      gate_ids: [string]  # Gate dependencies
+    acceptance_criteria: [string]
+    technical_notes: string  # Implementation guidance
+    context_accumulated: string  # Decisions/learnings during execution
+
+context:
+  description: "Accumulated knowledge and decisions for this phase"
+  fields:
+    decisions_made:
+      - decision: string
+        rationale: string
+        date: date
+    constraints_discovered: [string]
+    blockers_resolved:
+      - blocker: string
+        resolution: string
+    patterns_identified: [string]  # Reusable learnings
+
+artifacts:
+  description: "Expected and completed deliverables"
+  type: array
+  item_fields:
+    path: string          # File or directory path
+    type: enum            # code | config | doc | test | asset
+    status: enum          # expected | in_progress | complete | verified
+    description: string
+
+gate_criteria:
+  description: "Quality gate requirements for phase completion"
+  fields:
+    gate_type: enum       # build | test | lint | security | review | deploy
+    checks:
+      - name: string      # Check name
+        command: string   # How to verify (optional)
+        expected: string  # Expected result
+    blocking: boolean
+    remediation_hints: [string]  # Help for failures
+
+context_loading_strategy:
+  description: "How to load this phase based on distance from current"
+  rules:
+    current_phase: "Load full phase_context document (~1000 tokens)"
+    adjacent_phase: "Load phase_summary only (~200 tokens)"
+    distant_phase: "Load phase_id, status, name only (~50 tokens)"
+
+foundation_summaries:
+  description: "BOS-AI foundation documents with proportional token budgets (Sprint 9)"
+  purpose: "Persistent context across all phases for autonomous operation"
+  token_budgets:
+    prd:
+      budget: 600
+      rationale: "Highest information density - features, requirements, tech constraints, MVP scope"
+      always_load: true
+    vision:
+      budget: 200
+      rationale: "Guides feature prioritization and success criteria"
+      always_load: true
+    icp:
+      budget: 200
+      rationale: "Guides UX decisions and persona-driven development"
+      always_load: false  # Load when relevant
+    brand:
+      budget: 100
+      rationale: "UI/UX styling, colors, fonts, tone"
+      always_load: false  # Load for design/frontend phases
+    marketing:
+      budget: 100
+      rationale: "Messaging, positioning, copy guidance"
+      always_load: false  # Load for content/marketing phases
+  total_budget: 1200
+  loading_strategy: |
+    - Always load: prd-summary.md + vision-summary.md (800 tokens)
+    - Conditional: Load icp/brand/marketing based on phase type
+    - Maximum foundation context: ~1200 tokens
+    - Phase context + foundations: ~2200 tokens total budget
+
+# --- Example ---
+example:
+  phase_id: "core-features"
+  phase_summary:
+    name: "Core Features"
+    status: in_progress
+    objective: "Implement subscription and payment functionality"
+    tasks_total: 5
+    tasks_complete: 2
+    key_decisions:
+      - "Using Stripe Checkout for simplicity"
+      - "14-day free trial for all plans"
+  objectives:
+    - objective: "Stripe payment integration"
+      rationale: "Primary revenue mechanism"
+      success_metric: "Can process $1 test charge"
+  tasks:
+    - id: "2.1"
+      description: "Implement Stripe webhook handler"
+      status: in_progress
+      assigned_to: "@developer"
+      dependencies:
+        task_ids: ["1.3"]
+        gate_ids: ["build_phase1"]
+      acceptance_criteria:
+        - "Handles checkout.session.completed"
+        - "Updates user subscription status"
+      technical_notes: "Use stripe-signature for verification"
+  context:
+    decisions_made:
+      - decision: "Use Stripe Checkout instead of Elements"
+        rationale: "Faster to implement, handles PCI compliance"
+        date: "2025-01-18"
+  artifacts:
+    - path: "/src/app/api/webhooks/stripe/route.ts"
+      type: code
+      status: in_progress
+      description: "Stripe webhook handler"
+  gate_criteria:
+    gate_type: test
+    checks:
+      - name: "Webhook signature verification"
+        command: "npm test -- webhooks"
+        expected: "All tests pass"
+    blocking: true
+    remediation_hints:
+      - "Check STRIPE_WEBHOOK_SECRET env var"
+  foundation_summaries_loaded:
+    prd: ".context/summaries/prd-summary.md"      # 600 tokens
+    vision: ".context/summaries/vision-summary.md" # 200 tokens
+    icp: null  # Not loaded for backend phase
+    brand: null
+    tokens_used: 800

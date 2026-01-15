@@ -1,0 +1,116 @@
+# Stack Profile: SvelteKit + Supabase
+# Lightweight, performant full-stack with SvelteKit
+
+name: "sveltekit-supabase"
+display_name: "SvelteKit + Supabase"
+description: |
+  Lightweight full-stack TypeScript with SvelteKit for excellent performance.
+  Supabase provides auth, database, and storage.
+  Smaller bundle sizes and faster runtime than React-based alternatives.
+
+  Best for: Performance-critical MVPs, developer experience, smaller teams.
+
+version: "1.0.0"
+
+recommended_for:
+  - mvp
+  - saas
+  - high_traffic
+  - content_heavy
+
+# ============================================
+# FRONTEND
+# ============================================
+frontend:
+  framework: sveltekit
+  framework_version: "2"
+  routing: file_based
+  rendering: hybrid
+  styling: tailwindcss
+  component_library: none  # Svelte has fewer pre-built component libs
+  state_management: none  # Svelte stores are built-in
+  form_handling: native  # SvelteKit has great form handling
+  validation: zod
+
+# ============================================
+# BACKEND
+# ============================================
+backend:
+  runtime: node
+  api_style: rest
+  server_framework: none  # SvelteKit handles everything
+  database: supabase
+  orm: supabase_client
+  auth_provider: supabase_auth
+  cache: none
+
+# ============================================
+# SERVICES
+# ============================================
+services:
+  payments: stripe
+  email: resend
+  email_marketing: none
+  file_storage: supabase_storage
+  analytics: plausible
+  error_tracking: sentry
+  search: none
+  realtime: supabase_realtime
+  ai: none
+  feature_flags: none
+  cms: none
+
+# ============================================
+# DEPLOYMENT
+# ============================================
+deployment:
+  frontend: vercel
+  backend: same_as_frontend
+  ci_cd: github_actions
+  domain_registrar: cloudflare
+  cdn: none
+
+# ============================================
+# DEVELOPMENT
+# ============================================
+development:
+  language: typescript
+  package_manager: pnpm
+  linting: eslint
+  formatting: prettier
+  testing:
+    unit: vitest
+    e2e: playwright
+    component: testing_library
+  monorepo: none
+
+# ============================================
+# CUSTOM INTERPOLATION VALUES
+# ============================================
+interpolation:
+  project_name: "MyApp"
+  supabase_url: "https://your-project.supabase.co"
+  supabase_anon_key: "your-anon-key"
+
+# ============================================
+# METADATA
+# ============================================
+metadata:
+  author: "AGENT-11"
+  source: template
+  tags:
+    - typescript
+    - svelte
+    - lightweight
+    - performant
+  notes: |
+    This stack is optimized for performance and developer experience.
+    Trade-offs:
+    - Smaller ecosystem than React (fewer components, tutorials)
+    - Team may need to learn Svelte
+    - Some AI coding assistants have less Svelte training data
+
+    When to consider alternatives:
+    - Team already knows React → Use Next.js stack
+    - Need extensive component library → Consider React-based stack
+    - AI-assisted development priority → React has better tooling support

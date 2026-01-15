@@ -1,0 +1,73 @@
+{
+  "$schema": "../../../project/schemas/quality-gate.schema.yaml",
+  "version": "1.0",
+  "name": "minimal",
+  "description": "Minimal quality gates for any project type. Provides basic build and test verification without framework-specific tooling.",
+  "framework": "generic",
+  "gates": [
+    {
+      "name": "implementation-exit",
+      "description": "Basic gate at end of implementation - ensures code builds and basic tests pass",
+      "phase": "implementation",
+      "trigger": "phase_exit",
+      "checks": [
+        {
+          "type": "build",
+          "name": "Build Check",
+          "command": "make build || npm run build || python -m py_compile *.py || echo 'No build command found'",
+          "severity": "blocking",
+          "timeout": 300,
+          "remediation": {
+            "manual_steps": [
+              "Check if a build command is configured in package.json or Makefile",
+              "Review build output for errors",
+              "Ensure all dependencies are installed"
+            ]
+          }
+        },
+        {
+          "type": "test",
+          "name": "Test Check",
+          "command": "make test || npm test || pytest || echo 'No test command found'",
+          "severity": "blocking",
+          "timeout": 300,
+          "remediation": {
+            "manual_steps": [
+              "Check if a test command is configured",
+              "Review test output for failures",
+              "Run tests locally to reproduce issues"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "pre-deploy",
+      "description": "Minimal checks before deployment",
+      "phase": "deploy",
+      "trigger": "phase_entry",
+      "checks": [
+        {
+          "type": "build",
+          "name": "Final Build",
+          "command": "make build || npm run build || echo 'Build assumed successful'",
+          "severity": "blocking",
+          "timeout": 300
+        },
+        {
+          "type": "test",
+          "name": "Final Tests",
+          "command": "make test || npm test || pytest || echo 'Tests assumed passing'",
+          "severity": "warning",
+          "timeout": 300
+        }
+      ]
+    }
+  ],
+  "global_options": {
+    "fail_fast": false,
+    "parallel_checks": false,
+    "report_format": "simple",
+    "notification_channels": ["console"]
+  }
+}

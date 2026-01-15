@@ -1,0 +1,771 @@
+# Stack Profile Schema
+# Defines the user's tech stack configuration for skill adaptation
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://agent-11.dev/schemas/stack-profile"
+version: "1.0.0"
+
+title: Stack Profile
+description: |
+  A stack profile defines the user's technology choices for their project.
+  Skills use this profile to adapt code generation and recommendations to
+  the specific frameworks, services, and patterns the user has chosen.
+
+  Stack profiles enable skills to be stack-agnostic while producing
+  stack-specific implementations through {{stack.*}} interpolation.
+
+type: object
+required:
+  - name
+  - frontend
+  - backend
+
+properties:
+  # ============================================
+  # PROFILE METADATA
+  # ============================================
+
+  name:
+    type: string
+    description: Profile identifier (kebab-case)
+    pattern: "^[a-z0-9-]+$"
+    minLength: 3
+    maxLength: 50
+    examples:
+      - "nextjs-supabase"
+      - "remix-railway-postgres"
+      - "nuxt-firebase"
+
+  display_name:
+    type: string
+    description: Human-readable profile name
+    maxLength: 100
+    examples:
+      - "Next.js + Supabase"
+      - "Remix + Railway + PostgreSQL"
+
+  description:
+    type: string
+    description: Brief description of this stack
+    maxLength: 500
+    examples:
+      - "Full-stack TypeScript with Supabase for auth, database, and real-time"
+
+  version:
+    type: string
+    pattern: "^\\d+\\.\\d+\\.\\d+$"
+    description: Profile version
+    default: "1.0.0"
+
+  recommended_for:
+    type: array
+    description: Project types this stack is well-suited for
+    items:
+      type: string
+      enum:
+        - mvp
+        - enterprise
+        - high_traffic
+        - real_time
+        - content_heavy
+        - api_first
+        - mobile_app
+        - saas
+        - marketplace
+        - e_commerce
+    examples:
+      - ["mvp", "saas", "real_time"]
+
+  # ============================================
+  # FRONTEND CONFIGURATION
+  # ============================================
+
+  frontend:
+    type: object
+    description: Frontend technology choices
+    required:
+      - framework
+    properties:
+      framework:
+        type: string
+        enum:
+          - nextjs
+          - remix
+          - nuxt
+          - sveltekit
+          - astro
+          - gatsby
+          - vite_react
+          - vite_vue
+          - angular
+          - none
+        description: Primary frontend framework
+        examples:
+          - "nextjs"
+          - "remix"
+
+      framework_version:
+        type: string
+        description: Framework major version
+        examples:
+          - "14"
+          - "15"
+          - "2"
+
+      routing:
+        type: string
+        enum:
+          - app_router
+          - pages_router
+          - file_based
+          - config_based
+          - spa
+        description: Routing approach
+        examples:
+          - "app_router"
+
+      rendering:
+        type: string
+        enum:
+          - ssr
+          - ssg
+          - isr
+          - spa
+          - hybrid
+        description: Primary rendering strategy
+        default: "hybrid"
+
+      styling:
+        type: string
+        enum:
+          - tailwindcss
+          - css_modules
+          - styled_components
+          - emotion
+          - vanilla_extract
+          - sass
+          - plain_css
+          - shadcn
+        description: CSS/styling approach
+        default: "tailwindcss"
+
+      component_library:
+        type: string
+        description: UI component library (if any)
+        enum:
+          - shadcn
+          - radix
+          - chakra
+          - mantine
+          - material_ui
+          - ant_design
+          - headless_ui
+          - daisyui
+          - none
+        examples:
+          - "shadcn"
+
+      state_management:
+        type: string
+        enum:
+          - zustand
+          - jotai
+          - redux
+          - recoil
+          - pinia
+          - mobx
+          - tanstack_query
+          - swr
+          - none
+        description: Client-side state management
+        default: "zustand"
+
+      form_handling:
+        type: string
+        enum:
+          - react_hook_form
+          - formik
+          - tanstack_form
+          - superforms
+          - native
+          - none
+        description: Form library
+        default: "react_hook_form"
+
+      validation:
+        type: string
+        enum:
+          - zod
+          - yup
+          - valibot
+          - joi
+          - native
+        description: Schema validation library
+        default: "zod"
+
+  # ============================================
+  # BACKEND CONFIGURATION
+  # ============================================
+
+  backend:
+    type: object
+    description: Backend technology choices
+    required:
+      - runtime
+      - database
+    properties:
+      runtime:
+        type: string
+        enum:
+          - node
+          - edge
+          - deno
+          - bun
+          - python
+          - go
+          - serverless
+          - none
+        description: Backend runtime environment
+        examples:
+          - "edge"
+          - "node"
+
+      api_style:
+        type: string
+        enum:
+          - rest
+          - graphql
+          - trpc
+          - grpc
+          - rpc
+        description: API architecture style
+        default: "rest"
+
+      server_framework:
+        type: string
+        description: Server framework (if separate from frontend)
+        enum:
+          - express
+          - fastify
+          - hono
+          - elysia
+          - nestjs
+          - django
+          - fastapi
+          - gin
+          - nextjs_api
+          - remix_loader
+          - none
+        examples:
+          - "nextjs_api"
+          - "hono"
+
+      database:
+        type: string
+        enum:
+          - supabase
+          - postgres
+          - mysql
+          - mongodb
+          - planetscale
+          - neon
+          - turso
+          - firebase
+          - dynamodb
+          - sqlite
+        description: Primary database
+        examples:
+          - "supabase"
+          - "postgres"
+
+      database_host:
+        type: string
+        description: Database hosting provider (if not BaaS)
+        enum:
+          - supabase
+          - railway
+          - render
+          - fly
+          - aws_rds
+          - gcp_cloud_sql
+          - digital_ocean
+          - planetscale
+          - neon
+          - self_hosted
+          - none
+        examples:
+          - "railway"
+
+      orm:
+        type: string
+        enum:
+          - prisma
+          - drizzle
+          - kysely
+          - typeorm
+          - sequelize
+          - supabase_client
+          - mongoose
+          - none
+        description: ORM/query builder
+        default: "prisma"
+
+      auth_provider:
+        type: string
+        enum:
+          - supabase_auth
+          - clerk
+          - auth0
+          - nextauth
+          - lucia
+          - firebase_auth
+          - cognito
+          - custom
+          - none
+        description: Authentication provider
+        examples:
+          - "supabase_auth"
+          - "clerk"
+
+      cache:
+        type: string
+        description: Caching solution
+        enum:
+          - redis
+          - upstash
+          - memcached
+          - vercel_kv
+          - none
+        default: "none"
+
+  # ============================================
+  # SERVICES CONFIGURATION
+  # ============================================
+
+  services:
+    type: object
+    description: External service integrations
+    properties:
+      payments:
+        type: string
+        enum:
+          - stripe
+          - lemon_squeezy
+          - paddle
+          - paypal
+          - none
+        description: Payment processor
+        default: "stripe"
+
+      email:
+        type: string
+        enum:
+          - resend
+          - sendgrid
+          - postmark
+          - mailgun
+          - ses
+          - loops
+          - none
+        description: Transactional email provider
+        default: "resend"
+
+      email_marketing:
+        type: string
+        description: Email marketing (newsletters, campaigns)
+        enum:
+          - loops
+          - convertkit
+          - mailchimp
+          - buttondown
+          - none
+        default: "none"
+
+      file_storage:
+        type: string
+        enum:
+          - supabase_storage
+          - s3
+          - cloudflare_r2
+          - uploadthing
+          - cloudinary
+          - none
+        description: File/media storage
+        default: "supabase_storage"
+
+      analytics:
+        type: string
+        enum:
+          - posthog
+          - plausible
+          - google_analytics
+          - mixpanel
+          - amplitude
+          - vercel_analytics
+          - none
+        description: Analytics provider
+        default: "posthog"
+
+      error_tracking:
+        type: string
+        enum:
+          - sentry
+          - bugsnag
+          - rollbar
+          - logrocket
+          - none
+        description: Error/exception tracking
+        default: "sentry"
+
+      search:
+        type: string
+        enum:
+          - algolia
+          - typesense
+          - meilisearch
+          - elasticsearch
+          - postgres_fts
+          - none
+        description: Search service
+        default: "none"
+
+      realtime:
+        type: string
+        enum:
+          - supabase_realtime
+          - pusher
+          - ably
+          - socket_io
+          - liveblocks
+          - none
+        description: Real-time/websocket provider
+        default: "none"
+
+      ai:
+        type: string
+        description: AI/LLM provider
+        enum:
+          - openai
+          - anthropic
+          - vercel_ai
+          - replicate
+          - huggingface
+          - none
+        default: "none"
+
+      feature_flags:
+        type: string
+        enum:
+          - launchdarkly
+          - flagsmith
+          - growthbook
+          - vercel_edge_config
+          - none
+        description: Feature flag service
+        default: "none"
+
+      cms:
+        type: string
+        description: Content management system
+        enum:
+          - sanity
+          - contentful
+          - strapi
+          - payload
+          - notion
+          - markdown
+          - none
+        default: "none"
+
+  # ============================================
+  # DEPLOYMENT CONFIGURATION
+  # ============================================
+
+  deployment:
+    type: object
+    description: Deployment and hosting configuration
+    properties:
+      frontend:
+        type: string
+        enum:
+          - vercel
+          - netlify
+          - cloudflare_pages
+          - railway
+          - fly
+          - render
+          - aws_amplify
+          - self_hosted
+        description: Frontend hosting platform
+        default: "vercel"
+
+      backend:
+        type: string
+        description: Backend hosting (if separate)
+        enum:
+          - vercel
+          - railway
+          - fly
+          - render
+          - aws_lambda
+          - google_cloud_run
+          - digital_ocean_app
+          - supabase_edge
+          - same_as_frontend
+          - none
+        default: "same_as_frontend"
+
+      ci_cd:
+        type: string
+        enum:
+          - github_actions
+          - gitlab_ci
+          - vercel
+          - railway
+          - circle_ci
+          - none
+        description: CI/CD platform
+        default: "github_actions"
+
+      domain_registrar:
+        type: string
+        description: Domain management
+        enum:
+          - cloudflare
+          - namecheap
+          - google_domains
+          - route53
+          - vercel
+          - other
+        default: "cloudflare"
+
+      cdn:
+        type: string
+        description: CDN provider (if not included in hosting)
+        enum:
+          - cloudflare
+          - vercel_edge
+          - fastly
+          - aws_cloudfront
+          - none
+        default: "none"
+
+  # ============================================
+  # DEVELOPMENT CONFIGURATION
+  # ============================================
+
+  development:
+    type: object
+    description: Development tooling preferences
+    properties:
+      language:
+        type: string
+        enum:
+          - typescript
+          - javascript
+          - python
+          - go
+        description: Primary language
+        default: "typescript"
+
+      package_manager:
+        type: string
+        enum:
+          - npm
+          - pnpm
+          - yarn
+          - bun
+        description: Package manager
+        default: "pnpm"
+
+      linting:
+        type: string
+        enum:
+          - eslint
+          - biome
+          - oxlint
+          - none
+        description: Linting tool
+        default: "eslint"
+
+      formatting:
+        type: string
+        enum:
+          - prettier
+          - biome
+          - none
+        description: Code formatting
+        default: "prettier"
+
+      testing:
+        type: object
+        description: Testing framework choices
+        properties:
+          unit:
+            type: string
+            enum:
+              - vitest
+              - jest
+              - mocha
+              - none
+            default: "vitest"
+          e2e:
+            type: string
+            enum:
+              - playwright
+              - cypress
+              - none
+            default: "playwright"
+          component:
+            type: string
+            enum:
+              - testing_library
+              - storybook
+              - none
+            default: "testing_library"
+
+      monorepo:
+        type: string
+        description: Monorepo tooling (if applicable)
+        enum:
+          - turborepo
+          - nx
+          - lerna
+          - none
+        default: "none"
+
+  # ============================================
+  # INTERPOLATION MAPPINGS
+  # ============================================
+
+  interpolation:
+    type: object
+    description: |
+      Custom values for skill interpolation.
+      Skills use {{stack.interpolation.X}} to inject custom values.
+    additionalProperties:
+      type: string
+    examples:
+      - project_name: "MyApp"
+        org_name: "mycompany"
+        supabase_url: "https://xxx.supabase.co"
+
+  # ============================================
+  # METADATA
+  # ============================================
+
+  metadata:
+    type: object
+    description: Profile metadata
+    properties:
+      created:
+        type: string
+        format: date-time
+      updated:
+        type: string
+        format: date-time
+      author:
+        type: string
+      source:
+        type: string
+        description: Where this profile originated
+        enum:
+          - template
+          - generated
+          - custom
+        default: "custom"
+
+# Example stack profiles
+examples:
+  - name: "nextjs-supabase"
+    display_name: "Next.js + Supabase"
+    description: "Modern full-stack TypeScript with Supabase for auth, database, storage, and real-time"
+    version: "1.0.0"
+    recommended_for:
+      - mvp
+      - saas
+      - real_time
+    frontend:
+      framework: nextjs
+      framework_version: "14"
+      routing: app_router
+      rendering: hybrid
+      styling: tailwindcss
+      component_library: shadcn
+      state_management: zustand
+      form_handling: react_hook_form
+      validation: zod
+    backend:
+      runtime: edge
+      api_style: rest
+      server_framework: nextjs_api
+      database: supabase
+      orm: supabase_client
+      auth_provider: supabase_auth
+      cache: none
+    services:
+      payments: stripe
+      email: resend
+      file_storage: supabase_storage
+      analytics: posthog
+      error_tracking: sentry
+      realtime: supabase_realtime
+    deployment:
+      frontend: vercel
+      backend: same_as_frontend
+      ci_cd: github_actions
+    development:
+      language: typescript
+      package_manager: pnpm
+      linting: eslint
+      formatting: prettier
+      testing:
+        unit: vitest
+        e2e: playwright
+        component: testing_library
+
+  - name: "remix-railway"
+    display_name: "Remix + Railway + PostgreSQL"
+    description: "Full-stack Remix with Railway-hosted PostgreSQL and edge deployment"
+    version: "1.0.0"
+    recommended_for:
+      - mvp
+      - saas
+      - high_traffic
+    frontend:
+      framework: remix
+      framework_version: "2"
+      routing: file_based
+      rendering: ssr
+      styling: tailwindcss
+      component_library: radix
+      state_management: none
+      form_handling: native
+      validation: zod
+    backend:
+      runtime: node
+      api_style: rest
+      server_framework: remix_loader
+      database: postgres
+      database_host: railway
+      orm: prisma
+      auth_provider: lucia
+      cache: upstash
+    services:
+      payments: stripe
+      email: resend
+      file_storage: cloudflare_r2
+      analytics: plausible
+      error_tracking: sentry
+    deployment:
+      frontend: railway
+      backend: same_as_frontend
+      ci_cd: github_actions
+    development:
+      language: typescript
+      package_manager: pnpm
+      linting: biome
+      formatting: biome
+      testing:
+        unit: vitest
+        e2e: playwright

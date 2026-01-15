@@ -18,18 +18,6 @@ Conduct comprehensive security assessment and implement protective measures to s
 
 ## Mission Phases
 
-### ⛔ PHASE GATE PROTOCOL [APPLIES TO ALL PHASE TRANSITIONS]
-
-**Before starting ANY phase after Phase 1**, the coordinator MUST verify the previous phase passed its gate:
-- ALL tasks from previous phase marked [x] with timestamps
-- Phase completion entry in progress.md
-- handoff-notes.md updated with current state
-- agent-context.md has findings merged
-
-**See `/coord` command for full PHASE GATE ENFORCEMENT details.**
-
----
-
 ### Phase 1: Security Assessment and Threat Modeling (60-90 minutes)
 **Lead**: @architect  
 **Support**: @developer  

@@ -1,0 +1,404 @@
+# Skill Loading Schema
+# Defines how skills are discovered, loaded, and injected into context
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+$id: "https://agent-11.dev/schemas/skill-loading"
+version: "1.0.0"
+
+title: Skill Loading Configuration
+description: |
+  Defines the skill loading system configuration including:
+  - Skill discovery and registry
+  - Trigger matching rules
+  - Context injection patterns
+  - Token budget management
+
+type: object
+required:
+  - skill_directory
+  - trigger_config
+  - loading_config
+
+properties:
+  # ============================================
+  # DIRECTORY CONFIGURATION
+  # ============================================
+
+  skill_directory:
+    type: object
+    description: Skill file locations
+    required:
+      - library_path
+      - deployed_path
+    properties:
+      library_path:
+        type: string
+        description: Source path in AGENT-11 library
+        default: "project/skills"
+        examples:
+          - "project/skills"
+      deployed_path:
+        type: string
+        description: Target path in user projects
+        default: ".claude/skills"
+        examples:
+          - ".claude/skills"
+      stack_profiles_path:
+        type: string
+        description: Path to stack profile files
+        default: "templates/stack-profiles"
+      active_profile:
+        type: string
+        description: Currently active stack profile name
+        examples:
+          - "nextjs-supabase"
+
+  # ============================================
+  # SKILL REGISTRY
+  # ============================================
+
+  registry:
+    type: object
+    description: Skill registry configuration
+    properties:
+      index_file:
+        type: string
+        description: Path to skill index/manifest file
+        default: ".claude/skills/index.yaml"
+      auto_discover:
+        type: boolean
+        description: Auto-discover skills from directory
+        default: true
+      cache_enabled:
+        type: boolean
+        description: Cache parsed skills for performance
+        default: true
+      cache_ttl:
+        type: integer
+        description: Cache time-to-live in seconds
+        default: 3600
+
+  # ============================================
+  # TRIGGER CONFIGURATION
+  # ============================================
+
+  trigger_config:
+    type: object
+    description: How triggers are matched to load skills
+    required:
+      - matching_strategy
+    properties:
+      matching_strategy:
+        type: string
+        enum:
+          - exact
+          - fuzzy
+          - semantic
+        description: |
+          Trigger matching approach:
+          - exact: Word must match trigger exactly (case-insensitive)
+          - fuzzy: Approximate matching (Levenshtein distance <= 2)
+          - semantic: LLM-based semantic similarity (experimental)
+        default: "fuzzy"
+
+      case_sensitive:
+        type: boolean
+        description: Whether trigger matching is case-sensitive
+        default: false
+
+      match_threshold:
+        type: number
+        minimum: 0
+        maximum: 1
+        description: Minimum confidence for fuzzy/semantic matching
+        default: 0.8
+
+      match_sources:
+        type: array
+        description: Where to look for trigger matches
+        items:
+          type: string
+          enum:
+            - task_description
+            - phase_name
+            - user_prompt
+            - file_names
+            - prd_content
+        default:
+          - task_description
+          - user_prompt
+
+      max_matches:
+        type: integer
+        description: Maximum skills to load per query
+        minimum: 1
+        maximum: 10
+        default: 3
+
+      priority_weight:
+        type: object
+        description: Weighting for different match sources
+        additionalProperties:
+          type: number
+          minimum: 0
+          maximum: 1
+        examples:
+          - task_description: 1.0
+            phase_name: 0.8
+            user_prompt: 0.9
+            prd_content: 0.5
+
+  # ============================================
+  # LOADING CONFIGURATION
+  # ============================================
+
+  loading_config:
+    type: object
+    description: How skills are loaded into context
+    required:
+      - token_budget
+    properties:
+      token_budget:
+        type: integer
+        description: Maximum tokens for all loaded skills combined
+        minimum: 1000
+        maximum: 100000
+        default: 15000
+
+      priority_loading:
+        type: boolean
+        description: Load higher-priority skills first within budget
+        default: true
+
+      include_dependencies:
+        type: boolean
+        description: Auto-load skill dependencies
+        default: true
+
+      dependency_budget_share:
+        type: number
+        description: Max percentage of budget for dependencies
+        minimum: 0
+        maximum: 0.5
+        default: 0.3
+
+      interpolation:
+        type: object
+        description: Stack interpolation settings
+        properties:
+          enabled:
+            type: boolean
+            default: true
+          fail_on_missing:
+            type: boolean
+            description: Error if interpolation variable missing
+            default: false
+          default_value:
+            type: string
+            description: Default value for missing interpolations
+            default: "[STACK_VALUE]"
+
+      sections_to_load:
+        type: array
+        description: Which skill sections to include in context
+        items:
+          type: string
+          enum:
+            - capability
+            - patterns
+            - stack_implementations
+            - quality_checklist
+            - integration_points
+            - anti_patterns
+            - references
+            - all
+        default:
+          - capability
+          - patterns
+          - quality_checklist
+          - anti_patterns
+
+      compact_mode:
+        type: boolean
+        description: Minimize whitespace and formatting for token efficiency
+        default: true
+
+  # ============================================
+  # CONTEXT INJECTION
+  # ============================================
+
+  injection:
+    type: object
+    description: How loaded skills are injected into agent context
+    properties:
+      position:
+        type: string
+        enum:
+          - before_task
+          - after_task
+          - inline
+        description: Where to inject skill content
+        default: "before_task"
+
+      format:
+        type: string
+        enum:
+          - markdown
+          - xml
+          - structured_data
+        description: Format for injected content
+        default: "markdown"
+
+      header_template:
+        type: string
+        description: Template for skill section header
+        default: "## Loaded Skill: {{skill.name}}\n"
+
+      footer_template:
+        type: string
+        description: Template for skill section footer
+        default: "---\n"
+
+      include_metadata:
+        type: boolean
+        description: Include skill metadata (version, complexity, etc.)
+        default: true
+
+  # ============================================
+  # SKILL PRIORITY RULES
+  # ============================================
+
+  priority_rules:
+    type: array
+    description: Rules for skill loading priority
+    items:
+      type: object
+      required:
+        - condition
+        - priority
+      properties:
+        condition:
+          type: object
+          properties:
+            category:
+              type: string
+              description: Match skill category
+            complexity:
+              type: string
+              description: Match complexity level
+            tag:
+              type: string
+              description: Match skill tag
+            specialist:
+              type: string
+              description: Match specialist assignment
+        priority:
+          type: integer
+          description: Priority value (higher = more important)
+          minimum: 1
+          maximum: 100
+        reason:
+          type: string
+          description: Why this priority rule exists
+    examples:
+      - - condition:
+            category: "security"
+          priority: 100
+          reason: "Security skills always highest priority"
+        - condition:
+            category: "authentication"
+          priority: 90
+          reason: "Auth is foundational for most features"
+        - condition:
+            complexity: "basic"
+          priority: 30
+          reason: "Simple skills are quick references"
+
+  # ============================================
+  # DEBUGGING & METRICS
+  # ============================================
+
+  debug:
+    type: object
+    description: Debugging and metrics configuration
+    properties:
+      log_skill_loading:
+        type: boolean
+        description: Log when skills are loaded
+        default: true
+
+      log_trigger_matches:
+        type: boolean
+        description: Log trigger match details
+        default: false
+
+      log_token_usage:
+        type: boolean
+        description: Log token consumption per skill
+        default: true
+
+      metrics_file:
+        type: string
+        description: Path to write loading metrics
+        default: ".claude/skill-metrics.json"
+
+      include_in_handoff:
+        type: boolean
+        description: Include loaded skills in handoff notes
+        default: true
+
+# Default configuration
+examples:
+  - skill_directory:
+      library_path: "project/skills"
+      deployed_path: ".claude/skills"
+      stack_profiles_path: "templates/stack-profiles"
+      active_profile: "nextjs-supabase"
+    registry:
+      index_file: ".claude/skills/index.yaml"
+      auto_discover: true
+      cache_enabled: true
+    trigger_config:
+      matching_strategy: fuzzy
+      case_sensitive: false
+      match_threshold: 0.8
+      match_sources:
+        - task_description
+        - user_prompt
+        - phase_name
+      max_matches: 3
+      priority_weight:
+        task_description: 1.0
+        user_prompt: 0.9
+        phase_name: 0.7
+    loading_config:
+      token_budget: 15000
+      priority_loading: true
+      include_dependencies: true
+      dependency_budget_share: 0.3
+      interpolation:
+        enabled: true
+        fail_on_missing: false
+      sections_to_load:
+        - capability
+        - patterns
+        - quality_checklist
+        - anti_patterns
+      compact_mode: true
+    injection:
+      position: before_task
+      format: markdown
+      include_metadata: true
+    priority_rules:
+      - condition:
+          category: security
+        priority: 100
+        reason: "Security-critical skills always load first"
+      - condition:
+          category: authentication
+        priority: 90
+        reason: "Auth is foundational"
+    debug:
+      log_skill_loading: true
+      log_token_usage: true
+      include_in_handoff: true

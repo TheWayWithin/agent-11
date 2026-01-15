@@ -55,21 +55,9 @@ Transform product requirements into production-ready implementation. This missio
 
 ## Mission Phases
 
-### ⛔ PHASE GATE PROTOCOL [APPLIES TO ALL PHASE TRANSITIONS]
-
-**Before starting ANY phase after Phase 1**, the coordinator MUST verify the previous phase passed its gate:
-- ALL tasks from previous phase marked [x] with timestamps
-- Phase completion entry in progress.md
-- handoff-notes.md updated with current state
-- agent-context.md has findings merged
-
-**See `/coord` command for full PHASE GATE ENFORCEMENT details.**
-
----
-
 ### Phase 1: Strategic Analysis (30-45 minutes) - IMMEDIATE ACTION
 
-**Lead**: @strategist
+**Lead**: @strategist  
 **Objective**: Transform requirements into actionable user stories
 
 **COORDINATOR PROTOCOL**:

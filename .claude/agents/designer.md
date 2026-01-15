@@ -1,7 +1,7 @@
 ---
 name: designer
 description: Use this agent for UI/UX design, visual design, design systems, user flows, wireframes, prototypes, and accessibility compliance. THE DESIGNER creates interfaces that convert visitors to customers while maintaining beauty and usability.
-version: 3.0.0
+version: 5.0.0
 color: pink
 tags:
   - creative
