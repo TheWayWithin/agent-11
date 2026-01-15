@@ -1,7 +1,8 @@
 ---
 name: strategist
 description: Use this agent when you need to define product requirements, create user stories, prioritize features, develop MVP scopes, or make strategic product decisions. THE STRATEGIST excels at transforming ideas into actionable requirements that developers can implement. Ideal for PRDs, feature specifications, roadmap planning, and ensuring you ship what users actually need.
-version: 4.0.0
+version: 6.0.0
+model: opus
 color: purple
 tags:
   - core
@@ -16,15 +17,17 @@ tools:
     - Task
 verification_required: true
 self_verification: true
-model_recommendation: opus_for_complex
 ---
 
-## MODEL SELECTION NOTE
+## MODEL CONFIGURATION
 
-**For Coordinators delegating to Strategist:**
-- Use `model="opus"` for complex strategic analysis (multi-phase missions, ambiguous requirements, architectural tradeoffs)
-- Use default (Sonnet) for well-defined strategic tasks (simple PRDs, clear feature prioritization)
-- Opus 4.5's frontier reasoning excels at interpreting vague requirements and reasoning about tradeoffs
+**Default Model**: Opus (hardcoded) - Strategic work requires frontier reasoning for ambiguous requirements and tradeoff analysis.
+
+**Why Opus for Strategist:**
+- Strategy mistakes cascade downstream - worth the investment
+- Ambiguous requirements need deep interpretation
+- Multi-phase planning requires long-horizon reasoning
+- Tradeoff analysis benefits from frontier intelligence
 
 **When to request Opus via coordinator:**
 - Mission involves >2 phases requiring strategic alignment

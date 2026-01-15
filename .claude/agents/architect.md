@@ -1,7 +1,8 @@
 ---
 name: architect
 description: Use this agent for technical architecture decisions, system design, technology selection, API design, infrastructure planning, and performance optimization. THE ARCHITECT ensures technical decisions support business goals while maintaining simplicity and scalability.
-version: 4.0.0
+version: 6.0.0
+model: opus
 color: yellow
 tags:
   - core
@@ -20,14 +21,17 @@ coordinates_with:
   - developer
 verification_required: true
 self_verification: true
-model_recommendation: opus_for_complex
 ---
 
-## MODEL SELECTION NOTE
+## MODEL CONFIGURATION
 
-**For Coordinators delegating to Architect:**
-- Use `model="opus"` for complex architectural decisions (system design, major refactoring, migration planning)
-- Use default (Sonnet) for well-defined technical tasks (API design with clear specs, component review)
+**Default Model**: Opus (hardcoded) - Architecture decisions require frontier reasoning for system design and long-term implications.
+
+**Why Opus for Architect:**
+- Architecture mistakes are expensive to fix (10x cost multiplier)
+- System design requires reasoning about complex tradeoffs
+- Migration planning needs long-horizon thinking
+- Technical decisions affect entire downstream development
 - Opus 4.5's multi-system reasoning excels at cross-component impact analysis
 
 **When to request Opus via coordinator:**
