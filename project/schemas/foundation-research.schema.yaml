@@ -1,0 +1,275 @@
+# Market Research Schema
+# Purpose: Structured market and competitive research for strategic decisions
+# Usage: /foundations init extracts source docs to this format
+
+$schema: "http://json-schema.org/draft-07/schema#"
+type: object
+description: "Structured market research and competitive analysis data"
+
+required:
+  - market_overview
+
+properties:
+  market_overview:
+    type: object
+    description: "High-level market context"
+    properties:
+      market_size:
+        type: object
+        properties:
+          tam:
+            type: string
+            description: "Total Addressable Market"
+          sam:
+            type: string
+            description: "Serviceable Addressable Market"
+          som:
+            type: string
+            description: "Serviceable Obtainable Market"
+          growth_rate:
+            type: string
+          source:
+            type: string
+      market_trends:
+        type: array
+        items:
+          type: object
+          properties:
+            trend:
+              type: string
+            impact:
+              type: string
+              enum: [high, medium, low]
+            timeframe:
+              type: string
+            opportunity:
+              type: string
+
+  competitive_landscape:
+    type: object
+    description: "Competitor analysis"
+    properties:
+      direct_competitors:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+            pricing:
+              type: string
+            strengths:
+              type: array
+              items:
+                type: string
+            weaknesses:
+              type: array
+              items:
+                type: string
+            market_position:
+              type: string
+            target_audience:
+              type: string
+      indirect_competitors:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+            overlap:
+              type: string
+              description: "How they overlap with our offering"
+      competitive_advantages:
+        type: array
+        description: "Our unique advantages"
+        items:
+          type: object
+          properties:
+            advantage:
+              type: string
+            defensibility:
+              type: string
+              enum: [high, medium, low]
+            evidence:
+              type: string
+
+  target_segments:
+    type: array
+    description: "Market segments we're targeting"
+    items:
+      type: object
+      properties:
+        segment_name:
+          type: string
+        size:
+          type: string
+        characteristics:
+          type: array
+          items:
+            type: string
+        needs:
+          type: array
+          items:
+            type: string
+        willingness_to_pay:
+          type: string
+        acquisition_channels:
+          type: array
+          items:
+            type: string
+        priority:
+          type: integer
+          description: "1=primary, 2=secondary, etc."
+
+  customer_insights:
+    type: object
+    description: "Research findings about customers"
+    properties:
+      research_methods:
+        type: array
+        items:
+          type: string
+          description: "e.g., surveys, interviews, analytics"
+      key_findings:
+        type: array
+        items:
+          type: object
+          properties:
+            finding:
+              type: string
+            evidence:
+              type: string
+            implications:
+              type: string
+      quotes:
+        type: array
+        items:
+          type: object
+          properties:
+            quote:
+              type: string
+            source:
+              type: string
+            context:
+              type: string
+
+  industry_analysis:
+    type: object
+    properties:
+      industry:
+        type: string
+      maturity:
+        type: string
+        enum: [emerging, growing, mature, declining]
+      key_players:
+        type: array
+        items:
+          type: string
+      regulations:
+        type: array
+        items:
+          type: string
+      barriers_to_entry:
+        type: array
+        items:
+          type: object
+          properties:
+            barrier:
+              type: string
+            our_approach:
+              type: string
+
+  pricing_research:
+    type: object
+    description: "Pricing-related research findings"
+    properties:
+      price_sensitivity:
+        type: string
+      willingness_to_pay:
+        type: object
+        properties:
+          low:
+            type: string
+          mid:
+            type: string
+          high:
+            type: string
+      competitor_pricing:
+        type: array
+        items:
+          type: object
+          properties:
+            competitor:
+              type: string
+            pricing_model:
+              type: string
+            price_range:
+              type: string
+      pricing_insights:
+        type: array
+        items:
+          type: string
+
+  growth_metrics:
+    type: object
+    description: "Target growth and conversion metrics"
+    properties:
+      conversion_rates:
+        type: object
+        properties:
+          visitor_to_trial:
+            type: string
+          trial_to_paid:
+            type: string
+          paid_to_retained:
+            type: string
+      churn_rate:
+        type: string
+      ltv:
+        type: string
+        description: "Customer Lifetime Value"
+      cac:
+        type: string
+        description: "Customer Acquisition Cost"
+      payback_period:
+        type: string
+
+  opportunities:
+    type: array
+    description: "Identified market opportunities"
+    items:
+      type: object
+      properties:
+        opportunity:
+          type: string
+        size:
+          type: string
+        timing:
+          type: string
+          enum: [immediate, near-term, long-term]
+        requirements:
+          type: array
+          items:
+            type: string
+
+  risks:
+    type: array
+    description: "Identified market risks"
+    items:
+      type: object
+      properties:
+        risk:
+          type: string
+        likelihood:
+          type: string
+          enum: [high, medium, low]
+        impact:
+          type: string
+          enum: [high, medium, low]
+        mitigation:
+          type: string
