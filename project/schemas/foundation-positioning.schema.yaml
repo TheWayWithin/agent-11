@@ -1,0 +1,246 @@
+# Positioning Statement Extraction Schema
+# Purpose: Structured positioning data for consistent messaging and differentiation
+# Usage: /foundations init extracts source docs to this format
+# Mode: SYNTHESIS MODE - capture strategic positioning elements
+
+$schema: "http://json-schema.org/draft-07/schema#"
+type: object
+description: "Structured positioning statement for market differentiation"
+
+required:
+  - core_positioning
+  - category
+
+properties:
+  metadata:
+    type: object
+    properties:
+      version:
+        type: string
+      date:
+        type: string
+      next_review:
+        type: string
+
+  core_positioning:
+    type: object
+    description: "The core positioning statement framework"
+    required: [for, who, product_is, that, unlike, because]
+    properties:
+      for:
+        type: string
+        description: "Target audience"
+      who:
+        type: string
+        description: "Their situation/pain"
+      product_is:
+        type: string
+        description: "Product category"
+      that:
+        type: string
+        description: "Key benefit/capability"
+      unlike:
+        type: string
+        description: "Competitive alternatives"
+      because:
+        type: string
+        description: "Proof/reason to believe"
+
+  category:
+    type: object
+    description: "Market category definition"
+    properties:
+      name:
+        type: string
+        description: "Category name (e.g., 'AI Model Advisor')"
+      position:
+        type: string
+        enum: ["category_leader", "category_challenger", "niche_player", "category_creator"]
+        description: "Position within category"
+      frame:
+        type: string
+        description: "Competitive frame statement"
+      versus:
+        type: array
+        items:
+          type: object
+          properties:
+            competitor_type:
+              type: string
+            their_approach:
+              type: string
+            our_approach:
+              type: string
+
+  competitive_differentiation:
+    type: object
+    description: "How we differ from alternatives"
+    properties:
+      matrix:
+        type: array
+        description: "Dimension-by-dimension comparison"
+        items:
+          type: object
+          properties:
+            dimension:
+              type: string
+            us:
+              type: string
+            competitors:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  value:
+                    type: string
+      unique_advantage:
+        type: string
+        description: "The one thing only we can claim"
+      defensibility:
+        type: string
+        description: "Why this advantage is defensible"
+
+  value_propositions:
+    type: object
+    properties:
+      primary_punchy:
+        type: string
+        description: "Short, punchy value prop"
+      primary_full:
+        type: string
+        description: "Complete value proposition"
+      supporting:
+        type: array
+        items:
+          type: object
+          properties:
+            value:
+              type: string
+            proof_point:
+              type: string
+
+  messaging_framework:
+    type: object
+    description: "Core messaging elements"
+    properties:
+      elevator_pitch:
+        type: string
+        description: "30-second pitch"
+      one_liner:
+        type: string
+        description: "Single sentence description"
+      taglines:
+        type: array
+        items:
+          type: object
+          properties:
+            context:
+              type: string
+              description: "Where to use (advertising, brand, etc.)"
+            tagline:
+              type: string
+            purpose:
+              type: string
+      supporting_taglines:
+        type: array
+        items:
+          type: string
+
+  proof_points:
+    type: object
+    description: "Evidence supporting positioning"
+    properties:
+      evidence:
+        type: array
+        items:
+          type: object
+          properties:
+            point:
+              type: string
+            type:
+              type: string
+              enum: ["product_discipline", "roi_validation", "structural_fact", "capability", "feature", "identity", "process"]
+      target_customer_quote:
+        type: string
+        description: "Ideal testimonial we're working toward"
+
+  positioning_map:
+    type: object
+    description: "Strategic positioning visualization"
+    properties:
+      axes:
+        type: object
+        properties:
+          x:
+            type: object
+            properties:
+              label:
+                type: string
+              low:
+                type: string
+              high:
+                type: string
+          y:
+            type: object
+            properties:
+              label:
+                type: string
+              low:
+                type: string
+              high:
+                type: string
+      our_position:
+        type: object
+        properties:
+          quadrant:
+            type: string
+          description:
+            type: string
+      competitors:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            quadrant:
+              type: string
+
+  the_one_thing:
+    type: string
+    description: "If customers remember only one thing"
+
+  success_criteria:
+    type: array
+    items:
+      type: string
+    description: "How we know positioning is working"
+
+  prd_cross_references:
+    type: object
+    description: "Links to PRD features that support positioning"
+    properties:
+      features_proving_differentiation:
+        type: array
+        items:
+          type: object
+          properties:
+            claim:
+              type: string
+            feature_ids:
+              type: array
+              items:
+                type: string
+      value_prop_to_features:
+        type: array
+        items:
+          type: object
+          properties:
+            value_prop:
+              type: string
+            supporting_features:
+              type: array
+              items:
+                type: string

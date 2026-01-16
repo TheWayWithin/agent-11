@@ -58,7 +58,8 @@ If no subcommand provided, default to `status`.
 | **icp** | client-success-blueprint.md | icp.md | personas.md | customer-success.md | |
 | **research** | market-and-client-research.md | market-research.md | competitive-analysis.md | research.md | |
 | **brand** | brand-style-guidelines.md | brand.md | style-guide.md | brand-style-guide.md | |
-| **marketing** | marketing-bible.md | marketing.md | positioning.md | positioning-statement.md | |
+| **positioning** | positioning-statement.md | positioning.md | market-positioning.md | | |
+| **marketing** | marketing-bible.md | marketing.md | go-to-market.md | gtm.md | |
 | **pricing** | pricing-strategy.md | pricing.md | pricing-tiers.md | | |
 
 **Pattern Matching Notes**:
@@ -91,6 +92,7 @@ sha256sum documents/foundations/<filename> | cut -d' ' -f1
 - `foundation-icp.schema.yaml`
 - `foundation-research.schema.yaml`
 - `foundation-brand.schema.yaml`
+- `foundation-positioning.schema.yaml`
 - `foundation-marketing.schema.yaml`
 - `foundation-pricing.schema.yaml`
 
@@ -110,6 +112,7 @@ Before extraction, classify the document type to apply appropriate rules:
 | ICP | STRUCTURED | MAPPING MODE |
 | Research | ANALYTICAL | COMPLETENESS MODE |
 | Brand | PRECISION | EXACT MODE |
+| Positioning | STRATEGIC | SYNTHESIS MODE |
 | Marketing | STRATEGIC | SYNTHESIS MODE |
 | Pricing | STRUCTURED | MAPPING MODE |
 
@@ -378,16 +381,72 @@ CRITICAL RULES:
 Schema reference: project/schemas/foundation-icp.schema.yaml
 ```
 
+**For Positioning Documents** (SYNTHESIS MODE):
+```
+Extract structured data from this Positioning document into the schema format.
+
+CRITICAL RULES:
+
+1. CORE POSITIONING STATEMENT - Extract the complete framework:
+   - For (target audience)
+   - Who (their situation/pain)
+   - Product is (category)
+   - That (key benefit)
+   - Unlike (alternatives)
+   - Because (proof/reason)
+
+2. CATEGORY DEFINITION - Extract:
+   - Category name
+   - Category position (leader, challenger, niche, creator)
+   - Competitive frame statement
+   - Versus comparisons for each competitor type
+
+3. COMPETITIVE DIFFERENTIATION - Extract complete matrix:
+   - Every dimension being compared
+   - Our value for each dimension
+   - Each competitor's value for each dimension
+   - Unique advantage statement
+   - Defensibility rationale
+
+4. VALUE PROPOSITIONS - Extract ALL:
+   - Primary punchy version
+   - Primary full version
+   - ALL supporting value props with proof points
+
+5. MESSAGING FRAMEWORK - Extract ALL elements:
+   - Elevator pitch (full text)
+   - One-liner
+   - ALL taglines with context and purpose
+   - Supporting taglines
+
+6. PROOF POINTS - Extract ALL evidence:
+   - Each proof point with its type
+   - Target customer quote
+
+7. POSITIONING MAP - Extract axes and positions:
+   - X-axis label and endpoints
+   - Y-axis label and endpoints
+   - Our quadrant position
+   - Competitor positions
+
+8. THE ONE THING - Extract the single memorable claim
+
+9. SUCCESS CRITERIA - Extract ALL indicators
+
+Schema reference: project/schemas/foundation-positioning.schema.yaml
+```
+
 **For Marketing Documents** (SYNTHESIS MODE):
 ```
 Extract structured data from this Marketing document into the schema format.
 
 CRITICAL RULES:
-1. Extract positioning statements fully
+1. Extract go-to-market strategies fully
 2. Include ALL value propositions by audience
 3. Preserve ALL messaging frameworks
 4. Extract ALL channel strategies
 5. Include ALL competitive differentiators
+6. Extract launch plans and timelines
 
 Schema reference: project/schemas/foundation-marketing.schema.yaml
 ```
@@ -678,7 +737,8 @@ extraction:
 - roadmap (strategic-roadmap, roadmap, or development-plan)
 - icp (client-success-blueprint, icp, or personas)
 - brand (brand-style-guidelines, brand, or style-guide)
-- marketing (marketing-bible, marketing, or positioning)
+- positioning (positioning-statement, positioning, or market-positioning)
+- marketing (marketing-bible, marketing, or go-to-market)
 - pricing (pricing-strategy, pricing, or pricing-tiers)
 
 **Extraction Validation**:
@@ -701,6 +761,7 @@ Required (MUST have):
 Advisable (SHOULD have):
   [x] icp: Client Success Blueprint.md (checksum: ghi789...)
   [x] brand: Brand Style Guide.md (checksum: jkl012...)
+  [x] positioning: Positioning Statement.md (checksum: pqr678...)
   [x] marketing: Marketing Bible.md (checksum: mno345...)
 
 Structured Extraction:
@@ -743,8 +804,17 @@ Structured Extraction:
     ✓ animations: durations, easings, presets
     ✓ breakpoints: 6 responsive breakpoints
 
+  .context/structured/positioning.yaml - COMPLETE
+    ✓ core_positioning: for/who/product_is/that/unlike/because
+    ✓ category: name, position, competitive frame
+    ✓ competitive_differentiation: matrix, unique advantage
+    ✓ value_propositions: primary + 4 supporting
+    ✓ messaging_framework: elevator pitch, one-liner, taglines
+    ✓ positioning_map: axes and quadrant positions
+    ✓ the_one_thing: single memorable claim
+
   .context/structured/marketing.yaml - COMPLETE
-    ✓ positioning: tagline, one_liner
+    ✓ go_to_market: launch strategy, channels
     ✓ messaging: value props, differentiation
     ✓ channels: primary and secondary defined
 
