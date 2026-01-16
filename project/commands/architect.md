@@ -50,33 +50,73 @@ Generate a comprehensive `architecture.md` document that captures all system des
 Before running `/architect`, ensure:
 
 1. **`/foundations init` has completed successfully**
-   - `.context/structured/prd.yaml` exists
+   - `.context/structured/prd.yaml` exists (REQUIRED)
    - `.context/structured/vision.yaml` exists (recommended)
+   - `.context/structured/roadmap.yaml` exists (optional - provides strategic context)
 
 2. **PRD contains tech stack hints**
    - Frontend framework mentioned
    - Database preference indicated
    - Key integrations identified
 
-## MODE SELECTION
+**Context Sources Used:**
+- `prd.yaml` → Features, tech stack preferences, integrations
+- `vision.yaml` → Hedgehog concept, value proposition (informs architectural priorities)
+- `roadmap.yaml` → Keystone products, implementation framework (informs build sequence)
 
-When you run `/architect` without flags:
+## EXECUTION PROTOCOL
+
+**CRITICAL**: This command MUST prompt for mode selection before doing any work (unless `--mode` flag is provided).
+
+### Step 1: Check for --mode Flag
+
+If `--mode auto` → Skip to AUTO MODE section
+If `--mode engaged` → Skip to ENGAGED MODE section
+If no --mode flag → Continue to Step 2
+
+### Step 2: Present Mode Selection (MANDATORY)
+
+**Use AskUserQuestion tool** to present this choice:
+
+```
+question: "How would you like to design your architecture?"
+header: "Mode"
+options:
+  - label: "Engaged Mode (Recommended)"
+    description: "Walk through each decision together - I'll explain trade-offs and you make informed choices"
+  - label: "Auto Mode"
+    description: "Generate architecture automatically from PRD tech stack hints using sensible defaults"
+```
+
+**WAIT for user response before proceeding.**
+
+### Step 3: Execute Selected Mode
+
+- If user selects "Engaged Mode" → Execute ENGAGED MODE section
+- If user selects "Auto Mode" → Execute AUTO MODE section
+
+---
+
+## MODE SELECTION REFERENCE
+
+When you run `/architect` without flags, this is what the user sees:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │ 🏛️ Architect: System Design                                    │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│ How would you like to proceed?                                  │
-│                                                                 │
-│ ○ Auto Mode                                                     │
-│   Generates architecture from PRD tech stack hints              │
-│   Uses sensible defaults for unspecified decisions              │
+│ How would you like to design your architecture?                 │
 │                                                                 │
 │ ○ Engaged Mode (Recommended)                                    │
-│   Walks through each architectural decision                     │
-│   Explains trade-offs and asks for your input                   │
-│   Produces architecture tailored to your needs                  │
+│   Walk through each decision together                           │
+│   I'll explain trade-offs and you make informed choices         │
+│   Produces architecture tailored to your specific needs         │
+│                                                                 │
+│ ○ Auto Mode                                                     │
+│   Generate architecture from PRD tech stack hints               │
+│   Uses sensible defaults for unspecified decisions              │
+│   Fast, but you may want to review decisions afterward          │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -91,7 +131,36 @@ When you run `/architect` without flags:
 
 ## ENGAGED MODE (Interactive Design Session)
 
-Engaged Mode walks through 7 architectural decision areas:
+Engaged Mode walks through 7 architectural decision areas. **For each decision:**
+
+1. **Read relevant context** from `.context/structured/prd.yaml` and `.context/structured/vision.yaml`
+2. **Present the decision** using AskUserQuestion with:
+   - Context from PRD (what was specified)
+   - Your recommendation with reasoning
+   - 2-4 options with trade-offs explained
+3. **Wait for user response** before proceeding to next decision
+4. **Record the decision** for final architecture.md generation
+
+**IMPORTANT**: Do NOT batch decisions. Present ONE decision at a time, get user input, then proceed.
+
+### Decision Flow Example
+
+For each decision, use AskUserQuestion like this:
+```
+question: "Decision 1/7: Application Architecture - Your PRD indicates [features]. Which architecture pattern?"
+header: "Architecture"
+options:
+  - label: "Monolith (Recommended)"
+    description: "Fast to build, easy to deploy. Best for MVP - can refactor later"
+  - label: "Modular Monolith"
+    description: "Clear module boundaries. Easier to split into services later"
+  - label: "Microservices"
+    description: "⚠️ Adds operational complexity. Usually overkill for MVP"
+```
+
+---
+
+### The 7 Decisions
 
 ### Decision 1: Application Architecture
 
