@@ -255,6 +255,7 @@ project-root/
 ├── .context/structured/          # Extracted YAML (agent-parseable)
 │   ├── prd.yaml
 │   ├── vision.yaml
+│   ├── roadmap.yaml
 │   ├── icp.yaml
 │   ├── brand.yaml
 │   └── marketing.yaml
@@ -266,6 +267,7 @@ project-root/
 Foundation extraction schemas are in `project/schemas/`:
 - `foundation-prd.schema.yaml` - Product, features, tech stack, pricing
 - `foundation-vision.schema.yaml` - Vision, mission, hedgehog concept, goals
+- `foundation-roadmap.schema.yaml` - Strategic roadmap, phases, decision framework, resource planning
 - `foundation-icp.schema.yaml` - Personas, pain points, jobs to be done
 - `foundation-brand.schema.yaml` - Colors, typography, components, design system
 - `foundation-marketing.schema.yaml` - Positioning, messaging, channels
@@ -284,16 +286,29 @@ context:
     - components.buttons
   prd:
     - features.p0_must_have
+
+# Example: What coordinator/strategist needs
+context:
+  roadmap:
+    - strategic_foundation
+    - phases
+    - decision_framework
+    - resource_planning
+  vision:
+    - hedgehog_concept
+    - value_proposition
 ```
 
 ### Mission-to-Context Mapping
 
 | Mission Type | Context Needed |
 |--------------|----------------|
-| build/mvp | prd.features, prd.tech_stack, brand.colors, brand.components |
+| build/mvp | prd.features, prd.tech_stack, roadmap.phases, brand.colors, brand.components |
 | design-review | brand.*, icp.personas |
 | marketing | marketing.*, vision.value_proposition |
-| strategy | vision.*, icp.pain_points, prd.success_metrics |
+| strategy | vision.*, roadmap.strategic_foundation, roadmap.decision_framework, icp.pain_points |
+| planning | roadmap.phases, roadmap.implementation_framework, roadmap.resource_planning, prd.features |
+| architecture | prd.tech_stack, roadmap.keystone_products, vision.hedgehog_concept |
 
 ### Commands
 
