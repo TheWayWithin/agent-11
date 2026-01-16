@@ -596,6 +596,38 @@ Blocking Issues: [issues that MUST be fixed]
 4. Any feature missing acceptance criteria
 5. State machines missing transitions
 
+**Internal Consistency Check (PRD only)**:
+After extraction, verify terminology is consistent across sections:
+
+1. **Term Consistency**:
+   - Extract key terms from glossary
+   - Verify same terms used in features, acceptance criteria, state machines
+   - Flag mismatches (e.g., "Provenance" vs "Output Quality")
+
+2. **Cross-Section Validation**:
+   - Terms defined in glossary should match usage in features
+   - Entity names in data_model should match touched_entities in features
+   - State names in state_machines should match references in business_rules
+   - Dimension names in trust/scoring sections should be consistent
+
+3. **Consistency Report**:
+```
+INTERNAL CONSISTENCY CHECK
+==========================
+Term Matches: {matched}/{total}
+Mismatches Found:
+  - "{term_a}" in {section_a} vs "{term_b}" in {section_b}
+  - ...
+
+Recommendation: Use "{canonical_term}" consistently (from {authoritative_section})
+```
+
+4. **Auto-Correction Prompt**:
+   When inconsistency detected, prompt:
+   - "Found inconsistent terminology: '{term_a}' vs '{term_b}'"
+   - "Authoritative source (glossary/schema) uses: '{canonical}'"
+   - "Apply correction? [Y/n]"
+
 ### Phase 4: Generate handoff-manifest.yaml
 
 **Schema Reference**: `project/schemas/handoff-manifest.schema.yaml`
