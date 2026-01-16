@@ -837,8 +837,9 @@ Sprint 9 introduces **Plan-Driven Development** where `project-plan.md` is the s
 
 | Command | Purpose |
 |---------|---------|
-| `/foundations init` | Create vision and PRD documents |
-| `/bootstrap [template]` | Generate project-plan.md from templates |
+| `/foundations init` | Extract foundation documents to structured YAML |
+| `/architect` | Design system architecture (Auto or Engaged mode) |
+| `/bootstrap [template]` | Generate project-plan.md from YAML extracts |
 | `/plan status` | View current mission state |
 | `/plan phase [N]` | Show phase details |
 | `/coord continue` | Autonomous execution until blocked |
@@ -848,13 +849,19 @@ Sprint 9 introduces **Plan-Driven Development** where `project-plan.md` is the s
 ### Plan-Driven Workflow
 
 ```bash
-# 1. Initialize foundations
+# 1. Initialize foundations (extract to YAML)
 /foundations init
 
-# 2. Bootstrap with template
-/bootstrap saas-mvp
+# 2. Design architecture (REQUIRED before bootstrap)
+/architect                  # Prompts: Auto or Engaged mode
+/architect --mode engaged   # Walk through 7 decisions together
+/architect --mode auto      # Generate from PRD defaults
 
-# 3. Start autonomous execution
+# 3. Bootstrap project plan from YAML extracts
+/bootstrap                  # Prompts: Auto, Engaged, or Preview mode
+/bootstrap --mode auto      # Generate immediately
+
+# 4. Start autonomous execution
 /coord continue
 
 # After phase complete:
@@ -862,6 +869,24 @@ Sprint 9 introduces **Plan-Driven Development** where `project-plan.md` is the s
 /clear                     # Clear context
 /coord continue            # Resume from project-plan.md
 ```
+
+### /architect Mode Selection
+
+When running `/architect` without flags, you'll be prompted to choose:
+
+| Mode | Description |
+|------|-------------|
+| **Engaged (Recommended)** | Walk through 7 architectural decisions together. I explain trade-offs, you make informed choices. |
+| **Auto** | Generate architecture from PRD tech stack hints using sensible defaults. Fast, but review afterward. |
+
+**The 7 Decisions** (Engaged Mode):
+1. Application Architecture (Monolith vs Modular vs Microservices)
+2. Frontend Stack (Framework, rendering, styling, components)
+3. Backend & Database (Provider, multi-tenancy, API layer)
+4. Authentication (Provider, methods, sessions, roles)
+5. External Integrations (Payments, AI models, email)
+6. Infrastructure & Deployment (Hosting, CI/CD, environments)
+7. Security & Observability (API security, data protection, monitoring)
 
 ### Quality Gates
 
@@ -918,8 +943,9 @@ extends: nextjs-supabase  # or remix-railway, sveltekit-supabase
 - `/meeting [agenda]` - Facilitate structured meetings
 
 ### Project Setup (Sprint 9)
-- `/foundations init` - Create vision and PRD documents
-- `/bootstrap [template]` - Generate project-plan.md (templates: saas-mvp, saas-full, api)
+- `/foundations init` - Extract foundation documents to structured YAML
+- `/architect` - Design system architecture (Auto or Engaged mode)
+- `/bootstrap [template]` - Generate project-plan.md from YAML extracts
 - `/plan status` - View current mission state
 - `/plan phase [N]` - Show phase details
 - `/skills` - List and match skills
