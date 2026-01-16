@@ -455,51 +455,178 @@ Schema reference: project/schemas/foundation-marketing.schema.yaml
 ```
 Extract structured data from this Roadmap document into the schema format.
 
-CRITICAL DELIVERABLES_LIST RULES - YOU MUST FOLLOW THESE:
+DOCUMENT TYPE DETECTION:
+First, identify if this is a:
+A) TECHNICAL ROADMAP - Has week-by-week deliverables, sprint plans
+B) STRATEGIC ROADMAP - Has high-level phases, decision frameworks, resource planning
 
-1. For EACH week/period in EACH phase, create a deliverables_list array:
-   - Extract EVERY deliverable as a separate item
-   - Classify type: code, database, integration, infrastructure, design, documentation, test
-   - Add acceptance criteria: "How we know it's done"
+For Technical Roadmaps, use the `mvp` section with deliverables_list.
+For Strategic Roadmaps, use the sections below.
 
-   Example:
-   deliverables_list:
-     - item: "Next.js app scaffold"
-       type: "code"
-       acceptance: "App runs on localhost:3000"
-     - item: "PostgreSQL database schema"
-       type: "database"
-       acceptance: "Migrations run successfully"
-     - item: "Authentication system (Clerk)"
-       type: "integration"
-       acceptance: "User can sign up/login"
+CRITICAL SECTIONS - Extract ALL of these if present:
 
-2. For EACH strategic milestone, expand success_criteria to array:
-   - Extract EACH measurable criterion
-   - Include target (numeric or qualitative)
-   - Include measurement method
+1. STRATEGIC FOUNDATION (Section I if present)
+   - vision: Full vision statement
+   - mission: Full mission statement
+   - hedgehog_concept: Collins' hedgehog concept
+   - value_proposition: Core value prop statement
 
-   Example:
-   success_criteria:
-     - metric: "Beta users"
-       target: 50
-       measurement: "Signed up accounts with activity"
-     - metric: "Core features"
-       target: "5 P0 features functional"
-       measurement: "QA checklist passed"
-     - metric: "Critical bugs"
-       target: 0
-       measurement: "No P0 bugs in production"
+2. PROBLEM CATEGORIES (Section II if present)
+   For EACH problem category extract:
+   - name: Category name
+   - specific_problems: ALL bullet points
+   - impact: ALL impact dimensions (finances, time, confidence, outcomes)
+   - current_solution_gaps: Why current solutions fail (CRITICAL - often missed)
+   - unique_angle: Our unique approach (CRITICAL - often missed)
+   - solution_opportunity: The opportunity statement
 
-3. Preserve the original comma-separated deliverables string for reference
+3. STRATEGIC POSITIONING (Section III if present)
+   - reframe.old / reframe.new: Market reframing
+   - core_insight: Key strategic insight
+   - opportunity: The opportunity this creates
 
-4. Apply to ALL phases (typically 4) and ALL year milestones (Years 1-5)
+4. KEYSTONE PRODUCTS (Section IV if present)
+   For EACH primary product:
+   - name, problem_solved, target_people
+   - core_features: ALL features with priority and description
+   - success_metrics: ALL metrics with targets
+   - keystone_effect: Why this is foundational
+   - competitive_advantage: Advantage details
+   - honest_limitations: What we don't do well (CRITICAL - often missed)
+   - vision_alignment: How this serves the vision
+   - future_extensions: What comes next
+   - risks: Product-specific risks (CRITICAL - often missed)
+
+   For secondary products: name, description, builds_on, business_model, target
+
+5. DEVELOPMENT PHASES (Section V if present)
+   - phase_philosophy: Guiding philosophy
+   For EACH phase:
+   - phase_id, name, timeline, objective, focus
+   - products: What's built in this phase
+   - strategic_objectives: ALL objectives
+   - go_to_market: GTM approach for this phase
+   - milestones.product / milestones.strategic / milestones.revenue
+   - success_criteria: ALL criteria
+
+6. PRODUCT INTERDEPENDENCIES (Section V.B if present)
+   - enablement_chain: How products enable each other
+   - required_sequence: Build order with priorities
+   - can_build_in_parallel: What can be parallel
+   - capability_building: Capabilities by phase (CRITICAL - often missed)
+
+7. SUCCESS METRICS (Section VI if present)
+   Extract ALL categories:
+   - conversion: metrics with target and alert_if
+   - activation: metrics with target and alert_if
+   - upgrades: metrics with target and alert_if
+   - retention: metrics with target and alert_if
+   - acquisition: metrics with target and alert_if
+   - trust_specific: Trust-related metrics (CRITICAL - often missed)
+   - pricing_page: Pricing page metrics (CRITICAL - often missed)
+   - tier_distribution: Expected distribution over time
+
+8. IMPLEMENTATION FRAMEWORK (Section VII) - CRITICAL SECTION
+   development_methodology:
+   - approach: Overall approach name
+   - systems: Each system with name, purpose, output
+   - workflow: How systems interact
+
+   build_cadence:
+   - total_cycle: "5-7 weeks from PRD to mature product"
+   - phases: Requirements, Build, Test, Launch with durations
+
+   phase_implementation:
+   For EACH phase:
+   - phase_id
+   - tasks: Each task with approach and time
+   - components: MVP components with approach and priority
+   - test_mature: Testing activities
+   - launch_sequence: Launch steps
+
+   market_validation:
+   - loop: Validation loop steps
+   - decision_points: Decision/criteria/action
+
+9. DECISION FRAMEWORK (Section VIII) - CRITICAL SECTION
+   decision_points:
+   For EACH major decision (e.g., Phase 0→1, Alpha→Launch):
+   - name: Decision point name
+   - criteria: Each criterion with green_light, yellow_light, red_light
+   - green_action, yellow_action, red_action
+
+   acceleration_triggers:
+   - signal: What signal indicates acceleration
+   - action: What to do
+
+   investigation_triggers:
+   - signal: What signal requires investigation
+   - investigation: What to investigate
+
+   pivot_triggers:
+   - signal: What signal indicates possible pivot
+   - consideration: What to consider
+
+   pivot_options:
+   - type: Type of pivot (zoom-in, customer segment, etc.)
+   - description: What this means
+
+   roadmap_revision:
+   - triggers: When to update roadmap
+   - no_revision_needed: What doesn't require revision
+
+   adaptation_framework:
+   - cadence: Weekly/Monthly/Quarterly with focus areas
+   - principle: Guiding principle
+
+10. RESOURCE PLANNING (Section X) - CRITICAL SECTION
+    by_phase:
+    For EACH phase:
+    - phase_id
+    - time_investment: Activity with hours_per_week
+    - financial_requirements: Item with monthly_cost
+    - total_monthly: Total cost
+    - skills_required: Skill with source (AI/self/contractor)
+    - team_consideration: When to consider hiring
+    - financial_model: Revenue thresholds and team approach
+
+    investment_priorities:
+    - high_impact: Do first
+    - foundation: Essential investments
+    - avoid_until_validated: Don't invest yet
+
+11. RISKS (Section IX if present)
+    For EACH risk:
+    - name, severity, probability
+    - description, impact
+    - mitigations: ALL mitigation strategies
+    - key_insight: Secret weapon / defensive insight
+
+    risk_monitoring:
+    - early_warning_indicators: Indicator with signals
+    - response_framework: Steps (Detect, Assess, Diagnose, Respond, Review)
+
+12. VISION ACHIEVEMENT (Section XI if present)
+    transformations:
+    - timeframe (Year 1, Year 3, Year 7, etc.)
+    - outcomes: What's achieved
+
+    legacy_impact:
+    - market_transformation, customer_transformation, competitive_landscape
+    - vision_statement
+
+    bhag:
+    - statement: 25-year Big Hairy Audacious Goal
+    - why_it_matters
 
 VALIDATION CHECK:
-- Every phase week has deliverables_list array (not just string)
-- Every milestone has success_criteria array (not just summary string)
-- Every deliverable has item, type, and acceptance fields
-- Every criterion has metric, target, and measurement fields
+- implementation_framework section is populated (if in source)
+- decision_framework section is populated (if in source)
+- resource_planning section is populated (if in source)
+- problem_categories have current_solution_gaps AND unique_angle
+- keystone_products have honest_limitations AND risks
+- success_metrics include trust_specific AND pricing_page (if in source)
+- risk_monitoring includes early_warning_indicators
 
 Schema reference: project/schemas/foundation-roadmap.schema.yaml
 ```

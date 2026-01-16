@@ -1,135 +1,794 @@
 # Roadmap Extraction Schema
-# Purpose: Structured development timeline and milestones for agents
+# Purpose: Structured strategic roadmap for project planning and execution
 # Usage: /foundations init extracts source docs to this format
-# Mode: SYNTHESIS MODE - capture essence while maintaining key metrics and timelines
+# Mode: SYNTHESIS MODE - capture strategic essence while maintaining all operational details
+#
+# Supports TWO types of roadmaps:
+# 1. Technical Development Roadmaps - week-by-week deliverables (use mvp section)
+# 2. Strategic Business Roadmaps - high-level phases with decision frameworks (use development_phases)
 
 $schema: "http://json-schema.org/draft-07/schema#"
 type: object
 description: "Structured strategic roadmap for project planning and execution"
 
-required:
-  - mvp
-  - strategic_milestones
+# Note: Required fields are flexible based on roadmap type
+# Technical roadmaps: mvp required
+# Strategic roadmaps: strategic_foundation + development_phases required
 
 properties:
+  metadata:
+    type: object
+    properties:
+      version:
+        type: string
+      date:
+        type: string
+      purpose:
+        type: string
+
+  # ============================================================
+  # STRATEGIC FOUNDATION (for strategic business roadmaps)
+  # ============================================================
+
+  strategic_foundation:
+    type: object
+    description: "Core strategic elements - vision, mission, hedgehog concept"
+    properties:
+      vision:
+        type: string
+        description: "Long-term vision statement"
+      vision_elaboration:
+        type: string
+        description: "Extended vision context"
+      mission:
+        type: string
+        description: "Mission statement"
+      mission_elaboration:
+        type: string
+        description: "Extended mission context"
+      hedgehog_concept:
+        type: string
+        description: "Collins' hedgehog concept - what you can be best at"
+      value_proposition:
+        type: string
+        description: "Core value proposition statement"
+
+  # ============================================================
+  # PROBLEM-SOLUTION MAPPING
+  # ============================================================
+
+  problem_categories:
+    type: array
+    description: "Core problems being solved with full context"
+    items:
+      type: object
+      required: [name, specific_problems, impact, solution_opportunity]
+      properties:
+        name:
+          type: string
+          description: "Problem category name"
+        specific_problems:
+          type: array
+          items:
+            type: string
+          description: "List of specific problems in this category"
+        impact:
+          type: object
+          description: "Impact on ideal people"
+          additionalProperties:
+            type: string
+        current_solution_gaps:
+          type: array
+          items:
+            type: string
+          description: "Why current solutions fail"
+        unique_angle:
+          type: array
+          items:
+            type: string
+          description: "Our unique approach to solving this"
+        solution_opportunity:
+          type: string
+          description: "The opportunity we're addressing"
+
+  # ============================================================
+  # STRATEGIC POSITIONING
+  # ============================================================
+
+  strategic_positioning:
+    type: object
+    description: "Market positioning and competitive framing"
+    properties:
+      reframe:
+        type: object
+        properties:
+          old:
+            type: string
+            description: "Old/common framing"
+          new:
+            type: string
+            description: "Our new framing"
+      core_insight:
+        type: string
+        description: "Key strategic insight"
+      opportunity:
+        type: string
+        description: "The opportunity this creates"
+
+  # ============================================================
+  # KEYSTONE PRODUCTS
+  # ============================================================
+
+  keystone_products:
+    type: object
+    description: "Product portfolio - primary and secondary products"
+    properties:
+      primary:
+        type: array
+        items:
+          $ref: "#/$defs/keystone_product"
+      secondary:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            description:
+              type: string
+            builds_on:
+              type: string
+            business_model:
+              type: string
+            target:
+              type: string
+
+  # ============================================================
+  # DEVELOPMENT PHASES (Strategic - not week-by-week)
+  # ============================================================
+
+  development_phases:
+    type: object
+    description: "High-level development phases for strategic roadmaps"
+    properties:
+      phase_philosophy:
+        type: string
+        description: "Guiding philosophy for phase progression"
+
+      phases:
+        type: array
+        items:
+          type: object
+          required: [phase_id, name, timeline, objective]
+          properties:
+            phase_id:
+              type: string
+              description: "Phase identifier (e.g., 'phase_0', 'phase_1')"
+            name:
+              type: string
+              description: "Phase name"
+            timeline:
+              type: string
+              description: "Timeline (e.g., 'Year 1', 'Years 2-3')"
+            objective:
+              type: string
+              description: "Primary objective"
+            focus:
+              type: string
+              description: "What to focus on"
+            products:
+              oneOf:
+                - type: string
+                - type: array
+                  items:
+                    type: string
+              description: "Products/features in this phase"
+            strategic_objectives:
+              type: array
+              items:
+                type: string
+            go_to_market:
+              type: array
+              items:
+                type: string
+            milestones:
+              type: object
+              description: "Milestones by category"
+              properties:
+                product:
+                  type: array
+                  items:
+                    $ref: "#/$defs/milestone_entry"
+                strategic:
+                  type: array
+                  items:
+                    $ref: "#/$defs/milestone_entry"
+                revenue:
+                  type: array
+                  items:
+                    $ref: "#/$defs/milestone_entry"
+            success_criteria:
+              type: array
+              items:
+                type: string
+            revenue_target:
+              type: string
+
+  # ============================================================
+  # PRODUCT INTERDEPENDENCIES
+  # ============================================================
+
+  product_interdependencies:
+    type: object
+    description: "How products relate and enable each other"
+    properties:
+      enablement_chain:
+        type: array
+        items:
+          type: string
+        description: "How products enable each other"
+      required_sequence:
+        type: array
+        items:
+          type: object
+          properties:
+            priority:
+              type: integer
+            product:
+              type: string
+            why:
+              type: string
+      can_build_in_parallel:
+        type: array
+        items:
+          type: string
+      capability_building:
+        type: object
+        description: "Capabilities developed per phase"
+        additionalProperties:
+          type: array
+          items:
+            type: string
+
+  # ============================================================
+  # SUCCESS METRICS (Comprehensive)
+  # ============================================================
+
+  success_metrics:
+    type: object
+    description: "All success metrics by category"
+    properties:
+      conversion:
+        type: array
+        items:
+          $ref: "#/$defs/metric_with_alert"
+      activation:
+        type: array
+        items:
+          $ref: "#/$defs/metric_with_alert"
+      upgrades:
+        type: array
+        items:
+          $ref: "#/$defs/metric_with_alert"
+      retention:
+        type: array
+        items:
+          $ref: "#/$defs/metric_with_alert"
+      acquisition:
+        type: array
+        items:
+          $ref: "#/$defs/metric_with_alert"
+      trust_specific:
+        type: array
+        description: "Trust-related metrics (if applicable)"
+        items:
+          $ref: "#/$defs/metric_with_alert"
+      pricing_page:
+        type: array
+        description: "Pricing page engagement metrics"
+        items:
+          type: object
+          properties:
+            metric:
+              type: string
+            watch_for:
+              type: string
+      tier_distribution:
+        type: object
+        description: "Expected tier distribution over time"
+        additionalProperties:
+          type: object
+          additionalProperties:
+            type: string
+
+  # ============================================================
+  # IMPLEMENTATION FRAMEWORK
+  # ============================================================
+
+  implementation_framework:
+    type: object
+    description: "How to actually build - methodology, cadence, resources"
+    properties:
+      development_methodology:
+        type: object
+        properties:
+          approach:
+            type: string
+            description: "Overall approach name"
+          systems:
+            type: array
+            description: "Systems/tools used"
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                purpose:
+                  type: string
+                output:
+                  type: string
+          workflow:
+            type: string
+            description: "How systems interact"
+
+      build_cadence:
+        type: object
+        description: "Typical build cycle"
+        properties:
+          total_cycle:
+            type: string
+            description: "Total time from PRD to mature product"
+          phases:
+            type: array
+            items:
+              type: object
+              properties:
+                phase:
+                  type: string
+                duration:
+                  type: string
+                focus:
+                  type: string
+
+      phase_implementation:
+        type: array
+        description: "Specific implementation details per phase"
+        items:
+          type: object
+          properties:
+            phase_id:
+              type: string
+            tasks:
+              type: array
+              items:
+                type: object
+                properties:
+                  task:
+                    type: string
+                  approach:
+                    type: string
+                  time:
+                    type: string
+            components:
+              type: array
+              description: "MVP components with priorities"
+              items:
+                type: object
+                properties:
+                  component:
+                    type: string
+                  approach:
+                    type: string
+                  priority:
+                    type: string
+            test_mature:
+              type: array
+              items:
+                type: string
+            launch_sequence:
+              type: array
+              items:
+                type: string
+
+      market_validation:
+        type: object
+        description: "Continuous validation approach"
+        properties:
+          loop:
+            type: array
+            items:
+              type: string
+          decision_points:
+            type: array
+            items:
+              type: object
+              properties:
+                decision:
+                  type: string
+                criteria:
+                  type: string
+                action:
+                  type: string
+
+  # ============================================================
+  # DECISION FRAMEWORK
+  # ============================================================
+
+  decision_framework:
+    type: object
+    description: "Strategic decision-making criteria"
+    properties:
+      decision_points:
+        type: array
+        description: "Major go/no-go decision points"
+        items:
+          type: object
+          required: [name, criteria]
+          properties:
+            name:
+              type: string
+              description: "Decision point name (e.g., 'Phase 0 → Phase 1')"
+            criteria:
+              type: array
+              items:
+                type: object
+                properties:
+                  criterion:
+                    type: string
+                  green_light:
+                    type: string
+                  yellow_light:
+                    type: string
+                  red_light:
+                    type: string
+            green_action:
+              type: string
+            yellow_action:
+              type: string
+            red_action:
+              type: string
+
+      acceleration_triggers:
+        type: array
+        description: "When to speed up"
+        items:
+          type: object
+          properties:
+            signal:
+              type: string
+            action:
+              type: string
+
+      investigation_triggers:
+        type: array
+        description: "When to dig deeper"
+        items:
+          type: object
+          properties:
+            signal:
+              type: string
+            investigation:
+              type: string
+
+      pivot_triggers:
+        type: array
+        description: "When to change direction"
+        items:
+          type: object
+          properties:
+            signal:
+              type: string
+            consideration:
+              type: string
+
+      pivot_options:
+        type: array
+        description: "Types of pivots available"
+        items:
+          type: object
+          properties:
+            type:
+              type: string
+            description:
+              type: string
+
+      roadmap_revision:
+        type: object
+        description: "When to update the roadmap"
+        properties:
+          triggers:
+            type: array
+            items:
+              type: object
+              properties:
+                trigger:
+                  type: string
+                action:
+                  type: string
+          no_revision_needed:
+            type: array
+            items:
+              type: string
+
+      adaptation_framework:
+        type: object
+        description: "Review cadence"
+        properties:
+          cadence:
+            type: array
+            items:
+              type: object
+              properties:
+                frequency:
+                  type: string
+                focus:
+                  type: string
+          principle:
+            type: string
+
+  # ============================================================
+  # RESOURCE PLANNING
+  # ============================================================
+
+  resource_planning:
+    type: object
+    description: "Resource requirements by phase"
+    properties:
+      by_phase:
+        type: array
+        items:
+          type: object
+          properties:
+            phase_id:
+              type: string
+            time_investment:
+              type: array
+              items:
+                type: object
+                properties:
+                  activity:
+                    type: string
+                  hours_per_week:
+                    type: string
+                  notes:
+                    type: string
+            financial_requirements:
+              type: array
+              items:
+                type: object
+                properties:
+                  item:
+                    type: string
+                  monthly_cost:
+                    type: string
+                  notes:
+                    type: string
+            total_monthly:
+              type: string
+            skills_required:
+              type: array
+              items:
+                type: object
+                properties:
+                  skill:
+                    type: string
+                  source:
+                    type: string
+            team_consideration:
+              type: string
+            financial_model:
+              type: array
+              items:
+                type: object
+                properties:
+                  revenue:
+                    type: string
+                  team_approach:
+                    type: string
+
+      investment_priorities:
+        type: object
+        properties:
+          high_impact:
+            type: array
+            items:
+              type: string
+            description: "Do first"
+          foundation:
+            type: array
+            items:
+              type: string
+            description: "Essential investments"
+          avoid_until_validated:
+            type: array
+            items:
+              type: string
+            description: "Don't invest until proven"
+
+  # ============================================================
+  # RISKS AND MITIGATIONS (Enhanced)
+  # ============================================================
+
+  risks:
+    type: array
+    description: "Strategic risks with full context"
+    items:
+      type: object
+      properties:
+        name:
+          type: string
+        severity:
+          type: string
+          enum: ["Low", "Medium", "High", "Critical"]
+        probability:
+          type: string
+        description:
+          type: string
+        impact:
+          type: string
+        mitigations:
+          type: array
+          items:
+            type: string
+        key_insight:
+          type: string
+          description: "Secret weapon or key defensive insight"
+
+  risk_monitoring:
+    type: object
+    description: "How to monitor and respond to risks"
+    properties:
+      early_warning_indicators:
+        type: array
+        items:
+          type: object
+          properties:
+            indicator:
+              type: string
+            signals:
+              type: string
+      response_framework:
+        type: array
+        description: "Steps to respond to risks"
+        items:
+          type: object
+          properties:
+            step:
+              type: string
+            description:
+              type: string
+
+  # ============================================================
+  # VISION ACHIEVEMENT
+  # ============================================================
+
+  vision_achievement:
+    type: object
+    description: "How vision is achieved over time"
+    properties:
+      transformations:
+        type: array
+        items:
+          type: object
+          properties:
+            timeframe:
+              type: string
+              description: "e.g., 'Year 1', 'Year 3', 'Year 7'"
+            outcomes:
+              type: array
+              items:
+                type: string
+      legacy_impact:
+        type: object
+        properties:
+          market_transformation:
+            type: array
+            items:
+              type: string
+          customer_transformation:
+            type: array
+            items:
+              type: string
+          competitive_landscape:
+            type: array
+            items:
+              type: string
+          vision_statement:
+            type: string
+      bhag:
+        type: object
+        description: "Big Hairy Audacious Goal (25-year view)"
+        properties:
+          statement:
+            type: string
+          why_it_matters:
+            type: string
+
+  # ============================================================
+  # LEGACY SECTIONS (for technical development roadmaps)
+  # ============================================================
+
   mvp:
     type: object
-    description: "MVP development details"
-    required: [development_timeline]
+    description: "MVP development details (for technical roadmaps with week-by-week breakdown)"
     properties:
       name:
         type: string
-        description: "MVP version name (e.g., 'MVP v1.0')"
       target_date:
         type: string
-        description: "Target completion date or quarter"
       overview:
         type: string
-        description: "Brief MVP description"
-
       development_timeline:
         type: object
-        required: [phases]
         properties:
           total_duration:
             type: string
-            description: "Total timeline (e.g., '24 weeks', '6 months')"
-
           phases:
             type: array
-            description: "Development phases with detailed deliverables"
             items:
               type: object
-              required: [phase, name, weeks]
               properties:
                 phase:
                   type: integer
-                  description: "Phase number (1, 2, 3, etc.)"
                 name:
                   type: string
-                  description: "Phase name (e.g., 'Foundation', 'Core Features')"
                 duration:
                   type: string
-                  description: "Duration span (e.g., 'Weeks 1-6')"
                 goal:
                   type: string
-                  description: "High-level phase goal"
-
                 weeks:
                   type: array
-                  description: "Week-by-week breakdown with detailed deliverables"
                   items:
                     type: object
-                    required: [weeks, focus, deliverables_list]
                     properties:
                       weeks:
                         type: string
-                        description: "Week range (e.g., '1-2', '3-4')"
                       focus:
                         type: string
-                        description: "Primary focus area"
                       deliverables:
                         type: string
-                        description: "Original comma-separated deliverables (preserve for reference)"
-
                       deliverables_list:
                         type: array
-                        description: "CRITICAL: Structured list of ALL deliverables with acceptance criteria"
                         items:
                           type: object
-                          required: [item, type, acceptance]
                           properties:
                             item:
                               type: string
-                              description: "Deliverable name (e.g., 'Next.js app scaffold')"
                             type:
                               type: string
                               enum: ["code", "database", "integration", "infrastructure", "design", "documentation", "test"]
-                              description: "Deliverable category"
                             acceptance:
                               type: string
-                              description: "How we know it's done (e.g., 'App runs on localhost:3000')"
                             dependencies:
                               type: array
                               items:
                                 type: string
-                              description: "Other deliverables this depends on"
-
                       milestone:
                         type: string
-                        description: "Key milestone achieved at end of this period"
 
   strategic_milestones:
     type: object
-    description: "Long-term milestones by year with expanded success criteria"
+    description: "Long-term milestones by year"
     properties:
       year_1_foundation:
         type: array
-        description: "Year 1 foundation milestones"
         items:
           $ref: "#/$defs/milestone_with_criteria"
-
       year_2_growth:
         type: array
-        description: "Year 2 growth milestones"
         items:
           $ref: "#/$defs/milestone_with_criteria"
-
       year_3_scale:
         type: array
-        description: "Year 3 scaling milestones"
         items:
           $ref: "#/$defs/milestone_with_criteria"
-
       year_5_vision:
         type: array
-        description: "Year 5 vision milestones"
         items:
           $ref: "#/$defs/milestone_with_criteria"
 
   growth_strategy:
     type: object
-    description: "Growth approach and channels"
     properties:
       primary_channels:
         type: array
@@ -156,35 +815,17 @@ properties:
     properties:
       model:
         type: string
-        description: "Revenue model (subscription, usage-based, etc.)"
       year_1:
         type: object
-        properties:
-          mrr_target:
-            type: string
-          arr_target:
-            type: string
-          customers:
-            type: string
+        additionalProperties: true
       year_3:
         type: object
-        properties:
-          mrr_target:
-            type: string
-          arr_target:
-            type: string
-          customers:
-            type: string
+        additionalProperties: true
       year_5:
         type: object
-        properties:
-          mrr_target:
-            type: string
-          arr_target:
-            type: string
-          customers:
-            type: string
+        additionalProperties: true
 
+  # Legacy compatibility
   risks_and_mitigations:
     type: array
     items:
@@ -194,202 +835,149 @@ properties:
           type: string
         probability:
           type: string
-          enum: ["low", "medium", "high"]
         impact:
           type: string
-          enum: ["low", "medium", "high"]
         mitigation:
           type: string
 
-  # ============================================================
-  # ENHANCED SECTIONS (Added for comprehensive Roadmap extraction)
-  # ============================================================
-
   dependency_graph:
     type: object
-    description: "Deliverable dependencies for critical path analysis"
     properties:
       critical_path:
         type: array
-        description: "Sequence of deliverables on the critical path"
         items:
           type: object
-          properties:
-            deliverable:
-              type: string
-            phase:
-              type: integer
-            week:
-              type: string
-            blocks:
-              type: array
-              items:
-                type: string
-              description: "What this deliverable blocks"
+          additionalProperties: true
       parallel_tracks:
         type: array
-        description: "Work streams that can proceed in parallel"
         items:
           type: object
-          properties:
-            track_name:
-              type: string
-            deliverables:
-              type: array
-              items:
-                type: string
-            can_start_after:
-              type: string
-
-  resource_requirements:
-    type: object
-    description: "Resources needed for each phase"
-    properties:
-      by_phase:
-        type: array
-        items:
-          type: object
-          properties:
-            phase:
-              type: integer
-            skills_needed:
-              type: array
-              items:
-                type: string
-            tools_required:
-              type: array
-              items:
-                type: string
-            external_dependencies:
-              type: array
-              items:
-                type: object
-                properties:
-                  dependency:
-                    type: string
-                  provider:
-                    type: string
-                  lead_time:
-                    type: string
+          additionalProperties: true
 
   checkpoint_gates:
     type: array
-    description: "Go/no-go decision points"
     items:
       type: object
-      required: [name, timing, criteria]
-      properties:
-        name:
-          type: string
-          description: "Gate name (e.g., 'MVP Feature Complete')"
-        timing:
-          type: string
-          description: "When this gate occurs (e.g., 'End of Phase 2')"
-        criteria:
-          type: array
-          items:
-            type: object
-            properties:
-              criterion:
-                type: string
-              required:
-                type: boolean
-              verification:
-                type: string
-        stakeholders:
-          type: array
-          items:
-            type: string
-        failure_action:
-          type: string
-          description: "What happens if gate criteria not met"
+      additionalProperties: true
 
   prd_cross_references:
     type: object
-    description: "Links to PRD features and business rules"
-    properties:
-      phase_to_features:
-        type: array
-        items:
-          type: object
-          properties:
-            phase:
-              type: integer
-            features_delivered:
-              type: array
-              items:
-                type: string
-              description: "Feature IDs from PRD (e.g., 'F-001')"
-            business_rules_implemented:
-              type: array
-              items:
-                type: string
-              description: "Business rule IDs (e.g., 'BR-001')"
-      deliverable_to_features:
-        type: array
-        items:
-          type: object
-          properties:
-            deliverable:
-              type: string
-            implements_features:
-              type: array
-              items:
-                type: string
-            touches_entities:
-              type: array
-              items:
-                type: string
+    additionalProperties: true
 
   contingency_plans:
     type: array
-    description: "Backup plans for high-risk items"
     items:
       type: object
-      properties:
-        risk:
-          type: string
-        trigger:
-          type: string
-          description: "When to activate contingency"
-        contingency:
-          type: string
-        impact_on_timeline:
-          type: string
+      additionalProperties: true
+
+# ============================================================
+# REUSABLE DEFINITIONS
+# ============================================================
 
 $defs:
   milestone_with_criteria:
     type: object
-    required: [milestone, target_date]
     properties:
       milestone:
         type: string
-        description: "Milestone name (e.g., 'Beta Launch')"
       target_date:
         type: string
-        description: "Target quarter or date (e.g., 'Q1 2026')"
       success_criteria_summary:
         type: string
-        description: "Original one-line summary (preserve for reference)"
-
       success_criteria:
         type: array
-        description: "CRITICAL: Expanded success criteria with measurable targets"
         items:
           type: object
-          required: [metric, target, measurement]
           properties:
             metric:
               type: string
-              description: "What we're measuring (e.g., 'Beta users')"
             target:
               oneOf:
                 - type: number
                 - type: string
-              description: "Numeric or qualitative target (e.g., 50, '5 P0 features')"
             measurement:
               type: string
-              description: "How we measure this (e.g., 'Signed up accounts with activity')"
             source_quote:
               type: string
-              description: "Original text from source document"
+
+  milestone_entry:
+    type: object
+    properties:
+      milestone:
+        type: string
+      target:
+        type: string
+      notes:
+        type: string
+      significance:
+        type: string
+
+  metric_with_alert:
+    type: object
+    properties:
+      metric:
+        type: string
+      target:
+        type: string
+      alert_if:
+        type: string
+
+  keystone_product:
+    type: object
+    properties:
+      name:
+        type: string
+      problem_solved:
+        type: string
+      target_people:
+        type: string
+      core_features:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            priority:
+              type: string
+            description:
+              type: string
+            sub_features:
+              type: array
+              items:
+                type: object
+                additionalProperties: true
+      success_metrics:
+        type: array
+        items:
+          type: object
+          properties:
+            metric:
+              type: string
+            target:
+              type: string
+      keystone_effect:
+        type: string
+      competitive_advantage:
+        type: string
+      business_model:
+        type: string
+      honest_limitations:
+        type: array
+        items:
+          type: string
+      vision_alignment:
+        type: string
+      future_extensions:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            phase:
+              type: string
+      risks:
+        type: array
+        items:
+          type: string
