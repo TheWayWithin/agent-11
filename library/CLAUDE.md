@@ -1,10 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
-## Project Overview
-
-AGENT-11 is a framework for deploying specialized AI agents in Claude Code to form an elite development squad. The project provides templates, documentation, and deployment guides for 11 specialized agents that collaborate to help solo founders build and ship products rapidly.
+This file provides guidance to Claude Code when working with this repository.
 
 ## Critical Software Development Principles
 
@@ -44,75 +40,6 @@ AGENT-11 is a framework for deploying specialized AI agents in Claude Code to fo
    - PROPOSE: Present multiple solutions with trade-offs
    - IMPLEMENT: Choose the solution that maintains system integrity
    - DOCUMENT: Record why decisions were made for future reference
-
-## Architecture
-
-This is a documentation-based project with the following structure:
-
-- `/project/agents/` - Agent profiles and deployment commands
-  - `core-squad.md` - 4 essential agents for getting started
-  - `full-squad.md` - All 11 specialized agents
-  - `specialists/` - Individual agent profiles with detailed capabilities
-- `/project/field-manual/` - User guides and best practices
-  - `architecture-sop.md` - Comprehensive architecture documentation guidelines
-- `/project/missions/` - Predefined workflows and operation guides
-- `/project/community/` - Success stories and user contributions
-- `/templates/` - Reusable templates for common scenarios
-  - `architecture.md` - Production-ready architecture documentation template
-
-## Agent Deployment System
-
-The core functionality involves deploying agents to Claude Code's `.claude/agents/` directory. The agents are then available via the `@` command:
-
-```bash
-# After installation, agents are available as:
-@strategist Create user stories for our feature
-@developer Implement the authentication system
-@tester Validate the implementation
-@operator Prepare for deployment
-
-# NEW: Mission-based orchestration
-/coord build requirements.md    # Orchestrate full build mission
-/coord fix bug-report.md       # Quick bug fix mission
-/coord mvp vision.md          # MVP development mission
-```
-
-## Key Components
-
-### Core Squad (Minimum Viable Team)
-1. **The Strategist** - Product strategy and requirements
-2. **The Developer** - Full-stack implementation 
-3. **The Tester** - Quality assurance
-4. **The Operator** - DevOps and deployment
-
-### Full Squad (11 Specialists)
-Includes the core squad plus:
-- The Architect (system design)
-- The Designer (UX/UI)
-- The Documenter (technical writing)
-- The Support (customer success)
-- The Analyst (data insights)
-- The Marketer (growth)
-- The Coordinator (mission orchestration)
-
-## Development Guidelines
-
-- This is a documentation-first project with no build system or package.json
-- All content is in Markdown format
-- Agent profiles follow a consistent structure with deployment commands, capabilities, and collaboration protocols
-- Documentation uses military/tactical metaphors consistently
-- Focus on actionable, practical guidance for solo founders
-- **CRITICAL**: All agents must follow the Critical Software Development Principles above
-- Security-first mindset required for all development decisions
-- Root cause analysis mandatory before implementing fixes
-
-## File Editing Conventions
-
-- Maintain the consistent tone and military theme throughout
-- Agent profiles should include deployment commands, capabilities, collaboration protocols, and real examples
-- Use consistent formatting with emoji indicators for different sections
-- Keep deployment commands as single-line strings for easy copy/paste
-- Include practical examples and workflows in documentation
 
 ## Ideation File Concept
 
@@ -667,26 +594,6 @@ Every Task tool delegation MUST remind agents to:
 - Creates/updates tracking files
 - Optimizes CLAUDE.md for project
 
-### Adding New Agent Profiles
-1. Create new file in `/project/agents/specialists/`
-2. Follow existing template structure
-3. Update `/project/agents/full-squad.md` with new agent
-4. Add deployment command to relevant quick-start guides
-
-### Updating Documentation
-- Maintain consistency with existing tone and structure
-- Focus on practical, actionable content
-- Include real-world examples and workflows
-- Keep military/tactical metaphors throughout
-
-### Content Guidelines
-- Write for solo founders and non-technical founders
-- Emphasize speed, efficiency, and practical results
-- Include specific commands and examples
-- Maintain the "elite squad" branding throughout
-- **ESSENTIAL**: Reference Critical Software Development Principles in all agent guidance
-- Ensure security-first development is emphasized in all documentation
-
 ## MCP (Model Context Protocol) Integration
 
 ### MCP-First Principle
@@ -905,40 +812,6 @@ With Opus 4.5 for Coordinator:
 - Verify API keys in `.env.mcp` are correct
 - Run `grep "mcp__"` to see available MCP tools
 
-## MCP Context Optimization (Sprint 5)
-
-### Overview
-MCP tools consume significant context (~50-60K tokens). Use lean profiles for better efficiency.
-
-### Token Targets by Profile
-
-| Profile | Tokens | Use When |
-|---------|--------|----------|
-| **minimal-core** | ~5K | File operations only |
-| **research-only** | ~15K | Documentation lookup |
-| **frontend-deploy** | ~15K | Netlify deployments |
-| **backend-deploy** | ~15K | Railway deployments |
-| **db-read/db-write** | ~15-18K | Database operations |
-| **core** | ~50K | Standard development |
-| **testing** | ~62K | Playwright automation |
-
-### Profile Switching
-
-```bash
-# Switch to minimal profile (fastest startup)
-ln -sf .mcp-profiles/minimal-core.json .mcp.json
-
-# Switch to research profile
-ln -sf .mcp-profiles/research-only.json .mcp.json
-
-# Restart Claude Code after switching
-```
-
-### Reference Documentation
-- **Complete Guide**: `/project/field-manual/mcp-optimization-guide.md`
-- **Consolidated Tools Spec**: `/project/mcp/mcp-agent11-optimized.md`
-- **Profile Directory**: `/.mcp-profiles/`
-
 ## Sprint 9: Plan-Driven Development
 
 ### Overview
@@ -1040,9 +913,3 @@ extends: nextjs-supabase  # or remix-railway, sveltekit-supabase
 - `/report [since_date]` - Generate progress reports for stakeholders
 - `/pmd [issue]` - Post Mortem Dump for root cause analysis
 
-## Development Notes
-
-- **No Build System**: Pure documentation project - verify changes through Markdown review and deployment testing
-- **Mission System**: Use `/coord [mission] [files]` for systematic workflows
-- **Templates**: Available in `/templates/` for reusable patterns
-- **Updates**: Changes automatically deployed via GitHub integration
