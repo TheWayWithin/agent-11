@@ -371,3 +371,209 @@ properties:
       og_image:
         type: string
         description: "Open Graph image for social sharing"
+
+  # ============================================================
+  # ENHANCED SECTIONS (Added for comprehensive Brand extraction)
+  # ============================================================
+
+  accessibility:
+    type: object
+    description: "Accessibility requirements and guidelines"
+    properties:
+      wcag_level:
+        type: string
+        enum: ["A", "AA", "AAA"]
+        description: "Target WCAG compliance level"
+      color_contrast:
+        type: object
+        properties:
+          normal_text:
+            type: string
+            description: "Minimum contrast ratio for normal text (e.g., '4.5:1')"
+          large_text:
+            type: string
+            description: "Minimum contrast ratio for large text (e.g., '3:1')"
+          ui_components:
+            type: string
+            description: "Minimum contrast for UI components"
+      focus_indicators:
+        type: object
+        properties:
+          style:
+            type: string
+            description: "CSS for focus state (e.g., 'ring-2 ring-offset-2')"
+          color:
+            type: string
+      motion:
+        type: object
+        properties:
+          reduced_motion:
+            type: string
+            description: "How to handle prefers-reduced-motion"
+          safe_animations:
+            type: array
+            items:
+              type: string
+            description: "Animations safe for motion-sensitive users"
+      screen_reader:
+        type: array
+        items:
+          type: object
+          properties:
+            element:
+              type: string
+            requirement:
+              type: string
+
+  animation_system:
+    type: object
+    description: "Comprehensive animation specifications"
+    properties:
+      principles:
+        type: array
+        items:
+          type: string
+        description: "Animation design principles"
+      durations:
+        type: object
+        additionalProperties:
+          type: string
+        description: "Named duration values (e.g., fast: '150ms')"
+      easings:
+        type: object
+        additionalProperties:
+          type: string
+        description: "Named easing functions"
+      presets:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+              description: "Animation name (e.g., 'fade-in', 'slide-up')"
+            css:
+              type: string
+              description: "CSS animation or transition"
+            usage:
+              type: string
+            tailwind_class:
+              type: string
+              description: "Tailwind CSS class if applicable"
+
+  responsive_design:
+    type: object
+    description: "Responsive design specifications"
+    properties:
+      breakpoints:
+        type: object
+        additionalProperties:
+          type: string
+        description: "Named breakpoints with pixel values"
+      container_widths:
+        type: object
+        additionalProperties:
+          type: string
+        description: "Max container widths per breakpoint"
+      mobile_first:
+        type: boolean
+        description: "Whether to use mobile-first approach"
+      touch_targets:
+        type: object
+        properties:
+          minimum_size:
+            type: string
+            description: "Minimum touch target size (e.g., '44px')"
+          spacing:
+            type: string
+            description: "Minimum spacing between touch targets"
+
+  component_states:
+    type: object
+    description: "Standard states for interactive components"
+    properties:
+      interactive_states:
+        type: array
+        items:
+          type: string
+        description: "Standard states (e.g., ['default', 'hover', 'focus', 'active', 'disabled'])"
+      state_colors:
+        type: object
+        additionalProperties:
+          type: object
+          properties:
+            background:
+              type: string
+            text:
+              type: string
+            border:
+              type: string
+      loading_states:
+        type: object
+        properties:
+          spinner:
+            type: object
+            properties:
+              size:
+                type: string
+              color:
+                type: string
+              animation:
+                type: string
+          skeleton:
+            type: object
+            properties:
+              background:
+                type: string
+              animation:
+                type: string
+
+  design_tokens:
+    type: object
+    description: "Design tokens for systematic design"
+    properties:
+      format:
+        type: string
+        description: "Token format (e.g., 'CSS variables', 'Tailwind config')"
+      naming_convention:
+        type: string
+        description: "How tokens are named (e.g., '--color-primary-500')"
+      categories:
+        type: array
+        items:
+          type: string
+        description: "Token categories (e.g., ['color', 'spacing', 'typography', 'shadow'])"
+
+  prd_cross_references:
+    type: object
+    description: "Links to PRD features for UI consistency"
+    properties:
+      feature_to_components:
+        type: array
+        items:
+          type: object
+          properties:
+            feature_id:
+              type: string
+              description: "Feature ID from PRD (e.g., 'F-001')"
+            ui_components:
+              type: array
+              items:
+                type: string
+              description: "Components used by this feature"
+            color_usage:
+              type: array
+              items:
+                type: string
+              description: "Colors used (e.g., ['primary', 'success'])"
+      persona_to_themes:
+        type: array
+        items:
+          type: object
+          properties:
+            persona:
+              type: string
+            design_considerations:
+              type: array
+              items:
+                type: string

@@ -209,3 +209,222 @@ properties:
           type: string
         why_not:
           type: string
+
+  # ============================================================
+  # ENHANCED SECTIONS (Added for comprehensive ICP extraction)
+  # ============================================================
+
+  segment_criteria:
+    type: object
+    description: "Quantitative criteria for identifying ideal customers"
+    properties:
+      firmographics:
+        type: array
+        items:
+          type: object
+          properties:
+            criterion:
+              type: string
+              description: "e.g., 'Annual revenue', 'Team size'"
+            minimum:
+              type: string
+            maximum:
+              type: string
+            ideal:
+              type: string
+      technographics:
+        type: array
+        items:
+          type: object
+          properties:
+            technology:
+              type: string
+            required:
+              type: boolean
+            rationale:
+              type: string
+      behavioral:
+        type: array
+        items:
+          type: object
+          properties:
+            behavior:
+              type: string
+            frequency:
+              type: string
+            significance:
+              type: string
+
+  buying_committee:
+    type: array
+    description: "Decision makers and influencers in the buying process"
+    items:
+      type: object
+      properties:
+        role:
+          type: string
+          description: "e.g., 'Decision Maker', 'Technical Evaluator', 'Budget Holder'"
+        title:
+          type: string
+          description: "Common job titles"
+        concerns:
+          type: array
+          items:
+            type: string
+        influence_level:
+          type: string
+          enum: ["high", "medium", "low"]
+        messaging_focus:
+          type: string
+          description: "What messaging resonates with this role"
+
+  user_journey_stages:
+    type: array
+    description: "Customer journey from awareness to advocacy"
+    items:
+      type: object
+      required: [stage, description]
+      properties:
+        stage:
+          type: string
+          description: "e.g., 'Awareness', 'Consideration', 'Decision', 'Onboarding', 'Retention'"
+        description:
+          type: string
+        user_goals:
+          type: array
+          items:
+            type: string
+        touchpoints:
+          type: array
+          items:
+            type: string
+        content_needs:
+          type: array
+          items:
+            type: string
+        success_indicators:
+          type: array
+          items:
+            type: string
+
+  competitive_landscape:
+    type: object
+    description: "How target users currently solve the problem"
+    properties:
+      direct_competitors:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            strengths:
+              type: array
+              items:
+                type: string
+            weaknesses:
+              type: array
+              items:
+                type: string
+            user_perception:
+              type: string
+      indirect_alternatives:
+        type: array
+        items:
+          type: object
+          properties:
+            solution:
+              type: string
+            why_used:
+              type: string
+            limitations:
+              type: string
+      switching_barriers:
+        type: array
+        items:
+          type: object
+          properties:
+            barrier:
+              type: string
+            severity:
+              type: string
+              enum: ["high", "medium", "low"]
+            mitigation:
+              type: string
+
+  validation_evidence:
+    type: object
+    description: "Evidence supporting ICP assumptions"
+    properties:
+      research_sources:
+        type: array
+        items:
+          type: object
+          properties:
+            source:
+              type: string
+            type:
+              type: string
+              enum: ["interview", "survey", "analytics", "market_research", "competitor_analysis"]
+            sample_size:
+              type: string
+            date:
+              type: string
+      validated_assumptions:
+        type: array
+        items:
+          type: object
+          properties:
+            assumption:
+              type: string
+            evidence:
+              type: string
+            confidence:
+              type: string
+              enum: ["high", "medium", "low"]
+      unvalidated_assumptions:
+        type: array
+        items:
+          type: object
+          properties:
+            assumption:
+              type: string
+            validation_plan:
+              type: string
+
+  prd_cross_references:
+    type: object
+    description: "Links to PRD features and business rules"
+    properties:
+      persona_to_features:
+        type: array
+        items:
+          type: object
+          properties:
+            persona:
+              type: string
+            primary_features:
+              type: array
+              items:
+                type: string
+              description: "Feature IDs from PRD (e.g., 'F-001')"
+            must_have_for_conversion:
+              type: array
+              items:
+                type: string
+      pain_to_features:
+        type: array
+        items:
+          type: object
+          properties:
+            pain_point:
+              type: string
+            solving_features:
+              type: array
+              items:
+                type: string
+            business_rules:
+              type: array
+              items:
+                type: string
+              description: "Business rule IDs (e.g., 'BR-001')"

@@ -189,11 +189,68 @@ CRITICAL COMPLETENESS RULES - YOU MUST FOLLOW THESE:
    - "Next.js 14 App Router" → name: "Next.js", version: "14", features: ["App Router"]
    - "Supabase with RLS" → name: "Supabase", features: ["RLS"]
 
+6. GLOSSARY - Extract ALL domain-specific terms:
+   - Look for definitions, abbreviations, product-specific terminology
+   - Include term, definition, aliases, and examples
+   - Terms like "Opportunity", "Function", "Watcher" need clear definitions
+
+7. STATE MACHINES - Extract ALL entity lifecycle states:
+   - Subscription states: trial → active → cancelled/expired/paused
+   - Opportunity states: new → evaluated → accepted/rejected
+   - Include ALL transitions with triggers and side effects
+   - Document guard conditions for each transition
+
+8. ACCEPTANCE CRITERIA - Extract for EVERY feature:
+   - Use Given/When/Then format where possible
+   - "Given I am on checkout, When I click 'Start Trial', Then subscription created"
+   - Include edge cases in acceptance criteria
+
+9. CRITICAL USER JOURNEYS - Extract ALL end-to-end flows:
+   - "New User to First Insight" - complete signup to value delivery
+   - "Upgrade Path" - free trial to paid conversion
+   - Include ALL steps with expected results
+
+10. EDGE CASES - Extract ALL boundary conditions:
+    - Tier limits: "User at 5 product limit adds 6th"
+    - Payment failures: "Card declined during trial conversion"
+    - Data edge cases: "Product with 0 functions tracked"
+    - Categorize by: tier_limits, authentication, payment, data, concurrency
+
+11. BUSINESS RULES - Extract ALL BR-XXX rules:
+    - Include rule ID, category, statement, enforcement locations
+    - Capture exceptions and related features
+    - CRITICAL: Extract rules for tier limits, downgrade behavior, alerts
+
+12. DATA MODEL ENTITIES - Extract ALL entities:
+    - Include entities referenced in features but not explicitly listed
+    - Common missing entities: Session, AuditLog, PromotionCode
+    - Include ALL attributes with types and constraints
+
+13. INTEGRATION TESTS - Extract cross-component scenarios:
+    - "Signup + Stripe + Email" - registration flow integration
+    - "Usage tracking + Alerts + Notifications"
+    - Include data flow between components
+
+14. SUCCESS CRITERIA BY TIER - Extract tier-specific metrics:
+    - Free trial: activation criteria, conversion targets
+    - Each paid tier: retention targets, upgrade signals
+    - Include key actions that indicate success
+
+15. ADDITIONAL COMPLIANCE - Extract privacy/data requirements:
+    - Prompt data disclosure requirements
+    - Third-party DPA requirements (OpenAI, Anthropic, etc.)
+    - Audit logging requirements
+    - Data retention policies
+
 VALIDATION CHECK: Before completing, verify:
 - Count of list items matches source document
 - All numeric targets have values (not just descriptions)
 - All timeline information is present
 - All technology versions are preserved
+- ALL business rules extracted (count BR-XXX in source vs output)
+- ALL state machines with complete transitions
+- ALL entities mentioned in features exist in data_model
+- Acceptance criteria for EVERY feature
 
 Schema reference: project/schemas/foundation-prd.schema.yaml
 ```
@@ -442,6 +499,12 @@ Schema reference: project/schemas/foundation-pricing.schema.yaml
 
 After extraction, perform these verification checks:
 
+**CRITICAL: Schema Validation (FAIL mode)**:
+- Parse output YAML against schema definition
+- FAIL extraction if required fields are missing
+- FAIL if field types don't match schema
+- Do NOT proceed with incomplete extractions
+
 **Numeric Preservation Check**:
 - Count numeric values in source document
 - Verify at least 95% are present in YAML
@@ -462,6 +525,41 @@ After extraction, perform these verification checks:
 - Verify all named technologies are listed
 - Verify feature variants are captured
 
+**Business Rules Check (PRD only)**:
+- Count BR-XXX patterns in source document
+- Verify same count in extracted business_rules array
+- Flag any missing rule IDs
+- Verify enforcement locations are populated
+
+**State Machine Check (PRD only)**:
+- Verify all entity states mentioned are captured
+- Verify all transitions have from/to/trigger
+- Flag orphan states (states not reachable via transitions)
+- Verify side effects are documented
+
+**Entity Cross-Reference Check (PRD only)**:
+- Build list of entities mentioned in features.touched_entities
+- Build list of entities in data_model.entities
+- FAIL if any touched entity is not in data_model
+- Report: "Entity 'X' referenced in feature 'Y' but missing from data_model"
+
+**Acceptance Criteria Check (PRD only)**:
+- Count features in p0_must_have, p1_should_have, p2_nice_to_have
+- Verify each feature has at least 1 acceptance criterion
+- Flag features with empty acceptance_criteria arrays
+
+**Completeness Metrics Report**:
+```
+COMPLETENESS METRICS
+====================
+Business Rules: {source_count} found → {yaml_count} extracted
+State Machines: {expected_count} entities → {yaml_count} machines
+Acceptance Criteria: {feature_count} features → {with_criteria} have criteria
+Entity Coverage: {referenced_count} referenced → {defined_count} defined
+Edge Cases: {yaml_count} documented
+Integration Tests: {yaml_count} scenarios
+```
+
 **Validation Output**:
 ```
 EXTRACTION VALIDATION REPORT
@@ -470,14 +568,33 @@ Document: {filename}
 Category: {category}
 Mode: {extraction_mode}
 
+Schema Validation: PASS/FAIL
+  - Required fields: {present}/{total}
+  - Type mismatches: {count}
+
 Numeric Values: {source_count} found → {yaml_count} extracted ({percentage}%)
 List Items: {source_lists} → {yaml_lists} (100% required)
 Timelines: {timeline_count} captured
 Technologies: {tech_count} with versions
 
+PRD-Specific Checks (if applicable):
+  Business Rules: {source_br_count} → {yaml_br_count} ({status})
+  State Machines: {machine_count} complete ({status})
+  Entity Cross-Reference: {status}
+    - Missing entities: [list if any]
+  Acceptance Criteria: {with_criteria}/{feature_count} features ({percentage}%)
+
 Status: PASS/FAIL
 Issues: [list any gaps]
+Blocking Issues: [issues that MUST be fixed]
 ```
+
+**FAIL Conditions** (extraction marked incomplete):
+1. Schema required fields missing
+2. Less than 90% of business rules extracted
+3. Any entity referenced but not defined
+4. Any feature missing acceptance criteria
+5. State machines missing transitions
 
 ### Phase 4: Generate handoff-manifest.yaml
 
@@ -557,9 +674,18 @@ Advisable (SHOULD have):
 Structured Extraction:
   .context/structured/prd.yaml - COMPLETE
     ✓ product: name, tagline, type
-    ✓ features: 5 P0 features extracted
+    ✓ features: 5 P0 features extracted (all with acceptance criteria)
     ✓ tech_stack: complete
     ✓ success_metrics: 4 metrics defined
+    ✓ glossary: 14 terms defined
+    ✓ state_machines: 3 machines (Subscription, Opportunity, Product)
+    ✓ critical_journeys: 13 end-to-end flows
+    ✓ edge_cases: 44 scenarios documented
+    ✓ business_rules: 30 rules (BR-001 to BR-030)
+    ✓ integration_tests: 23 scenarios
+    ✓ data_model: all entities cross-referenced
+    ✓ success_criteria_by_tier: all tiers covered
+    ✓ additional_compliance: privacy and DPA requirements
 
   .context/structured/vision.yaml - COMPLETE
     ✓ vision: statement and elaboration

@@ -201,6 +201,162 @@ properties:
         mitigation:
           type: string
 
+  # ============================================================
+  # ENHANCED SECTIONS (Added for comprehensive Roadmap extraction)
+  # ============================================================
+
+  dependency_graph:
+    type: object
+    description: "Deliverable dependencies for critical path analysis"
+    properties:
+      critical_path:
+        type: array
+        description: "Sequence of deliverables on the critical path"
+        items:
+          type: object
+          properties:
+            deliverable:
+              type: string
+            phase:
+              type: integer
+            week:
+              type: string
+            blocks:
+              type: array
+              items:
+                type: string
+              description: "What this deliverable blocks"
+      parallel_tracks:
+        type: array
+        description: "Work streams that can proceed in parallel"
+        items:
+          type: object
+          properties:
+            track_name:
+              type: string
+            deliverables:
+              type: array
+              items:
+                type: string
+            can_start_after:
+              type: string
+
+  resource_requirements:
+    type: object
+    description: "Resources needed for each phase"
+    properties:
+      by_phase:
+        type: array
+        items:
+          type: object
+          properties:
+            phase:
+              type: integer
+            skills_needed:
+              type: array
+              items:
+                type: string
+            tools_required:
+              type: array
+              items:
+                type: string
+            external_dependencies:
+              type: array
+              items:
+                type: object
+                properties:
+                  dependency:
+                    type: string
+                  provider:
+                    type: string
+                  lead_time:
+                    type: string
+
+  checkpoint_gates:
+    type: array
+    description: "Go/no-go decision points"
+    items:
+      type: object
+      required: [name, timing, criteria]
+      properties:
+        name:
+          type: string
+          description: "Gate name (e.g., 'MVP Feature Complete')"
+        timing:
+          type: string
+          description: "When this gate occurs (e.g., 'End of Phase 2')"
+        criteria:
+          type: array
+          items:
+            type: object
+            properties:
+              criterion:
+                type: string
+              required:
+                type: boolean
+              verification:
+                type: string
+        stakeholders:
+          type: array
+          items:
+            type: string
+        failure_action:
+          type: string
+          description: "What happens if gate criteria not met"
+
+  prd_cross_references:
+    type: object
+    description: "Links to PRD features and business rules"
+    properties:
+      phase_to_features:
+        type: array
+        items:
+          type: object
+          properties:
+            phase:
+              type: integer
+            features_delivered:
+              type: array
+              items:
+                type: string
+              description: "Feature IDs from PRD (e.g., 'F-001')"
+            business_rules_implemented:
+              type: array
+              items:
+                type: string
+              description: "Business rule IDs (e.g., 'BR-001')"
+      deliverable_to_features:
+        type: array
+        items:
+          type: object
+          properties:
+            deliverable:
+              type: string
+            implements_features:
+              type: array
+              items:
+                type: string
+            touches_entities:
+              type: array
+              items:
+                type: string
+
+  contingency_plans:
+    type: array
+    description: "Backup plans for high-risk items"
+    items:
+      type: object
+      properties:
+        risk:
+          type: string
+        trigger:
+          type: string
+          description: "When to activate contingency"
+        contingency:
+          type: string
+        impact_on_timeline:
+          type: string
+
 $defs:
   milestone_with_criteria:
     type: object

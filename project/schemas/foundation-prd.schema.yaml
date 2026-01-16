@@ -90,6 +90,9 @@ properties:
           type: object
           required: [name]
           properties:
+            id:
+              type: string
+              description: "Feature identifier (e.g., 'F-001')"
             name:
               type: string
             description:
@@ -101,12 +104,23 @@ properties:
                 type: string
             acceptance_criteria:
               type: array
+              description: "Given/When/Then format preferred"
               items:
                 type: string
             success_metric:
               type: string
             dependencies:
               type: array
+              items:
+                type: string
+            touched_entities:
+              type: array
+              description: "Data model entities this feature interacts with"
+              items:
+                type: string
+            related_business_rules:
+              type: array
+              description: "Business rules that apply to this feature"
               items:
                 type: string
       p1_should_have:
@@ -343,3 +357,390 @@ properties:
                 type: string
             limits:
               type: object
+
+  # ============================================================
+  # ENHANCED SECTIONS (Added for comprehensive PRD extraction)
+  # ============================================================
+
+  glossary:
+    type: array
+    description: "Domain-specific terms and their definitions for consistent understanding"
+    items:
+      type: object
+      required: [term, definition]
+      properties:
+        term:
+          type: string
+          description: "The term being defined"
+        definition:
+          type: string
+          description: "Clear, concise definition"
+        aliases:
+          type: array
+          items:
+            type: string
+          description: "Alternative names or abbreviations"
+        examples:
+          type: array
+          items:
+            type: string
+          description: "Example usages or instances"
+
+  state_machines:
+    type: array
+    description: "Entity lifecycle states and valid transitions - CRITICAL for implementation"
+    items:
+      type: object
+      required: [name, entity, states, transitions]
+      properties:
+        name:
+          type: string
+          description: "State machine name (e.g., 'Subscription State Machine')"
+        entity:
+          type: string
+          description: "The entity this state machine governs"
+        states:
+          type: array
+          items:
+            type: object
+            required: [name]
+            properties:
+              name:
+                type: string
+                description: "State name (e.g., 'trial', 'active', 'cancelled')"
+              description:
+                type: string
+                description: "What this state represents"
+              entry_conditions:
+                type: array
+                items:
+                  type: string
+                description: "Conditions that must be true to enter this state"
+              exit_conditions:
+                type: array
+                items:
+                  type: string
+                description: "Conditions that must be true to exit this state"
+        transitions:
+          type: array
+          items:
+            type: object
+            required: [from, to, trigger]
+            properties:
+              from:
+                type: string
+                description: "Source state"
+              to:
+                type: string
+                description: "Destination state"
+              trigger:
+                type: string
+                description: "Event that triggers this transition"
+              guard_conditions:
+                type: array
+                items:
+                  type: string
+                description: "Additional conditions that must be true"
+              side_effects:
+                type: array
+                items:
+                  type: string
+                description: "Actions performed during transition"
+
+  critical_journeys:
+    type: array
+    description: "End-to-end user flows that MUST work - use for E2E testing"
+    items:
+      type: object
+      required: [id, name, steps]
+      properties:
+        id:
+          type: string
+          description: "Journey identifier (e.g., 'CJ-001')"
+        name:
+          type: string
+          description: "Journey name (e.g., 'New User to First Insight')"
+        description:
+          type: string
+          description: "What this journey accomplishes"
+        preconditions:
+          type: array
+          items:
+            type: string
+          description: "State that must exist before journey starts"
+        steps:
+          type: array
+          items:
+            type: object
+            required: [step, action]
+            properties:
+              step:
+                type: integer
+                description: "Step number in sequence"
+              action:
+                type: string
+                description: "What the user does"
+              expected_result:
+                type: string
+                description: "What should happen"
+              touched_entities:
+                type: array
+                items:
+                  type: string
+                description: "Data entities affected by this step"
+        postconditions:
+          type: array
+          items:
+            type: string
+          description: "State that must exist after journey completes"
+        success_metric:
+          type: string
+          description: "How to measure journey success"
+
+  edge_cases:
+    type: array
+    description: "Boundary conditions and error scenarios - CRITICAL for robust implementation"
+    items:
+      type: object
+      required: [category, scenario, expected_behavior]
+      properties:
+        id:
+          type: string
+          description: "Edge case identifier (e.g., 'EC-001')"
+        category:
+          type: string
+          enum: ["tier_limits", "authentication", "payment", "data", "concurrency", "integration", "validation"]
+          description: "Type of edge case"
+        scenario:
+          type: string
+          description: "The specific edge case scenario"
+        trigger:
+          type: string
+          description: "What causes this edge case"
+        expected_behavior:
+          type: string
+          description: "How the system should handle it"
+        error_message:
+          type: string
+          description: "User-facing error message if applicable"
+        related_business_rule:
+          type: string
+          description: "Reference to relevant business rule (e.g., 'BR-001')"
+
+  integration_tests:
+    type: array
+    description: "Cross-component test scenarios - ensures features work together"
+    items:
+      type: object
+      required: [id, name, components, scenario]
+      properties:
+        id:
+          type: string
+          description: "Test identifier (e.g., 'IT-001')"
+        name:
+          type: string
+          description: "Test name"
+        components:
+          type: array
+          items:
+            type: string
+          description: "Components/features being tested together"
+        preconditions:
+          type: array
+          items:
+            type: string
+          description: "Setup required before test"
+        scenario:
+          type: string
+          description: "The integration scenario being tested"
+        steps:
+          type: array
+          items:
+            type: string
+          description: "Test steps"
+        expected_outcome:
+          type: string
+          description: "What success looks like"
+        data_flow:
+          type: string
+          description: "How data moves between components"
+
+  success_criteria_by_tier:
+    type: object
+    description: "Success metrics broken down by pricing tier"
+    properties:
+      free_trial:
+        type: object
+        properties:
+          activation_criteria:
+            type: array
+            items:
+              type: string
+          conversion_target:
+            type: string
+          key_actions:
+            type: array
+            items:
+              type: string
+      starter:
+        type: object
+        properties:
+          retention_target:
+            type: string
+          upgrade_signals:
+            type: array
+            items:
+              type: string
+          key_metrics:
+            type: array
+            items:
+              type: string
+      professional:
+        type: object
+        properties:
+          retention_target:
+            type: string
+          expansion_signals:
+            type: array
+            items:
+              type: string
+          key_metrics:
+            type: array
+            items:
+              type: string
+      team:
+        type: object
+        properties:
+          retention_target:
+            type: string
+          key_metrics:
+            type: array
+            items:
+              type: string
+
+  additional_compliance:
+    type: object
+    description: "Privacy, data handling, and regulatory compliance requirements"
+    properties:
+      data_privacy:
+        type: array
+        description: "Data privacy requirements beyond standard compliance"
+        items:
+          type: object
+          properties:
+            requirement:
+              type: string
+            implementation:
+              type: string
+            user_control:
+              type: string
+      third_party_integrations:
+        type: array
+        description: "Compliance requirements for external service integrations"
+        items:
+          type: object
+          properties:
+            service:
+              type: string
+            data_shared:
+              type: array
+              items:
+                type: string
+            dpa_required:
+              type: boolean
+            user_disclosure:
+              type: string
+      audit_requirements:
+        type: array
+        description: "Logging and audit trail requirements"
+        items:
+          type: object
+          properties:
+            event_type:
+              type: string
+            data_captured:
+              type: array
+              items:
+                type: string
+            retention_period:
+              type: string
+
+  business_rules:
+    type: array
+    description: "ALL business rules with enforcement locations - NEVER omit any rules"
+    items:
+      type: object
+      required: [id, rule, enforcement]
+      properties:
+        id:
+          type: string
+          description: "Rule identifier (e.g., 'BR-001')"
+        category:
+          type: string
+          enum: ["limits", "access", "billing", "data", "notifications", "security"]
+          description: "Rule category"
+        rule:
+          type: string
+          description: "The business rule statement"
+        enforcement:
+          type: array
+          items:
+            type: string
+          description: "Where/how this rule is enforced (e.g., 'API middleware', 'Database constraint')"
+        exceptions:
+          type: array
+          items:
+            type: string
+          description: "Any exceptions to this rule"
+        related_features:
+          type: array
+          items:
+            type: string
+          description: "Features that depend on this rule"
+
+  data_model:
+    type: object
+    description: "Complete data model with ALL entities - cross-reference with features"
+    properties:
+      entities:
+        type: array
+        items:
+          type: object
+          required: [name, attributes]
+          properties:
+            name:
+              type: string
+              description: "Entity name (e.g., 'User', 'Subscription', 'Product')"
+            description:
+              type: string
+              description: "What this entity represents"
+            attributes:
+              type: array
+              items:
+                type: object
+                required: [name, type]
+                properties:
+                  name:
+                    type: string
+                  type:
+                    type: string
+                  required:
+                    type: boolean
+                  description:
+                    type: string
+                  constraints:
+                    type: array
+                    items:
+                      type: string
+            relationships:
+              type: array
+              items:
+                type: object
+                properties:
+                  entity:
+                    type: string
+                  type:
+                    type: string
+                    enum: ["one-to-one", "one-to-many", "many-to-many"]
+                  description:
+                    type: string

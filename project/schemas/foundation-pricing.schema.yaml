@@ -478,3 +478,185 @@ properties:
           type: string
           description: "Threshold that triggers concern"
     description: "KPIs to track pricing effectiveness"
+
+  # ============================================================
+  # ENHANCED SECTIONS (Added for comprehensive Pricing extraction)
+  # ============================================================
+
+  stripe_implementation:
+    type: object
+    description: "Technical details for Stripe integration"
+    properties:
+      products:
+        type: array
+        items:
+          type: object
+          properties:
+            tier:
+              type: string
+            stripe_product_id:
+              type: string
+              description: "e.g., 'prod_xxx' or placeholder for implementation"
+            stripe_price_ids:
+              type: object
+              properties:
+                monthly:
+                  type: string
+                annual:
+                  type: string
+      subscription_settings:
+        type: object
+        properties:
+          trial_period_days:
+            type: integer
+          proration_behavior:
+            type: string
+            enum: ["create_prorations", "none", "always_invoice"]
+          collection_method:
+            type: string
+            enum: ["charge_automatically", "send_invoice"]
+          billing_cycle_anchor:
+            type: string
+      webhooks_required:
+        type: array
+        items:
+          type: object
+          properties:
+            event:
+              type: string
+              description: "e.g., 'customer.subscription.updated'"
+            handler_action:
+              type: string
+              description: "What the system should do"
+
+  payment_failure_handling:
+    type: array
+    description: "How to handle various payment scenarios"
+    items:
+      type: object
+      required: [scenario, action]
+      properties:
+        scenario:
+          type: string
+          description: "e.g., 'Card declined', 'Insufficient funds', 'Expired card'"
+        stripe_decline_code:
+          type: string
+          description: "Stripe decline code if applicable"
+        action:
+          type: string
+          description: "System action to take"
+        user_message:
+          type: string
+          description: "Message to show the user"
+        retry_strategy:
+          type: object
+          properties:
+            max_retries:
+              type: integer
+            retry_interval:
+              type: string
+            final_action:
+              type: string
+
+  currency_handling:
+    type: object
+    description: "Multi-currency support configuration"
+    properties:
+      primary_currency:
+        type: string
+        default: "USD"
+      supported_currencies:
+        type: array
+        items:
+          type: object
+          properties:
+            code:
+              type: string
+            symbol:
+              type: string
+            conversion_note:
+              type: string
+      display_format:
+        type: string
+        description: "How to display prices (e.g., '$29/mo', '29 USD/month')"
+
+  downgrade_rules:
+    type: array
+    description: "Business rules for tier downgrades - CRITICAL for implementation"
+    items:
+      type: object
+      required: [from_tier, to_tier, rules]
+      properties:
+        from_tier:
+          type: string
+        to_tier:
+          type: string
+        rules:
+          type: array
+          items:
+            type: object
+            properties:
+              condition:
+                type: string
+                description: "e.g., 'User has 8 products, limit is 5'"
+              action:
+                type: string
+                description: "e.g., 'Block downgrade until products reduced'"
+              user_message:
+                type: string
+        data_handling:
+          type: string
+          description: "What happens to data that exceeds new tier limits"
+
+  grandfathering_rules:
+    type: object
+    description: "Rules for existing customers when pricing changes"
+    properties:
+      policy:
+        type: string
+        description: "e.g., 'Grandfather for 12 months', 'Immediate', 'Never'"
+      duration:
+        type: string
+      affected_tiers:
+        type: array
+        items:
+          type: string
+      communication_plan:
+        type: string
+
+  prd_cross_references:
+    type: object
+    description: "Links to PRD features and business rules"
+    properties:
+      tier_to_features:
+        type: array
+        items:
+          type: object
+          properties:
+            tier:
+              type: string
+            included_features:
+              type: array
+              items:
+                type: string
+              description: "Feature IDs from PRD (e.g., 'F-001')"
+            excluded_features:
+              type: array
+              items:
+                type: string
+      business_rules:
+        type: array
+        items:
+          type: string
+        description: "Related business rule IDs (e.g., 'BR-001' through 'BR-014')"
+      upgrade_trigger_features:
+        type: array
+        items:
+          type: object
+          properties:
+            from_tier:
+              type: string
+            trigger_feature:
+              type: string
+            feature_id:
+              type: string
