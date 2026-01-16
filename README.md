@@ -1100,17 +1100,21 @@ These commands transform foundation documents into executable project plans:
 | `status` | Check current state | Shows all documents with checksums and modification status |
 | `validate` | Before `/bootstrap` | Verifies required docs present and extractions complete |
 
-**Supported Documents** (7 categories):
+**Foundation → YAML Mapping** (9 categories):
 
-| Category | Example Filenames | Schema |
-|----------|-------------------|--------|
-| PRD | prd.md, requirements.md | Features, tech stack, metrics |
-| Vision | vision-mission.md, vision.md | Goals, mission, values |
-| Roadmap | strategic-roadmap.md, roadmap.md | Phases, deliverables, milestones |
-| ICP | client-success-blueprint.md, icp.md | Personas, pain points, JTBD |
-| Brand | brand-style-guidelines.md, brand.md | Colors, typography, components |
-| Marketing | marketing-bible.md, marketing.md | Positioning, messaging, channels |
-| Pricing | pricing-strategy.md, pricing.md | Tiers, Marketing Physics, value ladder |
+| Foundation Document | Output YAML | Schema Contains |
+|---------------------|-------------|-----------------|
+| prd.md, *-prd-*.md, requirements.md | `prd.yaml` | Features, tech stack, metrics, business rules, state machines |
+| vision-mission.md, vision.md | `vision.yaml` | Vision, mission, hedgehog concept, core values |
+| strategic-roadmap.md, roadmap.md | `roadmap.yaml` | Phases, deliverables, milestones, success criteria |
+| client-success-blueprint.md, icp.md | `icp.yaml` | Personas, pain points, JTBD, anti-personas |
+| market-and-client-research.md, research.md | `research.yaml` | Competitive analysis, market research |
+| brand-style-guidelines.md, brand.md | `brand.yaml` | Colors, typography, components, shadows, animations |
+| positioning-statement.md, positioning.md | `positioning.yaml` | Core positioning, competitive differentiation, messaging |
+| marketing-bible.md, go-to-market.md | `marketing.yaml`* | Go-to-market, channels, launch strategy |
+| pricing-strategy.md, pricing.md | `pricing.yaml` | Tiers, Marketing Physics, value ladder, upgrade triggers |
+
+*`marketing.yaml` only generated if dedicated marketing document exists (not positioning)
 
 **Common Workflows:**
 

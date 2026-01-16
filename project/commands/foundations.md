@@ -904,8 +904,10 @@ fi
 | **vision** | vision-mission.md | vision.md | strategic-plan.md |
 | **roadmap** | strategic-roadmap.md | roadmap.md | development-plan.md |
 | **icp** | client-success-blueprint.md | icp.md | personas.md |
+| **research** | market-and-client-research.md | market-research.md | research.md |
 | **brand** | brand-style-guidelines.md | brand.md | style-guide.md |
-| **marketing** | marketing-bible.md | marketing.md | positioning.md |
+| **positioning** | positioning-statement.md | positioning.md | market-positioning.md |
+| **marketing** | marketing-bible.md | marketing.md | go-to-market.md |
 | **pricing** | pricing-strategy.md | pricing.md | pricing-tiers.md |
 
 ### Step 3: Compare and Classify
@@ -1029,9 +1031,12 @@ cp ~/BOS-AI-output/*.md documents/foundations/
 - vision: Must have at least one of [vision-mission.md, vision.md, strategic-plan.md]
 
 **Advisable Documents** (warning if missing):
+- roadmap: Should have at least one of [strategic-roadmap.md, roadmap.md, development-plan.md]
 - icp: Should have at least one of [client-success-blueprint.md, icp.md, personas.md]
+- research: Should have at least one of [market-and-client-research.md, market-research.md, research.md]
 - brand: Should have at least one of [brand-style-guidelines.md, brand.md, style-guide.md]
-- marketing: Should have at least one of [marketing-bible.md, marketing.md, positioning.md]
+- positioning: Should have at least one of [positioning-statement.md, positioning.md, market-positioning.md]
+- marketing: Should have at least one of [marketing-bible.md, marketing.md, go-to-market.md]
 - pricing: Should have at least one of [pricing-strategy.md, pricing.md, pricing-tiers.md]
 
 **Extraction Validation**:
@@ -1085,21 +1090,25 @@ After `/foundations init`:
 project-root/
 ├── documents/
 │   └── foundations/
-│       ├── Product Requirements Document.md
-│       ├── Vision and Mission.md
-│       ├── Strategic Roadmap.md
-│       ├── Client Success Blueprint.md
-│       ├── Brand Style Guide.md
-│       ├── Marketing Bible.md
-│       └── Pricing Strategy.md
+│       ├── Product Requirements Document.md  → prd.yaml
+│       ├── Vision and Mission.md             → vision.yaml
+│       ├── Strategic Roadmap.md              → roadmap.yaml
+│       ├── Client Success Blueprint.md       → icp.yaml
+│       ├── Market and Client Research.md     → research.yaml
+│       ├── Brand Style Guide.md              → brand.yaml
+│       ├── Positioning Statement.md          → positioning.yaml
+│       ├── Marketing Bible.md                → marketing.yaml (optional)
+│       └── Pricing Strategy.md               → pricing.yaml
 ├── .context/
 │   └── structured/
 │       ├── prd.yaml          # Full PRD extraction
 │       ├── vision.yaml       # Full vision/mission extraction
 │       ├── roadmap.yaml      # Full roadmap with deliverables_list
 │       ├── icp.yaml          # Full ICP extraction
+│       ├── research.yaml     # Full market research extraction
 │       ├── brand.yaml        # Full brand extraction (neutrals, shadows, animations, breakpoints)
-│       ├── marketing.yaml    # Full marketing extraction
+│       ├── positioning.yaml  # Full positioning strategy extraction
+│       ├── marketing.yaml    # Full marketing extraction (if marketing doc present)
 │       └── pricing.yaml      # Full pricing strategy with Marketing Physics
 └── handoff-manifest.yaml
 ```
