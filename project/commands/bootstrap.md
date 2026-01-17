@@ -33,32 +33,44 @@ Transform foundation YAML extracts (created by `/foundations init`) into a valid
 
 **Why This Matters**: Foundation documents contain rich context but lack executable structure. Bootstrap bridges the gap between "what we want to build" and "how we'll build it" by generating a phased execution plan using machine-readable YAML extracts.
 
-## MODE SELECTION (First Step)
+## EXECUTION PROTOCOL
 
-When you run `/bootstrap` without flags, you'll be asked to choose a mode:
+**CRITICAL**: This command MUST prompt for mode selection before doing any work (unless `--mode` flag is provided).
+
+### Step 1: Check for --mode Flag
+
+If `--mode auto` → Skip to AUTO MODE section
+If `--mode engaged` → Skip to ENGAGED MODE section
+If `--mode preview` → Skip to PREVIEW MODE section
+If no --mode flag → Continue to Step 2
+
+### Step 2: Present Mode Selection (MANDATORY)
+
+**Use AskUserQuestion tool** to present this choice:
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│ 🏗️ Bootstrap: Project Plan Generation                          │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│ How would you like to proceed?                                  │
-│                                                                 │
-│ ○ Auto Mode (Recommended for complete, validated PRDs)         │
-│   Generates plan immediately from your foundations             │
-│   Fast, no questions asked                                     │
-│                                                                 │
-│ ○ Engaged Mode (Recommended for first-time users)              │
-│   Reviews PRD assumptions with you first                       │
-│   Validates tech stack, phases, priorities                     │
-│   Decision checkpoints before generating                       │
-│                                                                 │
-│ ○ Preview Mode                                                  │
-│   Shows what would be generated without writing files          │
-│   Good for reviewing before committing                         │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
+question: "How would you like to generate your project plan?"
+header: "Mode"
+options:
+  - label: "Engaged Mode (Recommended)"
+    description: "Walk through PRD assumptions together - validate tech stack, features, and phases before generating"
+  - label: "Auto Mode"
+    description: "Generate immediately from foundation YAMLs using sensible defaults - fast, no questions"
+  - label: "Preview Mode"
+    description: "Show what would be generated without writing files - good for review before committing"
 ```
+
+**WAIT for user response before proceeding.**
+
+### Step 3: Execute Selected Mode
+
+- If user selects "Engaged Mode" → Execute ENGAGED MODE section
+- If user selects "Auto Mode" → Execute AUTO MODE section
+- If user selects "Preview Mode" → Execute PREVIEW MODE section
+
+---
+
+## MODE SELECTION REFERENCE
 
 **Skip mode selection**: Use `--mode` flag to go directly to a mode:
 ```bash
