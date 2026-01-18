@@ -24,19 +24,35 @@ This mission systematically identifies required MCPs based on project needs, ins
 - Project requirements understood (ideation.md or similar)
 - Claude Code with MCP support enabled
 
-### Recommended Approach: MCP Profiles
+### Recommended Approach: Dynamic Tool Loading (v5.2.0+)
 
-**AGENT-11 includes pre-configured MCP profiles** that simplify setup:
+**AGENT-11 now uses dynamic MCP tool loading** - agents automatically discover and load tools as needed:
 
 ```bash
-# Activate a profile matching your project needs
-ln -sf .mcp-profiles/core.json .mcp.json
+# Copy the dynamic MCP configuration
+cp mcp/dynamic-mcp.json .mcp.json
+
+# Set up your API keys
+cp .env.mcp.template .env.mcp
+# Edit .env.mcp with your keys
+
 # Restart Claude Code
 ```
 
-Available profiles: `core`, `testing`, `database-staging`, `database-production`, `payments`, `deployment`, `fullstack`
+**Key Benefits:**
+- **93% token reduction** (51K → 3.3K initial context)
+- **No manual profile switching** - tools discovered automatically
+- **7 MCPs pre-configured**: context7, firecrawl, playwright, supabase, github, railway, stripe
 
-See [MCP Profile Guide](../../docs/MCP-GUIDE.md) for complete profile reference. This mission helps you choose and configure the right profile for your project.
+See [MCP Guide](../../docs/MCP-GUIDE.md) and [Migration Guide](../../docs/MCP-MIGRATION-GUIDE.md) for details.
+
+### Legacy: Profile-Based Setup
+
+For users preferring the older profile system:
+```bash
+ln -sf .mcp-profiles/core.json .mcp.json
+```
+Available profiles: `core`, `testing`, `database-staging`, `database-production`, `payments`, `deployment`, `fullstack`
 
 ---
 
