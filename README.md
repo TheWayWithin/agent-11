@@ -269,9 +269,9 @@ cp ~/Documents/BOS-AI/*.md ./documents/foundations/
 
 ---
 
-## 🆕 Current Version: v5.1.0
+## 🆕 Current Version: v5.2.0
 
-**Latest**: Structured context system with 100% data preservation in foundation processing.
+**Latest**: Dynamic MCP tool loading with 93% token reduction (51K → 3.3K). No more manual profile switching.
 
 [→ Full Release History](docs/RELEASE-HISTORY.md) - Complete sprint-by-sprint changelog
 

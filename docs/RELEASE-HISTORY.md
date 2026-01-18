@@ -4,6 +4,59 @@ Complete history of AGENT-11 development sprints and releases.
 
 ---
 
+## Sprint 11: Dynamic MCP Tooling & Context Optimization (v5.2.0)
+**Released**: 2026-01-17
+
+93% token reduction through dynamic MCP tool loading. Eliminates manual profile switching with Tool Search discovery.
+
+### The Problem
+
+The static MCP profile system had critical limitations:
+- **Context Bloat**: Pre-loading all tools consumed 51,000+ tokens before any work
+- **Profile Management**: 11 separate files required manual updates
+- **Tool Waste**: Agents loaded tools they never used (90%+ waste)
+- **Coordination Overhead**: Required manual profile switching and agent restarts
+
+### The Solution
+
+**Dynamic Tool Loading** via Claude Code's Tool Search feature:
+
+| Approach | Initial Context | Reduction |
+|----------|-----------------|-----------|
+| All Tools (static) | 51,000 tokens | baseline |
+| Profile-based | 3,000-15,000 tokens | 40-80% |
+| **Dynamic Loading** | **3,300 tokens** | **93%** |
+
+**Two-Tier Tool Architecture**:
+- **Discovery Tools** (pre-loaded): Lightweight routing tools (~350 tokens each)
+- **Execution Tools** (lazy-loaded): Heavy tools loaded on-demand only
+
+**7 MCPs Configured**:
+- context7, firecrawl, playwright, supabase, github, railway, stripe
+
+### Key Changes
+
+1. **Tool Search Protocol**: Agents use `tool_search_tool_regex_20251119("mcp__pattern")` to discover tools
+2. **Agent Updates**: coordinator, developer, tester, operator now use DYNAMIC MCP TOOL DISCOVERY
+3. **No Profile Switching**: Tools discovered and loaded automatically based on task
+4. **Backwards Compatible**: Profile system documented as legacy with rollback path
+
+### New Files
+
+| File | Purpose |
+|------|---------|
+| `project/mcp/dynamic-mcp.json` | Unified dynamic MCP configuration |
+| `project/schemas/dynamic-mcp.schema.yaml` | Schema definition |
+| `docs/MCP-MIGRATION-GUIDE.md` | Migration guide from profiles |
+
+### Impact
+- Token reduction: 93.5% (51K → 3.3K)
+- Profile files eliminated: 11 → 1
+- Manual switching: Required → Automatic
+- Agent restarts: Required → Not needed
+
+---
+
 ## Sprint 10: Structured Context System (v5.1.0)
 **Released**: 2026-01-01
 
