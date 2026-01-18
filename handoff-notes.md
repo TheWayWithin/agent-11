@@ -1,8 +1,86 @@
 # Handoff Notes
 
-## Last Updated: 2026-01-01 09:30
-## Current Phase: README Restructuring COMPLETE ✅
-## Mission Status: Documentation Updated - SaaS Boilerplate Killer Focus
+## Last Updated: 2026-01-17
+## Current Phase: Sprint 11 - Dynamic MCP Tooling & Context Optimization
+## Mission Status: Sprint 11 COMPLETE - Git Commit Ready
+
+---
+
+## Current Mission: Sprint 11 - Dynamic MCP Tooling
+
+### The Problem Being Solved
+Current MCP architecture causes two critical issues:
+1. **Context Bloat**: Pre-loading all tools consumes 51,000+ tokens even when only a few are needed
+2. **Profile Friction**: Manual profile switching requires agent restart, breaks mission flow
+
+### The Solution
+Dynamic tool loading via Claude Code's new features:
+- **Tool Search** (`tool_search_tool_regex_20251119`): Pre-loaded tool to discover deferred tools
+- **Lazy Loading** (`defer_loading: true`): Keep tools discoverable but out of initial context
+- **Token Reduction**: 93.5% reduction in initial context (51K → 3.3K tokens)
+
+### Sprint 11 Phases
+
+| Phase | Name | Priority | Status |
+|-------|------|----------|--------|
+| 11A | Configuration Blueprint Design | P0 | ✅ COMPLETE - 2026-01-17 |
+| 11B | Agent Protocol Update | P0 | ✅ COMPLETE - 2026-01-17 |
+| 11C | Documentation Update | P1 | ✅ COMPLETE - 2026-01-17 |
+| 11D | Testing and Validation | P1 | ✅ COMPLETE - 2026-01-17 |
+| 11E | Deployment and Rollout | P0 | ✅ COMPLETE - 2026-01-17 |
+
+### Target MCPs (7 services)
+- context7, firecrawl, playwright, supabase, github, railway, stripe
+
+---
+
+## Phase 11A & 11B Deliverables (Complete)
+
+**Phase 11A Files Created**:
+1. `project/schemas/dynamic-mcp.schema.yaml` (14KB, 394 lines)
+2. `project/mcp/dynamic-mcp.json` (8.5KB, 291 lines)
+3. `docs/MCP-MIGRATION-GUIDE.md` (13KB, 543 lines)
+
+**Phase 11B Files Updated**:
+1. `project/agents/specialists/coordinator.md` - DYNAMIC MCP TOOL DISCOVERY section
+2. `project/agents/specialists/developer.md` - Tool Search patterns
+3. `project/agents/specialists/tester.md` - Playwright discovery
+4. `project/agents/specialists/operator.md` - Deployment discovery
+
+**Verification**: All legacy `/mcp-switch` and `.mcp-profiles/` references removed from main agent files.
+
+---
+
+## Phase 11C: Documentation Update - NEXT
+
+### Objective
+Update all MCP documentation to reflect new dynamic architecture.
+
+### Tasks (from project-plan.md)
+
+1. **Update MCP-GUIDE.md** (@documenter)
+   - **File**: `docs/MCP-GUIDE.md`
+   - **Add**: "Dynamic Tool Loading" section at top
+   - **Update**: Installation instructions for dynamic-mcp.json
+   - **Mark**: Profile switching commands as legacy
+
+2. **Update README.md** (@documenter)
+   - **Section**: MCP Integration
+   - **Add**: Brief mention of dynamic tool loading
+   - **Link**: To MCP-MIGRATION-GUIDE.md
+
+3. **Update library/CLAUDE.md** (@documenter)
+   - **Section**: MCP Integration
+   - **Add**: Tool Search workflow
+   - **Remove**: Profile-based instructions
+
+### Files to Reference
+- `docs/MCP-MIGRATION-GUIDE.md` - Migration documentation (already created)
+- `project/schemas/dynamic-mcp.schema.yaml` - Schema definition
+- `project/mcp/dynamic-mcp.json` - Configuration example
+
+### Next Action
+Begin Phase 11C with @documenter to update MCP-GUIDE.md, README.md, and library/CLAUDE.md
 
 ---
 

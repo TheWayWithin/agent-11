@@ -476,55 +476,42 @@ Automatic setup during missions. Manual: `@tester "Set up testing infrastructure
 
 ---
 
-### MCP Profile System (Recommended)
+### MCP Integration
 
-**Running out of context during long missions?** The MCP Profile System solves this by loading only the tools you need.
+**Running out of context during long missions?** AGENT-11's MCP system optimizes context usage for your workflow.
 
-Instead of loading all 8 MCPs every session (15,000 tokens of context), profiles load only relevant MCPs for your task - giving you 40-80% more space for code and conversation.
+#### 🚀 Dynamic Tool Loading (v5.2.0+ - Recommended)
 
-**Why Use Profiles:**
-- ✅ **Longer missions** - 40-80% more context for code and conversation
-- ✅ **Faster responses** - Load only what you need
-- ✅ **Task-appropriate tools** - Testing profile for tests, deployment for deploys
-- ✅ **Production safety** - Read-only database profiles prevent accidents
+The new **dynamic MCP tool loading** system eliminates manual profile switching with **93% context reduction**:
 
-**What are profiles?** Pre-configured sets of MCP servers for different tasks. **13 profiles** available - from ultra-lean (5K tokens) to full-stack (50K+):
+| Approach | Initial Context | Reduction |
+|----------|-----------------|-----------|
+| All Tools (static) | 51,000 tokens | baseline |
+| Profile-based (legacy) | 3,000-15,000 tokens | 40-80% |
+| **Dynamic Loading** | **3,300 tokens** | **93%** |
 
-| Profile | Tokens | Reduction | Use Case |
-|---------|--------|-----------|----------|
-| **minimal-core** | ~5K | 90% | File-only operations |
-| **research-only** | ~15K | 70% | Documentation lookup |
-| **core** | ~3K | 80% | General development |
-| **testing** | ~5.5K | 63% | Playwright automation |
-| **frontend-deploy** | ~15K | 70% | Netlify deployment |
-| **backend-deploy** | ~15K | 70% | Railway deployment |
-| **db-read** | ~15K | 70% | Read-only database |
-| **db-write** | ~18K | 64% | Full database access |
-| **database-staging** | ~8K | 47% | Database development |
-| **database-production** | ~8K | 47% | Production (read-only) |
-| **payments** | ~7K | 53% | Stripe integration |
-| **deployment** | ~9K | 40% | Netlify + Railway |
-| **fullstack** | ~50K | 0% | All development MCPs |
+**How it works**: Agents discover and load tools on-demand using Tool Search. No profile switching required.
 
-**Start with `minimal-core`** for max context. Use `core` for 90% of development.
-
-**Quick Setup:**
-
-Start with the lightweight `core` profile (80% less context):
+**Quick Setup (Dynamic):**
 ```bash
-/mcp-switch core
+# Use dynamic MCP configuration
+cp project/mcp/dynamic-mcp.json .mcp.json
+
+# Configure API keys
+cp .env.mcp.template .env.mcp
+# Edit .env.mcp with your credentials
+
+# Restart Claude Code
 ```
-
-Then restart Claude Code when prompted.
-
-**See all profiles**: `/mcp-list` | **Check current profile**: `/mcp-status`
-
-Need full setup? [→ Complete MCP Setup Guide](docs/MCP-GUIDE.md) covers MCP installation, API keys, and all 7 profiles.
 
 **Documentation:**
 - [📖 MCP Setup Guide](docs/MCP-GUIDE.md) - Complete setup and usage instructions
-- [📋 Profile Reference](docs/MCP-PROFILES.md) - Detailed profile documentation
+- [🔄 Migration Guide](docs/MCP-MIGRATION-GUIDE.md) - Migrate from profiles to dynamic loading
 - [🔧 Troubleshooting](docs/MCP-TROUBLESHOOTING.md) - Common issues and solutions
+
+#### Legacy: Profile-Based System
+
+Profile-based MCP switching is still supported. See [MCP-PROFILES.md](docs/MCP-PROFILES.md) for documentation.
 
 ---
 

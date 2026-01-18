@@ -1143,6 +1143,10 @@ install_mcp_system() {
                 cp "$PROJECT_ROOT/docs/MCP-GUIDE.md" "$TARGET_DIR/docs/"
                 cp "$PROJECT_ROOT/docs/MCP-PROFILES.md" "$TARGET_DIR/docs/"
                 cp "$PROJECT_ROOT/docs/MCP-TROUBLESHOOTING.md" "$TARGET_DIR/docs/"
+                # NEW: Install dynamic MCP migration guide
+                if [[ -f "$PROJECT_ROOT/docs/MCP-MIGRATION-GUIDE.md" ]]; then
+                    cp "$PROJECT_ROOT/docs/MCP-MIGRATION-GUIDE.md" "$TARGET_DIR/docs/"
+                fi
                 success "MCP documentation installed"
             fi
         fi
@@ -1159,6 +1163,24 @@ install_mcp_system() {
         fi
         if download_file_from_github "docs/MCP-TROUBLESHOOTING.md" "$TARGET_DIR/docs/MCP-TROUBLESHOOTING.md"; then
             log "Downloaded: MCP-TROUBLESHOOTING.md"
+        fi
+        # NEW: Download dynamic MCP migration guide
+        if download_file_from_github "docs/MCP-MIGRATION-GUIDE.md" "$TARGET_DIR/docs/MCP-MIGRATION-GUIDE.md"; then
+            log "Downloaded: MCP-MIGRATION-GUIDE.md"
+        fi
+    fi
+
+    # NEW: Install dynamic MCP configuration (Sprint 11)
+    log "Installing dynamic MCP configuration..."
+    mkdir -p "$TARGET_DIR/mcp"
+    if [[ "$execution_mode" == "local" ]]; then
+        if [[ -f "$PROJECT_ROOT/project/mcp/dynamic-mcp.json" ]]; then
+            cp "$PROJECT_ROOT/project/mcp/dynamic-mcp.json" "$TARGET_DIR/mcp/"
+            success "Dynamic MCP configuration installed (93% token reduction enabled)"
+        fi
+    else
+        if download_file_from_github "project/mcp/dynamic-mcp.json" "$TARGET_DIR/mcp/dynamic-mcp.json"; then
+            success "Dynamic MCP configuration downloaded"
         fi
     fi
 

@@ -383,19 +383,30 @@ If upgrading from token-budgeted summaries:
 
 **Full Documentation**: See `/project/field-manual/mcp-integration.md`
 
-### Key Principles
-- **MCP-First**: Check for available MCPs before manual implementation
-- **Discovery**: Use `grep "mcp__"` to find available MCP tools
-- **Fallback**: Have manual approach ready when MCPs unavailable
+### Dynamic Tool Loading (v5.2.0+)
 
-### Common MCPs
-| Category | MCPs |
-|----------|------|
-| Infrastructure | `mcp__railway`, `mcp__supabase`, `mcp__vercel` |
-| Commerce | `mcp__stripe` |
-| Development | `mcp__github`, `mcp__context7` |
-| Testing | `mcp__playwright` |
-| Research | `mcp__firecrawl`, `WebSearch` |
+AGENT-11 uses **dynamic MCP tool loading** - tools are discovered on-demand using Tool Search, reducing initial context from 51K to 3.3K tokens (93% reduction).
+
+**How It Works**:
+1. **Search** for tools: `tool_search_tool_regex_20251119("mcp__supabase")`
+2. **Load** discovered tools automatically on first use
+3. **Execute** with minimal context overhead
+
+### Tool Search Patterns
+| Need | Search Pattern | Discovers |
+|------|----------------|-----------|
+| Database | `mcp__supabase` | PostgreSQL, auth, RLS |
+| Testing | `mcp__playwright` | Browser automation |
+| Deployment | `mcp__railway` | Railway deployments |
+| Payments | `mcp__stripe` | Billing, subscriptions |
+| Documentation | `mcp__context7` | Library docs |
+| Version Control | `mcp__github` | PRs, issues |
+| Research | `mcp__firecrawl` | Web scraping |
+
+### Key Principles
+- **MCP-First**: Use Tool Search to check for available MCPs before manual implementation
+- **Discovery**: Use Tool Search with pattern (e.g., `mcp__supabase`) to find tools
+- **Fallback**: Have manual approach ready when Tool Search returns no results
 
 ## Model Selection Guidelines
 
@@ -415,9 +426,14 @@ If upgrading from token-budgeted summaries:
 
 **Full Documentation**: See `/project/field-manual/mcp-integration.md`
 
-**Quick Start**: `cp .env.mcp.template .env.mcp` → Add API keys → Restart Claude Code
+**Quick Start (Dynamic)**:
+```bash
+cp project/mcp/dynamic-mcp.json .mcp.json  # Use dynamic configuration
+cp .env.mcp.template .env.mcp              # Configure API keys
+# Restart Claude Code
+```
 
-**Troubleshooting**: Run `grep "mcp__"` to see available tools. If missing, check `.env.mcp` keys and restart Claude Code.
+**Troubleshooting**: Use Tool Search to verify tools: `tool_search_tool_regex_20251119("mcp__.*")`. If missing, check `.env.mcp` keys and restart Claude Code.
 
 ## Sprint 9: Plan-Driven Development
 

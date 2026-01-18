@@ -1,0 +1,291 @@
+{
+  "$schema": "../schemas/dynamic-mcp.schema.yaml",
+  "version": "1.0.0",
+  "description": "Dynamic MCP tool loading configuration for AGENT-11 framework",
+
+  "discovery_tools": [
+    {
+      "type": "tool_search_tool_regex_20251119",
+      "name": "tool_search",
+      "description": "Search and discover MCP tools via regex patterns. Always pre-loaded for dynamic tool discovery."
+    }
+  ],
+
+  "toolsets": [
+    {
+      "type": "mcp_toolset",
+      "mcp_server_name": "context7",
+      "description": "Library documentation and code patterns",
+      "default_config": {
+        "defer_loading": true
+      },
+      "tools": [
+        {
+          "name": "mcp__context7__resolve-library-id",
+          "defer_loading": false,
+          "description": "Resolve library identifiers - pre-loaded for discovering available libraries"
+        },
+        {
+          "name": "mcp__context7__get-library-docs",
+          "defer_loading": true,
+          "description": "Retrieve up-to-date library documentation"
+        }
+      ]
+    },
+    {
+      "type": "mcp_toolset",
+      "mcp_server_name": "firecrawl",
+      "description": "Web scraping and documentation extraction",
+      "default_config": {
+        "defer_loading": true
+      },
+      "tools": [
+        {
+          "name": "mcp__firecrawl__firecrawl_scrape",
+          "defer_loading": false,
+          "description": "Scrape single web pages - pre-loaded for quick documentation access"
+        },
+        {
+          "name": "mcp__firecrawl__firecrawl_batch_scrape",
+          "defer_loading": false,
+          "description": "Batch scrape multiple pages - pre-loaded for comprehensive research"
+        },
+        {
+          "name": "mcp__firecrawl__firecrawl_crawl",
+          "defer_loading": true,
+          "description": "Deep crawl websites"
+        },
+        {
+          "name": "mcp__firecrawl__firecrawl_map",
+          "defer_loading": true,
+          "description": "Map website structure"
+        }
+      ]
+    },
+    {
+      "type": "mcp_toolset",
+      "mcp_server_name": "playwright",
+      "description": "Browser automation and testing",
+      "default_config": {
+        "defer_loading": true
+      },
+      "tools": [
+        {
+          "name": "mcp__playwright__browser_navigate",
+          "defer_loading": false,
+          "description": "Navigate browser to URL - pre-loaded for quick browser operations"
+        },
+        {
+          "name": "mcp__playwright__browser_screenshot",
+          "defer_loading": true,
+          "description": "Capture screenshots"
+        },
+        {
+          "name": "mcp__playwright__browser_click",
+          "defer_loading": true,
+          "description": "Click elements"
+        },
+        {
+          "name": "mcp__playwright__browser_fill",
+          "defer_loading": true,
+          "description": "Fill form fields"
+        },
+        {
+          "name": "mcp__playwright__browser_select",
+          "defer_loading": true,
+          "description": "Select dropdown options"
+        },
+        {
+          "name": "mcp__playwright__browser_hover",
+          "defer_loading": true,
+          "description": "Hover over elements"
+        },
+        {
+          "name": "mcp__playwright__browser_evaluate",
+          "defer_loading": true,
+          "description": "Execute JavaScript in browser"
+        }
+      ]
+    },
+    {
+      "type": "mcp_toolset",
+      "mcp_server_name": "supabase",
+      "description": "Database, auth, and backend services",
+      "default_config": {
+        "defer_loading": true
+      },
+      "tools": [
+        {
+          "name": "mcp__supabase__list-tables",
+          "defer_loading": false,
+          "description": "List database tables - pre-loaded for schema discovery"
+        },
+        {
+          "name": "mcp__supabase__describe-table",
+          "defer_loading": true,
+          "description": "Get table schema details"
+        },
+        {
+          "name": "mcp__supabase__select",
+          "defer_loading": true,
+          "description": "Query data from tables"
+        },
+        {
+          "name": "mcp__supabase__insert",
+          "defer_loading": true,
+          "description": "Insert data into tables"
+        },
+        {
+          "name": "mcp__supabase__update",
+          "defer_loading": true,
+          "description": "Update table records"
+        },
+        {
+          "name": "mcp__supabase__delete",
+          "defer_loading": true,
+          "description": "Delete table records"
+        },
+        {
+          "name": "mcp__supabase__execute-sql",
+          "defer_loading": true,
+          "description": "Execute raw SQL queries"
+        }
+      ]
+    },
+    {
+      "type": "mcp_toolset",
+      "mcp_server_name": "github",
+      "description": "Version control and repository management",
+      "default_config": {
+        "defer_loading": true
+      },
+      "tools": [
+        {
+          "name": "mcp__github__search_repositories",
+          "defer_loading": false,
+          "description": "Search GitHub repositories - pre-loaded for discovering repos and examples"
+        },
+        {
+          "name": "mcp__github__create_repository",
+          "defer_loading": true,
+          "description": "Create new repository"
+        },
+        {
+          "name": "mcp__github__get_file_contents",
+          "defer_loading": true,
+          "description": "Read file contents from repository"
+        },
+        {
+          "name": "mcp__github__push_files",
+          "defer_loading": true,
+          "description": "Push files to repository"
+        },
+        {
+          "name": "mcp__github__create_pull_request",
+          "defer_loading": true,
+          "description": "Create pull request"
+        },
+        {
+          "name": "mcp__github__create_issue",
+          "defer_loading": true,
+          "description": "Create GitHub issue"
+        },
+        {
+          "name": "mcp__github__search_code",
+          "defer_loading": true,
+          "description": "Search code across repositories"
+        },
+        {
+          "name": "mcp__github__create_or_update_file",
+          "defer_loading": true,
+          "description": "Create or update single file"
+        }
+      ]
+    },
+    {
+      "type": "mcp_toolset",
+      "mcp_server_name": "railway",
+      "description": "Backend deployment and infrastructure",
+      "default_config": {
+        "defer_loading": true
+      },
+      "tools": [
+        {
+          "name": "mcp__railway__list-projects",
+          "defer_loading": false,
+          "description": "List Railway projects - pre-loaded for discovering deployments"
+        },
+        {
+          "name": "mcp__railway__create-project-and-link",
+          "defer_loading": true,
+          "description": "Create new Railway project"
+        },
+        {
+          "name": "mcp__railway__list-services",
+          "defer_loading": true,
+          "description": "List services in project"
+        },
+        {
+          "name": "mcp__railway__deploy",
+          "defer_loading": true,
+          "description": "Deploy to Railway"
+        },
+        {
+          "name": "mcp__railway__get-logs",
+          "defer_loading": true,
+          "description": "Get deployment logs"
+        },
+        {
+          "name": "mcp__railway__set-variables",
+          "defer_loading": true,
+          "description": "Configure environment variables"
+        }
+      ]
+    },
+    {
+      "type": "mcp_toolset",
+      "mcp_server_name": "stripe",
+      "description": "Payment processing and subscriptions",
+      "default_config": {
+        "defer_loading": true
+      },
+      "tools": [
+        {
+          "name": "mcp__stripe__search_customers",
+          "defer_loading": false,
+          "description": "Search Stripe customers - pre-loaded for customer discovery"
+        },
+        {
+          "name": "mcp__stripe__create_customer",
+          "defer_loading": true,
+          "description": "Create new customer"
+        },
+        {
+          "name": "mcp__stripe__create_payment_intent",
+          "defer_loading": true,
+          "description": "Create payment intent"
+        },
+        {
+          "name": "mcp__stripe__create_subscription",
+          "defer_loading": true,
+          "description": "Create subscription"
+        },
+        {
+          "name": "mcp__stripe__list_products",
+          "defer_loading": true,
+          "description": "List available products"
+        },
+        {
+          "name": "mcp__stripe__create_product",
+          "defer_loading": true,
+          "description": "Create new product"
+        },
+        {
+          "name": "mcp__stripe__retrieve_balance",
+          "defer_loading": true,
+          "description": "Get account balance"
+        }
+      ]
+    }
+  ]
+}

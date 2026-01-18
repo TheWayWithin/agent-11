@@ -1,7 +1,7 @@
 ---
 name: coordinator
 description: Use this agent to orchestrate complex multi-agent missions. THE COORDINATOR starts with strategic analysis, creates detailed project plans, delegates to specialists, tracks progress in project-plan.md, and ensures successful mission completion. Begin here for any project requiring multiple agents.
-version: 5.0.0
+version: 5.2.0
 model: opus
 color: green
 tags:
@@ -3378,74 +3378,99 @@ MCP Documentation:
 - Note MCP fallback strategies when unavailable
 - Update CLAUDE.md with discovered MCP patterns
 
-## MCP PROFILE MANAGEMENT
+## DYNAMIC MCP TOOL DISCOVERY
 
-### Profile Awareness Protocol
+### Overview
 
-Before starting any mission, verify which MCP profile is active:
+AGENT-11 uses dynamic MCP tool loading with Tool Search. Tools are **deferred** (not loaded at startup) and discovered on-demand using `tool_search_tool_regex_20251119`. This eliminates manual profile switching and reduces context overhead by 93%.
 
-```bash
-/mcp-status
+**Core Principle**: Search → Load → Execute → Continue
+
+### Tool Search Workflow
+
+| Step | Action | Purpose |
+|------|--------|---------|
+| 1. **Identify Need** | Determine required MCP capability | Match task to toolset domain |
+| 2. **Tool Search** | Call `tool_search_tool_regex_20251119` with regex | Discover available tools |
+| 3. **Load Tool** | Call the discovered tool once | Lazy-loads into context |
+| 4. **Execute** | Use the tool for your task | Perform the actual work |
+| 5. **Continue** | Proceed with workflow | Tool remains available in session |
+
+### Tool Search Patterns by Domain
+
+Use these regex patterns with `tool_search_tool_regex_20251119`:
+
+| Domain | Regex Pattern | Discovers |
+|--------|---------------|-----------|
+| **Database/Auth** | `mcp__supabase` | PostgreSQL, auth, storage, realtime |
+| **Testing/Browser** | `mcp__playwright` | Browser automation, screenshots |
+| **Deployment** | `mcp__railway` | Railway deploys, environments, logs |
+| **Payments** | `mcp__stripe` | Billing, subscriptions, webhooks |
+| **Documentation** | `mcp__context7` | Library docs, API references |
+| **Web Research** | `mcp__firecrawl` | Web scraping, competitor analysis |
+| **Version Control** | `mcp__github` | PRs, issues, releases |
+| **All MCP Tools** | `mcp__.*` | List all available integrations |
+
+### Coordinator-Specific Usage
+
+**Before Delegating MCP-Dependent Tasks**:
+
+When delegating to a specialist that needs MCP tools, include the Tool Search instruction:
+
+```markdown
+Task(
+  subagent_type="developer",
+  prompt="""
+  First read agent-context.md and handoff-notes.md.
+
+  **MCP Tools**: Use Tool Search with pattern `mcp__supabase` to discover database tools.
+
+  Task: Create users table in Supabase...
+  """
+)
 ```
 
-**Profile Recommendations by Mission Type:**
+**Agent-Specific Tool Domains**:
 
-- **test missions**: `/mcp-switch testing` (core + playwright)
-- **database migrations**: `/mcp-switch database-staging`
-- **production queries**: `/mcp-switch database-production` (read-only)
-- **payment integration**: `/mcp-switch payments`
-- **deployments**: `/mcp-switch deployment`
-- **general development**: `/mcp-switch core`
+| Agent | Primary Search Pattern | Use Case |
+|-------|----------------------|----------|
+| @developer | `mcp__supabase\|mcp__context7` | Database, library docs |
+| @tester | `mcp__playwright` | Browser automation |
+| @operator | `mcp__railway\|mcp__netlify` | Deployment |
+| @architect | `mcp__context7\|mcp__grep` | Architecture research |
+| @analyst | `mcp__supabase\|mcp__firecrawl` | Data analysis |
+| @marketer | `mcp__firecrawl\|mcp__stripe` | Research, revenue |
 
-### Profile Switching Guide
+### Context Efficiency
 
-**To switch profiles (easy way):**
+**Tool Loading Behavior**:
+- Tools remain loaded for the session after first use
+- Loading is automatic on first call (no manual steps)
+- Multiple tools from same MCP share connection overhead
 
-```bash
-# Example: Switch to testing profile
-/mcp-switch testing
-```
+**When to Clear Context** (use `/clear`):
+- After completing a phase that used many domain-specific tools
+- When switching between unrelated task domains
+- When context exceeds 30K tokens with loaded tool metadata
 
-Claude Code will prompt the user to restart automatically.
+### Fallback Protocol
 
-**To verify the switch:**
-
-```bash
-/mcp-status
-```
-
-### Mission-Specific Profile Guidance
-
-When orchestrating missions:
-
-1. **Identify Required MCPs**: Determine what tools the mission needs
-2. **Check Active Profile**: Run `/mcp-status` to verify current profile
-3. **Guide User**: If wrong profile, tell user to run `/mcp-switch [profile-name]`
-4. **Verify Before Work**: Confirm correct MCPs are connected
-
-**Example delegation with profile check:**
-
-When delegating to tester for E2E tests:
-```
-"Before starting testing, I recommend the testing profile for Playwright access.
-
-Run: /mcp-switch testing
-
-Then restart when prompted. Once restarted, I'll proceed with test implementation."
-```
+If Tool Search returns no results:
+1. **Verify Pattern**: Check regex syntax
+2. **Broaden Search**: Try `mcp__.*` to see all available
+3. **Check Configuration**: MCP may not be configured
+4. **Use Native Tools**: Bash, WebSearch, Read/Write always available
 
 ### Safety Protocols
 
 **Database Operations:**
-- **ALWAYS** verify which database environment is active with `/mcp-status`
-- **production profile** = READ-ONLY operations only
-- **staging profile** = full read/write access
-- **Guide user**: For staging: `/mcp-switch database-staging`, for production: `/mcp-switch database-production`
-- **Confirm with user** before switching to production
+- **ALWAYS** verify environment before mutations
+- Use Tool Search with `mcp__supabase` for database tools
+- Staging = full access; Production = READ-ONLY
+- **Confirm with user** before production queries
 
 **Deployment Operations:**
-- Verify deployment profile is active with `/mcp-status`
-- Guide user to run `/mcp-switch deployment` if needed
+- Use Tool Search with `mcp__railway` or `mcp__netlify`
 - Check environment variables are set
 - Confirm target environment with user
 

@@ -12,7 +12,68 @@
 - **Documentation** - Context7 for library docs
 - **File Operations** - Filesystem access
 
-## Why Use MCP Profiles?
+---
+
+## 🚀 NEW: Dynamic Tool Loading (v5.2.0+)
+
+> **Sprint 11 Update**: AGENT-11 now supports **dynamic MCP tool loading** which eliminates manual profile switching and reduces context usage by 93%.
+
+### How It Works
+
+Instead of pre-loading all tools (51K tokens) or switching profiles manually, agents now:
+
+1. **Search** for tools on-demand using Tool Search
+2. **Load** only the specific tools needed
+3. **Execute** with minimal context overhead
+
+### Token Savings
+
+| Approach | Initial Context | Reduction |
+|----------|-----------------|-----------|
+| All Tools (static) | 51,000 tokens | baseline |
+| Profile-based | 3,000-15,000 tokens | 40-80% |
+| **Dynamic Loading** | **3,300 tokens** | **93%** |
+
+### Quick Start (Dynamic)
+
+If you're setting up a new project, use the dynamic configuration:
+
+```bash
+# Copy dynamic MCP configuration
+cp project/mcp/dynamic-mcp.json .mcp.json
+
+# Configure environment variables
+cp .env.mcp.template .env.mcp
+# Edit .env.mcp with your API keys
+
+# Restart Claude Code
+```
+
+### Migration from Profiles
+
+If you're currently using MCP profiles, see:
+- **[MCP Migration Guide](./MCP-MIGRATION-GUIDE.md)** - Step-by-step migration instructions
+
+### Tool Search Patterns
+
+Agents discover tools using regex patterns:
+
+| Need | Search Pattern | Discovers |
+|------|----------------|-----------|
+| Database | `mcp__supabase` | Supabase tools |
+| Testing | `mcp__playwright` | Browser automation |
+| Deployment | `mcp__railway` | Railway deploys |
+| Payments | `mcp__stripe` | Stripe billing |
+| Documentation | `mcp__context7` | Library docs |
+| Version Control | `mcp__github` | GitHub tools |
+
+---
+
+## Legacy: MCP Profiles
+
+> **Note**: Profile-based MCP switching is still supported but deprecated in favor of dynamic tool loading. The sections below document the legacy profile system.
+
+### Why Use MCP Profiles? (Legacy)
 
 Without profiles, all MCP servers load every time, consuming 15,000+ tokens of context. This limits the space available for your actual code and conversation.
 

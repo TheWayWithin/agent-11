@@ -1,0 +1,394 @@
+# Dynamic MCP Configuration Schema v1.0.0
+# Purpose: Define structure for AGENT-11's context-optimized MCP tool loading
+# Target: 80%+ token reduction (51K → ~10K) via lazy loading with Tool Search discovery
+
+version: "1.0.0"
+description: |
+  Schema for dynamic MCP tool configuration in AGENT-11. Supports lazy loading
+  via defer_loading to minimize context size while maintaining tool discoverability
+  through Tool Search. Discovery tools are pre-loaded for routing; execution tools
+  are loaded on-demand.
+
+# Top-level configuration
+configuration:
+  # Global defaults
+  defaults:
+    defer_loading: true  # Default behavior: lazy load all tools
+    enable_tool_search: true  # Enable Tool Search for discovery
+
+  # Token budget tracking
+  token_budget:
+    target_initial_context: 10000  # Target: <10K tokens initial context
+    current_static_context: 51000  # Baseline: static profile context
+    reduction_goal: 0.80  # Goal: 80%+ reduction
+
+  # Estimated token costs (for planning)
+  token_costs:
+    tool_search_tool: 500  # Tool Search tool context cost
+    discovery_tool_avg: 350  # Average discovery tool cost
+    execution_tool_avg: 200  # Average execution tool cost (when loaded)
+
+# Tool definitions
+tools:
+  # Tool Search Tool (REQUIRED for discovery)
+  - type: "tool_search_tool_regex_20251119"
+    name: "tool_search"
+    description: "Search and discover available MCP tools dynamically"
+    defer_loading: false  # MUST be pre-loaded for discovery
+    estimated_tokens: 500
+    priority: critical
+    usage_pattern: "Discovery and routing - used by coordinator to find relevant tools"
+
+  # MCP Toolsets with lazy loading
+  mcp_toolsets:
+    # Context7 - Library documentation and code patterns
+    - type: "mcp_toolset"
+      mcp_server_name: "context7"
+      description: "Library documentation, API references, and code patterns"
+
+      # Server-level defaults
+      default_config:
+        defer_loading: true  # Lazy load by default
+
+      # Per-tool overrides
+      tools:
+        # DISCOVERY TOOLS (pre-loaded)
+        - name: "resolve-library-id"
+          defer_loading: false  # Pre-load for discovery
+          description: "Find correct library identifiers for documentation lookup"
+          estimated_tokens: 400
+          usage_pattern: "Discovery - architect/developer use to find library IDs before fetching docs"
+          category: "discovery"
+
+        # EXECUTION TOOLS (lazy loaded)
+        - name: "get-library-docs"
+          defer_loading: true
+          description: "Retrieve up-to-date library documentation"
+          estimated_tokens: 300
+          usage_pattern: "Execution - loaded when specific documentation needed"
+          category: "execution"
+
+        - name: "search-library-docs"
+          defer_loading: true
+          description: "Search library documentation by query"
+          estimated_tokens: 300
+          usage_pattern: "Execution - loaded when documentation search needed"
+          category: "execution"
+
+    # Firecrawl - Web scraping and research
+    - type: "mcp_toolset"
+      mcp_server_name: "firecrawl"
+      description: "Web scraping, competitor analysis, market research"
+
+      default_config:
+        defer_loading: true
+
+      tools:
+        # DISCOVERY TOOLS
+        - name: "firecrawl_scrape"
+          defer_loading: false
+          description: "Scrape single webpage for content analysis"
+          estimated_tokens: 350
+          usage_pattern: "Discovery - strategist/analyst use to analyze competitor pages"
+          category: "discovery"
+
+        - name: "firecrawl_batch_scrape"
+          defer_loading: false
+          description: "Scrape multiple pages in batch"
+          estimated_tokens: 350
+          usage_pattern: "Discovery - batch analysis for market research"
+          category: "discovery"
+
+        # EXECUTION TOOLS
+        - name: "firecrawl_crawl"
+          defer_loading: true
+          description: "Deep crawl website for comprehensive data"
+          estimated_tokens: 250
+          usage_pattern: "Execution - loaded for deep competitor analysis"
+          category: "execution"
+
+        - name: "firecrawl_extract_data"
+          defer_loading: true
+          description: "Extract structured data from pages"
+          estimated_tokens: 250
+          usage_pattern: "Execution - loaded for data extraction tasks"
+          category: "execution"
+
+    # Playwright - Browser automation and testing
+    - type: "mcp_toolset"
+      mcp_server_name: "playwright"
+      description: "Browser automation, testing, screenshots, accessibility"
+
+      default_config:
+        defer_loading: true
+
+      tools:
+        # DISCOVERY TOOLS
+        - name: "playwright_navigate"
+          defer_loading: false
+          description: "Navigate browser to URL for testing/analysis"
+          estimated_tokens: 300
+          usage_pattern: "Discovery - tester/designer use to access pages for testing"
+          category: "discovery"
+
+        # EXECUTION TOOLS
+        - name: "playwright_click"
+          defer_loading: true
+          description: "Click elements on page"
+          estimated_tokens: 200
+          usage_pattern: "Execution - loaded for interaction testing"
+          category: "execution"
+
+        - name: "playwright_type"
+          defer_loading: true
+          description: "Type text into input fields"
+          estimated_tokens: 200
+          usage_pattern: "Execution - loaded for form testing"
+          category: "execution"
+
+        - name: "playwright_screenshot"
+          defer_loading: true
+          description: "Capture page screenshots"
+          estimated_tokens: 200
+          usage_pattern: "Execution - loaded for visual testing/evidence"
+          category: "execution"
+
+        - name: "playwright_wait_for"
+          defer_loading: true
+          description: "Wait for elements or conditions"
+          estimated_tokens: 200
+          usage_pattern: "Execution - loaded for async testing"
+          category: "execution"
+
+    # Supabase - Database and authentication
+    - type: "mcp_toolset"
+      mcp_server_name: "supabase"
+      description: "Managed Postgres, authentication, real-time, storage"
+
+      default_config:
+        defer_loading: true
+
+      tools:
+        # DISCOVERY TOOLS
+        - name: "supabase_list_tables"
+          defer_loading: false
+          description: "List database tables and schema"
+          estimated_tokens: 350
+          usage_pattern: "Discovery - developer/architect use to understand schema"
+          category: "discovery"
+
+        # EXECUTION TOOLS
+        - name: "supabase_query_sql"
+          defer_loading: true
+          description: "Execute SQL queries"
+          estimated_tokens: 250
+          usage_pattern: "Execution - loaded for data operations"
+          category: "execution"
+
+        - name: "supabase_create_migration"
+          defer_loading: true
+          description: "Create database migrations"
+          estimated_tokens: 250
+          usage_pattern: "Execution - loaded for schema changes"
+          category: "execution"
+
+        - name: "supabase_manage_auth"
+          defer_loading: true
+          description: "Manage authentication settings"
+          estimated_tokens: 250
+          usage_pattern: "Execution - loaded for auth configuration"
+          category: "execution"
+
+    # GitHub - Version control and CI/CD
+    - type: "mcp_toolset"
+      mcp_server_name: "github"
+      description: "Repository management, PRs, issues, Actions, project boards"
+
+      default_config:
+        defer_loading: true
+
+      tools:
+        # DISCOVERY TOOLS
+        - name: "github_list_repos"
+          defer_loading: false
+          description: "List repositories in organization/user account"
+          estimated_tokens: 350
+          usage_pattern: "Discovery - developer/coordinator use to find repositories"
+          category: "discovery"
+
+        # EXECUTION TOOLS
+        - name: "github_create_pr"
+          defer_loading: true
+          description: "Create pull requests"
+          estimated_tokens: 250
+          usage_pattern: "Execution - loaded for code review workflows"
+          category: "execution"
+
+        - name: "github_manage_issues"
+          defer_loading: true
+          description: "Create, update, close issues"
+          estimated_tokens: 250
+          usage_pattern: "Execution - loaded for issue tracking"
+          category: "execution"
+
+        - name: "github_commit_file"
+          defer_loading: true
+          description: "Commit files to repository"
+          estimated_tokens: 250
+          usage_pattern: "Execution - loaded for direct commits"
+          category: "execution"
+
+    # Railway - Backend services and infrastructure
+    - type: "mcp_toolset"
+      mcp_server_name: "railway"
+      description: "Backend services, databases, cron jobs, auto-scaling"
+
+      default_config:
+        defer_loading: true
+
+      tools:
+        # DISCOVERY TOOLS
+        - name: "railway_list_services"
+          defer_loading: false
+          description: "List deployed services and their status"
+          estimated_tokens: 350
+          usage_pattern: "Discovery - operator use to view infrastructure"
+          category: "discovery"
+
+        # EXECUTION TOOLS
+        - name: "railway_deploy"
+          defer_loading: true
+          description: "Deploy services to Railway"
+          estimated_tokens: 250
+          usage_pattern: "Execution - loaded for deployment operations"
+          category: "execution"
+
+        - name: "railway_manage_env"
+          defer_loading: true
+          description: "Manage environment variables"
+          estimated_tokens: 250
+          usage_pattern: "Execution - loaded for configuration updates"
+          category: "execution"
+
+        - name: "railway_link_service"
+          defer_loading: true
+          description: "Link services for communication"
+          estimated_tokens: 250
+          usage_pattern: "Execution - loaded for service orchestration"
+          category: "execution"
+
+    # Stripe - Payments and subscriptions
+    - type: "mcp_toolset"
+      mcp_server_name: "stripe"
+      description: "Payment processing, subscriptions, revenue analytics"
+
+      default_config:
+        defer_loading: true
+
+      tools:
+        # DISCOVERY TOOLS
+        - name: "stripe_search_customers"
+          defer_loading: false
+          description: "Search and list customers"
+          estimated_tokens: 350
+          usage_pattern: "Discovery - support/analyst use to find customer data"
+          category: "discovery"
+
+        # EXECUTION TOOLS
+        - name: "stripe_create_payment"
+          defer_loading: true
+          description: "Create payment intents and charges"
+          estimated_tokens: 250
+          usage_pattern: "Execution - loaded for payment operations"
+          category: "execution"
+
+        - name: "stripe_get_logs"
+          defer_loading: true
+          description: "Retrieve API logs and events"
+          estimated_tokens: 250
+          usage_pattern: "Execution - loaded for debugging"
+          category: "execution"
+
+        - name: "stripe_manage_subscriptions"
+          defer_loading: true
+          description: "Manage subscription lifecycles"
+          estimated_tokens: 250
+          usage_pattern: "Execution - loaded for subscription operations"
+          category: "execution"
+
+# Token Budget Calculation (for reference)
+token_budget_breakdown:
+  tool_search_tool: 500
+  discovery_tools:
+    context7: 400  # resolve-library-id
+    firecrawl: 700  # scrape + batch_scrape
+    playwright: 300  # navigate
+    supabase: 350  # list_tables
+    github: 350  # list_repos
+    railway: 350  # list_services
+    stripe: 350  # search_customers
+    subtotal: 2800
+
+  total_initial_context: 3300  # 500 + 2800
+  reduction_from_baseline: 0.935  # (51000 - 3300) / 51000 = 93.5%
+
+  execution_tools_loaded_on_demand: true
+  avg_execution_context_when_needed: 1500  # ~6 tools x 250 tokens
+  peak_context_estimate: 4800  # 3300 + 1500
+
+# Usage Guidelines
+usage_guidelines:
+  discovery_phase:
+    - Tool Search finds relevant tools via regex matching
+    - Discovery tools provide lightweight routing information
+    - Coordinator uses tool metadata to select appropriate specialists
+
+  execution_phase:
+    - Execution tools loaded only when specialist needs them
+    - Context grows dynamically based on actual usage
+    - Tools unloaded after task completion to manage context
+
+  specialist_routing:
+    architect: ["context7:resolve-library-id", "firecrawl:scrape"]
+    developer: ["context7:resolve-library-id", "github:list_repos", "supabase:list_tables"]
+    tester: ["playwright:navigate", "supabase:list_tables"]
+    operator: ["railway:list_services", "github:list_repos"]
+    analyst: ["firecrawl:scrape", "stripe:search_customers", "supabase:list_tables"]
+    strategist: ["firecrawl:scrape", "context7:resolve-library-id"]
+
+# Migration Strategy
+migration:
+  phase_1: "Add Tool Search tool to all agents"
+  phase_2: "Convert static profiles to dynamic toolsets with defer_loading"
+  phase_3: "Update coordinator to use Tool Search for routing"
+  phase_4: "Deprecate static MCP profiles"
+  phase_5: "Monitor context usage and optimize tool categorization"
+
+# Validation Rules
+validation:
+  required_fields:
+    - version
+    - tools
+    - mcp_toolsets
+
+  tool_search_required: true
+
+  per_mcp_rules:
+    - At least one discovery tool (defer_loading: false)
+    - default_config must specify defer_loading
+    - All tools must have name, description, category
+
+  token_budget_limits:
+    initial_context_max: 10000
+    execution_context_max: 15000
+
+# Version History
+changelog:
+  - version: "1.0.0"
+    date: "2026-01-17"
+    changes:
+      - Initial schema design
+      - Support for Tool Search tool
+      - MCP toolset lazy loading
+      - Discovery vs execution tool categorization
+      - Token budget tracking
