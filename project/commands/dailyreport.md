@@ -40,7 +40,9 @@ Shipped bulletproof file persistence today 🚀
 
 Learned that agents can silently fail - fixed it for good.
 
-Full writeup: jamiewatters.work/progress/2025-11-19
+Try it: {{PRODUCT_URL}}
+
+Full build story: jamiewatters.work/progress/2025-11-19
 
 #buildinpublic
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -96,7 +98,7 @@ When enabled (default), `/dailyreport` generates platform-optimized social media
 - `YYYY-MM-DD-linkedin.md` - LinkedIn post (800-1000 character sweet spot)
 - Copy-paste ready format with character count validation
 - Platform-specific tone and engagement patterns
-- Links to full progress post
+- Dual-link structure: product URL + article URL (article LAST for OG preview)
 
 **Configuration**:
 ```bash
@@ -105,6 +107,10 @@ DAILYREPORT_ENABLE_SOCIAL=true
 
 # Base URL for progress links (default: jamiewatters.work)
 DAILYREPORT_BASE_URL=jamiewatters.work
+
+# Product URL placeholder (you fill in after generation)
+# Examples: modeloptix.com, plebtest.com, yourdomain.com
+# Leave as {{PRODUCT_URL}} in generated files - replace before publishing
 ```
 
 ## SOCIAL MEDIA POST GENERATION
@@ -116,13 +122,15 @@ When social media generation is enabled, `/dailyreport` automatically creates pl
 **Twitter/X**:
 - 280 character hard limit (aims for 71-100 optimal)
 - 1-2 hashtags from: #buildinpublic #solofounder #indiehacker #devlog
-- Strong hook + accomplishment + link pattern
+- Strong hook + accomplishment + dual-link pattern
+- Product link first ({{PRODUCT_URL}}), article link LAST (for OG preview)
 - Behind-the-scenes, authentic tone
 
 **LinkedIn**:
 - 800-1000 character sweet spot (3,000 max)
 - First 140 characters optimized as hook (shown before "see more")
 - Short one-line phrases for scannability
+- Product link mid-post ({{PRODUCT_URL}}), article link at end (for OG preview)
 - Ends with engagement question
 - Professional yet authentic developer/founder tone
 
@@ -132,6 +140,34 @@ When social media generation is enabled, `/dailyreport` automatically creates pl
 |------|----------|--------|
 | `YYYY-MM-DD-twitter.md` | Twitter/X | Copy-paste ready with character count |
 | `YYYY-MM-DD-linkedin.md` | LinkedIn | Copy-paste ready with hook validation |
+
+### Dual-Link Structure (OG Preview Optimization)
+
+Social posts include **two links** strategically ordered for optimal OG preview behavior:
+
+**Link Order:**
+1. **Product Link ({{PRODUCT_URL}})** - Your live product/app (modeloptix.com, plebtest.com, etc.)
+2. **Article Link (LAST)** - Your blog post with branded OG image
+
+**Why This Order Matters:**
+- Social platforms use the **LAST link** for the OG preview card
+- Your jamiewatters.work blog posts have custom OG images
+- Product link appears first as a clear call-to-action
+- Article link at the end generates the branded preview image
+
+**Example Output:**
+```
+Shipped bulletproof file persistence today 🚀
+
+Try it: {{PRODUCT_URL}}
+
+Full build story: jamiewatters.work/progress/2025-11-19
+
+#buildinpublic
+```
+
+**After Generation:**
+Replace `{{PRODUCT_URL}}` with your actual product URL (e.g., `modeloptix.com`) before publishing.
 
 ### Cost & Performance
 
@@ -188,6 +224,10 @@ DAILYREPORT_ENABLE_SOCIAL=true
 
 # Base URL for progress links (default: jamiewatters.work)
 DAILYREPORT_BASE_URL=jamiewatters.work
+
+# Product URL placeholder (you fill in after generation)
+# Examples: modeloptix.com, plebtest.com, yourdomain.com
+# Leave as {{PRODUCT_URL}} in generated files - replace before publishing
 ```
 
 ## OUTPUT TO USER
@@ -215,7 +255,9 @@ Shipped bulletproof file persistence today 🚀
 
 Learned that agents can silently fail - fixed it for good.
 
-Full writeup: jamiewatters.work/progress/2025-11-19
+Try it: {{PRODUCT_URL}}
+
+Full build story: jamiewatters.work/progress/2025-11-19
 
 #buildinpublic
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -247,17 +289,19 @@ Full writeup: jamiewatters.work/progress/2025-11-19
 
 1. Open `/progress/YYYY-MM-DD-twitter.md`
 2. Copy the post text (between the dashed lines)
-3. Paste into Twitter/X compose
-4. Click Tweet
+3. **Replace `{{PRODUCT_URL}}`** with your product URL (e.g., `modeloptix.com`)
+4. Paste into Twitter/X compose
+5. Click Tweet
 
 ### LinkedIn Publishing
 
 1. Open `/progress/YYYY-MM-DD-linkedin.md`
 2. Copy the post text (between the dashed lines)
-3. Go to LinkedIn home feed
-4. Click "Start a post"
-5. Paste content
-6. Click "Post"
+3. **Replace `{{PRODUCT_URL}}`** with your product URL (e.g., `modeloptix.com`)
+4. Go to LinkedIn home feed
+5. Click "Start a post"
+6. Paste content
+7. Click "Post"
 
 ### Blog Publishing
 
