@@ -100,6 +100,13 @@ When enabled (default), `/dailyreport` generates platform-optimized social media
 - Platform-specific tone and engagement patterns
 - Dual-link structure: product URL + article URL (article LAST for OG preview)
 
+**Author Contact Details** (use these in generated posts):
+| Platform | Handle/URL |
+|----------|------------|
+| Build Site | jamiewatters.work |
+| X/Twitter | @Jamie_within |
+| LinkedIn | linkedin.com/in/jamie-watters-solo |
+
 **Configuration**:
 ```bash
 # Enable/disable social media generation (default: true)
