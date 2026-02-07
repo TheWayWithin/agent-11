@@ -906,7 +906,7 @@ Extended thinking modes (Ultrathink/Think harder/Think hard/Think - 39% effectiv
 
 | Capability | Measurement | Impact |
 |------------|-------------|--------|
-| **Mission Success** | +15% (v4.0) | Opus 4.5 coordinator intelligence |
+| **Mission Success** | +15% (v4.0) | Opus 4.6 coordinator intelligence |
 | **Cost Efficiency** | -24% total cost | Opus iterations offset token cost |
 | **Agent Effectiveness** | 39% improvement | Extended thinking + self-verification |
 | **Token Efficiency** | 84% reduction | Context editing + memory optimization |

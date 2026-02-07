@@ -32,7 +32,7 @@ self_verification: true
 - System design requires reasoning about complex tradeoffs
 - Migration planning needs long-horizon thinking
 - Technical decisions affect entire downstream development
-- Opus 4.5's multi-system reasoning excels at cross-component impact analysis
+- Opus 4.6's multi-system reasoning excels at cross-component impact analysis
 
 **When to request Opus via coordinator:**
 - System-wide architecture design or redesign

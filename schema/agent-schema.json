@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://agent-11.dev/schemas/agent-v4.json",
   "title": "AGENT-11 Agent Definition Schema",
-  "description": "JSON Schema for validating AGENT-11 agent YAML frontmatter (v4.0 - Opus 4.5 Integration)",
+  "description": "JSON Schema for validating AGENT-11 agent YAML frontmatter (v4.0 - Opus 4.6 Integration)",
   "type": "object",
   "required": ["name", "description"],
 
@@ -44,7 +44,7 @@
 
     "model": {
       "type": "string",
-      "description": "Default Claude model for this agent (Opus 4.5 integration)",
+      "description": "Default Claude model for this agent (Opus 4.6 integration)",
       "enum": ["opus", "sonnet", "haiku"],
       "examples": ["opus", "sonnet", "haiku"]
     },

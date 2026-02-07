@@ -34,6 +34,7 @@ Claude's memory system operates through a client-side, file-based architecture:
 Memory operates through the beta API with header: `context-management-2025-06-27`
 
 **Supported Models**:
+- Claude Opus 4.6 (`claude-opus-4-6`)
 - Claude Sonnet 4.5 (`claude-sonnet-4-5-20250929`)
 - Claude Sonnet 4 (`claude-sonnet-4-20250514`)
 - Claude Opus 4.1 (`claude-opus-4-1-20250805`)

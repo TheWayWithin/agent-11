@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- Nothing yet
+### Changed
+- Upgraded Opus tier references from 4.5 to 4.6 across all documentation
+- Updated model-selection-guide.md (v1.1.0) with Opus 4.6 tier
+- Added Opus 4.6 (`claude-opus-4-6`) to memory-management.md supported models
+- Added Opus 4.6 to extended-thinking-guide.md supported models
+- Updated agent-schema.json descriptions for Opus 4.6
+- Updated architect specialist Opus reasoning reference
 
 ## [5.0.0] - 2025-12-31 - SaaS Boilerplate Killer Architecture
 

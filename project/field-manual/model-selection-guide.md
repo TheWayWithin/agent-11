@@ -1,12 +1,12 @@
 # Model Selection Guide
 
-**Version**: 1.0.0
-**Last Updated**: 2025-11-27
+**Version**: 1.1.0
+**Last Updated**: 2026-02-07
 **Applies To**: AGENT-11 v4.0.0+
 
 ## Overview
 
-AGENT-11 v4.0.0 introduces intelligent model selection to optimize cost and performance. The Task tool's `model` parameter enables dynamic selection between Claude Opus 4.5, Sonnet 4.5, and Haiku based on task complexity.
+AGENT-11 v4.0.0 introduces intelligent model selection to optimize cost and performance. The Task tool's `model` parameter enables dynamic selection between Claude Opus 4.6, Sonnet 4.5, and Haiku based on task complexity.
 
 **Key Benefits**:
 - **+15% mission success rate** - Better orchestration decisions
@@ -22,11 +22,11 @@ AGENT-11 uses a three-tier model deployment strategy:
 
 | Tier | Model | Primary Use | Cost/1M Tokens |
 |------|-------|-------------|----------------|
-| **1** | **Opus 4.5** | Complex orchestration, strategic reasoning | Highest |
+| **1** | **Opus 4.6** | Complex orchestration, strategic reasoning | Highest |
 | **2** | **Sonnet 4.5** | Standard implementation, testing (default) | Medium |
 | **3** | **Haiku** | Simple tasks, quick operations | Lowest |
 
-### Tier 1: Opus 4.5 (Frontier Intelligence)
+### Tier 1: Opus 4.6 (Frontier Intelligence)
 
 **Best for**: Complex reasoning that requires sustained attention and multi-step planning.
 
@@ -105,7 +105,7 @@ Task(
 
 | Value | Model | When to Use |
 |-------|-------|-------------|
-| `"opus"` | Claude Opus 4.5 | Complex, ambiguous, multi-phase tasks |
+| `"opus"` | Claude Opus 4.6 | Complex, ambiguous, multi-phase tasks |
 | `"sonnet"` | Claude Sonnet 4.5 | Standard tasks (default if omitted) |
 | `"haiku"` | Claude Haiku | Simple, routine, speed-critical tasks |
 
@@ -438,6 +438,9 @@ Documenter: Sonnet (main documentation)
 ---
 
 ## Changelog
+
+### v1.1.0 (2026-02-07)
+- Updated Opus tier from 4.5 to 4.6 following model release
 
 ### v1.0.0 (2025-11-27)
 - Initial release with Sprint 4 Opus 4.5 integration

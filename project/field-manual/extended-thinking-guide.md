@@ -41,7 +41,7 @@ response = client.messages.create(
 - Minimum thinking budget: 1,024 tokens
 - Thinking tokens count towards `max_tokens` limit
 - Thinking tokens are billed as output tokens
-- Supported models: Opus 4.1, Opus 4, Sonnet 4.5, Sonnet 4, Sonnet 3.7
+- Supported models: Opus 4.6, Opus 4.1, Opus 4, Sonnet 4.5, Sonnet 4, Sonnet 3.7
 
 ## When to Use Extended Thinking
 
