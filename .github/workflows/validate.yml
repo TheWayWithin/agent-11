@@ -15,7 +15,7 @@ jobs:
       run: |
         echo "🎯 Validating AGENT-11 structure..."
         [ -f "README.md" ] || exit 1
-        [ -f "QUICKSTART.md" ] || exit 1
-        [ -d "agents" ] || exit 1
+        [ -f "QUICK-START.md" ] || exit 1
+        [ -d "library" ] || exit 1
         [ -d "missions" ] || exit 1
         echo "✅ Structure valid!"
