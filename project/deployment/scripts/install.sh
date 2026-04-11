@@ -8,7 +8,7 @@ set -euo pipefail
 
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 
 # Colors for output (defined early for use in functions)
 RED='\033[0;31m'
@@ -596,6 +596,7 @@ install_mission_system() {
         "project/commands/report.md"
         "project/commands/pmd.md"
         "project/commands/dailyreport.md"
+        "project/commands/blog.md"
         "project/commands/planarchive.md"
         # Sprint 9: Plan-Driven Development commands
         "project/commands/foundations.md"
@@ -710,26 +711,27 @@ install_mission_system() {
         sleep 0.1
     done
 
-    # Install command scripts (enhancement scripts, utilities, etc.)
-    log "Installing command support scripts..."
-    mkdir -p "$COMMANDS_DIR/scripts"
+    # Install command support data — the default voice guide shared by /dailyreport
+    # and /blog. Both commands are Claude-native and read this file directly.
+    # Lives in .claude/data/ (outside .claude/commands/) so the Claude Code harness
+    # doesn't auto-index it as a skill in the command palette.
+    log "Installing command support data..."
+    mkdir -p "$CLAUDE_DIR/data"
 
     if [[ "$execution_mode" == "local" ]]; then
-        if [[ -f "$PROJECT_ROOT/project/commands/scripts/enhance_dailyreport.py" ]]; then
-            if cp "$PROJECT_ROOT/project/commands/scripts/enhance_dailyreport.py" "$COMMANDS_DIR/scripts/"; then
-                chmod +x "$COMMANDS_DIR/scripts/enhance_dailyreport.py"
-                log "Installed: enhance_dailyreport.py script"
+        if [[ -f "$PROJECT_ROOT/project/data/voice-guide-default.md" ]]; then
+            if cp "$PROJECT_ROOT/project/data/voice-guide-default.md" "$CLAUDE_DIR/data/"; then
+                log "Installed: voice-guide-default.md → .claude/data/"
             else
-                warn "Could not install enhance_dailyreport.py script"
+                warn "Could not install voice-guide-default.md"
             fi
         fi
     else
         # Remote installation
-        if download_file_from_github "project/commands/scripts/enhance_dailyreport.py" "$COMMANDS_DIR/scripts/enhance_dailyreport.py"; then
-            chmod +x "$COMMANDS_DIR/scripts/enhance_dailyreport.py"
-            log "Installed: enhance_dailyreport.py script"
+        if download_file_from_github "project/data/voice-guide-default.md" "$CLAUDE_DIR/data/voice-guide-default.md"; then
+            log "Installed: voice-guide-default.md → .claude/data/"
         else
-            warn "Could not download enhance_dailyreport.py script"
+            warn "Could not download voice-guide-default.md"
         fi
     fi
     

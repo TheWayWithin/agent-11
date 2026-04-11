@@ -1457,68 +1457,117 @@ Is this correct? [Y/n/edit]:
 ---
 
 ### 📅 `/dailyreport` - Daily Progress Reports + Social Media Posts
-**Generate consolidated daily summaries with AI-enhanced blog and social media posts for build-in-public updates**
+**Turn today's progress.md entries into a structured daily report plus voice-aligned blog, Twitter/X, and LinkedIn posts for build-in-public sharing**
 
 ```bash
-/dailyreport    # Extract today's work from progress.md + generate social posts
+/dailyreport    # Extract today's work from progress.md and generate all four files
 ```
 
 **Report includes**:
-- **Completed Milestones** - Grouped by context (features, fixes, infrastructure)
-- **Issues & Learnings** - Root cause analysis and prevention strategies
-- **Impact Summary** - 2-3 sentence summary of achievements
-- **Next Steps** - Key priorities for tomorrow
+- **Completed milestones** grouped by context (features, fixes, infrastructure, docs)
+- **Issues & learnings** with root cause analysis and failed-attempt history
+- **Lessons learned** and patterns noticed
+- **Next steps** for tomorrow
 
 **Output Files** (4 files per day):
 ```
 progress/
-├── 2025-11-19.md           # Raw daily report (source of truth)
-├── 2025-11-19-blog.md      # Blog post (AI-enhanced narrative)
-├── 2025-11-19-twitter.md   # Twitter/X post (280 char, copy-paste ready)
-└── 2025-11-19-linkedin.md  # LinkedIn post (800-1000 char, copy-paste ready)
+├── 2026-04-11.md           # Raw daily report (source of truth)
+├── 2026-04-11-blog.md      # Long-form blog post (voice-aligned)
+├── 2026-04-11-twitter.md   # Twitter/X post (copy-paste ready)
+└── 2026-04-11-linkedin.md  # LinkedIn post (copy-paste ready)
 ```
 
 **Social Media Features**:
-- **Twitter/X**: 280 char limit, optimized 71-100 chars, hashtags (#buildinpublic, #solofounder)
-- **LinkedIn**: 800-1000 char sweet spot, hook-optimized first 140 chars, engagement question
-- **Copy-paste ready**: Character count validated, ready to publish
-- **Platform-optimized tone**: Authentic developer/founder voice
+- **Twitter/X**: 180-260 char sweet spot, dual-link OG preview structure, 1-2 hashtags
+- **LinkedIn**: 800-1000 char sweet spot, hook-optimized first 140 chars, genuine closing question
+- **Copy-paste ready**: character count validated, `{{PRODUCT_URL}}` placeholder for final edit
+- **Voice-aligned**: every post follows your voice guide (see below)
 
-**Example Output**:
-```
-✅ Daily report created: /progress/2025-11-19.md
-🤖 Generating blog-ready version...
-✨ Blog post created: /progress/2025-11-19-blog.md
-🐦 Generating social media posts...
-✨ Twitter post created: /progress/2025-11-19-twitter.md
-✨ LinkedIn post created: /progress/2025-11-19-linkedin.md
-
-Twitter Preview (copy-paste ready):
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Shipped bulletproof file persistence today 🚀
-
-Learned that agents can silently fail - fixed it for good.
-
-Full writeup: jamiewatters.work/progress/2025-11-19
-
-#buildinpublic
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
+**Claude-native architecture**: `/dailyreport` is pure Claude Code — no Python script,
+no `OPENAI_API_KEY`, no external API costs. Claude reads your `progress.md`, drafts the
+structured report, and derives all three derived outputs following the voice guide to
+the letter. This is the same pipeline `/blog` uses.
 
 **Use when**:
-- End of work day for daily update blog posts
+- End of work day for daily build-in-public updates
 - After major milestone completion
 - When switching between multiple projects
-- For authentic build-in-public transparency
+- For authentic progress transparency
 
 **Benefits**:
 - Blog-ready markdown format
 - Platform-optimized social posts (Twitter/X + LinkedIn)
-- Shows both wins and challenges
+- Shows both wins and challenges, including failed fix attempts
 - Documents learnings for future reference
-- ~$0.002 per complete report (blog + social)
+- No API keys, no usage costs, works immediately after install
 
-**AI Enhancement** (Required for social posts): Add `OPENAI_API_KEY` to `.env.mcp`. See [Full Setup](project/commands/dailyreport.md#ai-enhancement).
+**Voice Alignment**: `/dailyreport` and `/blog` share a voice guide system. Drop a
+`voice-guide.md` in your project root (or set `DAILYREPORT_VOICE_GUIDE=/path/to/file.md`)
+and every generated post follows your voice. The built-in default is tuned for authentic,
+non-AI-sounding build-in-public writing. See the [voice alignment docs](project/commands/dailyreport.md#voice-alignment)
+for the full resolution chain.
+
+---
+
+### ✍️ `/blog` - Topic-Driven Blog Posts + Social Media Posts
+**Draft a long-form blog post and matching Twitter/X + LinkedIn versions on any topic, pulling context from your repo**
+
+```bash
+# Inline topic
+/blog why I stopped using feature flags for small teams
+
+# Brief file
+/blog briefs/cron-incident.md
+
+# Topic with explicit context files
+/blog the file persistence bug --context progress/2025-11-19.md post-mortem-analysis.md
+```
+
+`/dailyreport` turns a structured progress log into a build-in-public update. `/blog`
+is for everything else: opinion pieces, tutorials, deep dives, post-mortems, reactions
+— any writing that isn't tied to a daily changelog. Both commands share the same
+Claude-native pipeline, the same voice guide file, and the same social post format.
+The only difference is the shape of the input: `/dailyreport` parses structured
+progress logs, `/blog` takes any topic you want to write about.
+
+**Output Files** (3 files per post):
+```
+blog/
+├── 2026-04-11-feature-flags-small-teams.md          # Long-form blog post (400-1200 words)
+├── 2026-04-11-feature-flags-small-teams-twitter.md  # Twitter/X (180-260 char, copy-paste ready)
+└── 2026-04-11-feature-flags-small-teams-linkedin.md # LinkedIn (800-1000 char, copy-paste ready)
+```
+
+**What Claude does on each run:**
+1. Resolves the voice guide (same chain as `/dailyreport` — custom file, env var, or default)
+2. Reads `README.md`, `CLAUDE.md`, the brief file (if given), any `--context` files, and
+   intelligently pulls in related files (e.g. `progress.md` for a bug story)
+3. Drafts the long-form post following every voice rule
+4. Derives Twitter/X and LinkedIn versions from the long-form post
+5. Runs an AI-tell scrub and rewrites any banned vocabulary before writing files
+6. Writes all three files to `blog/` and previews the Twitter post inline
+
+**When to use `/blog` vs `/dailyreport`:**
+
+| Situation | Command |
+|-----------|---------|
+| End-of-day progress update from `progress.md` | `/dailyreport` |
+| Opinion piece, tutorial, deep dive, post-mortem story | `/blog` |
+| Build-in-public changelog narrative | `/dailyreport` |
+| Reaction or explainer on any topic | `/blog` |
+
+Both commands write in the same voice and share the same voice guide file. Define your
+voice once, use it everywhere.
+
+**Shared configuration** (same env vars as `/dailyreport`):
+```bash
+DAILYREPORT_VOICE_GUIDE=/path/to/voice-guide.md   # Custom voice guide (optional)
+DAILYREPORT_BASE_URL=yourdomain.com               # Used in social post blog links
+```
+
+See [full `/blog` documentation](project/commands/blog.md) for argument forms, drafting
+rules, troubleshooting, and examples.
 
 ---
 
@@ -1635,6 +1684,7 @@ Estimated token savings: ~4,250 tokens (63% reduction)
 | `/report` | Stakeholder updates | 5-10 min | Progress report | Communication, tracking |
 | `/pmd` | Failure analysis | 30-60 min | Root cause analysis | Learning from mistakes |
 | `/dailyreport` | Daily progress + social posts | 2-5 min | Blog + Twitter + LinkedIn | Build-in-public updates |
+| `/blog` | Topic-driven blog + social posts | 2-5 min | Blog + Twitter + LinkedIn | Opinion pieces, tutorials, deep dives |
 | `/planarchive` | Intelligent tracking file cleanup | 2-5 min | Archive files | Token optimization, context management |
 
 ---

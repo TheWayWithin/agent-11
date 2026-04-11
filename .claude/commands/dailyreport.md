@@ -1,335 +1,489 @@
 ---
 name: dailyreport
-description: Generate consolidated daily progress reports with AI-enhanced blog and social media posts
+description: Generate a daily progress report plus voice-aligned blog and social media posts from your project's progress logs
 ---
 
 # /dailyreport Command
 
-Automated daily progress capture, blog generation, and social media post creation for build-in-public documentation. Tracks milestones, issues, and lessons learned while generating AI-enhanced blog posts and platform-optimized social media content.
+Turn today's work from `progress.md` into a structured daily report, a long-form blog
+post, and copy-paste-ready Twitter/X and LinkedIn posts for build-in-public sharing.
+Voice-aligned, Claude-native, no API keys required.
 
-## KEY FEATURES
+`/dailyreport` is the progress-log counterpart to `/blog`. Where `/blog` takes any topic
+you want to write about, `/dailyreport` parses your structured changelog and narrates
+the day. Both commands share the same voice guide system.
 
-- **Automatic Progress Capture**: Creates structured daily report capturing milestones, issues, lessons, and metrics
-- **Blog Post Generation**: AI-enhanced blog-ready versions optimized for technical audience
-- **Social Media Posts**: Platform-optimized Twitter/X and LinkedIn posts for build-in-public sharing
-- **Structured Metadata**: Captures project context, timestamps, and categorization
-- **Build-in-Public Ready**: Copy-paste social posts with character count validation
-- **Cost Efficient**: ~$0.002 per complete report (blog + social)
-- **Lightning Fast**: ~5 seconds for full report generation with blog and social posts
-
-## WHAT IT DOES
-
-### First Run of the Day
-
-When you run `/dailyreport` for the first time in a day, it creates your initial daily report capturing:
-
-```
-✅ Daily report created: /progress/2025-11-19.md
-📊 Captured 5 milestones across 3 categories
-🐛 Documented 2 issues with root cause analysis
-🤖 Generating blog-ready version...
-✨ Blog post created: /progress/2025-11-19-blog.md
-🐦 Generating social media posts...
-✨ Twitter post created: /progress/2025-11-19-twitter.md
-✨ LinkedIn post created: /progress/2025-11-19-linkedin.md
-📝 Ready to publish!
-
-Twitter Preview (copy-paste ready):
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Shipped bulletproof file persistence today 🚀
-
-Learned that agents can silently fail - fixed it for good.
-
-Full writeup: jamiewatters.work/progress/2025-11-19
-
-#buildinpublic
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-💡 Files ready:
-   - /progress/2025-11-19-blog.md (blog post)
-   - /progress/2025-11-19-twitter.md (Twitter/X)
-   - /progress/2025-11-19-linkedin.md (LinkedIn)
-```
-
-### Subsequent Runs
-
-Running `/dailyreport` later the same day appends to existing daily report:
-
-```
-✅ Daily report updated: /progress/2025-11-19.md
-📊 Total: 8 milestones across 4 categories
-🐛 Total issues: 3
-🤖 Regenerating blog-ready version...
-✨ Blog post updated: /progress/2025-11-19-blog.md
-🐦 Regenerating social media posts...
-✨ Twitter post updated: /progress/2025-11-19-twitter.md
-✨ LinkedIn post updated: /progress/2025-11-19-linkedin.md
-📝 Ready to publish!
-```
-
-## AI ENHANCEMENT FEATURE
-
-### Blog Post Generation
-
-When enabled (default), `/dailyreport` generates a polished blog-ready version of your daily report.
-
-**Blog Output** (`YYYY-MM-DD-blog.md`):
-- Narrative structure with engaging introduction
-- Categorized milestones with context and impact
-- Issue analysis with root cause explanations
-- Lessons learned and patterns discovered
-- Technical depth appropriate for developer audience
-- 5-10 minute read length
-
-**Configuration**:
-```bash
-# Required for AI features
-OPENAI_API_KEY=your_openai_key_here
-```
-
-### Social Media Post Generation
-
-When enabled (default), `/dailyreport` generates platform-optimized social media posts for Twitter/X and LinkedIn.
-
-**Social Media Output**:
-- `YYYY-MM-DD-twitter.md` - Twitter/X post (280 char limit, 71-100 optimal)
-- `YYYY-MM-DD-linkedin.md` - LinkedIn post (800-1000 character sweet spot)
-- Copy-paste ready format with character count validation
-- Platform-specific tone and engagement patterns
-- Links to full progress post
-
-**Configuration**:
-```bash
-# Enable/disable social media generation (default: true)
-DAILYREPORT_ENABLE_SOCIAL=true
-
-# Base URL for progress links (default: jamiewatters.work)
-DAILYREPORT_BASE_URL=jamiewatters.work
-```
-
-## SOCIAL MEDIA POST GENERATION
-
-When social media generation is enabled, `/dailyreport` automatically creates platform-optimized posts alongside your blog content.
-
-### Platforms Supported
-
-**Twitter/X**:
-- 280 character hard limit (aims for 71-100 optimal)
-- 1-2 hashtags from: #buildinpublic #solofounder #indiehacker #devlog
-- Strong hook + accomplishment + link pattern
-- Behind-the-scenes, authentic tone
-
-**LinkedIn**:
-- 800-1000 character sweet spot (3,000 max)
-- First 140 characters optimized as hook (shown before "see more")
-- Short one-line phrases for scannability
-- Ends with engagement question
-- Professional yet authentic developer/founder tone
-
-### Output Files
-
-| File | Platform | Format |
-|------|----------|--------|
-| `YYYY-MM-DD-twitter.md` | Twitter/X | Copy-paste ready with character count |
-| `YYYY-MM-DD-linkedin.md` | LinkedIn | Copy-paste ready with hook validation |
-
-### Cost & Performance
-
-- **Per report**: ~$0.001 additional (combined with blog = ~$0.002 total)
-- **Processing time**: ~3-5 seconds additional
-- **Model**: gpt-4o-mini (same as blog generation)
-
-## FILE STRUCTURE
-
-Daily reports create a consistent file structure in `/progress/` directory:
-
-```
-progress/
-├── 2025-11-19.md              # Raw daily report (source of truth)
-├── 2025-11-19-blog.md         # Blog post (AI-enhanced narrative)
-├── 2025-11-19-twitter.md      # Twitter/X post (280 char)
-└── 2025-11-19-linkedin.md     # LinkedIn post (800-1000 char)
-
-├── 2025-11-20.md              # Next day report
-├── 2025-11-20-blog.md         # Blog version
-├── 2025-11-20-twitter.md      # Twitter/X version
-└── 2025-11-20-linkedin.md     # LinkedIn version
-```
-
-## COMMAND USAGE
-
-### Basic Usage
+## USAGE
 
 ```bash
 /dailyreport
 ```
 
-Automatically:
-1. Captures your progress for the day
-2. Generates blog-ready narrative version
-3. Generates Twitter/X post (if enabled)
-4. Generates LinkedIn post (if enabled)
-5. Displays preview of generated posts
-6. Returns file paths for publishing
+No arguments. Reads the current day's work from `progress.md`, creates or updates the
+daily report, regenerates all three outputs.
 
-### Environment Configuration
+## WHAT IT DOES
 
-Add to your `.env.mcp` file:
+### First run of the day
+
+Creates `progress/YYYY-MM-DD.md` capturing:
+
+- **Completed milestones** grouped by category (features, fixes, infrastructure, docs)
+- **Issues encountered** with root-cause analysis when available
+- **Lessons learned** and patterns noticed
+- **Metrics** when present in the source logs
+- **Next steps** for tomorrow
+
+Then generates the blog post and social posts from that report.
+
+### Subsequent runs the same day
+
+Updates the existing `progress/YYYY-MM-DD.md` with new work added since the last run,
+then regenerates all three derived outputs so they reflect the full day.
+
+## OUTPUT FILES
+
+Four files per day, all in the `progress/` directory:
+
+```
+progress/
+├── 2026-04-11.md            # Raw daily report (source of truth)
+├── 2026-04-11-blog.md       # Long-form blog post (voice-aligned)
+├── 2026-04-11-twitter.md    # Twitter/X post (copy-paste ready)
+└── 2026-04-11-linkedin.md   # LinkedIn post (copy-paste ready)
+```
+
+## VOICE ALIGNMENT
+
+Blog and social posts are drafted to match a specific voice profile loaded from a
+markdown file. Resolution order (first hit wins):
+
+1. **`DAILYREPORT_VOICE_GUIDE` env var** — absolute or relative path to any markdown file
+2. **`voice-guide.md`** in project root
+3. **`.claude/voice-guide.md`**
+4. **`docs/voice-guide.md`**
+5. **Default** — `.claude/data/voice-guide-default.md` (ships with AGENT-11)
+
+The default voice guide is tuned for authentic, non-AI-sounding build-in-public writing.
+It enforces:
+
+- **British spelling** throughout (colour, realise, favour, practise)
+- **No AI-tell vocabulary** — banned list includes delve, tapestry, pivotal, leverage,
+  foster, harness, empower, streamline, transformative, game-changing, seamless, robust,
+  moreover, furthermore, and 30+ others
+- **No stock AI constructions** — no "it's not just X, it's Y," no rule-of-three
+  adjective stacks, no em-dash overuse, no bullet-point-with-bolded-headers
+- **Varied sentence and paragraph length** — short punches mixed with longer lines
+- **Dry, understated humour** delivered straight (Adams/Pratchett/Vonnegut/Heller)
+- **Pub test**: if you wouldn't say it out loud to a friend, it doesn't ship
+
+### Writing your own voice guide
+
+Copy the default to your project root and adapt it:
 
 ```bash
-# Required for AI enhancement
-OPENAI_API_KEY=your_openai_key_here
-
-# Optional: Choose model (default: gpt-4o-mini)
-DAILYREPORT_MODEL=gpt-4o-mini
-
-# Enable/disable social media generation (default: true)
-DAILYREPORT_ENABLE_SOCIAL=true
-
-# Base URL for progress links (default: jamiewatters.work)
-DAILYREPORT_BASE_URL=jamiewatters.work
+cp .claude/data/voice-guide-default.md voice-guide.md
+# Then edit voice-guide.md to reflect your own voice
 ```
 
-## OUTPUT TO USER
+Both `/dailyreport` and `/blog` read from the same guide, so one edit updates both
+commands. The file is passed verbatim to Claude as drafting instructions — be specific.
 
-### First Daily Report (With AI Enhancement)
+### Setting the voice guide via env var
 
+```bash
+# Point at any markdown file, anywhere
+export DAILYREPORT_VOICE_GUIDE=/path/to/my-voice.md
 ```
-✅ Daily report created: /progress/2025-11-19.md
-📊 Captured 5 milestones across 3 categories
-🐛 Documented 2 issues with root cause analysis
 
-AI Enhancement Enabled:
-🤖 Generating blog-ready version...
-✨ Blog post created: /progress/2025-11-19-blog.md
+If the env var is set but points at a missing file, `/dailyreport` prints a loud warning
+and falls back to the default rather than silently using the wrong voice.
 
-🐦 Generating social media posts...
-✨ Twitter post created: /progress/2025-11-19-twitter.md
-✨ LinkedIn post created: /progress/2025-11-19-linkedin.md
+## DUAL-LINK STRUCTURE (SOCIAL POSTS)
 
-📝 Ready to publish!
+Social posts include two links in a specific order so the last one wins the OG preview
+card — blog link goes last so your branded preview image shows.
 
-Twitter Preview (copy-paste ready):
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Shipped bulletproof file persistence today 🚀
+**Twitter/X:**
+```
+<hook + specific detail>
 
-Learned that agents can silently fail - fixed it for good.
+Try it: {{PRODUCT_URL}}
 
-Full writeup: jamiewatters.work/progress/2025-11-19
+Full writeup: yourdomain.com/progress/2026-04-11
 
 #buildinpublic
+```
+
+**LinkedIn:**
+```
+<140-char hook that stands alone>
+
+<short paragraphs, one idea per line>
+
+Try it: {{PRODUCT_URL}}
+
+<plain closing or genuine question>
+
+Full writeup: yourdomain.com/progress/2026-04-11
+```
+
+Replace `{{PRODUCT_URL}}` with your actual product URL before publishing.
+
+## AGENT INSTRUCTIONS
+
+When the user invokes `/dailyreport`, you (Claude) execute the following steps directly.
+Do not delegate. Do not call any Python script. Do not use an external API.
+
+### Step 1: Determine today's date
+
+Use the current date in `YYYY-MM-DD` format. This drives the output filenames.
+
+### Step 2: Load the voice guide
+
+Resolution order (first hit wins):
+
+1. `$DAILYREPORT_VOICE_GUIDE` env var → read that file if it exists
+2. `./voice-guide.md`
+3. `./.claude/voice-guide.md`
+4. `./docs/voice-guide.md`
+5. **Default** — read `.claude/data/voice-guide-default.md`
+
+If the env var is set but the file is missing, print a warning and fall through to the
+project-file search. If step 5 fails because the file is missing (unusual — only
+happens if the install is corrupted), print a warning and use your best understanding
+of the voice rules documented in the Voice Alignment section above.
+
+Announce which guide was loaded and its path:
+
+```
+🎙️  Voice guide: <source description> → <path>
+```
+
+Examples:
+```
+🎙️  Voice guide: env DAILYREPORT_VOICE_GUIDE → /home/alice/my-voice.md
+🎙️  Voice guide: project file → ./voice-guide.md
+🎙️  Voice guide: built-in default → .claude/data/voice-guide-default.md
+```
+
+### Step 3: Gather progress context
+
+Read (always):
+- `progress.md` — primary source of truth for what happened today
+- `CLAUDE.md` — project name and context
+- `project-plan.md` if it exists — secondary source for task completion status
+- `progress/YYYY-MM-DD.md` if it already exists — the current state of today's report
+
+Read (if relevant to the day's work):
+- `git log --since="today" --oneline` — commits made today
+- `architecture.md` — if today's work involves architectural decisions
+- Specific files mentioned in progress.md entries — for concrete specifics
+
+Do not read the entire repo. Be surgical. The goal is enough context to narrate the
+day with concrete specifics.
+
+### Step 4: Extract today's work
+
+From `progress.md`, identify entries dated today (or since the last update if an
+existing `progress/YYYY-MM-DD.md` has a timestamp). Group them into:
+
+- **Completed milestones** — what shipped, what got fixed, what was built. Categorise
+  by context (features, bug fixes, infrastructure, documentation, refactors).
+- **Issues encountered** — problems that surfaced, including failed fix attempts and
+  their learnings. Include root cause when documented.
+- **Lessons learned** — patterns noticed, "next time we'll..." style observations.
+- **Next steps** — what's queued for tomorrow or this week.
+- **Metrics** — any numbers, counts, performance deltas, costs, durations.
+
+If there's nothing in `progress.md` for today, say so plainly and stop — do not invent
+content.
+
+### Step 5: Create or update the raw daily report
+
+Write to `progress/YYYY-MM-DD.md`. If the file already exists, merge new work in —
+don't wipe prior content. Structure:
+
+```markdown
+# <Project Name> Progress
+
+**Date**: YYYY-MM-DD
+**Last Updated**: HH:MM
+
+## Summary
+<2-3 sentence summary of the day's work>
+
+## Milestones
+
+### Features
+- **<short title>**: <one-line description with specifics>
+
+### Fixes
+- **<short title>**: <what broke, how it was fixed>
+
+### Infrastructure
+- **<short title>**: <what changed>
+
+## Issues
+### <Issue title>
+**Symptom**: <what went wrong>
+**Attempts**: <what was tried, including failures>
+**Resolution**: <final fix, or "still open">
+**Root cause**: <if known>
+**Learning**: <what this teaches>
+
+## Lessons Learned
+- <pattern or observation>
+
+## Next Steps
+- <next task>
+```
+
+Omit sections that don't have content. Don't pad with empty headers.
+
+### Step 6: Draft the blog post
+
+Apply the voice guide as your drafting rules — every rule in it is binding.
+
+Structural requirements:
+- **Open in the middle of something** — a specific moment from today, a decision
+  point, the second something broke or clicked. No "Today I worked on..." No
+  "In this update..." No preamble.
+- **Systems-first** — show how the pieces connect before zooming into details
+- **Concrete specifics** — numbers, tool names, file paths, commit hashes, exact
+  error messages. Never use a vague adjective where a specific noun would do.
+- **Include the fumbles** — failed attempts teach more than clean wins. If a fix
+  took three tries, say so.
+- **Varied sentence and paragraph length** — mix short punches with longer lines.
+  At least one single-sentence paragraph if the piece runs over 300 words.
+- **Length**: 400-700 words. Shorter if the day doesn't justify more. Respect the
+  reader's time.
+- **Markdown**: H2 headers (`##`) only when the reader genuinely needs a signpost.
+  `---` for major shifts. Code fences for code or command lines. No bold-header
+  bullet lists. No emoji in headers.
+- **Close with a concrete next step, a genuine question, or a plain statement.**
+  Never a motivational flourish. Never a summary that restates what the reader
+  just read.
+
+**Title**: specific to today's work, not a template. "The afternoon the cron job ate
+my inbox" beats "Daily Update — April 11." Make it something someone would click.
+
+Write to `progress/YYYY-MM-DD-blog.md` with frontmatter:
+
+```markdown
+---
+date: YYYY-MM-DD
+project: <project name>
+---
+
+# <specific title>
+
+<post content>
+```
+
+### Step 7: Derive the Twitter/X post
+
+- Pull the sharpest single idea from the blog post
+- First line is the hook — specific and slightly surprising. No emoji in the hook.
+- One concrete detail (number, tool name, what actually happened)
+- 180-260 characters (280 is the hard limit — use the room you have)
+- Dual-link structure:
+  1. `Try it: {{PRODUCT_URL}}`
+  2. Link to today's report last (OG preview): `Full writeup: <base-url>/progress/YYYY-MM-DD`
+- One hashtag, maybe two, from: `#buildinpublic #solofounder #indiehacker #devlog`
+- **No templates**: no "Shipped X today 🚀", no "Learned Y the hard way". Write fresh.
+
+Write to `progress/YYYY-MM-DD-twitter.md`:
+
+```markdown
+# Twitter/X Post — <formatted date>
+
+**Project**: <project name>
+**Characters**: <count>/280
+
+---
+
+<post content>
+
+---
+
+**Copy-paste ready** ⬆️
+
+## Optimization Notes
+- Character count: <count>/280 <✅ or ⚠️>
+- Link included: Yes
+```
+
+### Step 8: Derive the LinkedIn post
+
+- 800-1000 characters sweet spot. 3000 is the hard ceiling.
+- First 140 characters are the hook (shown before "see more"). Must carry weight on
+  their own. No "Excited to share...", no throat-clearing.
+- Short paragraphs. One idea per line. White space is a feature.
+- Register: smart colleague sharing a real lesson. Not thought leader dropping wisdom.
+- Dual-link structure:
+  1. `Try it: {{PRODUCT_URL}}` mid-post
+  2. Report link at the end (OG preview)
+- 0-2 hashtags at the very end. LinkedIn penalises spam.
+- Close with a genuine question the reader might actually answer, or a plain statement.
+  Never manufactured engagement ("What do you think? Drop a comment below!").
+
+Write to `progress/YYYY-MM-DD-linkedin.md`:
+
+```markdown
+# LinkedIn Post — <formatted date>
+
+**Project**: <project name>
+**Characters**: <count>/3000
+**Hook Length**: <hook_length>/140 chars
+
+---
+
+<post content>
+
+---
+
+**Copy-paste ready** ⬆️
+
+## Optimization Notes
+- Total characters: <count>/3000 <✅ or ⚠️>
+- Hook length: <hook_length>/140 <✅ or ⚠️>
+- Link included: Yes
+```
+
+### Step 9: Voice scrub (rewrite pass)
+
+Scan all three drafts (blog, Twitter, LinkedIn) for any word on the AI-tell blacklist:
+
+> delve, tapestry, intricate, pivotal, underscore, foster, testament, multifaceted,
+> comprehensive, myriad, leverage (as verb), embark, realm, beacon, paradigm, synergy,
+> unlock, harness, empower, streamline, spearhead, cornerstone, linchpin, bedrock,
+> hallmark, catalyst, transformative, game-changing, revolutionary, cutting-edge,
+> robust, seamless, holistic, groundbreaking, ever-evolving, moreover, furthermore
+
+If any survived, **rewrite** the affected sentence before writing the file. Do not
+just warn — you have full edit control. Fix it now.
+
+Also check and rewrite: rule-of-three adjective stacks, "it's not just X, it's Y"
+constructions, em dashes more than twice per 500 words, bullet points starting with
+bolded phrases that the following sentence restates.
+
+### Step 10: Report to the user
+
+Print a summary:
+
+```
+✅ Daily report updated: progress/YYYY-MM-DD.md
+📊 <N> milestones across <M> categories
+🐛 <N> issues with <M> resolved
+✨ Blog post: progress/YYYY-MM-DD-blog.md (<word count> words)
+🐦 Twitter/X: progress/YYYY-MM-DD-twitter.md (<char>/280)
+💼 LinkedIn: progress/YYYY-MM-DD-linkedin.md (<char>/3000, hook <n>/140)
+🎙️  Voice guide: <source>
+
+Next:
+  - Replace {{PRODUCT_URL}} with your actual product URL before publishing
+  - Review the blog post for anything that still sounds off
+```
+
+Then show the Twitter/X post inline as a preview so the user can eyeball it without
+opening the file:
+
+```
+Twitter Preview:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-💡 Files ready:
-   - Raw Report: /progress/2025-11-19.md
-   - Blog Post: /progress/2025-11-19-blog.md
-   - Twitter/X: /progress/2025-11-19-twitter.md
-   - LinkedIn: /progress/2025-11-19-linkedin.md
+<actual post content>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-### Without AI Enhancement
+## CONFIGURATION
 
-```
-✅ Daily report created: /progress/2025-11-19.md
-📊 Captured 5 milestones across 3 categories
-🐛 Documented 2 issues with root cause analysis
-💡 Run again today to append additional progress
-📝 Use this file for daily update generation
+No API keys required. Optional environment variables in `.env.mcp`:
 
-ℹ️  AI Enhancement Available:
-   Add OPENAI_API_KEY to .env.mcp to generate blog-ready posts automatically
-   See: https://platform.openai.com/api-keys
+```bash
+# Voice guide override (shared with /blog)
+DAILYREPORT_VOICE_GUIDE=/path/to/voice-guide.md
+
+# Base URL for blog links in social posts
+DAILYREPORT_BASE_URL=yourdomain.com
 ```
+
+That's the whole config surface. `/dailyreport` no longer uses `OPENAI_API_KEY`,
+`DAILYREPORT_MODEL`, or `DAILYREPORT_ENABLE_SOCIAL` — those were relics of the old
+Python-script pipeline. Claude Code does the writing now.
 
 ## PUBLISHING WORKFLOW
 
-### Twitter/X Publishing
+### Twitter/X
 
-1. Open `/progress/YYYY-MM-DD-twitter.md`
+1. Open `progress/YYYY-MM-DD-twitter.md`
 2. Copy the post text (between the dashed lines)
-3. Paste into Twitter/X compose
-4. Click Tweet
+3. Replace `{{PRODUCT_URL}}` with your product URL
+4. Paste into Twitter/X compose and post
 
-### LinkedIn Publishing
+### LinkedIn
 
-1. Open `/progress/YYYY-MM-DD-linkedin.md`
+1. Open `progress/YYYY-MM-DD-linkedin.md`
 2. Copy the post text (between the dashed lines)
-3. Go to LinkedIn home feed
-4. Click "Start a post"
-5. Paste content
-6. Click "Post"
+3. Replace `{{PRODUCT_URL}}` with your product URL
+4. Paste into LinkedIn compose and post
 
-### Blog Publishing
+### Blog
 
-1. Open `/progress/YYYY-MM-DD-blog.md`
-2. Verify formatting and content
+1. Open `progress/YYYY-MM-DD-blog.md`
+2. Review, edit anything that still sounds off
 3. Publish to your blog platform
-4. Share blog link in social posts
+4. Confirm the URL matches what you used in the social posts (so the OG preview works)
 
 ## TROUBLESHOOTING
 
-### Social Posts Not Generating
+**Nothing in progress.md for today?**
+- `/dailyreport` won't invent content. Log your work to `progress.md` first, then run
+  `/dailyreport`. The `/coord` and `/pmd` commands both write to `progress.md`
+  automatically.
 
-**Check if disabled**:
-```bash
-grep "DAILYREPORT_ENABLE_SOCIAL" .env.mcp
-```
+**Output doesn't sound like your voice?**
+- Drop a `voice-guide.md` in your project root with your own rules
+- The voice guide is passed to Claude as drafting instructions — more specific rules
+  produce more specific output
+- Use the default as a template: `cp .claude/data/voice-guide-default.md voice-guide.md`
 
-**Enable if disabled**:
-```bash
-echo "DAILYREPORT_ENABLE_SOCIAL=true" >> .env.mcp
-```
+**Voice guide not loading?**
+- Check the announcement line: `🎙️  Voice guide: <source>`
+- If it says "built-in default" but you expected a custom guide, verify the file exists
+  at one of the search locations or that your env var points at an existing file
 
-### Character Count Issues
-
-**Twitter/X Post Too Long**:
-- Character limit: 280 (hard limit)
-- Optimal: 71-100 characters
-- Solution: Re-run to regenerate, or manually edit
-
-**LinkedIn Hook Too Long**:
-- First 140 chars shown before "see more"
-- Check optimization notes in output file
-
-### Missing Files
-
-**Only Raw Report Created**:
-- Indicates AI enhancement is disabled or API key missing
-- Add `OPENAI_API_KEY` to `.env.mcp`
-- Set `DAILYREPORT_ENABLE_SOCIAL=true`
+**Twitter post too long?**
+- Claude drafts under 280 — if it's over, it's a mistake, re-run the command
+- If it keeps happening, your voice guide or context is pushing too much detail — trim
+  the raw daily report and re-run
 
 ## INTEGRATION WITH AGENT-11
 
-DailyReport works seamlessly with:
+`/dailyreport` works alongside:
 
-- **progress.md**: Primary data source for all logged work and issues
-- **project-plan.md**: Secondary source for task completion verification
-- **CLAUDE.md**: Project context for name and overview
-- **/report**: Complementary command for longer-form progress reports
-- **/pmd**: Root cause analysis feeds into issue documentation
+- **`progress.md`** — primary data source for all logged work and issues
+- **`project-plan.md`** — secondary source for task completion verification
+- **`CLAUDE.md`** — project context and name
+- **`/blog`** — complementary command for topic-driven posts (same voice guide, same
+  social post format, different input shape)
+- **`/report`** — longer-form stakeholder progress reports
+- **`/pmd`** — root cause analysis that feeds into the issue log
 
 ## QUICK REFERENCE
 
 | Task | Command/Setting |
 |------|-----------------|
-| Create daily report | `/dailyreport` |
-| Enable social posts | `DAILYREPORT_ENABLE_SOCIAL=true` |
-| Set custom domain | `DAILYREPORT_BASE_URL=yourdomain.com` |
+| Create or update daily report | `/dailyreport` |
+| Set custom voice guide path | `DAILYREPORT_VOICE_GUIDE=/path/to/file.md` |
+| Set custom domain for links | `DAILYREPORT_BASE_URL=yourdomain.com` |
+| Copy default voice to project | `cp .claude/data/voice-guide-default.md voice-guide.md` |
 | View today's report | `cat progress/$(date +%Y-%m-%d).md` |
-| View today's twitter | `cat progress/$(date +%Y-%m-%d)-twitter.md` |
-| View today's linkedin | `cat progress/$(date +%Y-%m-%d)-linkedin.md` |
-
-## COST & EFFICIENCY
-
-**Per Complete Report** (blog + social):
-- API cost: ~$0.002
-- Processing time: 3-5 seconds
-- Manual effort saved: 15-20 minutes
-
-**Monthly Estimate** (daily reports):
-- 30 reports × $0.002 = $0.06
-- Time saved: 7.5-10 hours
+| View today's twitter post | `cat progress/$(date +%Y-%m-%d)-twitter.md` |
+| View today's linkedin post | `cat progress/$(date +%Y-%m-%d)-linkedin.md` |
 
 ---
 
-*The /dailyreport command transforms daily work into shareable progress summaries, enabling authentic build-in-public documentation with platform-optimized social media posts.*
+*`/dailyreport` turns structured progress logs into a daily report plus voice-aligned
+blog and social posts, using the same voice guide system as `/blog`. Pure Claude-native,
+no API keys required.*
