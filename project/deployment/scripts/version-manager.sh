@@ -20,6 +20,11 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
+# Disable colors when stdout is not a terminal
+if [ ! -t 1 ]; then
+    RED=''; GREEN=''; YELLOW=''; BLUE=''; NC=''
+fi
+
 # Logging function
 log() {
     echo -e "$1"

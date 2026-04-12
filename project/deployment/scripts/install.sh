@@ -17,6 +17,11 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Disable colors when stdout is not a terminal (e.g., piped to file)
+if [ ! -t 1 ]; then
+    RED=''; GREEN=''; YELLOW=''; BLUE=''; NC=''
+fi
+
 # Logging functions (defined early for use in project detection)
 log() {
     echo -e "${BLUE}[INFO]${NC} $1"
@@ -182,6 +187,13 @@ validate_installation_paths() {
 }
 
 validate_installation_paths
+
+# Prevent concurrent installations
+LOCKDIR="/tmp/agent11-install.lock"
+if ! mkdir "$LOCKDIR" 2>/dev/null; then
+    fatal "Another AGENT-11 installation is already running. If this is a stale lock, remove: $LOCKDIR"
+fi
+trap 'rmdir "$LOCKDIR" 2>/dev/null' EXIT
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 BACKUP_PATH="$BACKUP_DIR/$TIMESTAMP"

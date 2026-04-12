@@ -18,6 +18,11 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
+# Disable colors when stdout is not a terminal
+if [ ! -t 1 ]; then
+    RED=''; GREEN=''; YELLOW=''; BLUE=''; NC=''
+fi
+
 # Logging functions
 log() { echo -e "${BLUE}[BACKUP]${NC} $1"; }
 success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }

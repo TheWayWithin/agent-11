@@ -19,6 +19,11 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Disable colors when stdout is not a terminal
+if [ ! -t 1 ]; then
+    RED=''; GREEN=''; YELLOW=''; BLUE=''; NC=''
+fi
+
 # Logging function
 log() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$UPDATE_LOG"
