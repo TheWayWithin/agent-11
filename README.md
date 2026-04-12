@@ -65,8 +65,8 @@ git init
 # 3. Create GitHub repository (private recommended)
 gh repo create my-project --private --source=. --push
 
-# 4. Install AGENT-11
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s full
+# 4. Install AGENT-11 (secure: downloads, verifies checksum, then installs)
+bash <(curl -fsSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/secure-install.sh)
 
 # 5. Restart Claude Code
 /exit
@@ -350,8 +350,8 @@ The deployment system you just used was built by AGENT-11 itself—from concept 
 # Navigate to your project directory
 cd /path/to/your/project
 
-# Deploy AGENT-11
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s full
+# Deploy AGENT-11 (secure installer with checksum verification)
+bash <(curl -fsSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/secure-install.sh)
 
 # Restart Claude Code
 /exit
@@ -849,6 +849,20 @@ stateDiagram-v2
 **Context Preservation**: Zero loss via agent-context.md + handoff-notes.md + /memories/. **Extended Thinking**: Ultrathink/Think harder/Think modes (39% effectiveness improvement). **Tool Permissions**: Least-privilege security model (64% read-only agents). **Parallel Execution**: Independent tasks run simultaneously for speed.
 
 [→ Memory Management](project/field-manual/memory-management.md) | [→ Extended Thinking](project/field-manual/extended-thinking-guide.md) | [→ Tool Permissions](project/field-manual/tool-permissions-guide.md)
+
+---
+
+### Security
+
+AGENT-11 is built with a security-first approach:
+
+- **Secure Installation**: SHA-256 checksum verification before execution (no raw `curl | bash`)
+- **Path Safety**: Guards against empty paths, system directories, and symlink attacks in all deployment scripts
+- **Credential Protection**: API keys in `.env.mcp` are created with owner-only permissions (`chmod 600`)
+- **Prompt Injection Defense**: All agents include a Document Trust Boundary that treats project documents as data, not instructions
+- **Least-Privilege Tools**: 64% of agents are read-only; destructive commands require explicit user confirmation
+- **Supply Chain Hardening**: GitHub Actions pinned to commit SHAs, concurrent execution lockfiles
+- **Anti-Injection Validation**: Agent validator detects prompt injection patterns in agent definitions
 
 ---
 
@@ -1788,7 +1802,7 @@ Some missions benefit from specific MCP profiles for optimal performance and con
 ```bash
 # Single command to update your project
 cd /path/to/your/project
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash -s core
+bash <(curl -fsSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/secure-install.sh)
 ```
 
 **🛡️ Your CLAUDE.md is Safe!** AGENT-11 uses a two-file architecture:
