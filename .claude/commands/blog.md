@@ -289,6 +289,18 @@ Also check for: rule-of-three adjective stacks, "it's not just X, it's Y"
 constructions, em dashes more than twice per 500 words, bullet points starting with
 bolded phrases that the following sentence restates. Fix each one by rewriting.
 
+**Character limit validation** — count the actual characters (not words) in each
+social post's content (the text between the `---` markers, excluding metadata):
+- **Twitter/X**: must be under 280. If over, shorten the post and recount. Do not
+  just trim — rewrite to fit while keeping the hook and a concrete detail.
+- **LinkedIn**: must be under 3000. Hook (first 140 chars) must be a complete
+  thought. If the hook is cut mid-sentence, rewrite the opening.
+- **wip.co**: each post should be under 150. If over, split into two posts or
+  compress the verb + description.
+
+If any limit is breached, rewrite and recount before writing the file. Do not
+publish a character count in the metadata that you haven't actually verified.
+
 ### Step 10: Report to the user
 
 Print:
