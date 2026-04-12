@@ -54,7 +54,9 @@ When you run `/blog <topic>`, Claude will:
    dual-link structure (product link first, article link last for OG preview).
 5. **Derive the LinkedIn version** — 800-1000 char sweet spot, first 140 chars as a
    standalone hook, short one-idea-per-line paragraphs, genuine closing question.
-6. **Write all three to disk** and print file paths.
+6. **Derive the wip.co post** — one short "shipped" update for the build-in-public
+   community, tied to a project hashtag.
+7. **Write all four to disk** and print file paths.
 
 ## OUTPUT FILES
 
@@ -64,7 +66,8 @@ Blog artifacts land in a `blog/` directory (created if missing):
 blog/
 ├── 2026-04-11-feature-flags-small-teams.md           # Long-form blog post
 ├── 2026-04-11-feature-flags-small-teams-twitter.md   # Twitter/X (copy-paste ready)
-└── 2026-04-11-feature-flags-small-teams-linkedin.md  # LinkedIn (copy-paste ready)
+├── 2026-04-11-feature-flags-small-teams-linkedin.md  # LinkedIn (copy-paste ready)
+└── 2026-04-11-feature-flags-small-teams-wip.md       # wip.co post (copy-paste ready)
 ```
 
 File naming: `YYYY-MM-DD-slug.md` where slug is derived from the topic (lowercased,
@@ -228,23 +231,50 @@ beats "Thoughts on Automation." Make it something someone would click.
 - Close with a genuine question the reader might actually answer, or a plain
   statement. Never manufactured engagement ("What do you think? Drop a comment below!").
 
-### Step 7: Write all three files
+### Step 7: Derive the wip.co post
+
+wip.co is a build-in-public community where members post short "shipped" updates
+tied to project hashtags. The convention is a public changelog line per completed
+item — "Fixed login bug #myapp" not "Working on auth later".
+
+For `/blog`, generate **one** wip post. Choose the framing that fits the topic:
+
+- **Process/work topics** (describing something you did or shipped): frame as a
+  completed action. Example: `Deleted 600 lines of Python from /dailyreport #agent11`
+- **Opinion/thinking topics** (describing something you realised or argued): frame
+  as a publication. Example: `Published "Why I stopped using feature flags" #agent11`
+  followed by the blog URL on a second line if space allows.
+
+The post must:
+- Be **under 200 characters** (aim for 50-150)
+- Start with a past-tense action verb where possible
+- Include the project hashtag at the end
+- Follow the voice guide for spelling and banned vocabulary
+- Be a single line (or two if including a URL)
+
+**Project hashtag resolution** (same as `/dailyreport`, first hit wins):
+1. `WIP_PROJECT_HASHTAG` env var
+2. Derive from CLAUDE.md project name (lowercase, remove non-alphanumeric, prefix `#`)
+3. Fall back to `#buildinpublic`
+
+### Step 8: Write all four files
 
 - Compute slug from topic: lowercase, strip punctuation, replace spaces with
   hyphens, remove stop words (a, an, the, of, for, to, in, on, and, or), cap at
   60 characters.
 - Compute date: today's date in `YYYY-MM-DD` format.
 - Create `blog/` directory if it doesn't exist.
-- Write three files:
+- Write four files:
   - `blog/YYYY-MM-DD-slug.md` — long-form post with frontmatter (`date`, `slug`,
     `title`)
   - `blog/YYYY-MM-DD-slug-twitter.md` — Twitter/X post with character count
   - `blog/YYYY-MM-DD-slug-linkedin.md` — LinkedIn post with character count and
     hook length
+  - `blog/YYYY-MM-DD-slug-wip.md` — wip.co post with character count and hashtag
 
-### Step 8: Voice scrub
+### Step 9: Voice scrub
 
-After drafting, scan all three outputs for any word on the AI-tell blacklist:
+After drafting, scan all four outputs for any word on the AI-tell blacklist:
 
 > delve, tapestry, intricate, pivotal, underscore, foster, testament, multifaceted,
 > comprehensive, myriad, leverage (as verb), embark, realm, beacon, paradigm, synergy,
@@ -259,7 +289,7 @@ Also check for: rule-of-three adjective stacks, "it's not just X, it's Y"
 constructions, em dashes more than twice per 500 words, bullet points starting with
 bolded phrases that the following sentence restates. Fix each one by rewriting.
 
-### Step 9: Report to the user
+### Step 10: Report to the user
 
 Print:
 
@@ -267,11 +297,13 @@ Print:
 ✅ Blog post created: blog/YYYY-MM-DD-slug.md (<word count> words)
 🐦 Twitter/X post: blog/YYYY-MM-DD-slug-twitter.md (<char count>/280)
 💼 LinkedIn post: blog/YYYY-MM-DD-slug-linkedin.md (<char count>/3000, hook <n>/140)
+🚢 wip.co post: blog/YYYY-MM-DD-slug-wip.md (<char count>, <hashtag>)
 🎙️  Voice guide: <source>
 
 Next:
   - Replace {{PRODUCT_URL}} with your actual product URL before publishing
   - Review the long-form post for anything that still sounds off
+  - Post the wip entry to wip.co (web, Telegram @wipbot, or menubar app)
 ```
 
 Then show a preview of the Twitter/X post inline so the user can eyeball it without
@@ -283,11 +315,14 @@ opening the file.
 
 ```bash
 # Voice guide override (shared with /dailyreport)
-# Points at a custom markdown file describing your voice
 DAILYREPORT_VOICE_GUIDE=/path/to/voice-guide.md
 
 # Base URL for blog links in social posts (shared with /dailyreport)
 DAILYREPORT_BASE_URL=yourdomain.com
+
+# wip.co project hashtag (shared with /dailyreport). If unset, derived from
+# the project name in CLAUDE.md (e.g. "AGENT-11" → #agent11)
+WIP_PROJECT_HASHTAG=#myproject
 ```
 
 No `OPENAI_API_KEY` required — `/blog` runs entirely through Claude.
@@ -318,6 +353,7 @@ Same as `/dailyreport`:
 2. Publish long-form to your blog platform
 3. Open `-twitter.md`, replace `{{PRODUCT_URL}}`, paste into X compose, publish
 4. Open `-linkedin.md`, replace `{{PRODUCT_URL}}`, paste into LinkedIn, publish
+5. Open `-wip.md`, copy the post, paste into wip.co (web, Telegram, or menubar)
 
 ## EXAMPLES
 

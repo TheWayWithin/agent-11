@@ -43,14 +43,15 @@ then regenerates all three derived outputs so they reflect the full day.
 
 ## OUTPUT FILES
 
-Four files per day, all in the `progress/` directory:
+Five files per day, all in the `progress/` directory:
 
 ```
 progress/
 ├── 2026-04-11.md            # Raw daily report (source of truth)
 ├── 2026-04-11-blog.md       # Long-form blog post (voice-aligned)
 ├── 2026-04-11-twitter.md    # Twitter/X post (copy-paste ready)
-└── 2026-04-11-linkedin.md   # LinkedIn post (copy-paste ready)
+├── 2026-04-11-linkedin.md   # LinkedIn post (copy-paste ready)
+└── 2026-04-11-wip.md        # wip.co posts (one per shipped milestone)
 ```
 
 ## VOICE ALIGNMENT
@@ -351,9 +352,77 @@ Write to `progress/YYYY-MM-DD-linkedin.md`:
 - Link included: Yes
 ```
 
-### Step 9: Voice scrub (rewrite pass)
+### Step 9: Derive the wip.co posts
 
-Scan all three drafts (blog, Twitter, LinkedIn) for any word on the AI-tell blacklist:
+wip.co is a build-in-public community where members post short "shipped" updates
+tied to project hashtags. The convention is a public changelog line per completed
+item — "Fixed login bug #myapp" not "Working on auth later". Multiple small posts
+per day are normal and encouraged.
+
+Generate **one post per meaningful shipped milestone** from the raw daily report
+(step 5). One post per item, not a single combined post. Draw from the milestones
+sections (Features, Fixes, Infrastructure, etc.) — do NOT include items from
+Lessons Learned, open issues without resolution, or Next Steps, because those
+are not completed work.
+
+Each post must:
+- Be **under 150 characters** (shorter is fine — aim for 40-120)
+- Start with a past-tense action verb: Shipped, Fixed, Deployed, Added,
+  Deleted, Refactored, Wrote, Merged, Rewrote, Converted, Removed, Renamed
+- Describe **what was completed** in one specific sentence
+- Include the project hashtag at the end
+- Follow the voice guide for spelling (British) and banned vocabulary
+- Be a single line, no newlines within a post
+
+**Project hashtag resolution** (first hit wins):
+1. `WIP_PROJECT_HASHTAG` env var (e.g. `WIP_PROJECT_HASHTAG=#agent11`)
+2. Derive from the project name in CLAUDE.md by lowercasing the name, removing
+   non-alphanumeric characters, and prefixing `#`. Examples:
+   - "AGENT-11" → `#agent11`
+   - "BOS-AI" → `#bosai`
+   - "ISOTracker" → `#isotracker`
+3. Fall back to `#buildinpublic`
+
+If the day has no completed milestones (rare), write a single post saying so with
+the hashtag, or skip the file entirely with a note in the final report.
+
+Write to `progress/YYYY-MM-DD-wip.md` using this structure (replace angle-bracket
+placeholders with real values):
+
+````markdown
+# wip.co Posts — <formatted date>
+
+**Project**: <project name>
+**Hashtag**: <hashtag>
+**Post count**: <N>
+
+---
+
+<post 1>
+
+<post 2>
+
+<post 3>
+
+---
+
+**Copy-paste ready** ⬆️ (one post at a time)
+
+## Posting Options
+- **Web**: homepage "Ship something..." input at wip.co
+- **Telegram**: DM @wipbot with `/done <post text>`
+- **Menubar app**: if installed
+
+## Optimization Notes
+- <N> posts generated from today's completed milestones
+- Longest post: <max> chars
+- Shortest post: <min> chars
+- Post one at a time throughout the day, or batch at the end
+````
+
+### Step 10: Voice scrub (rewrite pass)
+
+Scan all four drafts (blog, Twitter, LinkedIn, wip) for any word on the AI-tell blacklist:
 
 > delve, tapestry, intricate, pivotal, underscore, foster, testament, multifaceted,
 > comprehensive, myriad, leverage (as verb), embark, realm, beacon, paradigm, synergy,
@@ -368,7 +437,7 @@ Also check and rewrite: rule-of-three adjective stacks, "it's not just X, it's Y
 constructions, em dashes more than twice per 500 words, bullet points starting with
 bolded phrases that the following sentence restates.
 
-### Step 10: Report to the user
+### Step 11: Report to the user
 
 Print a summary:
 
@@ -379,11 +448,13 @@ Print a summary:
 ✨ Blog post: progress/YYYY-MM-DD-blog.md (<word count> words)
 🐦 Twitter/X: progress/YYYY-MM-DD-twitter.md (<char>/280)
 💼 LinkedIn: progress/YYYY-MM-DD-linkedin.md (<char>/3000, hook <n>/140)
+🚢 wip.co: progress/YYYY-MM-DD-wip.md (<N> posts, <hashtag>)
 🎙️  Voice guide: <source>
 
 Next:
   - Replace {{PRODUCT_URL}} with your actual product URL before publishing
   - Review the blog post for anything that still sounds off
+  - Post wip entries one at a time to wip.co (or batch via Telegram @wipbot)
 ```
 
 Then show the Twitter/X post inline as a preview so the user can eyeball it without
@@ -406,6 +477,10 @@ DAILYREPORT_VOICE_GUIDE=/path/to/voice-guide.md
 
 # Base URL for blog links in social posts
 DAILYREPORT_BASE_URL=yourdomain.com
+
+# wip.co project hashtag (shared with /blog). If unset, derived from
+# the project name in CLAUDE.md (e.g. "AGENT-11" → #agent11)
+WIP_PROJECT_HASHTAG=#agent11
 ```
 
 That's the whole config surface. `/dailyreport` no longer uses `OPENAI_API_KEY`,
@@ -434,6 +509,13 @@ Python-script pipeline. Claude Code does the writing now.
 2. Review, edit anything that still sounds off
 3. Publish to your blog platform
 4. Confirm the URL matches what you used in the social posts (so the OG preview works)
+
+### wip.co
+
+1. Open `progress/YYYY-MM-DD-wip.md`
+2. Copy each post one at a time (they're between the dashed lines)
+3. Post via web (homepage "Ship something..." box), Telegram (`/done <text>` to @wipbot), or menubar app
+4. Post throughout the day or batch at the end — multiple small posts per day are normal on wip
 
 ## TROUBLESHOOTING
 
@@ -481,9 +563,11 @@ Python-script pipeline. Claude Code does the writing now.
 | View today's report | `cat progress/$(date +%Y-%m-%d).md` |
 | View today's twitter post | `cat progress/$(date +%Y-%m-%d)-twitter.md` |
 | View today's linkedin post | `cat progress/$(date +%Y-%m-%d)-linkedin.md` |
+| View today's wip posts | `cat progress/$(date +%Y-%m-%d)-wip.md` |
+| Set wip.co project hashtag | `WIP_PROJECT_HASHTAG=#myproject` |
 
 ---
 
 *`/dailyreport` turns structured progress logs into a daily report plus voice-aligned
-blog and social posts, using the same voice guide system as `/blog`. Pure Claude-native,
-no API keys required.*
+blog, social, and wip.co posts, using the same voice guide system as `/blog`. Pure
+Claude-native, no API keys required.*
