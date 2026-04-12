@@ -24,6 +24,18 @@ success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1" >&2; }
 
+# Security: Validate critical paths are not empty or root
+validate_paths() {
+    local paths=("$CLAUDE_DIR" "$AGENTS_DIR" "$BACKUP_DIR")
+    for p in "${paths[@]}"; do
+        if [[ -z "$p" || "$p" == "/" ]]; then
+            error "SECURITY: Critical path is empty or root. Aborting."
+            exit 1
+        fi
+    done
+}
+validate_paths
+
 # Create timestamped backup
 create_backup() {
     local backup_name="${1:-$TIMESTAMP}"
@@ -180,8 +192,13 @@ cleanup_backups() {
     for ((i=keep_count; i<total_backups; i++)); do
         local backup_to_delete="${backups[$i]}"
         local backup_id=$(basename "$backup_to_delete")
-        log "Removing old backup: $backup_id"
-        rm -rf "$backup_to_delete"
+        # Security: Only delete paths that are inside BACKUP_DIR
+        if [[ -n "$backup_to_delete" && "$backup_to_delete" == "${BACKUP_DIR}/"* ]]; then
+            log "Removing old backup: $backup_id"
+            rm -rf "$backup_to_delete"
+        else
+            error "SECURITY: Refusing to delete path outside backup directory: $backup_to_delete"
+        fi
     done
     
     success "Cleanup completed. Kept $keep_count most recent backups."

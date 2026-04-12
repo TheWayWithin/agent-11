@@ -73,7 +73,8 @@ setup_env_vars() {
             echo ""
             if [[ $REPLY =~ ^[Yy]$ ]]; then
                 cp "$env_template" "$env_file"
-                success "Created .env.mcp from template"
+                chmod 600 "$env_file"
+                success "Created .env.mcp from template (permissions: owner-only)"
                 echo "Please edit .env.mcp and add your API keys, then re-run this script"
                 exit 0
             else

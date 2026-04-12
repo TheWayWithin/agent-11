@@ -1,7 +1,7 @@
 #!/bin/bash
 # validate-mcp-profiles.sh - Validate MCP profile installation
 
-set -e
+set -euo pipefail
 
 # Colors for output
 RED='\033[0;31m'

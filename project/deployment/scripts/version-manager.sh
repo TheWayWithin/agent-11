@@ -3,7 +3,7 @@
 # AGENT-11 Version Manager
 # Handles version management, rollback capabilities, and release management
 
-set -e
+set -euo pipefail
 
 # Configuration
 AGENT11_REPO="https://api.github.com/repos/TheWayWithin/agent-11"
@@ -75,9 +75,9 @@ get_available_versions() {
 
 # Download and install specific version
 install_version() {
-    local version="$1"
-    local force="$2"
-    
+    local version="${1:-}"
+    local force="${2:-}"
+
     if [[ -z "$version" ]]; then
         log "${RED}Version not specified${NC}"
         return 1
@@ -484,31 +484,31 @@ main() {
             show_history "${2:-10}"
             ;;
         "install")
-            if [[ -z "$2" ]]; then
+            if [[ -z "${2:-}" ]]; then
                 log "${RED}Version required${NC}"
                 log "Usage: $0 install <version>"
                 exit 1
             fi
-            install_version "$2" "$3"
+            install_version "${2:-}" "${3:-}"
             ;;
         "switch")
-            if [[ -z "$2" ]]; then
+            if [[ -z "${2:-}" ]]; then
                 log "${RED}Version required${NC}"
                 log "Usage: $0 switch <version>"
                 exit 1
             fi
-            switch_version "$2"
+            switch_version "${2:-}"
             ;;
         "rollback")
-            rollback "$2"
+            rollback "${2:-}"
             ;;
         "compare")
-            if [[ -z "$2" ]] || [[ -z "$3" ]]; then
+            if [[ -z "${2:-}" ]] || [[ -z "${3:-}" ]]; then
                 log "${RED}Two versions required${NC}"
                 log "Usage: $0 compare <version1> <version2>"
                 exit 1
             fi
-            compare_versions "$2" "$3"
+            compare_versions "${2:-}" "${3:-}"
             ;;
         "current")
             show_current

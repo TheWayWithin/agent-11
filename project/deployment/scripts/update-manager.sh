@@ -3,7 +3,7 @@
 # AGENT-11 Update Manager
 # Handles version checking, updates, and notifications for AGENT-11 installations
 
-set -e
+set -euo pipefail
 
 # Configuration
 AGENT11_REPO="https://api.github.com/repos/TheWayWithin/agent-11"
@@ -224,7 +224,7 @@ check_updates() {
 
 # Install update
 install_update() {
-    local target_version="$1"
+    local target_version="${1:-}"
     local current_version=$(get_current_version)
     
     if [[ -z "$target_version" ]]; then
@@ -248,17 +248,20 @@ install_update() {
     fi
     
     # Download and install the installer script
-    local temp_installer="/tmp/agent-11-installer-$$.sh"
+    local temp_installer
+    temp_installer=$(mktemp /tmp/agent-11-installer-XXXXXX.sh)
+    trap 'rm -f "$temp_installer"' RETURN
+
     curl -sSL "$AGENT11_RAW/deployment/scripts/install.sh" > "$temp_installer"
-    
-    if [[ ! -f "$temp_installer" ]]; then
+
+    if [[ ! -f "$temp_installer" || ! -s "$temp_installer" ]]; then
         log "${RED}Failed to download installer${NC}"
         return 1
     fi
-    
+
     # Make installer executable
     chmod +x "$temp_installer"
-    
+
     # Run the installer with update flag
     if bash "$temp_installer" update; then
         set_current_version "$target_version"
@@ -277,8 +280,7 @@ install_update() {
         return 1
     fi
     
-    # Cleanup
-    rm -f "$temp_installer"
+    # Cleanup handled by trap
 }
 
 # Configure update settings
@@ -431,7 +433,7 @@ main() {
             check_updates
             ;;
         "update")
-            install_update "$2"
+            install_update "${2:-}"
             ;;
         "status")
             show_status
@@ -443,12 +445,12 @@ main() {
             backup_installation
             ;;
         "restore")
-            if [[ -z "$2" ]]; then
+            if [[ -z "${2:-}" ]]; then
                 echo "Usage: $0 restore <backup-name>"
                 list_backups
                 exit 1
             fi
-            restore_backup "$2"
+            restore_backup "${2:-}"
             ;;
         "list-backups")
             list_backups

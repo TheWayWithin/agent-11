@@ -158,6 +158,31 @@ if ! detect_project_context; then
     fatal "Installation requires a project context. Please navigate to a project directory first."
 fi
 
+# Security: Validate installation paths before any operations
+validate_installation_paths() {
+    local dirs=("$CLAUDE_DIR" "$AGENTS_DIR" "$COMMANDS_DIR" "$MISSIONS_DIR" "$TEMPLATES_DIR" "$FIELD_MANUAL_DIR")
+    for dir_path in "${dirs[@]}"; do
+        if [[ -z "$dir_path" || "$dir_path" == "/" ]]; then
+            fatal "SECURITY: Installation path is empty or root. Aborting to prevent data loss."
+        fi
+        case "$dir_path" in
+            /etc*|/usr*|/var*|/bin*|/sbin*|/opt*|/System*|/Library*|/tmp)
+                fatal "SECURITY: Refusing to operate on system directory: $dir_path"
+                ;;
+        esac
+    done
+
+    # Check for symlink attacks on critical paths
+    if [[ -L "$AGENTS_DIR" ]]; then
+        fatal "SECURITY: $AGENTS_DIR is a symlink. Aborting for safety."
+    fi
+    if [[ -L "$COMMANDS_DIR" ]]; then
+        fatal "SECURITY: $COMMANDS_DIR is a symlink. Aborting for safety."
+    fi
+}
+
+validate_installation_paths
+
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 BACKUP_PATH="$BACKUP_DIR/$TIMESTAMP"
 
