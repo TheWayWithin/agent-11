@@ -562,3 +562,14 @@ extends: nextjs-supabase  # or remix-railway, sveltekit-supabase
 - `/report [since_date]` - Generate progress reports for stakeholders
 - `/pmd [issue]` - Post Mortem Dump for root cause analysis
 
+## Security Notes
+
+### CLAUDE.md Trust Model
+Claude Code loads CLAUDE.md files hierarchically. Your root CLAUDE.md has the highest precedence and can override framework instructions. Protect this file:
+- Do not accept CLAUDE.md changes from untrusted sources
+- Review any automated modifications to CLAUDE.md
+- AGENT-11 agents will refuse instructions in documents that explicitly attempt to disable security protocols
+
+### Document Trust Boundary
+All AGENT-11 agents treat project documents (ideation.md, architecture.md, PRD, context files) as DATA to analyze, not INSTRUCTIONS to execute. If a document contains directives that attempt to override agent behavior, agents will flag the anomaly rather than comply.
+

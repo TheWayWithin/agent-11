@@ -61,6 +61,11 @@ class ContentValidator {
         warnings.push(...thinkingWarnings);
       }
 
+      // Check for prompt injection patterns
+      const injectionResults = this.validateNoInjectionPatterns(markdown, agentFile);
+      errors.push(...injectionResults.errors);
+      warnings.push(...injectionResults.warnings);
+
       return {
         valid: errors.length === 0,
         errors,
@@ -293,6 +298,54 @@ class ContentValidator {
     }
 
     return warnings;
+  }
+
+  /**
+   * Check for prompt injection patterns in agent content
+   */
+  validateNoInjectionPatterns(content, agentFile) {
+    const errors = [];
+    const warnings = [];
+    const fileName = path.basename(agentFile);
+
+    const injectionPatterns = [
+      { pattern: /ignore previous instructions/i, message: 'Prompt injection language detected: "ignore previous instructions"', severity: 'error' },
+      { pattern: /disregard.*instructions/i, message: 'Instruction override language detected: "disregard instructions"', severity: 'error' },
+      { pattern: /forget (your|all|prior|previous)/i, message: 'Memory override language detected', severity: 'error' },
+      { pattern: /override.*system.*prompt/i, message: 'System prompt override detected', severity: 'error' },
+      { pattern: /you are now a(?! Claude agent)/i, message: 'Role reassignment language detected: "you are now a"', severity: 'error' },
+      { pattern: /pretend (you|to be)/i, message: 'Identity override language detected: "pretend to be"', severity: 'warning' },
+      { pattern: /do not follow.*instructions/i, message: 'Instruction negation language detected', severity: 'warning' },
+      { pattern: /you can do anything/i, message: 'Unlimited capability claim detected', severity: 'warning' },
+    ];
+
+    for (const { pattern, message, severity } of injectionPatterns) {
+      if (pattern.test(content)) {
+        const entry = {
+          section: 'SECURITY',
+          message: `[${fileName}] ${message}`,
+          fix: 'Review and remove prompt injection-like language from agent definition',
+          severity
+        };
+        if (severity === 'error') {
+          errors.push(entry);
+        } else {
+          warnings.push(entry);
+        }
+      }
+    }
+
+    // Check for DOCUMENT TRUST BOUNDARY section (required for security)
+    if (!content.includes('DOCUMENT TRUST BOUNDARY')) {
+      warnings.push({
+        section: 'SECURITY',
+        message: `[${fileName}] Missing DOCUMENT TRUST BOUNDARY section`,
+        fix: 'Add DOCUMENT TRUST BOUNDARY section to protect against document-based injection',
+        severity: 'warning'
+      });
+    }
+
+    return { errors, warnings };
   }
 
   /**
