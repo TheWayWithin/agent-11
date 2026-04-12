@@ -96,7 +96,7 @@ so the last one wins the preview card.
 ```
 <hook + specific detail>
 
-Try it: {{PRODUCT_URL}}
+Try it: <product-url>
 
 Full post: <your-domain>/blog/2026-04-11-feature-flags-small-teams
 
@@ -110,14 +110,15 @@ Full post: <your-domain>/blog/2026-04-11-feature-flags-small-teams
 <short paragraphs, one idea per line>
 <concrete detail, named tool, number>
 
-Try it: {{PRODUCT_URL}}
+Try it: <product-url>
 
 <plain closing or genuine question>
 
 Full post: <your-domain>/blog/2026-04-11-feature-flags-small-teams
 ```
 
-Replace `{{PRODUCT_URL}}` before publishing (same pattern as `/dailyreport`).
+The product URL is resolved from the `PRODUCT_URL` env var at write time. If unset,
+the "Try it:" line is omitted entirely rather than leaving a placeholder.
 
 ## AGENT INSTRUCTIONS
 
@@ -212,7 +213,8 @@ beats "Thoughts on Automation." Make it something someone would click.
 - One concrete detail from the post. A number, a tool name, what actually happened.
 - 180-260 characters (280 is the hard limit — use the room you have).
 - Dual-link structure:
-  1. `Try it: {{PRODUCT_URL}}`
+  1. `Try it: <product-url>` — resolve from `PRODUCT_URL` env var. If unset,
+     omit this line entirely rather than leaving a placeholder.
   2. Blog link last (for OG preview): `Full post: <base-url>/blog/<slug>`
 - One hashtag, maybe two, from: `#buildinpublic #solofounder #indiehacker #devlog`
 - **No templates**: no "Shipped X today 🚀", no "Learned Y the hard way". Write fresh.
@@ -225,7 +227,8 @@ beats "Thoughts on Automation." Make it something someone would click.
 - Short paragraphs. One idea per line. White space is a feature.
 - Register: smart colleague sharing a real lesson. Not thought leader dropping wisdom.
 - Dual-link structure:
-  1. `Try it: {{PRODUCT_URL}}` (mid-post)
+  1. `Try it: <product-url>` mid-post — resolve from `PRODUCT_URL` env var. If
+     unset, omit this line entirely rather than leaving a placeholder.
   2. Blog link at the end (for OG preview)
 - 0-2 hashtags at the very end. LinkedIn penalises spam.
 - Close with a genuine question the reader might actually answer, or a plain
@@ -307,16 +310,22 @@ Print:
 
 ```
 ✅ Blog post created: blog/YYYY-MM-DD-slug.md (<word count> words)
-🐦 Twitter/X post: blog/YYYY-MM-DD-slug-twitter.md (<char count>/280)
-💼 LinkedIn post: blog/YYYY-MM-DD-slug-linkedin.md (<char count>/3000, hook <n>/140)
-🚢 wip.co post: blog/YYYY-MM-DD-slug-wip.md (<char count>, <hashtag>)
-🎙️  Voice guide: <source>
+  🐦 Twitter/X: blog/YYYY-MM-DD-slug-twitter.md (<char count>/280)
+  💼 LinkedIn: blog/YYYY-MM-DD-slug-linkedin.md (<char count>/3000, hook <n>/140)
+  🚢 wip.co: blog/YYYY-MM-DD-slug-wip.md (<char count>, <hashtag>)
+  🎙️  Voice guide: <source>
 
-Next:
-  - Replace {{PRODUCT_URL}} with your actual product URL before publishing
-  - Review the long-form post for anything that still sounds off
-  - Post the wip entry to wip.co (web, Telegram @wipbot, or menubar app)
+📋 Ready to publish:
+
+  jpub <ABSOLUTE_PATH_TO_REPO>/blog/YYYY-MM-DD-slug --all --dry-run
+
+Remove --dry-run when you're happy with the preview.
 ```
+
+Where `<ABSOLUTE_PATH_TO_REPO>` is the real absolute path to the current working
+directory (from `pwd` or equivalent), and `YYYY-MM-DD-slug` is the blog post's
+filename without the `.md` extension. For example:
+`jpub /Users/jamiewatters/DevProjects/BOS-AI/blog/2026-04-12-my-post --all --dry-run`
 
 Then show a preview of the Twitter/X post inline so the user can eyeball it without
 opening the file.
@@ -331,6 +340,10 @@ DAILYREPORT_VOICE_GUIDE=/path/to/voice-guide.md
 
 # Base URL for blog links in social posts (shared with /dailyreport)
 DAILYREPORT_BASE_URL=yourdomain.com
+
+# Product URL for social posts (e.g. modeloptix.com). If unset, the
+# "Try it:" line is omitted rather than leaving a placeholder.
+PRODUCT_URL=yourdomain.com
 
 # wip.co project hashtag (shared with /dailyreport). If unset, derived from
 # the project name in CLAUDE.md (e.g. "AGENT-11" → #agent11)
@@ -361,11 +374,9 @@ difference is the shape of the input: `/dailyreport` parses structured progress 
 
 Same as `/dailyreport`:
 
-1. Open `blog/YYYY-MM-DD-slug.md`, review, edit anything that still sounds off
-2. Publish long-form to your blog platform
-3. Open `-twitter.md`, replace `{{PRODUCT_URL}}`, paste into X compose, publish
-4. Open `-linkedin.md`, replace `{{PRODUCT_URL}}`, paste into LinkedIn, publish
-5. Open `-wip.md`, copy the post, paste into wip.co (web, Telegram, or menubar)
+1. Run the `jpub` command shown at the end of the output with `--dry-run` to preview
+2. Remove `--dry-run` and run again to publish to all platforms
+3. Or publish manually: open each file, copy the content between the `---` markers, paste into the platform
 
 ## EXAMPLES
 

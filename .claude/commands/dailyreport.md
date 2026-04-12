@@ -109,7 +109,7 @@ card — blog link goes last so your branded preview image shows.
 ```
 <hook + specific detail>
 
-Try it: {{PRODUCT_URL}}
+Try it: <product-url>
 
 Full writeup: yourdomain.com/progress/2026-04-11
 
@@ -122,14 +122,15 @@ Full writeup: yourdomain.com/progress/2026-04-11
 
 <short paragraphs, one idea per line>
 
-Try it: {{PRODUCT_URL}}
+Try it: <product-url>
 
 <plain closing or genuine question>
 
 Full writeup: yourdomain.com/progress/2026-04-11
 ```
 
-Replace `{{PRODUCT_URL}}` with your actual product URL before publishing.
+The product URL is resolved from the `PRODUCT_URL` env var at write time. If unset,
+the "Try it:" line is omitted entirely rather than leaving a placeholder.
 
 ## AGENT INSTRUCTIONS
 
@@ -288,8 +289,9 @@ project: <project name>
 - First line is the hook — specific and slightly surprising. No emoji in the hook.
 - One concrete detail (number, tool name, what actually happened)
 - 180-260 characters (280 is the hard limit — use the room you have)
-- Dual-link structure:
-  1. `Try it: {{PRODUCT_URL}}`
+- Dual-link structure (include both only if a product URL is configured):
+  1. `Try it: <product-url>` — resolve from `PRODUCT_URL` env var. If unset, omit
+     this line entirely rather than leaving a placeholder.
   2. Link to today's report last (OG preview): `Full writeup: <base-url>/progress/YYYY-MM-DD`
 - One hashtag, maybe two, from: `#buildinpublic #solofounder #indiehacker #devlog`
 - **No templates**: no "Shipped X today 🚀", no "Learned Y the hard way". Write fresh.
@@ -322,8 +324,9 @@ Write to `progress/YYYY-MM-DD-twitter.md`:
   their own. No "Excited to share...", no throat-clearing.
 - Short paragraphs. One idea per line. White space is a feature.
 - Register: smart colleague sharing a real lesson. Not thought leader dropping wisdom.
-- Dual-link structure:
-  1. `Try it: {{PRODUCT_URL}}` mid-post
+- Dual-link structure (include both only if a product URL is configured):
+  1. `Try it: <product-url>` mid-post — resolve from `PRODUCT_URL` env var. If
+     unset, omit this line entirely rather than leaving a placeholder.
   2. Report link at the end (OG preview)
 - 0-2 hashtags at the very end. LinkedIn penalises spam.
 - Close with a genuine question the reader might actually answer, or a plain statement.
@@ -454,20 +457,25 @@ publish a character count in the metadata that you haven't actually verified.
 Print a summary:
 
 ```
-✅ Daily report updated: progress/YYYY-MM-DD.md
-📊 <N> milestones across <M> categories
-🐛 <N> issues with <M> resolved
-✨ Blog post: progress/YYYY-MM-DD-blog.md (<word count> words)
-🐦 Twitter/X: progress/YYYY-MM-DD-twitter.md (<char>/280)
-💼 LinkedIn: progress/YYYY-MM-DD-linkedin.md (<char>/3000, hook <n>/140)
-🚢 wip.co: progress/YYYY-MM-DD-wip.md (<N> posts, <hashtag>)
-🎙️  Voice guide: <source>
+✅ progress/YYYY-MM-DD.md
+  📊 <N> milestones across <M> categories
+  🐛 <N> issues with <M> resolved
+  ✨ Blog post: progress/YYYY-MM-DD-blog.md (<word count> words)
+  🐦 Twitter/X: progress/YYYY-MM-DD-twitter.md (<char>/280)
+  💼 LinkedIn: progress/YYYY-MM-DD-linkedin.md (<char>/3000, hook <n>/140)
+  🚢 wip.co: progress/YYYY-MM-DD-wip.md (<N> posts, <hashtag>)
+  🎙️  Voice guide: <source>
 
-Next:
-  - Replace {{PRODUCT_URL}} with your actual product URL before publishing
-  - Review the blog post for anything that still sounds off
-  - Post wip entries one at a time to wip.co (or batch via Telegram @wipbot)
+📋 Ready to publish:
+
+  jpub <ABSOLUTE_PATH_TO_REPO>/progress/YYYY-MM-DD --all --dry-run
+
+Remove --dry-run when you're happy with the preview.
 ```
+
+Where `<ABSOLUTE_PATH_TO_REPO>` is the real absolute path to the current working
+directory (from `pwd` or equivalent), so the command works from any terminal tab.
+For example: `jpub /Users/jamiewatters/DevProjects/BOS-AI/progress/2026-04-12 --all --dry-run`
 
 Then show the Twitter/X post inline as a preview so the user can eyeball it without
 opening the file:
@@ -490,6 +498,11 @@ DAILYREPORT_VOICE_GUIDE=/path/to/voice-guide.md
 # Base URL for blog links in social posts
 DAILYREPORT_BASE_URL=yourdomain.com
 
+# Product URL for social posts (e.g. modeloptix.com, plebtest.com).
+# If unset, the "Try it:" line is omitted from social posts rather
+# than leaving a placeholder.
+PRODUCT_URL=yourdomain.com
+
 # wip.co project hashtag (shared with /blog). If unset, derived from
 # the project name in CLAUDE.md (e.g. "AGENT-11" → #agent11)
 WIP_PROJECT_HASHTAG=#agent11
@@ -505,15 +518,13 @@ Python-script pipeline. Claude Code does the writing now.
 
 1. Open `progress/YYYY-MM-DD-twitter.md`
 2. Copy the post text (between the dashed lines)
-3. Replace `{{PRODUCT_URL}}` with your product URL
-4. Paste into Twitter/X compose and post
+3. Paste into Twitter/X compose and post
 
 ### LinkedIn
 
 1. Open `progress/YYYY-MM-DD-linkedin.md`
 2. Copy the post text (between the dashed lines)
-3. Replace `{{PRODUCT_URL}}` with your product URL
-4. Paste into LinkedIn compose and post
+3. Paste into LinkedIn compose and post
 
 ### Blog
 
