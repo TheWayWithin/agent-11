@@ -113,7 +113,7 @@ Try it: <product-url>
 
 Full writeup: <DAILYREPORT_BASE_URL>/journey/<blog-slug>
 
-#buildinpublic
+#BuildInPublic #AlgoTrading #Refactoring
 ```
 
 **LinkedIn:**
@@ -294,12 +294,17 @@ Write to `progress/YYYY-MM-DD-blog.md` with frontmatter:
 ---
 date: YYYY-MM-DD
 project: <project name>
+tags: [Tag1, Tag2, Tag3]
 ---
 
 # <specific title>
 
 <post content>
 ```
+
+`tags` is a YAML list of 3-5 topic tags in TitleCase derived from the day's work
+(e.g. `[AlgoTrading, Crypto, BuildInPublic]`). These become blog tags on the
+published site — keep them consistent with the hashtags used in the social posts.
 
 ### Step 7: Derive the Twitter/X post
 
@@ -314,7 +319,11 @@ project: <project name>
      - Resolve `<DAILYREPORT_BASE_URL>` by reading the env var at write time (`echo "$DAILYREPORT_BASE_URL"` via Bash). If empty, **omit the "Full writeup:" line entirely** — never guess.
      - `<blog-slug>` is the slug of the blog post you generated in Step 6 (derived from the first `# heading` of the blog file, lowercased, hyphenated). This must match the slug `jpub` will use at publish time.
      - The path is `/journey/<slug>` to match where `jpub` publishes (`jamiewatters.work/journey/<slug>`). Do NOT use `/progress/<date>` — that is not where published reports live.
-- One hashtag, maybe two, from: `#buildinpublic #solofounder #indiehacker #devlog`
+- **Hashtags: 2-4 total, TitleCase/PascalCase for readability.**
+  - Pick 1 community tag from: `#BuildInPublic #SoloFounder #IndieHacker #DevLog`
+  - Plus 1-3 topic-specific tags derived from the day's work (e.g. `#AlgoTrading #Crypto #Security #Refactoring #Auth #Postgres #LLMs`)
+  - Always TitleCase: `#BuildInPublic` not `#buildinpublic`, `#AlgoTrading` not `#algotrading`
+  - Topic tags come from what actually shipped — no generic filler
 - **No templates**: no "Shipped X today 🚀", no "Learned Y the hard way". Write fresh.
 
 Write to `progress/YYYY-MM-DD-twitter.md`:
@@ -350,7 +359,9 @@ Write to `progress/YYYY-MM-DD-twitter.md`:
      unset, omit this line entirely rather than leaving a placeholder.
   2. Report link at the end (OG preview): `Full writeup: <DAILYREPORT_BASE_URL>/journey/<blog-slug>`
      - Same resolution rules as the Twitter/X link: read `DAILYREPORT_BASE_URL` from env, omit the line if unset, use `/journey/<blog-slug>` path. Slug must match the blog file you generated in Step 6.
-- 0-2 hashtags at the very end. LinkedIn penalises spam.
+- **Hashtags: 2-3 total at the very end, TitleCase (LinkedIn penalises spam — fewer hashtags than Twitter/X).**
+  - Use the same TitleCase convention: `#BuildInPublic`, `#AlgoTrading`, `#Security`
+  - Mix community tag + topic-specific tags derived from the day's work
 - Close with a genuine question the reader might actually answer, or a plain statement.
   Never manufactured engagement ("What do you think? Drop a comment below!").
 

@@ -100,7 +100,7 @@ Try it: <product-url>
 
 Full post: <DAILYREPORT_BASE_URL>/journey/2026-04-11-feature-flags-small-teams
 
-#buildinpublic
+#BuildInPublic #FeatureFlags #SoloFounder
 ```
 
 **LinkedIn:**
@@ -237,7 +237,11 @@ beats "Thoughts on Automation." Make it something someone would click.
      - Resolve `<base-url>` from the `DAILYREPORT_BASE_URL` env var at write time (read it with a quick `Bash` call like `echo "$DAILYREPORT_BASE_URL"`)
      - If `DAILYREPORT_BASE_URL` is unset or empty, **omit the "Full post:" line entirely** rather than inventing a URL
      - The path is `/journey/<slug>` to match where `jpub` publishes blog posts (`jamiewatters.work/journey/<slug>`). Do NOT use `/blog/<slug>` — that is not where published posts live.
-- One hashtag, maybe two, from: `#buildinpublic #solofounder #indiehacker #devlog`
+- **Hashtags: 2-4 total, TitleCase/PascalCase for readability.**
+  - Pick 1 community tag from: `#BuildInPublic #SoloFounder #IndieHacker #DevLog`
+  - Plus 1-3 topic-specific tags derived from the blog content itself (e.g. `#AlgoTrading #Crypto #Security #Refactoring #Auth #Postgres #LLMs`)
+  - Always TitleCase: `#BuildInPublic` not `#buildinpublic`, `#AlgoTrading` not `#algotrading`
+  - Topic tags come from what the post is actually about — no generic filler
 - **No templates**: no "Shipped X today 🚀", no "Learned Y the hard way". Write fresh.
 
 ### Step 6: Derive the LinkedIn version
@@ -252,7 +256,9 @@ beats "Thoughts on Automation." Make it something someone would click.
      unset, omit this line entirely rather than leaving a placeholder.
   2. Blog link at the end (for OG preview): `Full post: <base-url>/journey/<slug>`
      - Same resolution rules as the Twitter/X link: read `DAILYREPORT_BASE_URL`, omit the line if unset, use `/journey/<slug>` path.
-- 0-2 hashtags at the very end. LinkedIn penalises spam.
+- **Hashtags: 2-3 total at the very end, TitleCase (LinkedIn penalises spam — fewer hashtags than Twitter/X).**
+  - Use the same TitleCase convention: `#BuildInPublic`, `#AlgoTrading`, `#Security`
+  - Mix community tag + topic-specific tags derived from content
 - Close with a genuine question the reader might actually answer, or a plain
   statement. Never manufactured engagement ("What do you think? Drop a comment below!").
 
@@ -291,7 +297,10 @@ The post must:
 - Create `blog/` directory if it doesn't exist.
 - Write four files:
   - `blog/YYYY-MM-DD-slug.md` — long-form post with frontmatter (`date`, `slug`,
-    `title`)
+    `title`, `tags`). `tags` is a YAML list of 3-5 topic tags in TitleCase
+    derived from the post content (e.g. `[AlgoTrading, Crypto, BuildInPublic]`).
+    These become blog tags on the published site — keep them consistent with
+    the hashtags used in the social posts.
   - `blog/YYYY-MM-DD-slug-twitter.md` — Twitter/X post with character count
   - `blog/YYYY-MM-DD-slug-linkedin.md` — LinkedIn post with character count and
     hook length
