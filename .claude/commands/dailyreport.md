@@ -111,7 +111,7 @@ card — blog link goes last so your branded preview image shows.
 
 Try it: <product-url>
 
-Full writeup: yourdomain.com/progress/2026-04-11
+Full writeup: <DAILYREPORT_BASE_URL>/journey/<blog-slug>
 
 #buildinpublic
 ```
@@ -126,11 +126,14 @@ Try it: <product-url>
 
 <plain closing or genuine question>
 
-Full writeup: yourdomain.com/progress/2026-04-11
+Full writeup: <DAILYREPORT_BASE_URL>/journey/<blog-slug>
 ```
 
-The product URL is resolved from the `PRODUCT_URL` env var at write time. If unset,
-the "Try it:" line is omitted entirely rather than leaving a placeholder.
+Both URLs are resolved from env vars at write time:
+- Product URL → `PRODUCT_URL`. If unset, the "Try it:" line is omitted.
+- Blog base URL → `DAILYREPORT_BASE_URL`. If unset, the "Full writeup:" line is omitted. The path is `/journey/<blog-slug>` to match where `jpub` publishes. Do NOT use `/progress/<date>`.
+
+If an env var is missing, the corresponding line is **omitted entirely** — never guessed, never left as a placeholder.
 
 ## AGENT INSTRUCTIONS
 
@@ -140,6 +143,21 @@ Do not delegate. Do not call any Python script. Do not use an external API.
 ### Step 1: Determine today's date
 
 Use the current date in `YYYY-MM-DD` format. This drives the output filenames.
+
+### Step 1.5: Resolve URL environment variables
+
+Before drafting social posts, read these env vars with Bash (use `echo` so an unset var returns empty):
+
+```bash
+echo "DAILYREPORT_BASE_URL=$DAILYREPORT_BASE_URL"
+echo "PRODUCT_URL=$PRODUCT_URL"
+```
+
+Record the values. They affect the Twitter/X and LinkedIn posts:
+- `DAILYREPORT_BASE_URL` → `Full writeup: <DAILYREPORT_BASE_URL>/journey/<blog-slug>`. If empty, **omit the "Full writeup:" line entirely**.
+- `PRODUCT_URL` → `Try it: <PRODUCT_URL>`. If empty, **omit the "Try it:" line entirely**.
+
+**Never guess or hallucinate these URLs.** If an env var is unset, the line is simply not written.
 
 ### Step 2: Load the voice guide
 
@@ -292,7 +310,10 @@ project: <project name>
 - Dual-link structure (include both only if a product URL is configured):
   1. `Try it: <product-url>` — resolve from `PRODUCT_URL` env var. If unset, omit
      this line entirely rather than leaving a placeholder.
-  2. Link to today's report last (OG preview): `Full writeup: <base-url>/progress/YYYY-MM-DD`
+  2. Link to today's report last (OG preview): `Full writeup: <DAILYREPORT_BASE_URL>/journey/<blog-slug>`
+     - Resolve `<DAILYREPORT_BASE_URL>` by reading the env var at write time (`echo "$DAILYREPORT_BASE_URL"` via Bash). If empty, **omit the "Full writeup:" line entirely** — never guess.
+     - `<blog-slug>` is the slug of the blog post you generated in Step 6 (derived from the first `# heading` of the blog file, lowercased, hyphenated). This must match the slug `jpub` will use at publish time.
+     - The path is `/journey/<slug>` to match where `jpub` publishes (`jamiewatters.work/journey/<slug>`). Do NOT use `/progress/<date>` — that is not where published reports live.
 - One hashtag, maybe two, from: `#buildinpublic #solofounder #indiehacker #devlog`
 - **No templates**: no "Shipped X today 🚀", no "Learned Y the hard way". Write fresh.
 
@@ -327,7 +348,8 @@ Write to `progress/YYYY-MM-DD-twitter.md`:
 - Dual-link structure (include both only if a product URL is configured):
   1. `Try it: <product-url>` mid-post — resolve from `PRODUCT_URL` env var. If
      unset, omit this line entirely rather than leaving a placeholder.
-  2. Report link at the end (OG preview)
+  2. Report link at the end (OG preview): `Full writeup: <DAILYREPORT_BASE_URL>/journey/<blog-slug>`
+     - Same resolution rules as the Twitter/X link: read `DAILYREPORT_BASE_URL` from env, omit the line if unset, use `/journey/<blog-slug>` path. Slug must match the blog file you generated in Step 6.
 - 0-2 hashtags at the very end. LinkedIn penalises spam.
 - Close with a genuine question the reader might actually answer, or a plain statement.
   Never manufactured engagement ("What do you think? Drop a comment below!").
@@ -495,8 +517,10 @@ No API keys required. Optional environment variables in `.env.mcp`:
 # Voice guide override (shared with /blog)
 DAILYREPORT_VOICE_GUIDE=/path/to/voice-guide.md
 
-# Base URL for blog links in social posts
-DAILYREPORT_BASE_URL=yourdomain.com
+# Base URL for blog links in social posts.
+# Social posts will contain `Full writeup: <DAILYREPORT_BASE_URL>/journey/<blog-slug>`.
+# If unset, the "Full writeup:" line is omitted rather than guessing a URL.
+DAILYREPORT_BASE_URL=jamiewatters.work
 
 # Product URL for social posts (e.g. modeloptix.com, plebtest.com).
 # If unset, the "Try it:" line is omitted from social posts rather

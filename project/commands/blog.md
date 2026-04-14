@@ -98,7 +98,7 @@ so the last one wins the preview card.
 
 Try it: <product-url>
 
-Full post: <your-domain>/blog/2026-04-11-feature-flags-small-teams
+Full post: <DAILYREPORT_BASE_URL>/journey/2026-04-11-feature-flags-small-teams
 
 #buildinpublic
 ```
@@ -114,11 +114,14 @@ Try it: <product-url>
 
 <plain closing or genuine question>
 
-Full post: <your-domain>/blog/2026-04-11-feature-flags-small-teams
+Full post: <DAILYREPORT_BASE_URL>/journey/2026-04-11-feature-flags-small-teams
 ```
 
-The product URL is resolved from the `PRODUCT_URL` env var at write time. If unset,
-the "Try it:" line is omitted entirely rather than leaving a placeholder.
+Both URLs are resolved from env vars at write time:
+- Product URL → `PRODUCT_URL` env var. If unset, the "Try it:" line is omitted.
+- Blog base URL → `DAILYREPORT_BASE_URL` env var. If unset, the "Full post:" line is omitted. The path is `/journey/<slug>` (matches where `jpub` publishes).
+
+If an env var is missing, the corresponding line is **omitted entirely** — never guessed, never left as a placeholder.
 
 ## AGENT INSTRUCTIONS
 
@@ -130,6 +133,21 @@ Do not delegate. Do not call a Python script. Do not use the OpenAI API.
 - If the argument is a file path that exists → treat it as a brief. Read it.
 - Otherwise → treat the whole argument as an inline topic string.
 - Extract any `--context <files...>` tokens separately and resolve each to a file path.
+
+### Step 1.5: Resolve URL environment variables
+
+Before drafting anything, read these env vars with Bash calls (use `echo` so an unset var returns empty):
+
+```bash
+echo "DAILYREPORT_BASE_URL=$DAILYREPORT_BASE_URL"
+echo "PRODUCT_URL=$PRODUCT_URL"
+```
+
+Record the values. They affect the social posts:
+- `DAILYREPORT_BASE_URL` → used to construct `Full post: <DAILYREPORT_BASE_URL>/journey/<slug>`. If empty, **omit the "Full post:" line entirely**.
+- `PRODUCT_URL` → used to construct `Try it: <PRODUCT_URL>`. If empty, **omit the "Try it:" line entirely**.
+
+**Never guess or hallucinate these URLs.** If an env var is unset, the line is simply not written. The reader sees a clean post without the link rather than a broken link to a made-up domain.
 
 ### Step 2: Load the voice guide
 
@@ -215,7 +233,10 @@ beats "Thoughts on Automation." Make it something someone would click.
 - Dual-link structure:
   1. `Try it: <product-url>` — resolve from `PRODUCT_URL` env var. If unset,
      omit this line entirely rather than leaving a placeholder.
-  2. Blog link last (for OG preview): `Full post: <base-url>/blog/<slug>`
+  2. Blog link last (for OG preview): `Full post: <base-url>/journey/<slug>`
+     - Resolve `<base-url>` from the `DAILYREPORT_BASE_URL` env var at write time (read it with a quick `Bash` call like `echo "$DAILYREPORT_BASE_URL"`)
+     - If `DAILYREPORT_BASE_URL` is unset or empty, **omit the "Full post:" line entirely** rather than inventing a URL
+     - The path is `/journey/<slug>` to match where `jpub` publishes blog posts (`jamiewatters.work/journey/<slug>`). Do NOT use `/blog/<slug>` — that is not where published posts live.
 - One hashtag, maybe two, from: `#buildinpublic #solofounder #indiehacker #devlog`
 - **No templates**: no "Shipped X today 🚀", no "Learned Y the hard way". Write fresh.
 
@@ -229,7 +250,8 @@ beats "Thoughts on Automation." Make it something someone would click.
 - Dual-link structure:
   1. `Try it: <product-url>` mid-post — resolve from `PRODUCT_URL` env var. If
      unset, omit this line entirely rather than leaving a placeholder.
-  2. Blog link at the end (for OG preview)
+  2. Blog link at the end (for OG preview): `Full post: <base-url>/journey/<slug>`
+     - Same resolution rules as the Twitter/X link: read `DAILYREPORT_BASE_URL`, omit the line if unset, use `/journey/<slug>` path.
 - 0-2 hashtags at the very end. LinkedIn penalises spam.
 - Close with a genuine question the reader might actually answer, or a plain
   statement. Never manufactured engagement ("What do you think? Drop a comment below!").
@@ -338,8 +360,10 @@ opening the file.
 # Voice guide override (shared with /dailyreport)
 DAILYREPORT_VOICE_GUIDE=/path/to/voice-guide.md
 
-# Base URL for blog links in social posts (shared with /dailyreport)
-DAILYREPORT_BASE_URL=yourdomain.com
+# Base URL for blog links in social posts (shared with /dailyreport).
+# Social posts will contain `Full post: <DAILYREPORT_BASE_URL>/journey/<slug>`.
+# If unset, the "Full post:" line is omitted rather than guessing a URL.
+DAILYREPORT_BASE_URL=jamiewatters.work
 
 # Product URL for social posts (e.g. modeloptix.com). If unset, the
 # "Try it:" line is omitted rather than leaving a placeholder.
