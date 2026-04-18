@@ -1497,4 +1497,4 @@ main() {
 trap 'error "Installation interrupted. Run script again to retry."; exit 130' INT TERM
 
 # Run main function with all arguments
-main "$@"
+main "$@"# intentional drift test - 2026-04-18T16:42:09Z
