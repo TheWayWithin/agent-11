@@ -43,6 +43,26 @@ This file has been restructured to be a BACKWARD-LOOKING changelog capturing:
 
 ---
 
+### [2026-04-18] - Install Checksum Drift — Fix + CI Guard ✅
+
+**Symptom**: `secure-install.sh` rejected every download from `main` with "Checksum verification FAILED". First surfaced when Jamie tried deploying Agent-11 into `/Users/jamiewatters/DevProjects/SEOAgent`.
+
+**Root Cause**: At commit `d501ca9` (security hardening), `install.sh.sha256` contained hash `7db0e95d…` but `install.sh` hashed to `4d510cc7…`. Verified `install.sh` has not been modified since d501ca9 — the .sha256 was generated against an intermediate working-copy state that was edited further before commit. The claimed "CI auto-regeneration" in d501ca9's message was never actually implemented (workflows only had `validate.yml` and `validate-agents.yml`).
+
+**Impact**: Every user trying to install via the new secure installer since the security sprint shipped was blocked. Undetected because this was Jamie's first deploy since hardening.
+
+**Fix Attempts (all ✅)**:
+1. Regenerated `install.sh.sha256` from the committed `install.sh`. Verified locally: `shasum -a 256 -c` → `install.sh: OK`. Committed as `14e24ba`, pushed. Verified live against `raw.githubusercontent.com`.
+2. Added `.github/workflows/verify-install-checksum.yml` — fails CI on any push or PR that causes drift between `install.sh` and `install.sh.sha256`. Gives a clear fix-command message pointing to `shasum -a 256 install.sh > install.sh.sha256`.
+
+**Design Choice**: CI fails on drift rather than auto-committing a regenerated checksum. Simpler (no write-token dance), safer (drift is surfaced to the author, not silently corrected), explicit (author takes responsibility for the checksum when they edit install.sh).
+
+**Prevention**: The new workflow catches this class of bug before merge. The author editing install.sh gets a failing CI run with exact remediation steps. Same class of drift cannot silently ship again.
+
+**Follow-up**: None required. Decided not to create a sprint doc — one workflow file, fully addressed.
+
+---
+
 ### [2026-01-17] - Sprint 11: Dynamic MCP Tooling & Context Optimization - PHASE 11A COMPLETE ✅
 **Created by**: Coordinator orchestration
 **Type**: Major Architecture Upgrade - Dynamic tool discovery system

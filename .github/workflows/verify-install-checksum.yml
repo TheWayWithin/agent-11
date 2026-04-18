@@ -1,0 +1,56 @@
+name: Verify install.sh checksum
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'project/deployment/scripts/install.sh'
+      - 'project/deployment/scripts/install.sh.sha256'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'project/deployment/scripts/install.sh'
+      - 'project/deployment/scripts/install.sh.sha256'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Verify install.sh.sha256 matches install.sh
+        run: |
+          cd project/deployment/scripts
+
+          if [ ! -f install.sh ]; then
+            echo "::error::install.sh not found at project/deployment/scripts/install.sh"
+            exit 1
+          fi
+
+          if [ ! -f install.sh.sha256 ]; then
+            echo "::error::install.sh.sha256 not found. Create it with: shasum -a 256 install.sh > install.sh.sha256"
+            exit 1
+          fi
+
+          ACTUAL=$(shasum -a 256 install.sh | awk '{print $1}')
+          EXPECTED=$(awk '{print $1}' install.sh.sha256)
+
+          if [ "$ACTUAL" != "$EXPECTED" ]; then
+            echo "::error::install.sh.sha256 is out of sync with install.sh"
+            echo ""
+            echo "Expected (from install.sh.sha256): $EXPECTED"
+            echo "Actual   (from install.sh):        $ACTUAL"
+            echo ""
+            echo "secure-install.sh will reject downloads from main until this is fixed."
+            echo ""
+            echo "To fix, run locally:"
+            echo "  cd project/deployment/scripts"
+            echo "  shasum -a 256 install.sh > install.sh.sha256"
+            echo "  git add install.sh.sha256"
+            echo "  git commit -m 'fix(install): regenerate install.sh.sha256'"
+            echo "  git push"
+            exit 1
+          fi
+
+          echo "install.sh.sha256 matches install.sh"
+          echo "  $EXPECTED"
