@@ -1,251 +1,85 @@
-# Handoff Notes
+# Handoff Notes — Agent-11 v6.0 Evolution
 
-## Last Updated: 2026-01-17
-## Current Phase: Sprint 11 - Dynamic MCP Tooling & Context Optimization
-## Mission Status: Sprint 11 COMPLETE - Git Commit Ready
-
----
-
-## Current Mission: Sprint 11 - Dynamic MCP Tooling
-
-### The Problem Being Solved
-Current MCP architecture causes two critical issues:
-1. **Context Bloat**: Pre-loading all tools consumes 51,000+ tokens even when only a few are needed
-2. **Profile Friction**: Manual profile switching requires agent restart, breaks mission flow
-
-### The Solution
-Dynamic tool loading via Claude Code's new features:
-- **Tool Search** (`tool_search_tool_regex_20251119`): Pre-loaded tool to discover deferred tools
-- **Lazy Loading** (`defer_loading: true`): Keep tools discoverable but out of initial context
-- **Token Reduction**: 93.5% reduction in initial context (51K → 3.3K tokens)
-
-### Sprint 11 Phases
-
-| Phase | Name | Priority | Status |
-|-------|------|----------|--------|
-| 11A | Configuration Blueprint Design | P0 | ✅ COMPLETE - 2026-01-17 |
-| 11B | Agent Protocol Update | P0 | ✅ COMPLETE - 2026-01-17 |
-| 11C | Documentation Update | P1 | ✅ COMPLETE - 2026-01-17 |
-| 11D | Testing and Validation | P1 | ✅ COMPLETE - 2026-01-17 |
-| 11E | Deployment and Rollout | P0 | ✅ COMPLETE - 2026-01-17 |
-
-### Target MCPs (7 services)
-- context7, firecrawl, playwright, supabase, github, railway, stripe
+**Last Updated**: 2026-04-17
+**From**: Planning session (2026-04-17)
+**To**: Next session — execute Sprint 4a
 
 ---
 
-## Phase 11A & 11B Deliverables (Complete)
+## Where We Are
 
-**Phase 11A Files Created**:
-1. `project/schemas/dynamic-mcp.schema.yaml` (14KB, 394 lines)
-2. `project/mcp/dynamic-mcp.json` (8.5KB, 291 lines)
-3. `docs/MCP-MIGRATION-GUIDE.md` (13KB, 543 lines)
+Planning for the Agent-11 v6.0 evolution is complete. The overall plan is in `project-plan.md`. Eight sprints (4a–4h) under the Sprint 4 umbrella, delivered rolling-wave style: detailed spec only for the current sprint; the final task of each sprint writes the spec for the next.
 
-**Phase 11B Files Updated**:
-1. `project/agents/specialists/coordinator.md` - DYNAMIC MCP TOOL DISCOVERY section
-2. `project/agents/specialists/developer.md` - Tool Search patterns
-3. `project/agents/specialists/tester.md` - Playwright discovery
-4. `project/agents/specialists/operator.md` - Deployment discovery
+Reference documents (review is complete — do not re-analyse unless Jamie asks):
+- `Ideation/Agent-11 v6.0 Master Blueprint_ The Lean Orchestrator (Final Revision)`
+- `Ideation/Dynamic MCP Tooling for Agent-11_ Context Optimization and Agent Routing.md`
 
-**Verification**: All legacy `/mcp-switch` and `.mcp-profiles/` references removed from main agent files.
+**Note**: Sprint 11 work (Dynamic MCP Tooling, Phases 11A–E) shown in the previous handoff-notes is from the archived initiative. That work produced `project/mcp/dynamic-mcp.json` and `project/schemas/dynamic-mcp.schema.yaml`, which remain in the repo and will be picked up again in Sprint 4f. The earlier Phase 11C documentation task is superseded by the v6.0 plan.
 
 ---
 
-## Phase 11C: Documentation Update - NEXT
+## What Was Done Today (2026-04-17)
 
-### Objective
-Update all MCP documentation to reflect new dynamic architecture.
-
-### Tasks (from project-plan.md)
-
-1. **Update MCP-GUIDE.md** (@documenter)
-   - **File**: `docs/MCP-GUIDE.md`
-   - **Add**: "Dynamic Tool Loading" section at top
-   - **Update**: Installation instructions for dynamic-mcp.json
-   - **Mark**: Profile switching commands as legacy
-
-2. **Update README.md** (@documenter)
-   - **Section**: MCP Integration
-   - **Add**: Brief mention of dynamic tool loading
-   - **Link**: To MCP-MIGRATION-GUIDE.md
-
-3. **Update library/CLAUDE.md** (@documenter)
-   - **Section**: MCP Integration
-   - **Add**: Tool Search workflow
-   - **Remove**: Profile-based instructions
-
-### Files to Reference
-- `docs/MCP-MIGRATION-GUIDE.md` - Migration documentation (already created)
-- `project/schemas/dynamic-mcp.schema.yaml` - Schema definition
-- `project/mcp/dynamic-mcp.json` - Configuration example
-
-### Next Action
-Begin Phase 11C with @documenter to update MCP-GUIDE.md, README.md, and library/CLAUDE.md
+1. Reviewed the v6.0 Master Blueprint and the Dynamic MCP Tooling companion doc.
+2. Verified current-state facts against the blueprint:
+   - `library/CLAUDE.md` = 575 lines
+   - `.claude/CLAUDE.md` = 214 lines
+   - `coordinator.md` = 3,558 lines (heavily decorated)
+   - `coord.md` = 549 lines
+   - MCP profile system exists (`.mcp-profiles/`, commands in `.claude/commands/`)
+   - 11 `.backup` files in `project/agents/specialists/`
+3. Archived previous initiative to `.archive/2026-04-17-pre-v6/`:
+   - Previous `project-plan.md` (Sprint 9 / Sprint 11 era work)
+   - `security-sprint-1-critical-shell-hardening.md`
+   - `security-sprint-2-install-integrity-and-hardening.md`
+4. Wrote new `project-plan.md` (v6.0 overview, 8-sprint roadmap, rolling-wave protocol, open questions).
+5. Wrote detailed `sprints/sprint-4a-baseline-and-great-deletion.md` (7 tasks, ready to execute).
+6. Wrote outline stubs for `sprints/sprint-4b` through `sprint-4h`.
+7. Left `sprints/sprint-3-agent-prompt-injection-defense.md` untouched (active security work, separate initiative).
+8. Added explicit scope clarity — all v6.0 edits target the **library surface** (`project/`, `library/CLAUDE.md`, `templates/`), not our internal working squad (`.claude/agents/`, `.claude/commands/`). See `project-plan.md` → "Scope: What We're Changing". One allowed exception is called out in Sprint 4a T3 (delete dead internal MCP command stubs).
+9. Added documentation strategy — public-facing docs (`README.md`, `CHANGELOG.md`, `docs/RELEASE-HISTORY.md`, `MCP-GUIDE.md`) updated once as a consolidated effort in Sprint 4h, NOT per-sprint. Each sprint logs "User-Facing Changes" to `progress.md`; 4h consolidates. Exception: brief deprecation notices in-sprint for anything removed users depend on.
 
 ---
 
-## Completed: README Restructuring (2026-01-01) ✅
+## Next Action
 
-### Deliverables Created
+**Start Sprint 4a** — see `sprints/sprint-4a-baseline-and-great-deletion.md`.
 
-| File | Lines | Purpose |
-|------|-------|---------|
-| `docs/RELEASE-HISTORY.md` | 326 | Complete sprint history (all 9 sprints) |
-| `README.md` | 306 | Restructured with SaaS Boilerplate Killer focus |
-
-### Key Changes
-
-1. **README.md** reduced from 1,408 to 306 lines (-78%)
-   - New tagline: "The SaaS Boilerplate Killer"
-   - "The Paradigm Shift" as lead section
-   - SaaS Skills section prominent
-   - Version History condensed to bullet list
-
-2. **docs/RELEASE-HISTORY.md** created as comprehensive history
-   - All 9 sprints documented
-   - Version summary table
-   - Impact metrics per sprint
-   - Migration guides linked
-
-### Next Steps (SoloPilot Testing)
-
-The SoloPilot project is set up with:
-- AGENT-11 v5.0.0 installed
-- 8 BOS-AI foundation docs in `documents/foundations/`
-- Ready to test `/foundations init` workflow
-
-To continue testing:
-1. User needs to restart Claude Code in SoloPilot project
-2. Run `/foundations init` to process foundation documents
-3. Run `/bootstrap saas-mvp` to generate project plan
-4. Run `/coord continue` for autonomous execution
+First task: T1 — Validation Harness Spec. Before starting T1, resolve the three items below with Jamie.
 
 ---
 
-## Completed: Phase 9H - Testing and Documentation ✅
+## Open Items to Resolve Before Sprint 4a Execution
 
-### Deliverables (Verified on Filesystem)
+1. **MCP profile commands in use on live projects?**
+   Sprint 4a T3 deletes `.claude/commands/mcp-switch.md`, `mcp-status.md`, `mcp-list.md`. Confirm Jamie isn't depending on these in other projects. If he is, add a deprecation step before deletion.
 
-| File | Size | Purpose |
-|------|------|---------|
-| `project/field-manual/plan-driven-development.md` | 7.1KB | Complete user guide |
-| `project/field-manual/quality-gates-guide.md` | 8.4KB | Gate configuration guide |
-| `project/field-manual/skills-guide.md` | 8.5KB | Skills usage guide |
-| `project/field-manual/architectural-principles.md` | 9.0KB | 7 architectural principles |
-| `CLAUDE.md` | (modified) | Sprint 9 section added |
-| `README.md` | (modified) | Sprint 9 (v5.0.0) section |
+2. **Harness task definition (T1) — pair or solo?**
+   T1 is the critical path for measuring every later sprint. The 5 representative tasks need to be reproducible and genuinely representative. Worth Jamie's input on the task selection before drafting.
 
-### Test Results Summary
-
-All Sprint 9 features validated:
-- ✅ 5 command files exist and properly formatted
-- ✅ 7 schemas validate (YAML syntax correct)
-- ✅ 7 skills have proper YAML frontmatter
-- ✅ Quality gate runner passes Python syntax check
-- ✅ 3 stack profiles exist and valid
-- ✅ Coordinator has PLAN-DRIVEN sections at expected lines
-
-### Documentation Created
-
-4 new field manual guides (~4,600 words total):
-1. **plan-driven-development.md** - Complete workflow guide
-2. **quality-gates-guide.md** - Gate configuration and usage
-3. **skills-guide.md** - Skill system documentation
-4. **architectural-principles.md** - 7 design principles
+3. **Open questions in `project-plan.md`** (6 total, one per future sprint)
+   Not blockers for 4a, but worth scanning to see if any need early resolution. Examples: `/effort` vs `MAX_THINKING_TOKENS` for budget controls (4b), does `/foundations` fold into `/bootstrap` (4c).
 
 ---
 
-## Sprint 9 Summary
+## Key Files
 
-### Completed Phases
-
-| Phase | Name | Status | Key Deliverables |
-|-------|------|--------|------------------|
-| 9A | Foundations Command | ✅ | /foundations command, vision/PRD templates |
-| 9B | Enhanced Schemas | ✅ | 4 YAML schemas for structured data |
-| 9C | Bootstrap Command | ✅ | /bootstrap command, 3 plan templates |
-| 9D | Plan Command | ✅ | /plan command with 6 subcommands |
-| 9E | Quality Gates | ✅ | Gate system, Python runner, 3 templates |
-| 9F | SaaS Skills | ✅ | 7 skills, 3 stack profiles, /skills command |
-| 9G | Plan-Driven Coordination | ✅ | Autonomous execution, vision integrity, smart routing |
-| 9H | Testing and Documentation | ✅ | 4 guides, CLAUDE.md, README updates |
-| 9I | Deployment and Rollout | ✅ | install.sh updates, v5.0.0, git commit |
-
-### Sprint 9 Architecture (Complete)
-
-```
-/foundations init → /bootstrap → /plan status → /coord continue
-                                              ↓
-                           Coordinator reads project-plan.md (source of truth)
-                                              ↓
-                           Smart routing to specialists with skill injection
-                                              ↓
-                           Quality gates enforce at phase transitions
-                                              ↓
-                           Vision integrity verified before major decisions
-                                              ↓
-                           Documentation guides users through workflow
-```
-
-### Files Created in Sprint 9
-
-| Category | Count | Details |
-|----------|-------|---------|
-| Commands | 5 | /foundations, /bootstrap, /plan, /skills, /coord enhancements |
-| Schemas | 7 | 4 Phase 9B + 3 Phase 9F |
-| Skills | 7 | SaaS patterns (~25K tokens) |
-| Plan Templates | 3 | saas-mvp, saas-full, api |
-| Stack Profiles | 3 | nextjs-supabase, remix-railway, sveltekit-supabase |
-| Gate Templates | 3 | nodejs-saas, python-api, minimal |
-| Field Manual Guides | 4 | plan-driven, quality-gates, skills, architectural-principles |
+| File | Purpose |
+|------|---------|
+| `project-plan.md` | v6.0 evolution overview, 8-sprint roadmap |
+| `sprints/sprint-4a-baseline-and-great-deletion.md` | Current sprint — detailed, ready |
+| `sprints/sprint-4b..4h` | Future sprints — outline only; detailed spec is Task 1 of each |
+| `.archive/2026-04-17-pre-v6/` | Previous plan and security sprints |
+| `progress.md` | Running log (will be archived in Sprint 4a T6) |
+| `agent-context.md` | Historic mission context (will be archived in Sprint 4a T6) |
 
 ---
 
-## Completed: Phase 9I - Deployment and Rollout ✅
+## Notes for Fresh Session
 
-### Deliverables (2025-12-31)
-
-| Task | Status | Details |
-|------|--------|---------|
-| Update install.sh | ✅ | +100 lines for Sprint 9 deployments |
-| Update agent versions | ✅ | All 11 agents → v5.0.0 |
-| Create CHANGELOG entry | ✅ | v5.0.0 release notes with migration guide |
-| Create git commit | ✅ | `33027e4 feat: Sprint 9 - SaaS Boilerplate Killer Architecture (v5.0.0)` |
-| Verify deployment | ✅ | All files validated on filesystem |
-
-### Git Status
-
-```
-Commit: 33027e4
-Branch: main (ahead of origin/main by 1 commit)
-Files: 130 changed, 25,778 insertions(+), 2,570 deletions(-)
-```
-
-### Next Step: Push to Origin
-
-Ready to push Sprint 9 to GitHub:
-```bash
-git push origin main
-```
-
----
-
-## Sprint 9 Complete Summary
-
-### What Was Built
-
-**SaaS Boilerplate Killer Architecture** - Transforms AGENT-11 into a plan-driven orchestration system:
-
-1. **Plan-Driven Development** - project-plan.md as single source of truth
-2. **Foundation Commands** - /foundations init for BOS-AI integration
-3. **Bootstrap System** - /bootstrap for plan generation from templates
-4. **Quality Gates** - Automated checks at phase transitions
-5. **SaaS Skills** - 7 domain-specific skills (~25K tokens)
-6. **Stack Profiles** - Multi-framework support
-7. **Autonomous Execution** - /coord continue until blocked
-
-### Version
-
-- **Version**: 5.0.0
-- **Tag**: v5.0.0-saas-boilerplate-killer (pending)
-- **Commit**: 33027e4
+- Don't re-litigate the sprint breakdown — it's already reviewed and approved by Jamie.
+- The existing `progress.md` and `agent-context.md` are historic (Sprint 9 / Sprint 11 era). They'll be archived as part of Sprint 4a T6. Don't merge today's work into them.
+- Jamie prefers brief context + specific steps (ADHD). One task at a time, fully closed before moving on.
+- Use British English.
+- Naming convention confirmed: v6.0 sprints are 4a–4h. `sprint-3-agent-prompt-injection-defense.md` is separate active security work.
+- The previous coordinator protocol (NO WAITING, heavy ASCII decoration) is what v6.0 is replacing. Expect to edit the coordinator prompt itself in Sprints 4a (decoration only) and 4d (content shrink).

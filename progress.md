@@ -16,6 +16,33 @@ This file has been restructured to be a BACKWARD-LOOKING changelog capturing:
 
 ## 📦 Recent Deliverables
 
+### [2026-04-17] - v6.0 Evolution — Planning Session Complete ✅
+
+**Summary**: Reviewed the v6.0 Master Blueprint. Produced overall plan and sprint structure for the v6.0 evolution of Agent-11.
+
+**Deliverables**:
+- Archived previous `project-plan.md` and the two security sprints to `.archive/2026-04-17-pre-v6/`.
+- New `project-plan.md` — 8-sprint roadmap (4a–4h) with rolling-wave protocol.
+- Detailed `sprints/sprint-4a-baseline-and-great-deletion.md` (7 tasks).
+- Outline stubs for `sprints/sprint-4b` through `sprint-4h`.
+- `handoff-notes.md` updated for next-session kick-off of Sprint 4a.
+
+**Decisions**:
+- v6.0 evolution delivered as sub-sprints under the "Sprint 4" umbrella (`4a`, `4b`, …, `4h`).
+- Rolling-wave planning: detailed spec only for the current sprint; the last task of each sprint writes the next sprint's spec.
+- 8-sprint breakdown chosen over the blueprint's original 4 sprints so each ships one assessable feature.
+- `sprints/sprint-3-agent-prompt-injection-defense.md` preserved (active security work, separate initiative).
+- **Scope rule**: v6.0 edits target the **library surface** (`project/`, `library/CLAUDE.md`, `templates/`), not our internal working squad (`.claude/agents/`, `.claude/commands/`). Exception in Sprint 4a T3: delete dead internal MCP command stubs only.
+- **Docs strategy**: public-facing docs (`README.md`, `CHANGELOG.md`, `docs/RELEASE-HISTORY.md`, `MCP-GUIDE.md`) updated once in Sprint 4h, not per-sprint. Each sprint logs "User-Facing Changes" entries here; 4h consolidates.
+
+**Reference docs**:
+- `Ideation/Agent-11 v6.0 Master Blueprint_ The Lean Orchestrator (Final Revision)`
+- `Ideation/Dynamic MCP Tooling for Agent-11_ Context Optimization and Agent Routing.md`
+
+**Note on this file**: `progress.md` itself will be archived and replaced with a fresh v6.0-scoped version during Sprint 4a T6. This entry is the bridge between eras.
+
+---
+
 ### [2026-01-17] - Sprint 11: Dynamic MCP Tooling & Context Optimization - PHASE 11A COMPLETE ✅
 **Created by**: Coordinator orchestration
 **Type**: Major Architecture Upgrade - Dynamic tool discovery system
