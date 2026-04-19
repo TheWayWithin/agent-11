@@ -61,6 +61,8 @@ This file has been restructured to be a BACKWARD-LOOKING changelog capturing:
 
 **Follow-up**: None required. Decided not to create a sprint doc — one workflow file, fully addressed.
 
+**Verification** (2026-04-18): Ran a PR-based drift test via throwaway branch `test/checksum-drift-guard` (PR #2, closed without merging). Intentionally appended a comment to `install.sh` without regenerating the checksum. `verify` check failed in 5s with the designed error output (expected vs actual hash, remediation command). `validate` passed in parallel (4s). PR closed, branch deleted, zero impact on `main`. Guard confirmed working.
+
 ---
 
 ### [2026-01-17] - Sprint 11: Dynamic MCP Tooling & Context Optimization - PHASE 11A COMPLETE ✅

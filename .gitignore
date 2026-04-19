@@ -48,3 +48,6 @@ CLAUDE-AGENT11-TEMPLATE.md
 
 # Verification frameworks (draft)
 templates/verification-framework.md
+
+# Harness run directories (fixtures get copied here per run)
+test-projects/
