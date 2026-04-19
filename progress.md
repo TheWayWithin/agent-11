@@ -33,6 +33,30 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ---
 
+### [2026-04-19] — Install Simplification: always install all 11 agents ✅
+
+**Summary**: Retired the `install.sh [core|full|minimal]` squad selector. All installs now always deploy all 11 specialists. This fixes the class of bug that surfaced in the Task 5 baseline review (secure-install.sh dropped the squad argument) by removing the argument's meaning entirely.
+
+**Rationale**: Having all 11 specialists installed costs approximately 1k tokens (lazy-loaded by Claude Code) and negligible disk space. The user benefit of "pick your squad" was notional — in practice, having more specialists available does not hurt and removes decisions users shouldn't have to make.
+
+**Changes**:
+- `project/deployment/scripts/install.sh`:
+  - `SQUAD_CORE` and `SQUAD_MINIMAL` arrays removed; only `SQUAD_FULL` (11 agents) remains.
+  - `install_squad`, `verify_installation`, `show_post_install_instructions` simplified to always use `SQUAD_FULL`; case statements on squad_type removed.
+  - `main()` now accepts legacy `core|full|minimal` arguments with a yellow "deprecated" notice, but always installs all 11.
+- `project/deployment/scripts/install.sh.sha256` regenerated (CI guard from `fea148d` enforced this).
+- `README.md`: no change needed (install command already didn't pass a squad arg).
+- `CHANGELOG.md`: entry under Unreleased → Changed/Deprecated.
+
+**Verification**: `shasum -a 256 -c install.sh.sha256` passes. `bash -n install.sh` syntax-clean.
+
+**User impact**:
+- Fresh installs get all 11 specialists. Previously, the default was 4.
+- Anyone passing `core` or `minimal` to `install.sh` gets a one-line deprecation notice and still gets all 11 (non-breaking).
+- `secure-install.sh` squad-arg regression is moot — there is no squad arg any more.
+
+---
+
 ### [2026-04-19] — v6.0 Evolution Kickoff
 
 Continuing from the v6.0 planning session committed in `aa6ecdb`. Historic context (pre-v6 plan, Sprint 9/11 work) preserved in `.archive/2026-04-17-pre-v6/`.

@@ -8,12 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- `install.sh` now always installs all 11 specialists (previously defaulted to "core" 4-agent squad). Disk and session-start cost of having all 11 is negligible because Claude Code lazy-loads custom agents. Removes a class of bugs caused by squad-argument handling (notably the `secure-install.sh` argument-drop regression found in the v6.0 baseline).
 - Upgraded Opus tier references from 4.5 to 4.6 across all documentation
 - Updated model-selection-guide.md (v1.1.0) with Opus 4.6 tier
 - Added Opus 4.6 (`claude-opus-4-6`) to memory-management.md supported models
 - Added Opus 4.6 to extended-thinking-guide.md supported models
 - Updated agent-schema.json descriptions for Opus 4.6
 - Updated architect specialist Opus reasoning reference
+
+### Deprecated
+- `install.sh [core|full|minimal]` arguments are accepted but ignored (with a notice); all installs get all 11 agents regardless. The selector will be removed in a future release.
+
+### Removed
+- `/mcp-switch`, `/mcp-list`, `/mcp-status` profile commands retired (v6.0 Sprint 4a). Replacement is dynamic tool search (v6.0 Sprint 4f). Brief deprecation notice added to README.
 
 ## [5.0.0] - 2025-12-31 - SaaS Boilerplate Killer Architecture
 

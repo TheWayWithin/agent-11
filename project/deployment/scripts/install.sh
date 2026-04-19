@@ -206,10 +206,11 @@ GITHUB_RAW_BASE="https://raw.githubusercontent.com/$GITHUB_REPO/$GITHUB_BRANCH/$
 GITHUB_REPO_BASE="https://raw.githubusercontent.com/$GITHUB_REPO/$GITHUB_BRANCH"
 
 
-# Available squads
-SQUAD_CORE=("strategist" "developer" "tester" "operator")
+# The Agent-11 squad: always deploys all 11 specialists.
+# (Legacy 'core' and 'minimal' squads were removed in favour of a single,
+#  deterministic install. Agents are lazy-loaded by Claude Code so having
+#  all 11 available costs almost nothing at session start.)
 SQUAD_FULL=("strategist" "developer" "tester" "operator" "architect" "designer" "documenter" "support" "analyst" "marketer" "coordinator")
-SQUAD_MINIMAL=("strategist" "developer")
 
 
 # Progress tracking
@@ -948,44 +949,29 @@ install_mission_system() {
     fi
 }
 
-# Install squad of agents
+# Install the Agent-11 squad (all 11 specialists)
 install_squad() {
-    local squad_type="$1"
-    local squad_agents
-    
-    # Get squad agents based on type
-    case "$squad_type" in
-        "core")
-            squad_agents=("${SQUAD_CORE[@]}")
-            ;;
-        "full")
-            squad_agents=("${SQUAD_FULL[@]}")
-            ;;
-        "minimal")
-            squad_agents=("${SQUAD_MINIMAL[@]}")
-            ;;
-    esac
-    
+    local squad_agents=("${SQUAD_FULL[@]}")
     local total=${#squad_agents[@]}
     local current=0
     local failed_agents=()
-    
-    log "Installing $squad_type squad ($total agents)..."
-    
+
+    log "Installing Agent-11 squad ($total agents)..."
+
     for agent in "${squad_agents[@]}"; do
         ((current++))
         show_progress "$current" "$total" "Installing $agent"
-        
+
         if ! install_agent "$agent"; then
             failed_agents+=("$agent")
         fi
-        
+
         # Small delay to show progress clearly
         sleep 0.1
     done
-    
+
     if [[ ${#failed_agents[@]} -eq 0 ]]; then
-        success "All $squad_type squad agents installed successfully!"
+        success "All Agent-11 specialists installed successfully!"
         return 0
     else
         error "Failed to install: ${failed_agents[*]}"
@@ -995,22 +981,8 @@ install_squad() {
 
 # Verify installation
 verify_installation() {
-    local squad_type="$1"
-    local squad_agents
-    
-    # Get squad agents based on type
-    case "$squad_type" in
-        "core")
-            squad_agents=("${SQUAD_CORE[@]}")
-            ;;
-        "full")
-            squad_agents=("${SQUAD_FULL[@]}")
-            ;;
-        "minimal")
-            squad_agents=("${SQUAD_MINIMAL[@]}")
-            ;;
-    esac
-    
+    local squad_agents=("${SQUAD_FULL[@]}")
+
     log "Verifying installation..."
     
     local missing_items=()
@@ -1333,24 +1305,10 @@ setup_mcp_configuration() {
 
 # Display post-installation instructions
 show_post_install_instructions() {
-    local squad_type="$1"
-    local squad_agents
-    
-    # Get squad agents based on type
-    case "$squad_type" in
-        "core")
-            squad_agents=("${SQUAD_CORE[@]}")
-            ;;
-        "full")
-            squad_agents=("${SQUAD_FULL[@]}")
-            ;;
-        "minimal")
-            squad_agents=("${SQUAD_MINIMAL[@]}")
-            ;;
-    esac
-    
+    local squad_agents=("${SQUAD_FULL[@]}")
+
     echo
-    echo "🎉 AGENT-11 $squad_type Squad Deployed Successfully!"
+    echo "🎉 AGENT-11 Squad Deployed Successfully! (11 specialists)"
     echo
     echo -e "${GREEN}📁 Project-Local Installation${NC}"
     echo "  Location: $AGENTS_DIR"
@@ -1371,25 +1329,10 @@ show_post_install_instructions() {
     echo "   /coord                                # Interactive mission selection"
     echo
     echo "   # Option 2: Direct Agent Commands"
-    
-    case "$squad_type" in
-        "core")
-            echo "   @strategist Create user stories for a user authentication feature"
-            echo "   @developer Implement the authentication based on the requirements above"
-            echo "   @tester Validate the implementation and create test cases"
-            echo "   @operator Deploy to production when tests pass"
-            ;;
-        "minimal")
-            echo "   @strategist Define requirements for [your feature]"
-            echo "   @developer Implement based on the requirements"
-            ;;
-        *)
-            echo "   @coordinator Plan and orchestrate multi-agent workflows"
-            echo "   @strategist Create user stories for complex features"
-            echo "   @architect Design system architecture"
-            echo "   @developer Implement features with full-stack expertise"
-            ;;
-    esac
+    echo "   @coordinator Plan and orchestrate multi-agent workflows"
+    echo "   @strategist Create user stories for complex features"
+    echo "   @architect Design system architecture"
+    echo "   @developer Implement features with full-stack expertise"
     
     echo -e "${BLUE}📚 Next Steps${NC}"
     echo "  • Your agents and mission system are ready to use"
@@ -1426,71 +1369,50 @@ show_post_install_instructions() {
 
 # Main installation function
 main() {
-    local squad_type="${1:-core}"
-    local squad_ref
-    
+    local legacy_arg="${1:-}"
+
     echo "🚁 AGENT-11 Deployment System"
     echo "=============================="
     echo
-    
-    # Validate squad type and set reference
-    case "$squad_type" in
-        "core")
-            squad_ref="SQUAD_CORE"
+
+    # Handle legacy squad-selection arguments.
+    # core/full/minimal are accepted but deprecated — install always deploys all 11 agents.
+    case "$legacy_arg" in
+        ""|"full")
+            # No arg, or the (still-valid) 'full'. No message needed.
             ;;
-        "full")
-            squad_ref="SQUAD_FULL"
-            ;;
-        "minimal")
-            squad_ref="SQUAD_MINIMAL"
+        "core"|"minimal")
+            echo -e "${YELLOW}Note: squad selection ('$legacy_arg') is deprecated.${NC}"
+            echo -e "${YELLOW}AGENT-11 now always installs all 11 specialists (~6KB, lazy-loaded).${NC}"
+            echo
             ;;
         *)
-            echo "Usage: $0 [core|full|minimal]"
-            echo
-            echo "Squad Types:"
-            echo "  core     - Essential 4 agents (strategist, developer, tester, operator)"
-            echo "  full     - All 11 specialized agents"
-            echo "  minimal  - Just strategist and developer"
-            echo
+            echo "Usage: $0 [core|full|minimal (all deprecated — always installs all 11)]"
             exit 1
             ;;
     esac
-    
-    # Get selected squad agents
-    local selected_squad
-    case "$squad_type" in
-        "core")
-            selected_squad=("${SQUAD_CORE[@]}")
-            ;;
-        "full")
-            selected_squad=("${SQUAD_FULL[@]}")
-            ;;
-        "minimal")
-            selected_squad=("${SQUAD_MINIMAL[@]}")
-            ;;
-    esac
-    
-    log "Selected squad: $squad_type (${#selected_squad[@]} agents)"
+
+    log "Installing Agent-11 squad (${#SQUAD_FULL[@]} specialists)"
     echo
-    
+
     # Installation pipeline with rollback on failure
     {
         validate_environment &&
         create_backup &&
-        install_squad "$squad_type" &&
+        install_squad &&
         install_claude_md &&
         install_mission_system &&
         install_mcp_system &&
-        verify_installation "$squad_type" &&
+        verify_installation &&
         setup_mcp_configuration
     } || {
         error "Installation failed. Initiating rollback..."
         rollback_installation
         fatal "Installation aborted. System restored to previous state."
     }
-    
+
     # Show success message and instructions
-    show_post_install_instructions "$squad_type"
+    show_post_install_instructions
 }
 
 # Handle script interruption
