@@ -1,0 +1,159 @@
+# Agent-11 v6.0 Master Blueprint: The Lean Orchestrator (Final Revision)
+
+**Date**: April 17, 2026
+**Author**: Manus AI (Synthesized from 18 independent LLM reviews)
+
+---
+
+## Executive Summary
+
+This is the final, actionable master blueprint for Agent-11 v6.0, incorporating three rounds of rigorous feedback from 18 independent LLMs. 
+
+The core strategic shift is moving Agent-11 from a monolithic "prompt-heavy local squad" into a **lean, platform-native, multi-mode dev organization**. We are stripping out the custom orchestration ceremony where Claude Code's native features now suffice, and doubling down on what remains Agent-11's true edge: the BOS-AI pipeline, opinionated SaaS skills, and Karpathy-aligned behavioral discipline.
+
+**Key Corrections in this Final Revision:**
+1. **Deterministic Routing over Inference:** `/coord` remains the single entry point, but it uses explicit mission names to determine the mode, rather than risky NLP intent inference.
+2. **Shrink, Don't Delete:** The project-local `.claude/CLAUDE.md` is shrunk to a lean <80-line constitution, rather than being deleted entirely.
+3. **Context to 3 Files:** We return to the 3-file context model, moving `progress.md` out of the active context entirely.
+
+---
+
+## Part 1: The Organizing Principle (Three Execution Modes)
+
+Agent-11 serves fundamentally different workflows. The architecture must reflect this.
+
+### Mode A: Greenfield Build (BOS-AI to Shipped Product)
+The pipeline from BOS-AI foundation documents through `/bootstrap` into a phased `project-plan.md`, then through coordinated multi-agent execution to a deployed MVP.
+* **Needs:** Strong orchestration, full context files, domain skills, explicit phase checkpoints.
+* **Model:** Opus 4.7 direct.
+
+### Mode B: Maintenance and Feature Work (Post-Deployment)
+Bug fixes, feature additions, and surgical changes on an existing codebase.
+* **Subtype B1 (Surgical):** Single-agent, quick fix. Bypasses `project-plan.md` updates; logs only in git commits.
+* **Subtype B2 (Mission):** Multi-step feature or refactor. Updates `project-plan.md`.
+* **Model:** Sonnet executor + Opus advisor (when supported), or Sonnet with `xhigh`.
+
+### Mode C: Operational Work
+Daily reports, blog posts, audits, status updates.
+* **Needs:** Background execution, read-only access (by default), scheduled triggers.
+* **Model:** Handled entirely by Routines.
+
+---
+
+## Part 2: The Universal `/coord` Interface (Deterministic Routing)
+
+The most significant usability improvement for v6.0 is shifting from a complex menu of explicit commands to a **single, universal interface**: `/coord`. 
+
+However, to avoid the "hidden coin flip" of intent inference, `/coord` will use **deterministic routing based on the mission name**.
+
+### How it Works
+1. **Mission-Based Routing**: The user types `/coord [mission]`. The mission name explicitly dictates the mode.
+   - **Mode A Missions**: `build`, `mvp`, `dev-setup`, `integrate`, `migrate`
+   - **Mode B Missions**: `fix`, `refactor`, `optimize`, `release`, `deploy`
+2. **Dynamic Context Loading Heuristic**: 
+   - Default: Load nothing or just `project-plan.md`.
+   - If architecture matters (Mode A or B2): Add `context.md`.
+   - If artifacts are needed: Add `evidence-repository.md` on demand.
+3. **Mode Overrides**: Allow explicit hints for ambiguous tasks (e.g., `/coord mode:maintenance security audit`).
+
+### The Exceptions: Explicit Pipeline Commands
+Explicit commands are retained *only* for rigid, multi-step pipeline processes where deviation is not allowed:
+1. **`/foundations`**: Ingests BOS-AI documents and structures them into YAML.
+2. **`/architect`**: The interactive, 8-decision design session.
+3. **`/bootstrap`**: The initial project scaffolding based on the architecture decisions. (Note: `/foundations` may be folded into `/bootstrap` if the dependency chain is always sequential).
+
+---
+
+## Part 3: The `CLAUDE.md` Strategy (Shrink, Don't Delete)
+
+The current architecture suffers from massive context overload because `library/CLAUDE.md` is a 576-line document containing everything from security principles to phase gate enforcement. 
+
+### The v6.0 Solution
+1. **`/CLAUDE.md` (Root)**: Reserved strictly for the user's personal preferences (e.g., Jamie's ADHD constraints, communication style) and global project constraints.
+2. **`/.claude/CLAUDE.md` (Project-Local)**: **SHRUNK to <80 lines.** It will contain only:
+   - The Karpathy Constitution (see below).
+   - A mission-runner index.
+   - Skill-loading rules.
+3. **Decentralized Rules**: The remaining 500 lines of operational rules are moved into the specific tools and agents that actually need them (e.g., `/foundations` rules live in `commands/foundations.md`).
+
+### Handling the Self-Referential Repo
+For the `agent-11` repository itself, the `/.claude/claude.md` file will be converted into a specific **Skill** ("Agent-11 Meta-Development"). A "System Toggle" will be implemented so the environment looks fundamentally different when working on `agent-11` core versus building a product.
+
+---
+
+## Part 4: The 7 Core Architectural Improvements
+
+### 1. Karpathy Principles & Prompt Hygiene
+* **The Fix:** Replace "NO WAITING / DELEGATE IMMEDIATELY" with "PAUSE-AND-PLAN" (state assumptions, identify uncertainties, then act).
+* **The Constitution (in `.claude/CLAUDE.md`):** 
+  1. Read files first.
+  2. State assumptions.
+  3. Prefer minimal diffs.
+  4. Verify with tests.
+  5. Avoid speculative refactors.
+  6. **Choose the lightest valid execution path first.**
+  7. **When uncertain between two plausible interpretations, present both briefly and choose one explicitly.**
+
+### 2. Claude Code Native Primitives
+* **The Fix:** Stop reinventing what the platform now provides.
+* **Subagents:** Map Agent-11 specialists directly to `.claude/agents/*.md`.
+* **Hooks:** Move quality gates (linting, type checking) from prompt instructions to deterministic `PostToolUse` hooks in `.claude/settings.json`.
+
+### 3. Opus 4.7 Tuning & Budget Controls
+* **The Fix:** A three-phase prompt minimization pass: (1) delete ASCII/emoji decoration, (2) collapse overlapping checklists, (3) relax forced-immediacy language because 4.7 thinks more internally.
+* **Budget Controls:** Introduce explicit budget controls using current supported mechanisms (e.g., `/effort`, `MAX_THINKING_TOKENS`). Treat the undocumented `task_budget` feature as an experiment. Add fallback behavior: if budget is reached, summarize state to `context.md`, mark next step in `project-plan.md`, and stop cleanly.
+
+### 4. Routines Integration
+* **The Fix:** Automate Mode C operational work using Claude Code Routines.
+* **Priority Routines:** `pr-review` (GitHub webhook), `nightly-qa` (scheduled), `backlog-triage` (scheduled).
+* **Implementation:** `/coord` detects operational intent and outputs a ready-to-import Routine config (JSON + prompt snippet) for the user to paste into the web UI.
+
+### 5. Context Preservation: 5 Files to 3
+* **The Fix:** Reduce context overhead without losing critical history.
+* **Keep:** `project-plan.md` (single source of truth for tasks/status).
+* **Keep:** `context.md` (architectural memory, decisions).
+* **Keep:** `evidence-repository.md` (large artifacts, loaded on-demand).
+* **Remove:** `progress.md` is no longer a first-class context file. It becomes a generated artifact or moves to an `evidence/` folder.
+* **Merge:** `handoff-notes.md` becomes a structured block appended to `context.md` at the end of a phase.
+
+### 6. Skills Modernization
+* **The Fix:** Adopt a 3-tier structure and the Agent Skills open standard (`SKILL.md`).
+* **Tier 1 (Behavioral):** The Karpathy constitution in `.claude/CLAUDE.md`.
+* **Tier 2 (Project Domain):** Project-specific decisions in `skills/`.
+* **Tier 3 (Marketplace):** Curated SaaS skills formatted to the open standard for future publishing.
+
+### 7. Validation Harness
+* **The Fix:** Measure before and after the v6.0 refactor.
+* **Metrics:** Task completion time, token usage at session start, unnecessary delegations, human intervention rate, restart/recovery success.
+* **Test Set:** 5 representative tasks (bootstrap, feature, bug fix, refactor, PR review).
+
+---
+
+## Part 5: Implementation Roadmap (Lead with Deletion)
+
+### Sprint 1: The Great Deletion & Hygiene
+* **Action:** Write the validation harness spec (5 representative tasks) and run baseline on v5.2.
+* **Action:** Delete MCP profile system.
+* **Action:** Delete all repo backup files and archive markdowns.
+* **Action:** Strip ASCII box art and emoji from coordinator prompt.
+* **Action:** Replace "NO WAITING" with "PAUSE-AND-PLAN".
+* **Action:** Add budget controls to `/coord build`, `/coord fix`, `/coord mvp` frontmatter.
+
+### Sprint 2: The Universal Router & Native Primitives
+* **Action:** Rewrite `coord.md` into the explicit `/coord [mission]` router with deterministic mode routing.
+* **Action:** Map specialists to `.claude/agents/*.md`.
+* **Action:** Implement deterministic quality gates in `.claude/settings.json` hooks.
+* **Action:** Shrink `.claude/CLAUDE.md` from 576 lines to ~80 lines (Karpathy constitution + mission index).
+* **Action:** Decentralize operational rules into specific command files.
+
+### Sprint 3: Context & Opus 4.7 Tuning
+* **Action:** Consolidate 5 context files to 3 (merge handoff-notes into context.md, remove progress.md from active context).
+* **Action:** Execute the 3-phase prompt minimization pass on all remaining prompts.
+* **Action:** Format existing domain skills to the `SKILL.md` open standard.
+
+### Sprint 4: Autonomy & Migration
+* **Action:** Deploy the 3 priority Routines (`pr-review`, `nightly-qa`, `backlog-triage`).
+* **Action:** Convert the agent-11 self-referential `.claude/claude.md` into a Meta-Development Skill.
+* **Action:** Run the Validation Harness on v6.0 and compare metrics.
+* **Action:** Publish the v5.2 → v6.0 migration script (compacts old context files, backs up `.claude/CLAUDE.md`).
+* **Action:** Conduct a private beta with 5-10 solo founders.
