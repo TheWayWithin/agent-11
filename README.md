@@ -1778,20 +1778,7 @@ Estimated token savings: ~4,250 tokens (63% reduction)
 
 ### Mission MCP Profile Guide
 
-Some missions benefit from specific MCP profiles for optimal performance and context efficiency:
-
-- **Testing missions** (BUILD with E2E tests, QA phases) → `/mcp-switch testing` (adds Playwright)
-- **Deployment missions** (DEPLOY, RELEASE) → `/mcp-switch deployment` (Netlify + Railway access)
-- **Database work** (MIGRATE, schema changes) → `/mcp-switch database-staging` or `/mcp-switch database-production`
-- **Full-stack development** (complex features) → `/mcp-switch fullstack` (all development MCPs)
-- **General development** (BUILD, FIX, REFACTOR) → `/mcp-switch core` (lightweight, 80% less context)
-
-**Quick Commands**:
-- Switch profiles: `/mcp-switch [profile-name]`
-- See all profiles: `/mcp-list`
-- Check current: `/mcp-status`
-
-[→ Complete MCP Profile Guide](docs/MCP-GUIDE.md)
+> **Deprecation notice (v6.0 evolution in progress)**: the `/mcp-switch`, `/mcp-list`, `/mcp-status` profile commands have been retired. A dynamic tool-search replacement ships in a later sprint (see `project-plan.md` Sprint 4f). Until then, all MCP tools remain available and are loaded on demand — no profile switching needed.
 
 [📋 Complete Mission Library →](project/missions/library.md)
 
