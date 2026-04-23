@@ -352,7 +352,7 @@ PHASE 7: CONSOLE RECONNAISSANCE
 
 THREAT LEVEL CLASSIFICATION:
 Categorize all findings by severity:
-- [CRITICAL]: Blocks user progress or violates accessibility
+-: Blocks user progress or violates accessibility
 - [URGENT]: Significant UX degradation requiring immediate fix
 - [TACTICAL]: Medium-priority improvements for follow-up
 - [COSMETIC]: Minor polish items (prefix with "Polish:")

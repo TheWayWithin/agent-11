@@ -1,9 +1,16 @@
+---
+mission: refactor
+expected_duration: 15-30 min for small targeted refactors (e.g., extract-to-middleware across ~3 files); 2-4 hours for system-wide refactors
+expected_interactions: 8-20 tool-use or delegation turns for a small targeted refactor
+on_budget_exceeded: summarise current state to context.md, mark next step in project-plan.md, stop cleanly. Do NOT continue refactoring beyond the requested scope — speculative refactors violate Karpathy principle 5.
+---
+
 # Mission: REFACTOR ♻️
 ## Code Quality Improvement
 
-**Mission Code**: REFACTOR  
-**Estimated Duration**: 2-4 hours  
-**Complexity**: Medium  
+**Mission Code**: REFACTOR
+**Estimated Duration**: 2-4 hours (see frontmatter `expected_duration` for targeted-refactor budget)
+**Complexity**: Medium
 **Squad Required**: Architect, Developer, Tester
 
 ## Mission Briefing

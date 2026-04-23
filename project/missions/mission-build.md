@@ -1,9 +1,16 @@
+---
+mission: build
+expected_duration: 30-90 min for a small MVP from ideation; 4-8 hours for full feature builds
+expected_interactions: 20-60 tool-use or delegation turns for an MVP-scale build
+on_budget_exceeded: summarise current state to context.md, mark next step in project-plan.md, stop cleanly — surface a clear checkpoint to the user rather than continuing into uncharted scope
+---
+
 # Mission: BUILD 🏗️
 ## Build New Service/Feature from Requirements
 
-**Mission Code**: BUILD  
-**Estimated Duration**: 4-8 hours  
-**Complexity**: Medium to High  
+**Mission Code**: BUILD
+**Estimated Duration**: 4-8 hours (see frontmatter `expected_duration` for MVP-scale budget)
+**Complexity**: Medium to High
 **Squad Required**: Full team engagement
 
 ## Quick Start

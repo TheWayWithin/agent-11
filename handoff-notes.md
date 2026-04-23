@@ -12,24 +12,22 @@ Per the v6.0 plan, `handoff-notes.md` is folded into `agent-context.md` as a str
 
 ## Where We Are
 
-Sprint 4a (Baseline + Great Deletion) is complete. All 7 tasks done:
-- T1: Harness spec
-- T2: v5.2 baseline (5 tasks run, all successful)
-- T3: MCP profile system deleted
-- T4: `.backup` files deleted
-- T5: Coordinator prompt de-decorated (3,559 → 2,836 lines)
-- T6: Historic `progress.md`, `agent-context.md`, `handoff-notes.md` archived; fresh versions in place
-- T7: Sprint 4b detailed spec written
-
-Sprint 4b is ready to execute.
+- **Sprint 4a** (Baseline + Great Deletion) — complete. See `progress.md`.
+- **Sprint 4b** (Prompt Hygiene & Budget Controls) — T1, T2, T3, T4, T5, T7 done solo. T6 (harness re-run) parked for a session where Jamie has ~45 min of terminal time.
+- **Sprint 4c** (Universal Router) — detailed spec ready; execution blocked on Sprint 4b T6.
+- **Install squad simplification** — shipped as `c6a53fa` (always installs all 11 agents).
 
 ---
 
 ## Next Action
 
-**Start Sprint 4b** — see `sprints/sprint-4b-prompt-hygiene-and-budget-controls.md`.
+**Sprint 4b T6 — harness re-run.** Measures whether the Sprint 4b changes (Karpathy constitution, PAUSE-AND-PLAN, subagent hardening, budget controls) produced measurable improvement vs the v5.2 baseline.
 
-First task of Sprint 4b is confirming the detailed spec with Jamie and then executing per spec.
+Subset to re-run: Tasks 3 (bug fix), 4 (refactor), 5 (commit review). Tasks 1 and 2 optional — they take longer and we have less hypothesis about their movement.
+
+Run procedure: same as baseline run. Follow `project/validation/run-playbook.md`. Record results in `project/validation/milestone-4b.md`.
+
+After T6 is done, Sprint 4c is ready to execute per `sprints/sprint-4c-universal-router.md`.
 
 ---
 

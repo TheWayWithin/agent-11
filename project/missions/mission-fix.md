@@ -1,9 +1,16 @@
+---
+mission: fix
+expected_duration: 10-30 min (for scoped single-file fixes); up to 1-3 hours for multi-system bugs
+expected_interactions: 5-15 tool-use or delegation turns for a scoped fix
+on_budget_exceeded: summarise current state to context.md, mark next step in project-plan.md, stop cleanly and hand back to the user — do not churn
+---
+
 # Mission: FIX 🐛
 ## Emergency Bug Resolution
 
-**Mission Code**: FIX  
-**Estimated Duration**: 1-3 hours  
-**Complexity**: Low to High  
+**Mission Code**: FIX
+**Estimated Duration**: 1-3 hours (see frontmatter `expected_duration` for scoped-fix budget)
+**Complexity**: Low to High
 **Squad Required**: Developer, Tester, Analyst
 
 ## Mission Briefing
