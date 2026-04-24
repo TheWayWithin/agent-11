@@ -294,7 +294,8 @@ Write to `progress/YYYY-MM-DD-blog.md` with frontmatter:
 ---
 date: YYYY-MM-DD
 project: <project name>
-tags: [Tag1, Tag2, Tag3]
+excerpt: <one sentence, 140-155 chars, hook-like, matches the voice>
+tags: [tag-1, tag-2, tag-3]
 ---
 
 # <specific title>
@@ -302,9 +303,18 @@ tags: [Tag1, Tag2, Tag3]
 <post content>
 ```
 
-`tags` is a YAML list of 3-5 topic tags in TitleCase derived from the day's work
-(e.g. `[AlgoTrading, Crypto, BuildInPublic]`). These become blog tags on the
-published site — keep them consistent with the hashtags used in the social posts.
+**`tags`**: YAML list of 3-5 topic tags in **lowercase**, hyphenated if multi-word,
+derived from the day's work (e.g. `[algo-trading, crypto, build-in-public]`). The
+CMS uses lowercase topic codes; PascalCase looks odd on the published site. These
+are the *same topics* as the social hashtags — just formatted for the blog's
+URL/taxonomy layer rather than for social readability. (Social hashtags stay
+TitleCase — see Twitter/LinkedIn sections below.)
+
+**`excerpt`**: one sentence, 140-155 characters, written with voice (hook-like,
+not a summary). This is the blurb that appears in blog listings and social
+previews. If you skip it, the CMS will auto-generate from the first 155
+characters of the body — that usually reads worse than an intentional excerpt.
+Always write one.
 
 ### Step 7: Derive the Twitter/X post
 
