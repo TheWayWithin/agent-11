@@ -53,33 +53,52 @@ The budget is advisory, not a hard cap. Use it to detect drift:
 
 This is the `on_budget_exceeded` protocol. Right behaviour under the Karpathy constitution — avoid speculative work (#5), choose the lightest valid path (#6), when uncertain whether to continue, present the choice explicitly (#7).
 
+## DYNAMIC CONTEXT LOADING
+
+When `/coord [mission]` dispatches to you, the command supplies a **mission name** and a **mode** (A, B1, or B2). Load only the context that mode requires. Do not read context files "just in case" — that pattern is deprecated.
+
+| Mode | Context to read at start | Tracking files maintained during mission |
+|------|--------------------------|------------------------------------------|
+| **A — Greenfield** | project-plan.md, agent-context.md, mission file | project-plan.md, progress.md, agent-context.md, handoff-notes.md |
+| **B1 — Surgical** | input file (e.g., bug report) only | none by default; escalate to B2 only if task becomes multi-step |
+| **B2 — Maintenance** | project-plan.md (if it exists), mission file | project-plan.md, progress.md (lightweight) |
+
+**Per-mission overrides** (some Mode A missions need lighter context than the default):
+- `dev-setup` — read only the ideation input. Tracking files are CREATED, not read.
+- `dev-alignment` — read existing project structure first; agent-context.md only if it already exists.
+
+**On-demand only** (never load at session start):
+- `evidence-repository.md` — load when you specifically need an artefact.
+- `progress.md` — load only when checking for staleness on a resumed mission, or when writing a new entry.
+
+**Mode override**: If `/coord` was invoked with `mode:greenfield|surgical|maintenance`, that mode's loading rules apply regardless of mission name.
+
+**No mode supplied** (legacy invocation, interactive, or `/coord continue`/`vision-check`): default to Mode B2's loading rules — moderate, no over-reading.
+
 ## SESSION RESUMPTION PROTOCOL
-**BEFORE ANY ACTION** - When starting work (new session, after break, or resuming):
-    📋 STALENESS CHECK [PREVENTS REPEATED WORK]
- 1. Read project-plan.md → Note: Current phase? Tasks [x]?
- 2. Read progress.md → Note: Last entry timestamp?
- 3. Read handoff-notes.md → Note: Last completed work?
- 4. COMPARE: Do the files tell consistent story?
 
- 🚨 STALENESS INDICATORS (fix before proceeding):
- • Tasks marked [ ] but handoff says "completed"
- • progress.md older than handoff-notes.md
- • Phase X tasks [ ] but "Phase X Complete" in progress.md
- • No timestamp on last project-plan.md update
+If `project-plan.md` or `progress.md` exists from a prior session, this is a **resumed** mission. Run a staleness check before any new work, regardless of mode:
 
- If ANY staleness detected:
- → UPDATE STALE FILES FIRST, then proceed with mission
-**Quick Staleness Check Commands**:
+1. Read project-plan.md → current phase, tasks [x]/[ ]
+2. Read progress.md → last entry timestamp
+3. Read handoff-notes.md → last completed work
+4. Compare for inconsistency:
+   - Tasks marked [ ] but handoff says "completed"
+   - progress.md older than handoff-notes.md
+   - Phase X tasks [ ] but "Phase X Complete" appears in progress.md
+   - No timestamp on the last project-plan.md update
+
+If stale, update files to reflect actual state before any new work.
+
+If no tracking files exist, this is a fresh start — proceed per the mode's DYNAMIC CONTEXT LOADING rules. Tracking files are created if and when the mode requires them (Mode A always; Mode B2 if the task spans multiple phases; Mode B1 only if the surgical task escalates).
+
+**Quick staleness check** (when applicable):
 ```bash
-# Check for incomplete tasks in project-plan.md
 grep -E "^- \[ \]" project-plan.md 2>/dev/null | head -5
-# Check last progress.md entry timestamp
 grep -E "^###.*[0-9]{4}-[0-9]{2}-[0-9]{2}" progress.md 2>/dev/null | tail -1
-# Check handoff-notes.md last update
 grep -i "last updated" handoff-notes.md 2>/dev/null | tail -1
 ```
-**If files don't exist**: Create them from templates before starting mission.
-**If staleness detected**: Update files to reflect actual state before doing ANY new work.
+
 ---
 ## CONTEXT EDITING GUIDANCE
 **When to Use /clear:**

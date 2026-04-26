@@ -129,6 +129,56 @@ M2 (session-start tokens) dropped 2.4% across all three. Modest — the bigger M
 
 ---
 
+### [2026-04-26] — Sprint 4c (T1-T6, T8) Complete — Harness Re-run (T7) Parked ✅
+
+**Summary**: Universal Router shipped. `/coord` collapsed from a 549-line mission-activation briefing into a 91-line dispatcher with deterministic mission-based routing. Coordinator gained a DYNAMIC CONTEXT LOADING protocol so Mode B1 (`fix`) reads the bug report only, not the full tracking file set. Sprint 4d detailed spec authored.
+
+**Deliverables**:
+
+- `project/commands/coord.md` — rewritten 549 → 91 lines (T1, T2, T3, T5, T6).
+  - Routing table: 13 missions mapped to Mode A / B1 / B2 with explicit context-loading rules.
+  - Control commands (`continue`, `complete phase N`, `vision-check`) listed separately from missions.
+  - Pipeline commands (`/foundations`, `/architect`, `/bootstrap`) explicitly noted as standalone (not routed via `/coord`).
+  - `mode:greenfield|surgical|maintenance` override syntax for ambiguous tasks.
+  - Unknown-mission fallback prints valid list and exits — no NLP "did you mean…" inference.
+  - Old 549-line briefing deleted; coordinator-owned content (PAUSE-AND-PLAN, phase gates, file ops, etc.) is no longer duplicated in the command.
+- `project/agents/specialists/coordinator.md` — DYNAMIC CONTEXT LOADING section added; SESSION RESUMPTION PROTOCOL rewritten (T4).
+  - Mode A: project-plan.md, agent-context.md, mission file.
+  - Mode B1: input file (e.g., bug report) only.
+  - Mode B2: project-plan.md (if exists), mission file.
+  - `evidence-repository.md` and `progress.md` are on-demand only — never loaded at session start.
+  - Per-mission overrides for `dev-setup` (read ideation only) and `dev-alignment` (read existing codebase first).
+  - Staleness check now scoped to resumed missions only (where tracking files exist), not run blindly on every fresh start.
+  - Net coordinator delta: 2,869 → 2,888 lines (+19; structural change before Sprint 4d's shrink).
+- `sprints/sprint-4d-native-primitives-and-claudemd-shrink.md` — outline replaced with detailed spec (T8).
+  - 8 tasks defined: audit & relocation map, hook design, lean CLAUDE.md (<80 lines), Meta-Dev Skill, decentralisation, install.sh hook deployment, harness re-run (milestone-4d), Sprint 4e spec.
+  - Default hooks proposed: PostToolUse for tsc/ruff on Edit-Write; PreToolUse for destructive Bash ops.
+  - Open questions called out: blocking vs advisory hooks, Meta-Dev Skill trigger mechanism, where plan-driven docs live.
+
+**Tasks parked for Jamie's terminal session**:
+- **T7** (harness re-run for milestone-4c) — needs the validation harness runbook, deferred to a separate session.
+
+**User-Facing Changes** (for Sprint 4h docs consolidation):
+- `/coord` interface stable: existing calls like `/coord build prd.md` and `/coord fix bug-report.md` still work unchanged.
+- New: `mode:` prefix for explicit mode override (`/coord mode:maintenance security`).
+- New routing-table-explicit missions: `dev-alignment`, `document`, `security` are now first-class entries (previously implicit or absent).
+- Behaviour change: `/coord fix` no longer reads project-plan.md / agent-context.md / handoff-notes.md by default. Users with a long-running plan and a small bug fix should expect lower session-start tokens; the coordinator can still load tracking files on demand if the fix grows.
+- Behaviour change: unknown mission names now fail fast with a clear error and the valid list. No silent NLP-inference fallback.
+
+**Files touched**:
+- `project/commands/coord.md` — rewritten.
+- `project/agents/specialists/coordinator.md` — DYNAMIC CONTEXT LOADING + SESSION RESUMPTION PROTOCOL replacement.
+- `sprints/sprint-4d-native-primitives-and-claudemd-shrink.md` — detailed spec.
+- `progress.md`, `handoff-notes.md`, `project-plan.md` — close-out updates.
+
+**Sprint 4c status**: ✅ **Complete** for solo-executable scope (T1, T2, T3, T4, T5, T6, T8). T7 deferred. Recommend proceeding to Sprint 4d once Jamie has reviewed.
+
+**What's next**:
+- T7 (harness re-run): schedule a session with the validation harness; produce `project/validation/milestone-4c.md`.
+- Sprint 4d (Native Primitives + CLAUDE.md Shrink) — detailed spec ready in `sprints/sprint-4d-native-primitives-and-claudemd-shrink.md`.
+
+---
+
 ### [2026-04-19] — v6.0 Evolution Kickoff
 
 Continuing from the v6.0 planning session committed in `aa6ecdb`. Historic context (pre-v6 plan, Sprint 9/11 work) preserved in `.archive/2026-04-17-pre-v6/`.
