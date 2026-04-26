@@ -269,6 +269,83 @@ M2 (session-start tokens) dropped 2.4% across all three. Modest — the bigger M
 
 ---
 
+### [2026-04-26] — Sprint 4e (T1, T3-T6, T8) Complete — Harness Re-run (T7) Parked ✅
+
+**Summary**: Active tracking surface cut from 5 files to 3. `handoff-notes.md` retired and folded into `agent-context.md` as structured Phase Handoff blocks (5-field schema). `progress.md` demoted to write-only. Smoke-tested install confirms 4d artefacts ship correctly. Sprint 4f detailed spec authored.
+
+**Decisions made during review (2026-04-26)**:
+
+1. **Skip the rename** of `agent-context.md` → `context.md` (T2 removed from sprint). The rename was the lowest-value item — added migration friction without proportional benefit. The fold (T3) and demotion (T4) carry the actual value.
+2. **5-field Phase Handoff schema**: Findings, Decisions, Warnings & Gotchas, Open Items, Evidence. Mirrors current handoff-notes structure.
+3. **Migration**: one-line `cat handoff-notes.md >> agent-context.md && rm handoff-notes.md` for v5.x users; documented in lean CLAUDE.md.
+4. **`progress.md` location**: stays at root (not moved to `evidence/`).
+
+**Deliverables**:
+
+- `templates/agent-context-template.md` — restructured to make Phase Handoff blocks the recurring section pattern. Includes the 5-field schema with a worked example (auth implementation).
+- `project/agents/specialists/coordinator.md` — DYNAMIC CONTEXT LOADING table updated:
+  - Mode A reads `project-plan.md` + `agent-context.md` + mission file (no `progress.md`, no `handoff-notes.md`).
+  - `progress.md` explicitly framed as **write-only by default**: append on issues/fixes/deliverables, read only for staleness checks or post-`/clear` reconstruction.
+- All 11 specialist agents (`project/agents/specialists/*.md`) — context-reading instructions updated:
+  - "First read agent-context.md and handoff-notes.md" → "First read agent-context.md (most recent Phase Handoff block)".
+  - "Update handoff-notes.md with findings" → "Append a Phase Handoff block to agent-context.md with findings".
+  - Numbering on Before/After Task Execution sections fixed where collapse left gaps.
+- All 18 mission files (`project/missions/*.md`) — handoff-notes references removed; agent-context.md is the single context file.
+- All commands and templates with handoff-notes references updated. `templates/handoff-notes-template.md` archived to `.archive/2026-04-26-pre-4e/handoff-notes-template.md`.
+- 3 plan templates (`templates/plan-saas-mvp.yaml`, `plan-api.yaml`, `plan-saas-full.yaml`) — `handoff-notes.md` entry removed; `agent-context.md` updated to absorb both task-completion and phase-completion frequencies.
+- `library/CLAUDE.md` — tracking-files section restructured: Active (project-plan.md, agent-context.md), On-demand (evidence-repository.md), Write-only (progress.md). Migration note for v5.x users included. **Still 78 lines** (under 80-line target).
+- `project/deployment/scripts/install.sh` — `handoff-notes-template.md` removed from template-files list and verification list. SHA256 regenerated.
+- `sprints/sprint-4e-context-consolidation.md` — spec updated to reflect "skip rename" decision; T2 marked REMOVED with rationale; open questions resolved inline.
+- `sprints/sprint-4f-dynamic-mcp-tool-search.md` — outline replaced with detailed spec.
+  - 8 tasks: audit dynamic-mcp.json vs static, wire as canonical .mcp.json, Tool-Centric Workflow in specialists, discovery/execution split, retire profile-switching residue, lean CLAUDE.md MCP section, harness, Sprint 4g spec.
+  - Target: M2 drops ≥30K vs v5.2 baseline (per Dynamic MCP doc projection).
+
+**Bulk replacement scope**:
+
+- 316 `handoff-notes.md` references across the library surface reduced to 5 intentional migration notes (in lean CLAUDE.md, agent-context-template.md, and 3 YAML plan templates).
+- 5 staged `sed` passes plus targeted Edit cleanups for grammar/numbering. Specialist frontmatter intact across all 11 specialists (verified).
+
+**4d Smoke Test (Jamie's terminal, 2026-04-26)**:
+
+- Install on fresh `/tmp/agent11-smoke` with `package.json` indicator: completed cleanly.
+- `library/CLAUDE.md` deploys at 79 lines.
+- `.claude/settings.json` deploys with valid JSON, 1.9 KB.
+- `.claude/constitution/karpathy-constitution.md` deploys at 2.9 KB (was missing pre-4d).
+- `field-manual/mcp-integration.md` deploys at 6.5 KB (was missing pre-4d).
+- All 11 agents, 14 commands, 7 SaaS skills, 3 quality-gate templates, 3 stack profiles ship correctly.
+- ✅ Sprint 4d install-side changes confirmed working.
+
+**Tasks parked for Jamie's terminal session**:
+- **T7** (harness re-run for milestone-4e) — joins parked T7s for 4c and 4d. All three can run in one batch session against the v5.2 baseline.
+
+**User-Facing Changes** (for Sprint 4h docs consolidation):
+- `handoff-notes.md` is retired in v6.0. Existing v5.x users migrate with one line: `cat handoff-notes.md >> agent-context.md && rm handoff-notes.md`. Documented in lean CLAUDE.md.
+- `progress.md` is now write-only by default — appended when issues, fix attempts, or deliverables occur. Read only for staleness checks on resumed missions, or post-`/clear` context reconstruction.
+- `agent-context.md` carries Phase Handoff blocks (5-field schema) at the bottom, accumulating across phases. Specialists read the most recent block to pick up context.
+- `templates/handoff-notes-template.md` no longer ships. Use `templates/agent-context-template.md` (now includes Phase Handoff schema).
+
+**Files touched**:
+- `templates/agent-context-template.md` — restructured.
+- `templates/handoff-notes-template.md` — archived to `.archive/2026-04-26-pre-4e/`.
+- `project/agents/specialists/*.md` — 11 specialists, context-reading updates.
+- `project/missions/*.md` — 18 mission files, handoff-notes references removed.
+- `project/commands/*.md` — handoff-notes references updated/removed.
+- `templates/plan-{saas-mvp,api,saas-full}.yaml` — handoff-notes file entry removed.
+- `templates/{project-plan,cleanup-checklist,claude,progress,lessons-index}-template.md` — references updated.
+- `library/CLAUDE.md` — tracking files section restructured.
+- `project/deployment/scripts/install.sh` — handoff-notes-template.md removed; SHA regenerated.
+- `sprints/sprint-4e-context-consolidation.md` — spec finalised post-review.
+- `sprints/sprint-4f-dynamic-mcp-tool-search.md` — detailed spec.
+- `progress.md`, `handoff-notes.md`, `project-plan.md` — close-out updates.
+
+**Sprint 4e status**: ✅ **Complete** for solo-executable scope (T1, T3, T4, T5, T6, T8). T7 deferred. Recommend proceeding to Sprint 4f once Jamie has reviewed.
+
+**What's next**:
+- T7 batch (4c + 4d + 4e harness re-runs): schedule a terminal session; produce `milestone-4c.md`, `milestone-4d.md`, `milestone-4e.md` against the v5.2 baseline.
+- Sprint 4f (Dynamic MCP Tool Search) — detailed spec ready. Target ≥30K M2 reduction vs baseline.
+
+---
+
 ### [2026-04-19] — v6.0 Evolution Kickoff
 
 Continuing from the v6.0 planning session committed in `aa6ecdb`. Historic context (pre-v6 plan, Sprint 9/11 work) preserved in `.archive/2026-04-17-pre-v6/`.

@@ -238,9 +238,9 @@ After completing this mission, decide on cleanup approach based on project statu
 
 **Actions** (30-60 min):
 1. Extract lessons to `lessons/[category]/` from progress.md
-2. Archive current handoff-notes.md to `archives/handoffs/milestone-X/`
+2. Archive milestone-relevant Phase Handoff blocks from agent-context.md if needed
 3. Clean agent-context.md (retain essentials, archive historical details)
-4. Create fresh handoff-notes.md for next milestone
+4. Continue using agent-context.md (Phase Handoff blocks accumulate across milestones)
 5. Update project-plan.md with next milestone tasks
 
 **See**: `templates/cleanup-checklist.md` Section A for detailed steps

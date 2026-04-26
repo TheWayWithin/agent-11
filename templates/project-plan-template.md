@@ -98,7 +98,7 @@
 
 1. **ONLY mark [x] after specialist CONFIRMATION**
    - Receive actual Task tool response with deliverables
-   - Verify specialist updated handoff-notes.md with findings
+   - Verify specialist appended a Phase Handoff block to agent-context.md with findings
    - Confirm deliverable exists and meets requirements
    - ❌ NEVER mark [x] based on assumption or plan
    - ❌ NEVER mark [x] before specialist completes work
@@ -106,7 +106,7 @@
 2. **VERIFICATION CHECKLIST** (Before marking ANY task [x]):
    - [ ] Task tool returned actual response (not timeout/error)
    - [ ] Specialist provided specific deliverables or status
-   - [ ] Specialist updated handoff-notes.md
+   - [ ] Specialist appended Phase Handoff block to agent-context.md
    - [ ] Deliverable files exist at specified paths
    - [ ] Quality spot-check passed (code runs, docs readable, tests pass)
    - [ ] No blockers preventing next dependent task
@@ -114,7 +114,7 @@
 3. **CROSS-FILE SYNCHRONIZATION** (Mandatory after task [x]):
    - Update progress.md with deliverable entry
    - Merge specialist findings into agent-context.md
-   - Verify handoff-notes.md ready for next specialist
+   - Verify Phase Handoff block in agent-context.md ready for next specialist
    - Update milestone status if phase complete
 
 4. **TODO LIST INTEGRATION**:
@@ -128,7 +128,7 @@
 ### Phase 1: Requirements
 - [x] Define user stories (@strategist) - ✅ 2025-10-19 14:30
   - Deliverable: user-stories.md with 15 stories
-  - Verified: File exists, handoff-notes.md updated
+  - Verified: File exists, Phase Handoff block in agent-context.md present
   - Next: @architect reviews for technical feasibility
 
 - [ ] Review technical feasibility (@architect) - 🟡 In Progress
@@ -178,7 +178,7 @@
 - [ ] All deliverables exist and meet quality standards
 - [ ] progress.md updated with phase lessons
 - [ ] agent-context.md updated with phase findings
-- [ ] handoff-notes.md prepared for next phase
+- [ ] Phase Handoff block appended to agent-context.md for next phase
 - [ ] No critical blockers remaining
 
 ---
@@ -389,7 +389,7 @@
 - **architecture.md** - Technical design and decisions
 - **progress.md** - Chronological changelog and learnings
 - **agent-context.md** - Mission-wide accumulated context
-- **handoff-notes.md** - Current specialist context
+- **agent-context.md (latest Phase Handoff block)** - Current specialist context
 - **evidence-repository.md** - Artifacts and supporting materials
 
 ### Supporting Documentation
@@ -414,29 +414,29 @@
 **SYNCHRONIZED Updates** (Cross-file):
 - When marking task [x] → Update progress.md with deliverable
 - After specialist completion → Merge findings to agent-context.md
-- After task [x] → Verify handoff-notes.md ready for next
+- After task [x] → Verify Phase Handoff block in agent-context.md ready for next
 - After phase → Extract lessons to progress.md
 
 **Quality Checks** (Before updating):
 - Verify specialist actually completed work (not just said they would)
 - Confirm deliverable files exist at specified paths
-- Check handoff-notes.md contains findings for next specialist
+- Check agent-context.md Phase Handoff block contains findings for next specialist
 - Validate no broken dependencies before marking [x]
 
 ### Update Sequence (Mandatory Order)
 1. Specialist completes work → Returns via Task tool
 2. Coordinator verifies deliverable exists and meets criteria
-3. Coordinator checks handoff-notes.md updated by specialist
+3. Coordinator checks Phase Handoff block in agent-context.md present by specialist
 4. Coordinator marks task [x] in project-plan.md with timestamp
 5. Coordinator updates progress.md with deliverable entry
 6. Coordinator merges findings into agent-context.md
-7. Coordinator prepares handoff-notes.md for next specialist
+7. Coordinator verifies most recent Phase Handoff block is complete in agent-context.md
 
 ### Common Update Mistakes to Avoid
 - ❌ Marking [x] before specialist confirmation
 - ❌ Updating only project-plan.md without progress.md sync
 - ❌ Assuming completion without checking deliverable files
-- ❌ Skipping handoff-notes.md verification
+- ❌ Skipping Phase Handoff block verification
 - ❌ Not timestamping completed tasks
 - ❌ Forgetting to update milestone status after phase
 
@@ -467,7 +467,7 @@
 - **project-plan.md** ← You are here (The Plan)
 - **progress.md** → Chronological log of what was DONE
 - **agent-context.md** → Rolling accumulation of findings
-- **handoff-notes.md** → Next specialist's immediate context
+- **agent-context.md (latest Phase Handoff block)** → Next specialist's immediate context
 - **lessons/index.md** → Searchable lessons reference
 
 ### Verification Examples
@@ -476,7 +476,7 @@
 ```markdown
 - [x] Implement authentication (@developer) - ✅ 2025-10-19 16:45
   - Deliverable: `src/auth/` with JWT implementation
-  - Verified: Code exists, tests pass, handoff-notes.md updated
+  - Verified: Code exists, tests pass, Phase Handoff block in agent-context.md present
   - Performance: 50ms avg response time
   - Next: @tester for security validation
 ```

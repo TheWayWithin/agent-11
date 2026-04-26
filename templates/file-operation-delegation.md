@@ -11,7 +11,7 @@
 ```
 Task(
   subagent_type="[developer|architect|documenter|etc.]",
-  prompt="First read agent-context.md and handoff-notes.md for mission context.
+  prompt="First read agent-context.md for mission context.
 
   [Describe what needs to be created and why]
 
@@ -36,7 +36,7 @@ Task(
   - DO NOT use Write/Edit tools
   - Provide specifications for coordinator to execute
 
-  Update handoff-notes.md with your design decisions."
+  Append a Phase Handoff block to agent-context.md with your design decisions."
 )
 ```
 
@@ -47,7 +47,7 @@ Task(
 ```
 Task(
   subagent_type="[developer|architect|documenter|etc.]",
-  prompt="First read agent-context.md and handoff-notes.md for mission context.
+  prompt="First read agent-context.md for mission context.
 
   [Describe what needs to be changed and why]
 
@@ -74,7 +74,7 @@ Task(
   - DO NOT use Write/Edit tools
   - Provide specifications for coordinator to execute
 
-  Update handoff-notes.md with your design decisions."
+  Append a Phase Handoff block to agent-context.md with your design decisions."
 )
 ```
 
@@ -85,7 +85,7 @@ Task(
 ```
 Task(
   subagent_type="[developer|architect|documenter|etc.]",
-  prompt="First read agent-context.md and handoff-notes.md for mission context.
+  prompt="First read agent-context.md for mission context.
 
   [Describe the overall task requiring multiple files]
 
@@ -124,7 +124,7 @@ Task(
   - DO NOT use Write/Edit tools
   - Provide specifications for coordinator to execute
 
-  Update handoff-notes.md with your design decisions."
+  Append a Phase Handoff block to agent-context.md with your design decisions."
 )
 ```
 
@@ -135,7 +135,7 @@ Task(
 ```
 Task(
   subagent_type="[developer|architect|etc.]",
-  prompt="First read agent-context.md and handoff-notes.md for mission context.
+  prompt="First read agent-context.md for mission context.
 
   [Explain why deletion is needed]
 
@@ -160,7 +160,7 @@ Task(
   - DO NOT attempt to delete files directly
   - Provide specifications for coordinator to execute
 
-  Update handoff-notes.md with your rationale."
+  Append a Phase Handoff block to agent-context.md with your rationale."
 )
 ```
 

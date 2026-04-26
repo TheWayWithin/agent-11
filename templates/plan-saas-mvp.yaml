@@ -28,10 +28,9 @@ defaults:
       update_frequency: phase-start
     - file: progress.md
       update_frequency: daily
-    - file: handoff-notes.md
-      update_frequency: task-completion
     - file: agent-context.md
-      update_frequency: phase-completion
+      update_frequency: task-completion-and-phase-completion
+      # absorbs the v5.x handoff-notes.md role via Phase Handoff blocks
 
 phase_templates:
   - id: phase-1

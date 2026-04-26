@@ -32,12 +32,11 @@ Control: `/coord continue`, `/coord complete phase N`, `/coord vision-check`.
 
 Coordinator owns these. Full protocols in `.claude/agents/coordinator.md`.
 
-- `project-plan.md` — forward-looking plan
-- `progress.md` — backward-looking changelog
-- `agent-context.md` — accumulated findings
-- `handoff-notes.md` — current task context for next specialist
+**Active** (read per mode at start): `project-plan.md`, `agent-context.md` (accumulated findings + Phase Handoff blocks).
+**On-demand**: `evidence-repository.md` (loaded only when an artefact is needed).
+**Write-only**: `progress.md` (changelog — appended when issues/fixes/deliverables occur; read only on staleness checks or post-`/clear` reconstruction).
 
-`evidence-repository.md` loads on demand only — never at session start. The coordinator's DYNAMIC CONTEXT LOADING protocol decides what else to read based on the mission's mode.
+**v5.x → v6.0 migration** (one-time): `cat handoff-notes.md >> agent-context.md && rm handoff-notes.md`. Phase Handoff discipline now lives as structured blocks inside agent-context.md.
 
 ## Foundation files
 
@@ -66,7 +65,7 @@ Setup and full list: `field-manual/mcp-integration.md`.
 
 ## Hooks
 
-Quality gates run via `.claude/settings.json` hooks: `tsc`/`ruff`/`rubocop` on Edit/Write; confirm prompt on destructive Bash. Default behaviour is **advisory** (exit 0 + output). Promote to blocking by changing `|| true` to `|| exit 2` in the command. Disable by removing the entry.
+`.claude/settings.json` runs `tsc`/`ruff`/`rubocop` on Edit/Write and prompts on destructive Bash. Advisory by default (`|| true`); promote to blocking with `|| exit 2`, or remove the entry to disable.
 
 ## Security
 

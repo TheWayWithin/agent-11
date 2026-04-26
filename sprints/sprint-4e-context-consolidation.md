@@ -3,7 +3,7 @@
 **Part of**: Agent-11 v6.0 Evolution (Sprint 4 umbrella)
 **Predecessor**: Sprint 4d — Native Primitives + CLAUDE.md Shrink ✅ (T1-T6, T8 shipped; T7 deferred)
 **Successor**: Sprint 4f — Dynamic MCP Tool Search
-**Status**: Detailed spec ready for Jamie's review; execution can start once Sprint 4d is committed
+**Status**: Spec finalised after review (2026-04-26); execution in progress
 
 ---
 
@@ -13,12 +13,17 @@ Cut the active-context tracking surface from **5 files to 3** without losing the
 
 **Target shape**:
 - `project-plan.md` — single source of truth for tasks and status (kept)
-- `context.md` — architectural memory, decisions, findings (renamed from `agent-context.md`; absorbs the `handoff-notes.md` discipline as a structured Phase Handoff block)
+- `agent-context.md` — architectural memory, decisions, findings; absorbs the `handoff-notes.md` discipline as a structured Phase Handoff block (kept; **not renamed** — see decisions below)
 - `evidence-repository.md` — large artefacts, loaded on demand (kept; on-demand only since Sprint 4c)
 
 **Files dropped from active context**:
-- `handoff-notes.md` — folded into `context.md` as a structured block at phase boundaries.
+- `handoff-notes.md` — folded into `agent-context.md` as a structured Phase Handoff block at phase boundaries.
 - `progress.md` — retained as an append-only generated artefact (writeable, not read by default).
+
+**Decisions made during review (2026-04-26)**:
+- **Skip the rename** of `agent-context.md` → `context.md`. The rename is the lowest-value item in the sprint — adds migration friction without proportional benefit. The fold (T3) and demotion (T4) carry the actual value.
+- **5-field Phase Handoff schema** (T1): Findings, Decisions, Warnings & Gotchas, Open Items, Evidence. Mirrors current handoff-notes structure.
+- **Migration**: one-line cat for v5.x users — `cat handoff-notes.md >> agent-context.md && rm handoff-notes.md`. Documented in lean CLAUDE.md.
 
 ## Why This Sprint
 
@@ -68,45 +73,32 @@ Library surface only: `project/agents/specialists/`, `project/commands/`, `proje
 
 ---
 
-### T2. Rename `agent-context.md` → `context.md`
+### T2. ~~Rename `agent-context.md` → `context.md`~~
 
-**Deliverable**: every reference to `agent-context.md` updated to `context.md`. New file naming used in templates, missions, specialists, coordinator, and `library/CLAUDE.md`.
+**REMOVED** during review (2026-04-26). The rename is the lowest-value item in the sprint — adds migration friction (every existing v5.x user needs to `mv`; many files updated; risk of incomplete refactor) without proportional value. The fold (T3) and demotion (T4) carry the actual value. `agent-context.md` describes the file just as well as `context.md` would.
 
-**Files to touch** (initial scan — refine during execution):
-- `project/agents/specialists/coordinator.md`
-- `project/agents/specialists/*.md` (all specialists with context-reading instructions)
-- `project/missions/*.md`
-- `project/commands/coord.md` and other commands
-- `templates/agent-context-template.md` → `templates/context-template.md`
-- `library/CLAUDE.md` (Sprint 4d's lean version already references `agent-context.md` — update to `context.md`)
-- `progress.md` references in coordinator
-- `field-manual/coordinator-protocol.md`
-
-**Search-and-replace strategy**: targeted, not blind. Some references in archived sprint docs and historical progress entries are correct as-is — do not rewrite history.
-
-**Migration for existing users**: `library/CLAUDE.md` carries a one-paragraph note: *"v6.0 renames `agent-context.md` to `context.md`. To migrate: `mv agent-context.md context.md`. New deployments use `context.md` from install."*
-
-**Acceptance**: `grep -r "agent-context.md" project/ library/ templates/` returns zero results. A fresh install creates `context.md`, not `agent-context.md`.
+If a future sprint has a real reason to rename, it can be done as a focused task. Skipping it here keeps Sprint 4e small and low-risk.
 
 ---
 
-### T3. Fold `handoff-notes.md` into `context.md`
+### T3. Fold `handoff-notes.md` into `agent-context.md`
 
-**Deliverable**: `handoff-notes.md` retired as a separate active-context file. Phase Handoff blocks (per T1 schema) appended to `context.md` at phase boundaries.
+**Deliverable**: `handoff-notes.md` retired as a separate active-context file. Phase Handoff blocks (per T1 schema) appended to `agent-context.md` at phase boundaries.
 
 **Coordinator changes**:
-- `CONTEXT PRESERVATION PROTOCOL` section in coordinator.md updated: specialists update `context.md`'s most recent Phase Handoff block instead of writing a separate `handoff-notes.md`.
-- `PHASE GATE ENFORCEMENT` section: replace "handoff-notes.md updated" check with "Phase Handoff block appended to context.md".
+- `CONTEXT PRESERVATION PROTOCOL` section in coordinator.md updated: specialists update `agent-context.md`'s most recent Phase Handoff block instead of writing a separate `handoff-notes.md`.
+- `PHASE GATE ENFORCEMENT` section: replace "handoff-notes.md updated" check with "Phase Handoff block appended to agent-context.md".
+- DYNAMIC CONTEXT LOADING table (Sprint 4c) updated: remove `handoff-notes.md` references.
 
 **Specialist prompt changes**:
-- All `project/agents/specialists/*.md` files that say "First read agent-context.md and handoff-notes.md" become "First read context.md".
-- All "Update handoff-notes.md with findings" becomes "Append a Phase Handoff block to context.md with findings".
+- All `project/agents/specialists/*.md` files that say "First read agent-context.md and handoff-notes.md" become "First read agent-context.md".
+- All "Update handoff-notes.md with findings" becomes "Append a Phase Handoff block to agent-context.md with findings".
 
 **Template changes**:
-- `templates/handoff-notes-template.md` → deleted (archived to `.archive/2026-04-26-pre-4e/`).
-- `templates/context-template.md` → contains the Phase Handoff block schema as a recurring section example.
+- `templates/handoff-notes-template.md` → archived to `.archive/2026-04-26-pre-4e/`.
+- `templates/agent-context-template.md` → updated to include the Phase Handoff block schema as a recurring section example.
 
-**Acceptance**: `grep -r "handoff-notes.md" project/ library/ templates/` returns zero results in active library files. Specialists can still complete a multi-phase mission with handoff continuity preserved through the Phase Handoff block.
+**Acceptance**: `grep -r "handoff-notes\.md" project/ library/ templates/` returns zero results in active library files. Specialists can still complete a multi-phase mission with handoff continuity preserved through the Phase Handoff block in agent-context.md.
 
 ---
 
@@ -132,8 +124,8 @@ Library surface only: `project/agents/specialists/`, `project/commands/`, `proje
 **Deliverable**: Sprint 4d's lean `library/CLAUDE.md` updated to reflect the new tracking-file count. Brief migration note for users on existing v5.x installs.
 
 **Diff**:
-- Tracking files section: list 3 files (`project-plan.md`, `context.md`, `evidence-repository.md`) instead of 4.
-- One-line migration note: *"v6.0 renames `agent-context.md` to `context.md` and absorbs `handoff-notes.md` discipline into context.md's Phase Handoff blocks. Migration: `mv agent-context.md context.md && mv handoff-notes.md .archive/`."*
+- Tracking files section: list 3 active files (`project-plan.md`, `agent-context.md`, `evidence-repository.md`) plus `progress.md` noted as write-only.
+- One-line migration note: *"v6.0 absorbs `handoff-notes.md` discipline into `agent-context.md` as Phase Handoff blocks. v5.x users migrate with: `cat handoff-notes.md >> agent-context.md && rm handoff-notes.md`."*
 
 **Acceptance**: Lean CLAUDE.md still under 80 lines after the edit. Migration note is one paragraph, not a section.
 
@@ -141,13 +133,13 @@ Library surface only: `project/agents/specialists/`, `project/commands/`, `proje
 
 ### T6. Update mission files for the 3-file model
 
-**Deliverable**: every `project/missions/mission-*.md` and `dev-setup.md`/`dev-alignment.md` updated to reference the new file model.
+**Deliverable**: every `project/missions/mission-*.md` and `dev-setup.md`/`dev-alignment.md` updated to remove `handoff-notes.md` references.
 
 **Common edits**:
-- "Initialize agent-context.md and handoff-notes.md" → "Initialize context.md".
-- Phase-end protocols that say "update handoff-notes.md" → "append Phase Handoff block to context.md".
+- "Initialize agent-context.md and handoff-notes.md" → "Initialize agent-context.md".
+- Phase-end protocols that say "update handoff-notes.md" → "append Phase Handoff block to agent-context.md".
 
-**Acceptance**: `grep -rn "agent-context\.md\|handoff-notes\.md" project/missions/` returns zero results.
+**Acceptance**: `grep -rn "handoff-notes\.md" project/missions/` returns zero results.
 
 ---
 
@@ -161,7 +153,7 @@ Library surface only: `project/agents/specialists/`, `project/commands/`, `proje
 - M2 (session-start tokens) drops on Mode A and Mode B2 tasks (fewer files loaded).
 - M2 on Mode B1 unchanged (was already minimal in 4c).
 - M3 (unnecessary delegations) does not increase — context fidelity preserved through Phase Handoff blocks.
-- No regression in pause/resume: a harness task interrupted mid-phase resumes correctly from `context.md` alone.
+- No regression in pause/resume: a harness task interrupted mid-phase resumes correctly from `agent-context.md` alone.
 
 ---
 
@@ -182,8 +174,8 @@ The spec should cover:
 
 ## Definition of Done
 
-- [ ] T1: Phase Handoff schema published in context-template.md
-- [ ] T2: All references to `agent-context.md` updated to `context.md`; templates renamed
+- [ ] T1: Phase Handoff schema published in `templates/agent-context-template.md`
+- [ ] T2: ~~Rename~~ — REMOVED during review
 - [ ] T3: `handoff-notes.md` retired; Phase Handoff blocks in use; specialist prompts updated
 - [ ] T4: `progress.md` demoted to write-only; no session-start reads
 - [ ] T5: `library/CLAUDE.md` reflects 3-file model; migration note added
@@ -202,18 +194,19 @@ The spec should cover:
 
 ---
 
-## Open Design Questions
+## Open Design Questions (resolved during review 2026-04-26)
 
-- **`progress.md` location?** Recommendation: leave at root, document the write-only nature in CLAUDE.md. Decision in T4.
-- **Migration tooling?** Recommendation: manual `mv` instructions in CLAUDE.md migration note; build `/coord migrate-v5-context` helper only if friction emerges. Decision in T2/T5.
-- **Phase Handoff schema fields?** Recommendation: 5 fields (Findings, Decisions, Warnings, Open Items, Evidence) per T1 proposal. Refine during execution if a sixth proves common.
+- **`progress.md` location?** Resolved: leave at root, document the write-only nature in CLAUDE.md.
+- **Migration tooling?** Resolved: one-line `cat` instruction in CLAUDE.md migration note. No `/coord migrate-v5-context` helper unless friction emerges.
+- **Phase Handoff schema fields?** Resolved: 5 fields (Findings, Decisions, Warnings & Gotchas, Open Items, Evidence). Refine if a sixth proves common in practice.
+- **Rename `agent-context.md` → `context.md`?** Resolved: skip. Lowest-value item; defer to a future sprint if a real reason emerges.
 
 ---
 
 ## Notes for Execution
 
-- T1 (schema design) gates everything else — get it right before any rename or fold.
-- T2 (rename) and T3 (fold) can run in parallel once T1 is approved, but commit them sequentially for cleaner diffs.
-- T6 is mostly mechanical search-and-replace once T2/T3 are done.
-- T7 is mandatory; without measurement we can't claim the consolidation actually reduced session-start tokens.
-- Sprint 4e is the cleanup sprint that lets Sprint 4f's MCP work compose against a stable, lean context surface. Don't compress timelines — fidelity matters.
+- T1 (schema) gates T3 — define before folding.
+- T3 is the largest task — touches 11+ specialist agents plus coordinator. Specialist prompt edits need careful review for context-reading instructions.
+- T6 is mostly mechanical search-and-replace once T3 is done.
+- T7 is mandatory for measurement; parked for a terminal session if not run inline.
+- Sprint 4e is the cleanup sprint that lets Sprint 4f's MCP work compose against a stable, lean context surface.

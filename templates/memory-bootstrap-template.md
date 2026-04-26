@@ -325,7 +325,7 @@ MEMORY PROTOCOL:
    - Update patterns that worked
    - Note issues to avoid
 
-4. HANDOFF: Update handoff-notes.md for next agent
+4. HANDOFF: Update agent-context.md for next agent
    (Memory = long-term, Handoff = immediate next step)
 ```
 
@@ -346,7 +346,7 @@ Mission Context Flow:
                     ↓
 ┌─────────────────────────────────────────┐
 │ Mission Coordination (Context Files)    │
-│ agent-context.md, handoff-notes.md      │
+│ agent-context.md      │
 │ - Current mission state                 │
 │ - Agent-to-agent handoffs              │
 │ - Mission-specific findings             │

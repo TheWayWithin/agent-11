@@ -26,7 +26,7 @@
 - [ ] All milestone tasks marked [x] in project-plan.md (verified, not assumed)
 - [ ] No critical blockers (🔴) remaining
 - [ ] All issues in progress.md have current status
-- [ ] handoff-notes.md updated within last 24 hours
+- [ ] Phase Handoff block appended to agent-context.md within last 24 hours
 - [ ] evidence-repository.md contains all milestone artifacts
 
 ### Step 1: Extract Lessons (15-20 min)
@@ -49,7 +49,7 @@ cp templates/lesson-template.md lessons/[category]/[name].md
 ### Step 2: Archive Handoff Notes (5 min)
 
 - [ ] Create milestone archive directory
-- [ ] Copy handoff-notes.md to archive
+- [ ] # (deprecated — Phase Handoff blocks live in agent-context.md)
 - [ ] Extract key decisions to archive README
 - [ ] Verify archive created successfully
 
@@ -59,7 +59,7 @@ cp templates/lesson-template.md lessons/[category]/[name].md
 mkdir -p archives/handoffs/milestone-X-[name]
 
 # Archive handoff
-cp handoff-notes.md archives/handoffs/milestone-X-[name]/handoff-notes-final.md
+# (deprecated — agent-context.md continues; archive milestone Phase Handoff blocks if needed)
 
 # Create metadata
 cat > archives/handoffs/milestone-X-[name]/README.md << 'EOF'
@@ -96,7 +96,7 @@ cat agent-context.md > archives/context/milestone-X-context.md
 
 **Command**:
 ```bash
-cp templates/handoff-notes-template.md handoff-notes.md
+# (deprecated — agent-context.md is initialised once; Phase Handoff blocks accumulate)
 # Edit to add current milestone and essential context
 ```
 
@@ -114,7 +114,7 @@ cp templates/handoff-notes-template.md handoff-notes.md
 
 - [ ] Lessons extracted to `lessons/` and indexed
 - [ ] Old handoff archived to `archives/handoffs/milestone-X/`
-- [ ] New handoff-notes.md contains only next milestone context
+- [ ] New agent-context.md Phase Handoff block contains only next milestone context
 - [ ] agent-context.md cleaned but retains essentials
 - [ ] project-plan.md updated with Milestone Y tasks
 - [ ] progress.md has milestone completion entry
@@ -156,7 +156,7 @@ cp templates/handoff-notes-template.md handoff-notes.md
 - [ ] Copy progress.md to archive
 - [ ] Copy agent-context.md to archive
 - [ ] Copy architecture.md to archive
-- [ ] Copy handoff-notes.md as handoff-notes-final.md
+- [ ] Copy agent-context.md as agent-context-final.md
 - [ ] Copy evidence-repository/ directory to archive
 - [ ] Create MISSION-SUMMARY.md with key metrics
 - [ ] Verify all files archived successfully
@@ -172,7 +172,7 @@ cp ../../project-plan.md ./
 cp ../../progress.md ./
 cp ../../agent-context.md ./
 cp ../../architecture.md ./
-cp ../../handoff-notes.md ./handoff-notes-final.md
+cp ../../agent-context.md ./agent-context-final.md
 cp -r ../../evidence-repository/ ./evidence/
 
 # Create mission summary (use template provided in lifecycle guide)
@@ -200,7 +200,7 @@ cp -r ../../evidence-repository/ ./evidence/
 - [ ] Move project-plan.md to mission archive
 - [ ] Move progress.md to mission archive
 - [ ] Move agent-context.md to mission archive
-- [ ] Move handoff-notes.md to mission archive
+- [ ] Move agent-context.md to mission archive (or extract milestone-relevant Phase Handoff blocks)
 - [ ] Move evidence-repository.md to mission archive
 - [ ] KEEP architecture.md (evolves across missions)
 - [ ] KEEP lessons/ directory (permanent knowledge base)
@@ -215,7 +215,7 @@ ARCHIVE_DIR="archives/missions/mission-[name]-$(date +%Y-%m-%d)"
 mv project-plan.md "${ARCHIVE_DIR}/"
 mv progress.md "${ARCHIVE_DIR}/"
 mv agent-context.md "${ARCHIVE_DIR}/"
-mv handoff-notes.md "${ARCHIVE_DIR}/handoff-notes-final.md"
+# (deprecated — agent-context.md continues; no separate handoff-notes file)
 mv evidence-repository.md "${ARCHIVE_DIR}/"
 
 # Persistent files remain (architecture.md, lessons/, CLAUDE.md)
@@ -256,7 +256,7 @@ mv evidence-repository.md "${ARCHIVE_DIR}/"
 
 - [ ] Extract critical insights to memory files (/memories/lessons/*.xml)
 - [ ] Update agent-context.md with current phase findings
-- [ ] Update handoff-notes.md for next agent/phase
+- [ ] Update agent-context.md for next agent/phase
 - [ ] Verify memory tool calls are recent (in last 3 tool uses)
 - [ ] Confirm at least 5K tokens will be cleared
 - [ ] Ensure not in middle of complex delegation chain
@@ -281,7 +281,7 @@ mv evidence-repository.md "${ARCHIVE_DIR}/"
 
 - [ ] Memory still accessible
 - [ ] Mission objectives still clear from agent-context.md
-- [ ] Specialist can access handoff-notes.md
+- [ ] Specialist can access agent-context.md
 - [ ] Next delegation ready with context instructions
 - [ ] Resume operations with clean context
 
@@ -290,11 +290,11 @@ mv evidence-repository.md "${ARCHIVE_DIR}/"
 ```
 Task(
   subagent_type="[specialist]",
-  prompt="First read agent-context.md and handoff-notes.md for full mission context.
+  prompt="First read agent-context.md for full mission context.
           Access /memories/ for project knowledge and past decisions.
           CRITICAL: Follow Critical Software Development Principles.
           [Task details]
-          Update handoff-notes.md with your findings."
+          Append a Phase Handoff block to agent-context.md with your findings."
 )
 ```
 
@@ -307,7 +307,7 @@ Task(
 1. **Marking tasks [x] before cleanup verification**
    - Verify specialist confirmation first
    - Check deliverable files exist
-   - Confirm handoff-notes.md updated
+   - Confirm Phase Handoff block in agent-context.md present
 
 2. **Archiving architecture.md**
    - architecture.md evolves across missions
@@ -328,7 +328,7 @@ Task(
 
 6. **Cleaning without context preservation**
    - Update agent-context.md before cleaning
-   - Archive handoff-notes.md before clearing
+   - # (deprecated — Phase Handoff blocks live in agent-context.md) before clearing
    - Extract insights to memory before /clear
 
 7. **Accumulating handoff-notes forever**
@@ -361,7 +361,7 @@ grep -r "keyword" lessons/
 ```bash
 # Create milestone handoff archive
 mkdir -p archives/handoffs/milestone-X-[name]
-cp handoff-notes.md archives/handoffs/milestone-X-[name]/handoff-notes-final.md
+# (deprecated — agent-context.md continues; archive milestone Phase Handoff blocks if needed)
 
 # Create mission archive
 mkdir -p archives/missions/mission-[name]-$(date +%Y-%m-%d)
@@ -374,7 +374,7 @@ ls -lt archives/handoffs/
 ### File Cleanup
 ```bash
 # Create fresh handoff notes
-cp templates/handoff-notes-template.md handoff-notes.md
+# (deprecated — agent-context.md is initialised once; Phase Handoff blocks accumulate)
 
 # Archive agent context
 cp agent-context.md archives/context/milestone-X-context.md

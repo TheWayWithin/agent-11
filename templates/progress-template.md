@@ -383,7 +383,7 @@ Specific actionable changes to process, architecture, or approach
 **Files Created**: [count] files verified on filesystem
 **Files Modified**: [count] edits applied and verified
 **Verification**: ls -la / head -n X confirmed all files
-**Handoff Updated**: ✅ handoff-notes.md current
+**Handoff Updated**: ✅ Phase Handoff block in agent-context.md current
 **Context Updated**: ✅ agent-context.md merged
 **Gate Status**: ✅ ALL CHECKS PASS - Proceeding to Phase [X+1]
 

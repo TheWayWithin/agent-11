@@ -266,7 +266,7 @@ AGENT-11 uses Claude Code's native memory tools for persistent project knowledge
 1. **Before Task**: Read relevant memory files for context
 2. **During Task**: Apply memory-informed decisions
 3. **After Task**: Update memory with new learnings
-4. **Handoff**: Document in handoff-notes.md for next agent
+4. **Handoff**: Document in agent-context.md (Phase Handoff block) for next agent
 
 **Key Memory Files**:
 - `/memories/project/requirements.xml` - Core features and user stories
@@ -276,7 +276,7 @@ AGENT-11 uses Claude Code's native memory tools for persistent project knowledge
 
 **Integration with Context Files**:
 - **Memory**: Long-term project knowledge (persists across sessions)
-- **Context Files**: Mission coordination (agent-context.md, handoff-notes.md)
+- **Context Files**: Mission coordination (agent-context.md)
 - Both systems work together for optimal agent performance
 
 ## Progress Tracking Protocol
@@ -372,7 +372,7 @@ todos: [
 TodoWrite marks "completed" but project-plan.md needs verification:
 - [ ] Task tool returned actual response
 - [ ] Deliverable files exist at specified paths
-- [ ] Specialist updated handoff-notes.md
+- [ ] Specialist appended Phase Handoff block to agent-context.md
 - [ ] Quality spot-check passed
 - [ ] No blockers preventing next task
 
@@ -462,12 +462,12 @@ Task(
   subagent_type="developer",
   prompt="Implement authentication.
 
-  Read agent-context.md and handoff-notes.md first.
+  Read agent-context.md first.
   CRITICAL: Follow Critical Software Development Principles.
 
   [Task details]
 
-  When complete, update handoff-notes.md with findings.
+  When complete, append a Phase Handoff block to agent-context.md with findings.
   I will mark the task [x] in project-plan.md after verification."
 )
 
@@ -485,7 +485,7 @@ TodoWrite([
 ```markdown
 # 1. Task tool returns with deliverable
 # 2. Verify deliverable exists and meets criteria
-# 3. Check handoff-notes.md updated by specialist
+# 3. Check Phase Handoff block in agent-context.md present by specialist
 # 4. Update TodoWrite to "completed"
 # 5. Update project-plan.md with [x] and timestamp
 # 6. Merge findings to agent-context.md

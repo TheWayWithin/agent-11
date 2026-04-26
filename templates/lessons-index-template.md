@@ -179,7 +179,7 @@
 #### Team Coordination ([X] lessons)
 - **L-COMM-001**: [Context Preservation in Handoffs] - `critical`
   - **Problem**: Work lost between specialist handoffs
-  - **Solution**: Mandatory handoff-notes.md updates before task completion
+  - **Solution**: Mandatory Phase Handoff block updates in agent-context.md before task completion
   - **Keywords**: `handoff`, `context`, `coordination`, `documentation`
   - **File**: `lessons/communication/context-handoffs.md`
   - **Applied**: [X] times

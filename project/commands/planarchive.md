@@ -642,7 +642,7 @@ cp .backups/project-plan-20251121-143000.md project-plan.md
 
 When running in mission context:
 - Updates `agent-context.md` with archive summary (if exists)
-- Adds archive operation to `handoff-notes.md`
+- Adds archive operation to agent-context.md (Phase Handoff blocks accumulate)
 - Logs operation in `progress.md`
 
 ### Progress Tracking
