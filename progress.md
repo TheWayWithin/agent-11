@@ -99,6 +99,36 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ---
 
+### [2026-04-26] — Sprint 4b T6: Harness Subset Re-Run COMPLETE ✅
+
+**Summary**: Ran Tasks 3, 4, 5 against post-Sprint-4b state. All three succeeded. Sprint 4b's behavioural-change hypotheses all validated, with the headline result — Task 4 dropped from 6m 7s to 1m 33s, a **75% reduction** vs the ≥25% hypothesis.
+
+**Headline numbers**:
+
+| Task | M1 baseline | M1 4b | Δ |
+|------|------------|-------|---|
+| T3 (bug fix) | 1:30 | 0:43 | **-52%** |
+| T4 (refactor) | 6:07 | 1:33 | **-75%** |
+| T5 (commit review) | 1:37 | ~1:45 | flat |
+
+M2 (session-start tokens) dropped 2.4% across all three. Modest — the bigger M2 cuts will come in Sprints 4d (CLAUDE.md shrink) and 4f (dynamic MCP).
+
+**Qualitative wins**:
+
+1. **The coordinator now articulates its discipline.** T5 review opened with "I'm doing this as a direct read-only review — no /coord orchestration overhead". T4 opened with a one-sentence plan before acting. PAUSE-AND-PLAN working as designed.
+2. **Subagent hardening prevented a real failure mode.** During T3 setup, the prompt got pasted into the wrong fixture (t5-commit-review-run instead of t3-bug-fix-run). The new coordinator detected the mismatch and refused to fabricate work — it said "I'm not going to fabricate a pagination test or start a fix mission on a problem that doesn't exist here." v5.2 baseline coordinator would likely have either delegated to a developer that returned "0 tool uses" or hallucinated a test to "fix".
+3. **Ceremony tax on small/medium tasks is gone.** T4 used to write 4 tracking files for a 3-file refactor. Now it writes none. The discipline change has direct, measurable impact.
+4. **T4 solution is architecturally cleaner**. Baseline applied middleware via `router.use(requireAuth)` inside each route file. 4b applied it at mount-time in `app.ts`: `app.use("/users", requireAuth, usersRouter)`. Auth concerns live entirely outside the route files now.
+
+**Deliverable**: `project/validation/milestone-4b.md` with full results, hypotheses scored, and qualitative observations.
+
+**Sprint 4b status**: ✅ **Complete.** All 7 tasks delivered (T1-T5 and T7 in commit `747c072`; T6 here). Recommend proceeding to Sprint 4c.
+
+**What's next**:
+- Sprint 4c (Universal Router) execution per `sprints/sprint-4c-universal-router.md`. Most of it can run solo; T7 (harness re-run for milestone-4c) requires Jamie's terminal again.
+
+---
+
 ### [2026-04-19] — v6.0 Evolution Kickoff
 
 Continuing from the v6.0 planning session committed in `aa6ecdb`. Historic context (pre-v6 plan, Sprint 9/11 work) preserved in `.archive/2026-04-17-pre-v6/`.

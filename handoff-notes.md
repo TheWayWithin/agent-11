@@ -13,21 +13,19 @@ Per the v6.0 plan, `handoff-notes.md` is folded into `agent-context.md` as a str
 ## Where We Are
 
 - **Sprint 4a** (Baseline + Great Deletion) — complete. See `progress.md`.
-- **Sprint 4b** (Prompt Hygiene & Budget Controls) — T1, T2, T3, T4, T5, T7 done solo. T6 (harness re-run) parked for a session where Jamie has ~45 min of terminal time.
-- **Sprint 4c** (Universal Router) — detailed spec ready; execution blocked on Sprint 4b T6.
+- **Sprint 4b** (Prompt Hygiene & Budget Controls) — **complete (2026-04-26)**. T6 harness re-run validated all hypotheses. Headline: Task 4 dropped 75% (6:07 → 1:33). Full results in `project/validation/milestone-4b.md`.
+- **Sprint 4c** (Universal Router) — detailed spec ready, execution unblocked.
 - **Install squad simplification** — shipped as `c6a53fa` (always installs all 11 agents).
 
 ---
 
 ## Next Action
 
-**Sprint 4b T6 — harness re-run.** Measures whether the Sprint 4b changes (Karpathy constitution, PAUSE-AND-PLAN, subagent hardening, budget controls) produced measurable improvement vs the v5.2 baseline.
+**Start Sprint 4c — The Universal Router.** See `sprints/sprint-4c-universal-router.md`.
 
-Subset to re-run: Tasks 3 (bug fix), 4 (refactor), 5 (commit review). Tasks 1 and 2 optional — they take longer and we have less hypothesis about their movement.
+Sprint 4c collapses the explicit-command menu behind a single `/coord [mission]` interface with deterministic mission-based routing and dynamic context loading. Most of its 8 tasks can be done solo (T2 is the biggest single edit — `coord.md` from 549 lines down to <100). T7 (harness re-run for `milestone-4c.md`) is the only task requiring Jamie's terminal again.
 
-Run procedure: same as baseline run. Follow `project/validation/run-playbook.md`. Record results in `project/validation/milestone-4b.md`.
-
-After T6 is done, Sprint 4c is ready to execute per `sprints/sprint-4c-universal-router.md`.
+Recommended approach: do T1-T6 and T8 solo in one pass, then schedule T7 for a separate session.
 
 ---
 
