@@ -179,6 +179,96 @@ M2 (session-start tokens) dropped 2.4% across all three. Modest — the bigger M
 
 ---
 
+### [2026-04-26] — Sprint 4d (T1-T6, T8) Complete — Harness Re-run (T7) Parked ✅
+
+**Summary**: `library/CLAUDE.md` shrunk **575 → 79 lines** (-86%) by deleting content that was duplicate of canonical sources elsewhere. Default `settings.json.template` shipped with advisory hooks for tsc/ruff/rubocop on Edit/Write and a confirm-prompt for destructive Bash. Karpathy constitution now deploys to `.claude/constitution/` (was previously referenced but not deployed). Meta-Dev skill added. Sprint 4e detailed spec authored.
+
+**Deliverables**:
+
+- `library/CLAUDE.md` — **575 → 79 lines** (-86%). Shape:
+  - Karpathy Constitution (7 principles inline, 1-line each)
+  - Mission table (Mode A/B1/B2)
+  - Tracking files (4 files, 1 line each, full protocols pointed to coordinator.md)
+  - Foundation files (one paragraph)
+  - Skills (one paragraph)
+  - MCP tools (search-pattern table, points to field-manual)
+  - Hooks (one paragraph, advisory by default)
+  - Security (3 bullets)
+  - Plan-driven workflow (one sentence + pointer)
+- `library/settings.json.template` — new file. Hooks:
+  - PostToolUse on Edit/Write/MultiEdit:
+    - `tsc --noEmit` for `*.ts/*.tsx` (only if `package.json` + `tsconfig.json` present)
+    - `ruff check` for `*.py` (only if `pyproject.toml` present)
+    - `rubocop` for `*.rb` (only if `Gemfile` present)
+  - PreToolUse `prompt` on Bash matching `rm -rf *`, `git push --force*`, `git push -f *`, `git reset --hard*`, `git clean -f*`, `git branch -D*` — confirms before proceeding.
+  - All command hooks `|| true` for advisory behaviour. Promote to blocking by changing to `|| exit 2`.
+- `.claude/skills/meta-dev/SKILL.md` — new file. Triggers on `agent-11`, `library/CLAUDE.md`, `working squad`, `install.sh`, etc. Orients Claude correctly when working inside the framework repo (library vs working-squad distinction). Verified registered in skill list.
+- `project/deployment/scripts/install.sh`:
+  - New function `install_settings_template()` — deploys `library/settings.json.template` to `.claude/settings.json`. Fresh install copies verbatim; existing files left alone with backup + notice.
+  - New function `install_constitution()` — deploys `project/constitution/karpathy-constitution.md` to `.claude/constitution/karpathy-constitution.md` (was missing from deployment).
+  - Both wired into the install pipeline after `install_claude_md` and before `install_mission_system`.
+  - `field_manual_files` list expanded to include `mcp-integration.md` (referenced by lean CLAUDE.md but not previously deployed).
+  - `install.sh.sha256` regenerated; CI guard verified passing.
+- `sprints/sprint-4e-context-consolidation.md` — outline replaced with detailed spec.
+  - 8 tasks: Phase Handoff schema, rename `agent-context.md` → `context.md`, fold `handoff-notes.md` into `context.md`, demote `progress.md` to write-only, lean CLAUDE.md update, mission file updates, harness re-run, Sprint 4f spec.
+  - Open questions resolved: progress.md stays at root (write-only); migration via manual `mv` documented in CLAUDE.md, no helper command yet.
+
+**T1 Relocation Map** (audit deliverable):
+
+| Old library/CLAUDE.md section | Action | Canonical home |
+|---|---|---|
+| Critical Software Dev Principles | DELETE | `coordinator.md` Karpathy Constitution |
+| Ideation File Concept | KEEP compressed | (lean file) |
+| Progress Tracking System | DELETE | `coordinator.md` |
+| Design Review System | DELETE | `/design-review` cmd, @designer agent |
+| Mission Documentation Standards | DELETE | duplicates progress tracking |
+| Context Preservation System | DELETE | `coordinator.md` |
+| Foundations v2.0 | DELETE | `project/commands/foundations.md` (1378 lines) |
+| Coordinator Delegation Protocol | DELETE | `coordinator.md` + `field-manual/coordinator-protocol.md` |
+| Common Tasks (dev-setup/alignment) | DELETE | `/coord` routing table (Sprint 4c) |
+| MCP Integration | DELETE | `field-manual/mcp-integration.md` |
+| Model Selection Guidelines | DELETE | `coordinator.md` + `field-manual/model-selection-guide.md` |
+| MCP Setup | DELETE | `field-manual/mcp-integration.md` |
+| Sprint 9 Plan-Driven Development | DELETE | `field-manual/plan-driven-development.md` (281 lines) |
+| Available Commands | KEEP compressed (mission table) | (lean file) |
+| Security Notes | KEEP compressed | (lean file) |
+
+~95% of the old file was duplicate content. Lean file points at canonical sources, doesn't restate them.
+
+**Open Decisions Made (per Jamie's "all defaults")**:
+
+1. **Hooks**: advisory by default (`|| true` exit 0 + output). Users promote to blocking individually.
+2. **Meta-Dev Skill trigger**: AGENT_11_PROJECT env var (already set in `.claude/settings.local.json`); skill description also matches the relevant repo terms.
+3. **Plan-driven docs location**: kept in existing `field-manual/plan-driven-development.md` (already deployed); no new file needed.
+
+**Tasks parked for Jamie's terminal session**:
+- **T7** (harness re-run for milestone-4d) — needs validation harness runbook, deferred.
+- T7 from Sprint 4c also remains parked. Both can be run in the same terminal session.
+
+**User-Facing Changes** (for Sprint 4h docs consolidation):
+- `.claude/CLAUDE.md` shrinks from 575 to 79 lines on next install. Existing users keep the old 575-line file until they reinstall or manually update.
+- New install deploys `.claude/settings.json` with default advisory hooks for TS/Python/Ruby type/lint checks and destructive Bash confirmation. Users without the relevant toolchains see no-op behaviour (hooks skip cleanly when `package.json`/`pyproject.toml`/`Gemfile` absent).
+- Karpathy constitution is now installed at `.claude/constitution/karpathy-constitution.md` (was referenced by coordinator but not deployed previously).
+- `field-manual/mcp-integration.md` now installed (was missing from deploy list).
+- Existing users with their own `.claude/settings.json` will not have it overwritten — installer leaves their file alone with a notice and writes a backup.
+
+**Files touched**:
+- `library/CLAUDE.md` — rewritten (-496 lines net).
+- `library/settings.json.template` — new file.
+- `.claude/skills/meta-dev/SKILL.md` — new file (working-squad exception per Sprint 4d scope rule).
+- `project/deployment/scripts/install.sh` — added `install_settings_template`, `install_constitution`; expanded field-manual list.
+- `project/deployment/scripts/install.sh.sha256` — regenerated.
+- `sprints/sprint-4e-context-consolidation.md` — detailed spec.
+- `progress.md`, `handoff-notes.md`, `project-plan.md` — close-out updates.
+
+**Sprint 4d status**: ✅ **Complete** for solo-executable scope (T1, T2, T3, T4, T5, T6, T8). T7 deferred. Recommend proceeding to Sprint 4e once Jamie has reviewed.
+
+**What's next**:
+- T7 (harness re-run): schedule a terminal session; produce `project/validation/milestone-4d.md`.
+- Sprint 4e (Context Consolidation 5→3) — detailed spec ready in `sprints/sprint-4e-context-consolidation.md`.
+
+---
+
 ### [2026-04-19] — v6.0 Evolution Kickoff
 
 Continuing from the v6.0 planning session committed in `aa6ecdb`. Historic context (pre-v6 plan, Sprint 9/11 work) preserved in `.archive/2026-04-17-pre-v6/`.

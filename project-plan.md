@@ -77,8 +77,8 @@ The v6.0 evolution is delivered as **8 sub-sprints under the "Sprint 4" umbrella
 | **4a** | Baseline + Great Deletion | Validation harness + baseline metrics; MCP profile system, backups, ASCII art removed | ✅ Complete |
 | **4b** | Prompt Hygiene & Budget Controls | Karpathy constitution; PAUSE-AND-PLAN replaces NO-WAITING; minimization pass; budget controls | ✅ Complete |
 | **4c** | The Universal Router | Rewritten `/coord` with deterministic mission routing and dynamic context loading | ✅ T1-T6, T8 complete; T7 (harness) parked |
-| **4d** | Native Primitives + CLAUDE.md Shrink | `settings.json` hooks for quality; `.claude/CLAUDE.md` ≤80 lines; Meta-Dev Skill for agent-11 repo | Detailed spec ready |
-| **4e** | Context Consolidation (5→3) | `handoff-notes.md` folded into `context.md`; `progress.md` out of active context | Outline only |
+| **4d** | Native Primitives + CLAUDE.md Shrink | `settings.json` hooks for quality; `.claude/CLAUDE.md` ≤80 lines; Meta-Dev Skill for agent-11 repo | ✅ T1-T6, T8 complete; T7 (harness) parked |
+| **4e** | Context Consolidation (5→3) | `handoff-notes.md` folded; `progress.md` write-only; `agent-context.md` → `context.md` | Detailed spec ready |
 | **4f** | Dynamic MCP Tool Search | `dynamic-mcp.json` + `defer_loading` + tool search protocol for specialists | Outline only |
 | **4g** | Skills + Routines | SKILL.md open standard; 3 priority Routines (pr-review, nightly-qa, backlog-triage) | Outline only |
 | **4h** | Validation + Migration | Harness on v6.0 vs baseline; v5.2→v6.0 migration script; private beta | Outline only |

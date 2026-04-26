@@ -596,6 +596,97 @@ install_claude_md() {
     return 0
 }
 
+# Install settings.json template with default hooks (Sprint 4d)
+# Deploys library/settings.json.template to .claude/settings.json
+# - Fresh install (no existing file): copy verbatim
+# - Existing settings.json without "hooks" key: skip with notice (don't risk merge corruption)
+# - Existing settings.json with "hooks": skip with notice (respect user customization)
+# Always backs up existing file before any change
+install_settings_template() {
+    local execution_mode
+    execution_mode=$(detect_execution_mode)
+
+    log "Installing settings.json template (hooks)..."
+
+    mkdir -p "$CLAUDE_DIR"
+
+    local dest_file="$CLAUDE_DIR/settings.json"
+    local backup_file="$CLAUDE_DIR/settings.json.backup-$(date +%Y%m%d_%H%M%S)"
+    local source_path="library/settings.json.template"
+
+    # If user already has a settings.json, do not overwrite
+    if [[ -f "$dest_file" ]]; then
+        # Backup unconditionally before any inspection
+        cp "$dest_file" "$backup_file"
+        log "Backed up existing .claude/settings.json"
+
+        if grep -q '"hooks"' "$dest_file" 2>/dev/null; then
+            warn "Existing .claude/settings.json already defines hooks - leaving it alone"
+        else
+            warn "Existing .claude/settings.json found without hooks - leaving it alone (manual merge recommended)"
+            echo "  See: $(dirname "$source_path")/$(basename "$source_path") for the AGENT-11 hook template"
+        fi
+        return 0
+    fi
+
+    # Fresh install - deploy template verbatim
+    if [[ "$execution_mode" == "local" ]]; then
+        local source_file="$PROJECT_ROOT/$source_path"
+        if [[ -f "$source_file" ]]; then
+            if cp "$source_file" "$dest_file"; then
+                success "Default hooks installed: .claude/settings.json"
+            else
+                warn "Failed to install settings.json - hooks not deployed"
+            fi
+        else
+            warn "library/settings.json.template not found - hooks not deployed"
+        fi
+    else
+        if download_file_from_github "$source_path" "$dest_file"; then
+            success "Default hooks downloaded: .claude/settings.json"
+        else
+            warn "Failed to download settings.json template - hooks not deployed"
+        fi
+    fi
+
+    return 0
+}
+
+# Install Karpathy constitution to .claude/constitution/ (Sprint 4d)
+install_constitution() {
+    local execution_mode
+    execution_mode=$(detect_execution_mode)
+
+    log "Installing Karpathy constitution..."
+
+    local dest_dir="$CLAUDE_DIR/constitution"
+    local dest_file="$dest_dir/karpathy-constitution.md"
+    local source_path="project/constitution/karpathy-constitution.md"
+
+    mkdir -p "$dest_dir"
+
+    if [[ "$execution_mode" == "local" ]]; then
+        local source_file="$PROJECT_ROOT/$source_path"
+        if [[ -f "$source_file" ]]; then
+            if cp "$source_file" "$dest_file"; then
+                success "Constitution installed: .claude/constitution/karpathy-constitution.md"
+            else
+                warn "Failed to install Karpathy constitution"
+            fi
+        else
+            warn "Karpathy constitution not found at $source_path"
+        fi
+    else
+        if download_file_from_github "$source_path" "$dest_file"; then
+            success "Constitution downloaded"
+        else
+            warn "Failed to download Karpathy constitution"
+        fi
+    fi
+
+    return 0
+}
+
 # Install mission system files (missions, commands, templates)
 install_mission_system() {
     local execution_mode
@@ -675,6 +766,7 @@ install_mission_system() {
         "project/field-manual/project-lifecycle-guide.md"
         "project/field-manual/model-selection-guide.md"
         "project/field-manual/mcp-optimization-guide.md"
+        "project/field-manual/mcp-integration.md"
         "project/field-manual/file-operation-quickref.md"
         # Sprint 9: Plan-Driven Development guides
         "project/field-manual/plan-driven-development.md"
@@ -1401,6 +1493,8 @@ main() {
         create_backup &&
         install_squad &&
         install_claude_md &&
+        install_constitution &&
+        install_settings_template &&
         install_mission_system &&
         install_mcp_system &&
         verify_installation &&
