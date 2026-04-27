@@ -46,13 +46,9 @@ cp .env.mcp.template .env.mcp
 
 See [MCP Guide](../../docs/MCP-GUIDE.md) and [Migration Guide](../../docs/MCP-MIGRATION-GUIDE.md) for details.
 
-### Legacy: Profile-Based Setup
+### Profile-Based Setup (RETIRED in v6.0)
 
-For users preferring the older profile system:
-```bash
-ln -sf .mcp-profiles/core.json .mcp.json
-```
-Available profiles: `core`, `testing`, `database-staging`, `database-production`, `payments`, `deployment`, `fullstack`
+The previous `.mcp-profiles/` system is retired. Tools now defer-load and are discovered via `tool_search_tool_regex_20251119`. No profile switching needed.
 
 ---
 

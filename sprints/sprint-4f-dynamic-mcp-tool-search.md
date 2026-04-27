@@ -3,25 +3,37 @@
 **Part of**: Agent-11 v6.0 Evolution (Sprint 4 umbrella)
 **Predecessor**: Sprint 4e — Context Consolidation ✅ (T1, T3-T6, T8 shipped; T7 deferred)
 **Successor**: Sprint 4g — Skills + Routines
-**Status**: Detailed spec ready for Jamie's review; execution can start once Sprint 4e is committed
+**Status**: Recalibrated 2026-04-26 after T1 audit revealed schema mismatch; execution in progress
 
-**Reference**: `Ideation/Dynamic MCP Tooling for Agent-11_ Context Optimization and Agent Routing.md`
+**Reference**: `Ideation/Dynamic MCP Tooling for Agent-11_ Context Optimization and Agent Routing.md` (note: ideation doc is based on Claude API schema, not Claude Code — see T1 finding below)
 
 ---
 
 ## Goal
 
-Replace static MCP tool loading with **deferred loading + tool search**, so MCP context cost drops from ~51K tokens at session start to ~3-8K. Tools are discovered on demand via `tool_search_tool_regex_20251119` and loaded lazily when the regex matches.
+Reduce MCP context cost at session start from ~51K tokens to <8K, leveraging Claude Code's **native** auto-deferring behaviour rather than a custom per-tool config.
 
-The plumbing already exists at `project/mcp/dynamic-mcp.json` and is deployed by install.sh (Sprint 11). What's missing: it isn't wired in as the canonical `.mcp.json`, specialist prompts don't use the Tool Search workflow, and there's no measurement against the baseline.
+## T1 Finding That Changed Scope (2026-04-26)
+
+Sprint 4f originally planned to wire `project/mcp/dynamic-mcp.json` as the canonical `.mcp.json`. **That doesn't work**: the file uses the Claude API schema (`toolsets`, per-tool `defer_loading`), not the Claude Code schema (`mcpServers` registry only). Claude Code would not understand it.
+
+**What actually works in Claude Code**:
+- `.mcp.json` is the server registry (stdio commands, args, env). Existing `.mcp.json.template` is correct.
+- Tool deferring is **automatic** — Claude Code auto-manages context when tool count is high.
+- The user-tunable lever is `ENABLE_TOOL_SEARCH=auto` in `.claude/settings.json` (threshold-based loading).
+- `tool_search_tool_regex_20251119` is the runtime discovery primitive specialists already know how to use (it's referenced in coordinator.md's DYNAMIC MCP TOOL DISCOVERY section).
+
+Implication: **`project/mcp/dynamic-mcp.json` is obsolete cruft from Sprint 11** (built on misreading of Claude Code's schema). It gets archived. The actual sprint deliverable is much smaller than originally scoped.
+
+Reference: [Connect Claude Code to tools via MCP](https://code.claude.com/docs/en/mcp).
 
 ## Why This Sprint
 
 Three observations:
 
-1. **MCP token cost dominates session-start budget.** Per the Dynamic MCP doc, loading all 7 configured MCP servers' full tool sets costs ~51K tokens at startup. That's roughly the size of the v5.2 baseline's *entire* CLAUDE.md + coordinator + specialists combined. After 4d's CLAUDE.md shrink and 4e's context consolidation, MCP is the single biggest remaining session-start cost.
-2. **Static profile switching was the v5.x answer; native deferred loading is the v6.0 answer.** Claude Code's `defer_loading` + Tool Search make profile switching obsolete. Specialists pull what they need when they need it; the rest sits unloaded.
-3. **The dynamic config already exists** (`project/mcp/dynamic-mcp.json`) but isn't connected — install.sh deploys it to `mcp/` but the canonical `.mcp.json` is the static one downloaded from `main`. Sprint 4f finishes the wiring.
+1. **MCP token cost dominates session-start budget.** Per the Dynamic MCP ideation doc, loading all 7 configured MCP servers' full tool sets costs ~51K tokens at startup. After 4d's CLAUDE.md shrink and 4e's context consolidation, MCP is the single biggest remaining session-start cost.
+2. **Claude Code now auto-defers tools natively** when many MCP servers are configured. We don't need to build per-tool config; we need to **enable** the native behaviour and **teach specialists** to use Tool Search instead of assuming all tools are pre-loaded.
+3. **The Sprint 11 dynamic-mcp.json was built on a misreading of the schema** (T1 finding above). Archiving it removes confusion and gets us to the simpler, correct design.
 
 ## Scope Reminder
 
@@ -31,34 +43,30 @@ Library surface only: `project/mcp/`, `project/agents/specialists/`, `project/co
 
 ## Tasks
 
-### T1. Audit current MCP deployment vs dynamic-mcp.json
+### T1. Audit MCP file schemas (✅ COMPLETED 2026-04-26)
 
-**Deliverable**: a clear delta between what `install.sh` currently deploys and what the dynamic config requires. Identify which file becomes the canonical `.mcp.json` post-4f.
+**Finding**: see "T1 Finding That Changed Scope" above. `dynamic-mcp.json` uses Claude API schema, not Claude Code. Recalibration done.
 
-**Approach**:
-1. Inspect existing `.mcp.json` (downloaded from `main` branch by install.sh) and `project/deployment/templates/.mcp.json.template`.
-2. Compare with `project/mcp/dynamic-mcp.json` (the dynamic config Sprint 11 added but didn't activate).
-3. Document the deltas — fields, server entries, tool entries.
-4. Decide: does dynamic-mcp.json **replace** `.mcp.json`, or does install.sh **transform** it into `.mcp.json` shape?
-
-**Recommendation**: dynamic-mcp.json **replaces** the old `.mcp.json`. The static file is retired. install.sh deploys dynamic-mcp.json directly as `.mcp.json` (or symlinks). One source of truth.
-
-**Acceptance**: Audit document or commit message lists the deltas, names the canonical file, and confirms no broken references.
+**Status**: complete.
 
 ---
 
-### T2. Wire dynamic-mcp.json as the canonical .mcp.json
+### T2. Enable native tool deferring + archive obsolete config
 
-**Deliverable**: `install.sh` deploys `project/mcp/dynamic-mcp.json` to `.mcp.json` in user projects. The old static `.mcp.json` download from `main` is retired.
+**Deliverable**: Claude Code's `ENABLE_TOOL_SEARCH=auto` ships in the deployed `settings.json` template; the obsolete `dynamic-mcp.json` is archived and removed from `install.sh`'s deployment list.
 
 **Changes**:
-- `install.sh` `setup_mcp_configuration()` function: deploy `project/mcp/dynamic-mcp.json` → `<project-root>/.mcp.json`. Backup any existing user `.mcp.json` before overwrite.
-- Retire the curl-from-main download for `.mcp.json` (the static config).
-- Keep the `.env.mcp.template` deployment unchanged — that's API keys, separate concern.
-- Update `project/deployment/templates/.mcp.json.template` to match dynamic-mcp.json schema (or delete if redundant).
+- `library/settings.json.template`: add `"env": {"ENABLE_TOOL_SEARCH": "auto"}` block (or merge with existing env if present). This is the actual lever that triggers threshold-based tool loading in Claude Code.
+- Archive `project/mcp/dynamic-mcp.json` to `.archive/2026-04-26-pre-4f/` (it's based on the wrong schema and was never wired in usefully).
+- Remove the dynamic-mcp.json deployment from `install.sh` (the `setup_mcp_configuration()` function around line 1276).
+- The existing static `.mcp.json` curl-download stays — it's the correct server registry that Claude Code reads.
 - Regenerate `install.sh.sha256`.
 
-**Acceptance**: Smoke test (same pattern as 4d): fresh install on a scratch dir produces `.mcp.json` with `defer_loading: true` entries. Existing user `.mcp.json` is backed up before overwrite.
+**What this does NOT touch**:
+- The static `.mcp.json` server registry (curl from main) — already correct, Claude Code parses it natively.
+- `.env.mcp.template` — separate concern (API keys).
+
+**Acceptance**: Smoke test (same pattern as 4d): fresh install produces `.claude/settings.json` with `ENABLE_TOOL_SEARCH=auto`. `mcp/dynamic-mcp.json` is no longer deployed. Existing static `.mcp.json` deployment unchanged.
 
 ---
 
@@ -92,22 +100,9 @@ Library surface only: `project/mcp/`, `project/agents/specialists/`, `project/co
 
 ---
 
-### T4. Pre-loaded discovery vs deferred execution split
+### T4. ~~Pre-loaded discovery vs deferred execution split~~
 
-**Deliverable**: confirm or refine the discovery/execution split in `dynamic-mcp.json`. Each MCP server has 1-2 lightweight "discovery" tools pre-loaded; everything else is deferred.
-
-**Current split** (from `project/mcp/dynamic-mcp.json` audit):
-- context7: `resolve-library-id` pre-loaded; `get-library-docs` deferred.
-- firecrawl: `firecrawl_scrape`, `firecrawl_batch_scrape` pre-loaded; crawl/map deferred.
-- playwright: `browser_navigate` pre-loaded; the rest deferred.
-- supabase: `list-tables` pre-loaded; CRUD deferred.
-- github: `search_repositories` pre-loaded; everything else deferred.
-- railway: `list-projects` pre-loaded; deploy/logs/services deferred.
-- stripe: `search_customers` pre-loaded; create/list deferred.
-
-**Open question**: is the firecrawl pre-load (`scrape` + `batch_scrape`) too heavy? Each is several hundred tokens. Recommendation: keep both initially; revisit after T6 measurement if MCP cost is still high.
-
-**Acceptance**: Split documented in `field-manual/mcp-integration.md` (or replacement). Specialists know which tools they get for free vs need to load.
+**REMOVED** during recalibration (2026-04-26). Per T1 finding, Claude Code does not accept per-tool defer_loading config in `.mcp.json` — that's a Claude API feature. Tool deferring is auto-managed natively when `ENABLE_TOOL_SEARCH=auto` is set (T2). No per-tool split to configure.
 
 ---
 
@@ -167,13 +162,13 @@ The spec should cover:
 
 ## Definition of Done
 
-- [ ] T1: dynamic-mcp.json vs static .mcp.json delta documented; canonical file decided
-- [ ] T2: install.sh deploys dynamic-mcp.json as `.mcp.json`; smoke test confirms `defer_loading` shipped
+- [x] T1: Schema audit complete; finding documented (dynamic-mcp.json uses Claude API schema, not Claude Code)
+- [ ] T2: `ENABLE_TOOL_SEARCH=auto` shipped in `library/settings.json.template`; `dynamic-mcp.json` archived; install.sh updated
 - [ ] T3: All 7 MCP-using specialists have a Tool-Centric Workflow paragraph + search pattern
-- [ ] T4: Discovery/execution split confirmed; documented in field-manual
+- [ ] ~~T4~~: REMOVED — Claude Code auto-manages, no per-tool config exists in `.mcp.json`
 - [ ] T5: No `mcp-profile` residue in library; post-install README updated
-- [ ] T6: Lean library/CLAUDE.md MCP section reflects dynamic loading; <80 lines
-- [ ] T7: Harness subset re-run; milestone-4f.md committed; M2 drops ≥30K vs v5.2 baseline
+- [ ] T6: Lean library/CLAUDE.md MCP section reflects native auto-deferring; <80 lines
+- [ ] T7: Harness subset re-run; milestone-4f.md committed; M2 drops measurably
 - [ ] T8: Sprint 4g detailed spec written and approved
 
 ---
@@ -181,18 +176,17 @@ The spec should cover:
 ## Risks & Watch-Items
 
 - **Tool Search regex misses.** A specialist searches for `mcp__supabase` and Tool Search returns nothing because the regex pattern requires escaping. Mitigation: T3 includes specific working patterns in each specialist; T7 verifies they resolve on a fresh install.
-- **Pre-loaded discovery tools still expensive.** If the 7 pre-loaded tools collectively cost 5-8K tokens, that's still a meaningful chunk of session-start. Mitigation: T4 reviews the split; T7 measures actual cost; if too high, prune to 1 tool per server.
-- **User custom `.mcp.json` overwrite.** install.sh deploys dynamic-mcp.json as `.mcp.json` — if a user customised theirs, we shouldn't overwrite. Mitigation: T2 backs up before overwrite, prints a notice, leaves user files alone if they exist (same pattern as 4d settings.json).
-- **MCP server availability.** dynamic-mcp.json references 7 servers (context7, firecrawl, playwright, supabase, github, railway, stripe). Not every user has API keys for all. Mitigation: deferred loading means missing-key servers don't break — they just don't appear in Tool Search results.
+- **`ENABLE_TOOL_SEARCH=auto` threshold not aggressive enough.** Claude Code's auto-defer threshold may not kick in until users have many MCP servers configured. Mitigation: T7 measures actual M2 reduction; if insufficient, the next sprint can revisit (e.g., set explicit threshold env var if Claude Code supports one).
+- **MCP server availability.** Static `.mcp.json` references 7 servers (context7, firecrawl, playwright, supabase, github, railway, stripe). Not every user has API keys for all. Mitigation: missing-key servers fail gracefully at server start — they just don't appear in Tool Search results.
 - **Specialist prompt churn.** T3 touches all 7 MCP-using specialists. Risk of breaking subtle MCP-related instructions. Mitigation: targeted edits, not bulk replace; review each specialist diff individually.
 
 ---
 
-## Open Design Questions (to resolve in T1-T2)
+## Open Design Questions (resolved during review 2026-04-26)
 
-- **Replace or merge `.mcp.json`?** Recommendation: replace. dynamic-mcp.json becomes the single source of truth. Static `.mcp.json` is retired.
-- **Pre-loaded count per server?** Recommendation: 1 lightweight discovery tool per server is the floor; 2 max only if both serve distinct discovery needs (e.g., firecrawl scrape + batch_scrape).
-- **Where does the Tool Search regex pattern catalogue live?** Options: `field-manual/mcp-integration.md` (already exists, deployed in 4d), inside coordinator.md's DYNAMIC MCP TOOL DISCOVERY section, or both. Recommendation: field-manual is canonical; coordinator references it.
+- **Replace or merge `.mcp.json`?** Resolved (then mooted by T1 finding): originally chose side-by-side. Now: there's nothing to replace — the static `.mcp.json` is correct as-is. `dynamic-mcp.json` is archived.
+- **Pre-loaded count per server?** Resolved (then mooted by T1 finding): originally chose strict 1-per-server. Now: per-tool config is a Claude API feature, not Claude Code. Native auto-deferring handles this.
+- **Where does the Tool Search regex pattern catalogue live?** Resolved: coordinator.md's DYNAMIC MCP TOOL DISCOVERY section is canonical (already there); lean CLAUDE.md keeps the at-a-glance pattern table; `field-manual/mcp-integration.md` is the deeper reference.
 
 ---
 

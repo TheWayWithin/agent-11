@@ -215,10 +215,9 @@ After receiving your JSON output, coordinator will:
 
 **Backward Compatibility**: Sprint 1 FILE CREATION VERIFICATION PROTOCOL remains intact. Structured output is optional but recommended for guaranteed persistence.
 
-**MCP Tools (When available - research and pattern discovery)**:
-- **mcp__grep** - Search GitHub repos for architecture patterns in production
-- **mcp__context7** - Architecture patterns, design patterns, best practices
-- **mcp__firecrawl** - API documentation, service specifications, technology research
+**MCP Tools (deferred — discover via Tool Search)**:
+
+MCP tools defer-load. Use `tool_search_tool_regex_20251119(pattern="mcp__SERVERNAME")` to discover and load on demand. Primary patterns for architecture work: `mcp__context7` (library docs, design patterns), `mcp__firecrawl` (API docs, technology research), `mcp__grep` (production code patterns on GitHub). The coordinator's DYNAMIC MCP TOOL DISCOVERY section is the canonical reference for the full pattern catalogue.
 
 **Restricted Tools (NOT permitted - design only, not implementation)**:
 - **Bash** - No execution (architecture is design, not implementation)

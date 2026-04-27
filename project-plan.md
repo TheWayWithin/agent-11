@@ -79,8 +79,8 @@ The v6.0 evolution is delivered as **8 sub-sprints under the "Sprint 4" umbrella
 | **4c** | The Universal Router | Rewritten `/coord` with deterministic mission routing and dynamic context loading | ✅ T1-T6, T8 complete; T7 (harness) parked |
 | **4d** | Native Primitives + CLAUDE.md Shrink | `settings.json` hooks for quality; `.claude/CLAUDE.md` ≤80 lines; Meta-Dev Skill for agent-11 repo | ✅ T1-T6, T8 complete; T7 (harness) parked |
 | **4e** | Context Consolidation (5→3) | `handoff-notes.md` folded; `progress.md` write-only (rename of `agent-context.md` skipped) | ✅ T1, T3-T6, T8 complete; T7 (harness) parked |
-| **4f** | Dynamic MCP Tool Search | `dynamic-mcp.json` wired as canonical `.mcp.json`; Tool-Centric Workflow in specialists; ≥30K M2 reduction target | Detailed spec ready |
-| **4g** | Skills + Routines | SKILL.md open standard; 3 priority Routines (pr-review, nightly-qa, backlog-triage) | Outline only |
+| **4f** | Dynamic MCP Tool Search | `ENABLE_TOOL_SEARCH=auto` enables native deferring; Tool-Centric Workflow in 7 specialists; profile-switching residue retired (recalibrated mid-sprint after schema audit) | ✅ T1, T2, T3, T5, T6, T8 complete; T4 removed; T7 (harness) parked |
+| **4g** | Skills + Routines | 3-tier skills model formalised; 3 Routine config templates; `/coord` detects operational intent | Detailed spec ready |
 | **4h** | Validation + Migration | Harness on v6.0 vs baseline; v5.2→v6.0 migration script; private beta | Outline only |
 
 ---

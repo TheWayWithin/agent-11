@@ -764,7 +764,6 @@ install_mission_system() {
         "project/field-manual/architecture-sop.md"
         "project/field-manual/project-lifecycle-guide.md"
         "project/field-manual/model-selection-guide.md"
-        "project/field-manual/mcp-optimization-guide.md"
         "project/field-manual/mcp-integration.md"
         "project/field-manual/file-operation-quickref.md"
         # Sprint 9: Plan-Driven Development guides
@@ -1207,33 +1206,14 @@ install_mcp_system() {
     local execution_mode
     execution_mode=$(detect_execution_mode)
 
-    log "Installing MCP profile system..."
+    log "Installing MCP system..."
 
     local TARGET_DIR="$(pwd)"
 
-    # Copy MCP profile directory
-    if [[ "$execution_mode" == "local" ]]; then
-        if [[ -d "$PROJECT_ROOT/.mcp-profiles" ]]; then
-            log "Installing MCP profiles from local repository..."
-            cp -r "$PROJECT_ROOT/.mcp-profiles" "$TARGET_DIR/"
-            success "MCP profiles installed (7 profiles)"
-        else
-            warn "MCP profiles not found in local repository"
-        fi
-    else
-        # Remote installation - download profiles
-        log "Downloading MCP profiles from GitHub..."
-        mkdir -p "$TARGET_DIR/.mcp-profiles"
-
-        local profiles=("core" "testing" "database-staging" "database-production" "payments" "deployment" "fullstack" "minimal-core" "research-only" "frontend-deploy" "backend-deploy" "db-read" "db-write")
-        for profile in "${profiles[@]}"; do
-            if download_file_from_github ".mcp-profiles/${profile}.json" "$TARGET_DIR/.mcp-profiles/${profile}.json"; then
-                log "Downloaded profile: ${profile}.json"
-            else
-                warn "Failed to download profile: ${profile}.json"
-            fi
-        done
-    fi
+    # Sprint 4f: profile-based MCP loading (.mcp-profiles/) is RETIRED.
+    # Tools defer-load via ENABLE_TOOL_SEARCH=auto (deployed in
+    # install_settings_template) and are discovered at runtime via
+    # tool_search_tool_regex_20251119. No profile directory needed.
 
     # Copy MCP documentation
     if [[ "$execution_mode" == "local" ]]; then
@@ -1272,19 +1252,11 @@ install_mcp_system() {
         fi
     fi
 
-    # NEW: Install dynamic MCP configuration (Sprint 11)
-    log "Installing dynamic MCP configuration..."
-    mkdir -p "$TARGET_DIR/mcp"
-    if [[ "$execution_mode" == "local" ]]; then
-        if [[ -f "$PROJECT_ROOT/project/mcp/dynamic-mcp.json" ]]; then
-            cp "$PROJECT_ROOT/project/mcp/dynamic-mcp.json" "$TARGET_DIR/mcp/"
-            success "Dynamic MCP configuration installed (93% token reduction enabled)"
-        fi
-    else
-        if download_file_from_github "project/mcp/dynamic-mcp.json" "$TARGET_DIR/mcp/dynamic-mcp.json"; then
-            success "Dynamic MCP configuration downloaded"
-        fi
-    fi
+    # Sprint 4f: Tool deferring is enabled via ENABLE_TOOL_SEARCH=auto in
+    # .claude/settings.json (deployed by install_settings_template).
+    # The previous Sprint 11 dynamic-mcp.json was based on the Claude API schema,
+    # not Claude Code, and is no longer deployed. Archived to
+    # .archive/2026-04-26-pre-4f/.
 
     # Copy .env.mcp.template (NEVER copy .env.mcp to protect user's API keys)
     # SECURITY: We only deploy the template, never the actual .env.mcp file
@@ -1433,16 +1405,18 @@ show_post_install_instructions() {
     echo "  • Documentation: https://github.com/TheWayWithin/agent-11"
     echo
 
-    echo -e "${BLUE}🔧 MCP Profile System Installed!${NC}"
-    echo "  ✓ 13 specialized profiles in .mcp-profiles/"
+    echo -e "${BLUE}🔧 MCP Configured!${NC}"
+    echo "  ✓ Tool deferring enabled (ENABLE_TOOL_SEARCH=auto in .claude/settings.json)"
     echo "  ✓ MCP documentation in docs/"
     echo "  ✓ Environment template: .env.mcp.template"
     echo
-    echo "  📝 Setup MCPs in 3 steps:"
+    echo "  📝 Setup MCP servers in 2 steps:"
     echo "     1. cp .env.mcp.template .env.mcp"
     echo "     2. Edit .env.mcp with your API keys"
-    echo "     3. Choose profile: ln -sf .mcp-profiles/core.json .mcp.json"
-    echo "     4. Restart Claude Code"
+    echo "     3. Restart Claude Code"
+    echo
+    echo "  Tools defer-load by default. Specialists discover them at runtime"
+    echo "  via tool_search_tool_regex_20251119 — no profile switching."
     echo
     echo "  📖 Documentation: docs/MCP-GUIDE.md"
     echo

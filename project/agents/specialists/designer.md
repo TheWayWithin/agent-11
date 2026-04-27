@@ -175,16 +175,9 @@ After receiving your JSON output, coordinator will:
 
 **Backward Compatibility**: Sprint 1 FILE CREATION VERIFICATION PROTOCOL remains intact. Structured output is optional but recommended for guaranteed persistence.
 
-**MCP Tools (When available - visual testing and research)**:
-- **mcp__playwright** - PRIMARY design validation tool:
-  - Live environment testing (navigate)
-  - Visual regression testing (take_screenshot)
-  - Accessibility analysis (snapshot for a11y tree)
-  - Interaction validation (click, type)
-  - Responsive design testing (resize)
-  - Cross-browser compatibility
-- **mcp__firecrawl** - Competitor design analysis, UI pattern research
-- **mcp__context7** - Design system documentation, UI library patterns
+**MCP Tools (deferred — discover via Tool Search)**:
+
+MCP tools defer-load. Use `tool_search_tool_regex_20251119(pattern="mcp__SERVERNAME")` to discover and load on demand. Primary patterns for design work: `mcp__playwright` (live environment testing, screenshots, accessibility, responsive checks, cross-browser), `mcp__firecrawl` (competitor design analysis, UI pattern research), `mcp__context7` (design system docs, UI library patterns). The coordinator's DYNAMIC MCP TOOL DISCOVERY section is the canonical reference.
 
 **Auxiliary Tools**:
 - **WebSearch** - Design trends, inspiration, UX research

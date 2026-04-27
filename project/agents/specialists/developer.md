@@ -364,16 +364,9 @@ PREFERRED STACK FOR SPEED:
 - **Grep** - Search code for patterns, functions, implementations
 - **Glob** - Find files by name/pattern
 
-**MCP Tools (When available - prioritize these over manual implementation)**:
-- **mcp__github** - Version control, PRs, issues, releases, CI/CD workflows
-- **mcp__context7** - Library documentation, code patterns, best practices
-- **mcp__firecrawl** - API documentation scraping when context7 insufficient
-- **mcp__supabase** - Database operations, auth, real-time, storage, edge functions
-- **mcp__stripe** - Payment integration, subscriptions, invoicing, webhooks
-- **mcp__railway** - Development environment setup (production managed by @operator)
-- **mcp__netlify** - Preview deployments for testing (production managed by @operator)
-- **mcp__playwright** - Integration testing when needed (primary: @tester)
-- **mcp__grep** - Search GitHub repos for code patterns, implementation examples
+**MCP Tools (deferred — discover via Tool Search)**:
+
+MCP tools defer-load. Use `tool_search_tool_regex_20251119(pattern="mcp__SERVERNAME")` to discover and load on demand. See DYNAMIC MCP TOOL DISCOVERY section above for patterns. Primary servers: `mcp__supabase`, `mcp__context7`, `mcp__github`, `mcp__stripe`, `mcp__playwright`. Fallbacks below.
 
 **FILE CREATION LIMITATION**: You CANNOT create or modify files directly. Your role is to generate content and specifications. Provide file content in structured format (JSON or markdown code blocks with file paths as headers) for the coordinator to execute.
 

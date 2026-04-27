@@ -346,6 +346,85 @@ M2 (session-start tokens) dropped 2.4% across all three. Modest — the bigger M
 
 ---
 
+### [2026-04-26] — Sprint 4f (T1, T2, T3, T5, T6, T8) Complete — Recalibrated After Schema Audit ✅
+
+**Summary**: T1 audit revealed Sprint 4f's original premise was wrong — `project/mcp/dynamic-mcp.json` (Sprint 11) uses the **Claude API** schema for per-tool `defer_loading`, not the **Claude Code** `.mcp.json` schema (which only accepts `mcpServers` registry). Recalibrated the sprint mid-execution: per-tool config is replaced by Claude Code's native `ENABLE_TOOL_SEARCH=auto` setting; `dynamic-mcp.json` archived; profile-switching residue retired. Specialists updated with concise Tool Search guidance.
+
+**T1 Audit Finding** (the recalibration trigger):
+
+Sprint 4f originally planned to "wire dynamic-mcp.json as the canonical .mcp.json". Investigation showed this would deploy a file Claude Code can't parse:
+- `.mcp.json` (Claude Code): top-level `{"mcpServers": {"name": {"type": "stdio", "command": "...", "args": [...], "env": {...}}}}` — server registry only.
+- `dynamic-mcp.json` (Claude API): top-level `{"discovery_tools": [...], "toolsets": [{"type": "mcp_toolset", "default_config": {"defer_loading": true}, "tools": [...]}]}` — per-tool defer_loading config.
+
+The two systems are different. Per-tool defer_loading is a Claude API feature; Claude Code handles tool deferring **natively** when many tools are configured, controlled by `ENABLE_TOOL_SEARCH=auto`. Reference: https://code.claude.com/docs/en/mcp.
+
+This finding mooted the original T2 (wire dynamic-mcp.json) and T4 (per-server preload split). The recalibrated sprint is significantly smaller and structurally simpler.
+
+**Decisions made during recalibration (2026-04-26)**:
+
+1. **Pre-T1**: Side-by-side ship dynamic-mcp.json as `.mcp.json.dynamic`. **Mooted by T1**: dynamic-mcp.json is wrong schema; archived instead.
+2. **Pre-T1**: Strict 1-per-server preload. **Mooted by T1**: Claude Code auto-manages, no per-tool config.
+3. **Recalibrated T2**: enable `ENABLE_TOOL_SEARCH=auto` in `library/settings.json.template`. Archive `dynamic-mcp.json`. Remove its install.sh deployment.
+4. **T4 removed**: Claude Code handles per-tool deferring natively; nothing to configure.
+
+**Deliverables**:
+
+- `library/settings.json.template` — added `"env": {"ENABLE_TOOL_SEARCH": "auto"}`. This is the actual lever for threshold-based tool loading in Claude Code.
+- `.archive/2026-04-26-pre-4f/dynamic-mcp.json` — Sprint 11 obsolete config archived (was based on Claude API schema, never wired in usefully).
+- `.archive/2026-04-26-pre-4f/mcp-optimization-guide.md` — entirely about retired profile-switching, archived.
+- `.archive/2026-04-26-pre-4f/validate-mcp-profiles.sh` — validates retired profiles, archived.
+- `project/deployment/scripts/install.sh`:
+  - `setup_mcp_configuration()`: removed dynamic-mcp.json deployment (replaced with comment explaining native auto-deferring).
+  - `install_mcp_system()`: removed `.mcp-profiles/` install logic (replaced with comment).
+  - Post-install message updated: no more "13 specialized profiles in .mcp-profiles/" or "Choose profile: ln -sf ..."; new message describes native tool deferring.
+  - field-manual deployment list: removed `mcp-optimization-guide.md` (archived).
+  - SHA256 regenerated; CI guard verified passing.
+- All 7 MCP-using specialists (`developer`, `tester`, `operator`, `architect`, `analyst`, `marketer`, `designer`) updated:
+  - 3 already had a `## DYNAMIC MCP TOOL DISCOVERY` section (verified accurate).
+  - 4 needed the section's pattern table compressed and enriched with a Tool Search reference: architect, analyst, marketer, designer.
+  - All 7 now have a concise (3-5 line) MCP guidance paragraph in their TOOL PERMISSIONS section pointing at Tool Search; long static MCP tool listings removed.
+- 4 mission files (`mission-deploy.md`, `connect-mcp.md`, `library.md`, `dev-setup.md`) updated to remove `.mcp-profiles/` profile-switching references; replaced with Tool Search guidance or v6.0 retirement notes.
+- `library/CLAUDE.md` MCP section: now says "MCP tools defer-load via `ENABLE_TOOL_SEARCH=auto`" + retains the search-pattern table + adds a one-line v5.x retirement note. Still 78 lines (under 80).
+- `sprints/sprint-4f-dynamic-mcp-tool-search.md` — spec recalibrated to match what was actually built. T1 finding documented inline; T4 marked REMOVED with rationale; resolved Open Design Questions noted.
+- `sprints/sprint-4g-skills-and-routines.md` — outline replaced with detailed spec.
+  - 10 tasks: skills audit against open standard, 3-tier model documentation, skill remediation, 3 Routine config templates (pr-review, nightly-qa, backlog-triage), `/coord` operational-intent detection, lean CLAUDE.md update, harness, Sprint 4h spec.
+  - Routines confirmed as paste-from-docs (per blueprint) — `project/routines/` ships templates; user pastes into Claude Code web UI.
+  - Tier 3 (marketplace) skills positioned for *future* publishing — format-only intent in v6.0.
+
+**Tasks parked for Jamie's terminal session**:
+- **T7** (harness re-run for milestone-4f) — joins parked T7s for 4c, 4d, 4e. All four can run in one batch session against v5.2 baseline.
+
+**User-Facing Changes** (for Sprint 4h docs consolidation):
+- `.claude/settings.json` ships with `ENABLE_TOOL_SEARCH=auto` — Claude Code threshold-based tool deferring activated. Specialists discover MCP tools at runtime via `tool_search_tool_regex_20251119`.
+- `.mcp-profiles/` profile-switching system **retired in v6.0**. Users no longer `ln -sf .mcp-profiles/X.json .mcp.json` to switch contexts. Tools auto-load when needed.
+- `mcp-optimization-guide.md` removed from deployed `field-manual/` (it was about the retired profile-switching system). `mcp-integration.md` (deployed in 4d) is now the canonical MCP guide.
+- `validate-mcp-profiles.sh` removed (validated retired profiles).
+- Sprint 11's `mcp/dynamic-mcp.json` no longer ships — it was based on a misreading of Claude Code's schema and was never wired in.
+
+**Files touched**:
+- `library/settings.json.template` — added ENABLE_TOOL_SEARCH=auto env.
+- `library/CLAUDE.md` — MCP section updated.
+- All 7 MCP-using specialists (developer, tester, operator, architect, analyst, marketer, designer) — Tool-Centric Workflow guidance.
+- 4 mission files (mission-deploy, connect-mcp, library, dev-setup) — profile references retired.
+- `project/deployment/scripts/install.sh` — `install_mcp_system` and `setup_mcp_configuration` simplified; post-install message updated; field-manual list updated.
+- `project/deployment/scripts/install.sh.sha256` — regenerated.
+- `.archive/2026-04-26-pre-4f/` — `dynamic-mcp.json`, `mcp-optimization-guide.md`, `validate-mcp-profiles.sh` archived.
+- `sprints/sprint-4f-dynamic-mcp-tool-search.md` — spec recalibrated.
+- `sprints/sprint-4g-skills-and-routines.md` — detailed spec.
+- `progress.md`, `handoff-notes.md`, `project-plan.md` — close-out updates.
+
+**Sprint 4f status**: ✅ **Complete** for solo-executable scope (T1, T2, T3, T5, T6, T8). T4 removed during recalibration. T7 deferred. Recommend proceeding to Sprint 4g once Jamie has reviewed.
+
+**Lessons captured**:
+
+The Sprint 11 `dynamic-mcp.json` was a useful reminder that the Claude API's MCP schema and Claude Code's `.mcp.json` schema are different systems — easy to conflate when reading docs. T1 audit caught the mismatch before we shipped a file Claude Code couldn't parse. Adding "schema verification against canonical docs" to T1 audits going forward.
+
+**What's next**:
+- T7 batch (4c + 4d + 4e + 4f harness re-runs): schedule a terminal session; produce milestone files against v5.2 baseline.
+- Sprint 4g (Skills + Routines) — detailed spec ready.
+
+---
+
 ### [2026-04-19] — v6.0 Evolution Kickoff
 
 Continuing from the v6.0 planning session committed in `aa6ecdb`. Historic context (pre-v6 plan, Sprint 9/11 work) preserved in `.archive/2026-04-17-pre-v6/`.

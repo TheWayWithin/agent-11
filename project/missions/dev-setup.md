@@ -32,20 +32,14 @@ This mission establishes the foundation for a new greenfield project by:
 
 ## Execution Protocol
 
-### Phase 0: MCP Profile Setup (2 min)
+### Phase 0: MCP Setup (2 min)
 
-**Recommended**: Start with the `core` profile for lightweight development:
-```bash
-ln -sf .mcp-profiles/core.json .mcp.json
-# Restart Claude Code
-```
-
-Switch to specialized profiles as needed (testing, deployment, etc.). See [MCP Profile Guide](../../docs/MCP-GUIDE.md) for details.
+The user's `.mcp.json` lists configured MCP servers. Tools defer-load by default; specialists discover what they need at runtime via `tool_search_tool_regex_20251119`.
 
 **Agent Actions:**
-- @coordinator identifies which MCP profile matches project needs
-- Documents profile selection in project-plan.md
-- Notes when to switch profiles for specific tasks (testing, deployment)
+- @coordinator confirms which MCP servers the project will need
+- Documents required servers in project-plan.md (so user can add API keys to `.env.mcp`)
+- No profile switching required — tools auto-load on demand
 
 ### Phase 1: GitHub Setup (5 min)
 ```bash

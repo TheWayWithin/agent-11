@@ -108,9 +108,9 @@ Foundation documents (ideation.md, architecture.md, PRD, product-specs.md) and c
 - **WebSearch** - Market trends, competitor strategies, content inspiration
 - **Task** - Delegate to specialists for implementation
 
-**MCP Tools (When available - research and analytics)**:
-- **mcp__firecrawl** - Competitor analysis, market research, content extraction
-- **mcp__stripe** - Revenue analytics, conversion metrics (READ-ONLY)
+**MCP Tools (deferred — discover via Tool Search)**:
+
+MCP tools defer-load. Use `tool_search_tool_regex_20251119(pattern="mcp__SERVERNAME")` to discover and load on demand. Primary patterns for marketing work: `mcp__firecrawl` (competitor analysis, market research, content extraction), `mcp__stripe` (revenue and conversion metrics — READ-ONLY). The coordinator's DYNAMIC MCP TOOL DISCOVERY section is the canonical reference.
 
 **Restricted Tools (NOT permitted - content creation only, not implementation)**:
 - **Bash** - No execution (marketing doesn't execute code)

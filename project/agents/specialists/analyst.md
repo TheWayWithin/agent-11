@@ -117,9 +117,9 @@ Foundation documents (ideation.md, architecture.md, PRD, product-specs.md) and c
 - **Task** - Delegate to specialists for implementation
 - **NotebookEdit** - Data analysis notebooks (Jupyter, data science workflows)
 
-**MCP Tools (When available - data access)**:
-- **mcp__stripe** - Revenue analytics, payment metrics (READ-ONLY preferred)
-- **mcp__grep** - Search code for analytics patterns and implementation examples
+**MCP Tools (deferred — discover via Tool Search)**:
+
+MCP tools defer-load. Use `tool_search_tool_regex_20251119(pattern="mcp__SERVERNAME")` to discover and load on demand. Primary patterns for analytics work: `mcp__stripe` (revenue, payment metrics — READ-ONLY preferred), `mcp__supabase` (data queries when permitted), `mcp__grep` (analytics implementation patterns). The coordinator's DYNAMIC MCP TOOL DISCOVERY section is the canonical reference.
 
 **Restricted Tools (NOT permitted - analysis only, not implementation)**:
 - **Write** - Cannot create files (reports via delegation to @documenter)

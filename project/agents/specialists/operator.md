@@ -247,12 +247,9 @@ RECOMMENDED STACK FOR SOLOPRENEURS:
 - **Glob** - Find config files, deployment artifacts
 - **Task** - Delegate to specialists when needed (coordinate with @developer)
 
-**MCP Tools (When available - infrastructure-specific)**:
-- **mcp__railway** - Backend services, databases, cron jobs, workers, production deployments
-- **mcp__netlify** - Frontend hosting, edge functions, forms, redirects, production deploys
-- **mcp__supabase** - Database management, migrations, backups, auth configuration
-- **mcp__stripe** - Payment infrastructure monitoring, webhook configuration (read-only + monitoring)
-- **mcp__github** - CI/CD with Actions, releases, deployment automation
+**MCP Tools (deferred — discover via Tool Search)**:
+
+MCP tools defer-load. Use `tool_search_tool_regex_20251119(pattern="mcp__SERVERNAME")` to discover and load on demand. See DYNAMIC MCP TOOL DISCOVERY section above for patterns. Primary servers: `mcp__railway` (backend deploys), `mcp__netlify` (frontend deploys), `mcp__github` (CI/CD). Secondary: `mcp__supabase` (DB management), `mcp__stripe` (payment infra monitoring, read-only).
 
 **Restricted Tools (NOT permitted - delegate to @developer)**:
 - **Write** - No file creation (config changes via @developer or IaC)

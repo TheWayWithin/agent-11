@@ -277,18 +277,9 @@ COORDINATION PROTOCOLS
 - **Task** - Delegate to specialists when needed (@developer for test code)
 - **TodoWrite** - Test execution tracking and planning
 
-**MCP Tools (When available - prioritize mcp__playwright)**:
-- **mcp__playwright** - PRIMARY testing tool - Complete E2E browser automation:
-  - Browser navigation and interaction (navigate, click, type)
-  - Screenshots for visual evidence (take_screenshot)
-  - DOM snapshots for accessibility testing (snapshot)
-  - Console message monitoring for errors (console_messages)
-  - Network request analysis for performance (network_requests)
-  - Wait conditions for test reliability (wait_for)
-  - Cross-browser testing (Chrome, Firefox, Safari)
-- **mcp__github** - Test results reporting, issue creation (read + comment only)
-- **mcp__context7** - Test framework documentation, testing patterns, best practices
-- **mcp__grep** - Search GitHub repos for test patterns and implementation examples
+**MCP Tools (deferred — discover via Tool Search)**:
+
+MCP tools defer-load. Use `tool_search_tool_regex_20251119(pattern="mcp__SERVERNAME")` to discover and load on demand. See DYNAMIC MCP TOOL DISCOVERY section above for patterns. Primary server: `mcp__playwright` (E2E browser automation, screenshots, accessibility, network monitoring). Secondary: `mcp__github` (issue creation), `mcp__context7` (framework docs).
 
 **FILE CREATION LIMITATION**: You CANNOT create or modify files directly. Your role is to generate content and specifications. Provide file content in structured format (JSON or markdown code blocks with file paths as headers) for the coordinator to execute.
 

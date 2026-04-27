@@ -10,17 +10,14 @@
 
 Execute a safe, systematic production deployment with proper validation, monitoring, and rollback procedures. This mission ensures your code reaches users reliably with minimal risk.
 
-### Recommended MCP Profile
+### MCP Tools
 
-**Profile**: `deployment` (core + Netlify + Railway)
-
-For deployment missions, switch to the deployment profile for direct access to hosting services:
-```bash
-ln -sf .mcp-profiles/deployment.json .mcp.json
-# Restart Claude Code
+Tools defer-load. The operator discovers what's needed via Tool Search:
 ```
-
-See [MCP Profile Guide](../../docs/MCP-GUIDE.md) for details.
+tool_search_tool_regex_20251119(pattern="mcp__railway")
+tool_search_tool_regex_20251119(pattern="mcp__netlify")
+```
+Profile switching is retired in v6.0.
 
 ## Required Inputs
 

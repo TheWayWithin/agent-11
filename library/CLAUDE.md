@@ -50,7 +50,7 @@ Domain skills load on trigger keywords. Catalogue: `.claude/skills/*/SKILL.md`. 
 
 ## MCP tools
 
-Tools are deferred and discovered on demand via Tool Search. Common patterns:
+MCP tools defer-load via `ENABLE_TOOL_SEARCH=auto` (set in `.claude/settings.json`). Specialists discover what they need at runtime: `tool_search_tool_regex_20251119(pattern="mcp__SERVERNAME")`. Common patterns:
 
 | Domain | Search pattern |
 |--------|----------------|
@@ -61,7 +61,7 @@ Tools are deferred and discovered on demand via Tool Search. Common patterns:
 | Docs | `mcp__context7` |
 | Version control | `mcp__github` |
 
-Setup and full list: `field-manual/mcp-integration.md`.
+Setup and full list: `field-manual/mcp-integration.md`. The previous `.mcp-profiles/` system is retired in v6.0.
 
 ## Hooks
 
