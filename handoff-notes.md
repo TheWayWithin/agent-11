@@ -41,19 +41,25 @@ Full close-out in `progress.md` under `[2026-04-27] — Sprint 4g (T1-T8, T10) C
 
 ---
 
-## Next Actions
+## Next Actions (locked checklist for v6.0 close-out)
 
-1. **Review Sprint 4h detailed spec** at `sprints/sprint-4h-validation-and-migration.md`. 7 tasks; this is the close-out sprint — no new structural changes, everything is measurement + migration + docs + beta + retrospective.
-2. **Sprint 4h T1 (harness batch)**: gating task. Five milestone documents to produce (`milestone-4c.md` through `milestone-4g.md`) against the v5.2 baseline. This is where all four parked T7s + 4g's T9 collapse into one terminal session. Without this measurement we can't validate v6.0.
-3. **After T1**: T2 (cumulative metrics report) + T3 (migration script) + T4 (docs consolidation) can run partially in parallel. T5-T7 (beta + release readiness + retrospective) are sequential.
+Sprint 4h is now **6 tasks** (T5 beta cohort dropped on 2026-04-27 — wrong fit for solo OSS context; replaced with: ship publicly when T1-T4 done, respond to GitHub issues as they come up).
+
+1. **You** — run the harness batch (T1) in terminal against v5.2 baseline. Five milestones to produce: 4c (Tasks 3, 4, 5), 4d (Tasks 1, 2, 5), 4e (Tasks 1, 2, 3), 4f (Tasks 1, 2, 3), 4g (Tasks 4, 5). Splittable across multiple sessions; produce them in any order.
+2. **Me** — draft T2 (cumulative v6.0 metrics report) from your T1 results. Solo, fast.
+3. **Me** — ship T3 (migration script) and T4 (consolidated docs) after T2 lands. Solo, mostly mechanical.
+4. **You + me** — T5 (release-readiness checklist sync). One short pass before tagging v6.0.0.
+5. **Me** — T6 (v6.0 retrospective + post-v6 backlog). Solo close-out.
+
+**v6.0 ships when T6 commits.** No beta gate, no formal cohort recruitment.
 
 ---
 
 ## Open Items for Jamie
 
-1. **Approve Sprint 4h scope** before execution. The big design calls in 4h are the migration script's destructive-op safeguards (T3) and the beta cohort's feedback channel (T5 recommendation: GitHub Discussions).
-2. **Schedule the harness batch** — Sprint 4h T1 is genuinely terminal-required. The window for that batch determines when v6.0 can ship.
-3. **No new design questions surfaced** in 4g's recalibration. The skills hybrid format and the Routines paste pattern both follow verified canonical sources.
+1. **Schedule the harness batch (T1)**. Genuinely terminal-required and gating for everything downstream. The window for that batch determines when v6.0 can ship.
+2. **Migration script destructive-op safeguards (T3)**: spec defaults to backup-before-anything + refuse-on-unrecognised-state. If you want different paranoia level, flag before T3 starts.
+3. **No new design questions surfaced** in 4g's recalibration or 4h's T5 trim. Skills hybrid format and Routines paste pattern both follow verified canonical sources.
 
 ---
 
