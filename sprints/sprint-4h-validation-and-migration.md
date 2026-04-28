@@ -9,7 +9,7 @@
 
 ## Goal
 
-Prove v6.0 is materially better than the v5.2 baseline, ship it to a private beta cohort, and provide existing users a one-command migration path. This is the close-out sprint — every loose thread from 4a-4g either gets pulled or explicitly deferred.
+Prove v6.0 is materially better than the v5.2 baseline, ship it publicly, and provide existing users a one-command migration path. This is the close-out sprint — every loose thread from 4a-4g either gets pulled or explicitly deferred.
 
 ## Why This Sprint
 
@@ -123,33 +123,28 @@ Library surface: `library/CLAUDE.md`, `project/deployment/scripts/`, public-faci
 
 ---
 
-### T5. Private beta cohort recruitment + onboarding
+### T5. ~~Private beta cohort~~
 
-**Deliverable**: 5-10 solo founders who've previously used AGENT-11 invited to try v6.0 before public release.
+**REMOVED** during review (2026-04-27). Beta-cohort framing was lifted from a SaaS release playbook that doesn't fit AGENT-11's reality:
 
-**Approach**:
-1. **Identify cohort**: Jamie's contacts list of prior AGENT-11 users (LLMTxtMastery, AImpactScanner, AImpactMonitor, AISearchArena audiences if relevant; X/Twitter/LinkedIn AGENT-11 mentions; GitHub repo stars who've engaged).
-2. **Outreach template**: short, direct email/DM. "v6.0 is materially leaner. Would you try it on a fresh project for 2-4 weeks and report back?" Link to README.
-3. **Feedback channel**: a single GitHub Discussions thread in TheWayWithin/agent-11. Beta participants post observations there. Avoid private channels for v6.0 — public feedback loops are healthier.
-4. **Onboarding kit**: README + migration script + a 1-page "what's new" doc + a feedback prompt list (5 questions: install experience, first mission run, MCP discovery, Routine setup, anything surprising).
+- Users on `main` already get v6.0 when they reinstall — there's no "release gate" they cross.
+- Public-facing API is largely backwards-compatible (`/coord build` still works); v6.0's wins are mostly invisible structural improvements.
+- The migration script (T3) does the upgrade automatically — if it works on Jamie's projects, it'll work on others'.
+- The harness measurement (T1) is the empirical validation. Beta would mostly catch ergonomics, which surfaces in normal usage post-launch.
+- Solo-founder bandwidth: formal beta = recruiting + supporting + triaging — overhead that doesn't fit IPP-90-days reality.
 
-**Acceptance**:
-- Cohort identified and contacted.
-- ≥5 beta installs confirmed via GitHub Discussions or direct response.
-- Feedback collection running for ≥2 weeks before considering public release.
+**What replaces it**: ship v6.0 publicly when T1-T4 are done. Respond to GitHub issues as they come up. Existing channels (X/Twitter, LinkedIn, blog) handle awareness without explicit recruitment.
 
 ---
 
-### T6. Public release readiness
+### T5. Public release readiness (was T6)
 
 **Deliverable**: a release readiness checklist that gates public v6.0 announcement.
 
 **Checklist**:
 - [ ] All 5 milestone harness docs committed and metrics meet v6.0 targets (per project-plan.md success criteria)
-- [ ] Migration script tested on ≥3 distinct v5.x projects without data loss
-- [ ] Documentation pass complete; no v5.x stale docs remain
-- [ ] Private beta running ≥2 weeks
-- [ ] Beta feedback triaged: zero P0 issues unresolved
+- [ ] Migration script tested on ≥3 distinct v5.x scenarios without data loss
+- [ ] Documentation pass complete; no v5.x stale docs remain as "current best practice"
 - [ ] CHANGELOG.md v6.0 entry finalised
 - [ ] Release tag drafted (v6.0.0)
 - [ ] Public announcement drafted (X/Twitter, LinkedIn, blog post per Jamie's voice — handled separately, not in this sprint)
@@ -158,7 +153,7 @@ Library surface: `library/CLAUDE.md`, `project/deployment/scripts/`, public-faci
 
 ---
 
-### T7. v6.0 retrospective + post-v6 backlog
+### T6. v6.0 retrospective + post-v6 backlog (was T7)
 
 **Deliverable**: `.archive/2026-XX-XX-v6-retro/v6-retrospective.md` — a short retrospective on the full 8-sprint evolution.
 
@@ -178,9 +173,9 @@ Library surface: `library/CLAUDE.md`, `project/deployment/scripts/`, public-faci
 - [ ] T2: v6.0-summary.md committed; readable in <5 minutes
 - [ ] T3: migrate-v5-to-v6.sh works on test scenarios; no data loss
 - [ ] T4: README, CHANGELOG, MCP-GUIDE, RELEASE-HISTORY updated for v6.0
-- [ ] T5: ≥5 beta users onboarded via GitHub Discussions
-- [ ] T6: release-readiness.md committed; checklist either complete or items deferred with rationale
-- [ ] T7: v6-retrospective.md committed; post-v6 backlog logged
+- [ ] ~~T5~~: REMOVED — beta cohort was the wrong fit for solo OSS context
+- [ ] T5: release-readiness.md committed; checklist either complete or items deferred with rationale
+- [ ] T6: v6-retrospective.md committed; post-v6 backlog logged
 
 ---
 
@@ -194,18 +189,17 @@ Library surface: `library/CLAUDE.md`, `project/deployment/scripts/`, public-faci
 
 ---
 
-## Open Design Questions (resolve in T1-T2)
+## Open Design Questions (resolved during review 2026-04-27)
 
-- **What if metrics don't hit v6.0 targets?** Recommendation: ship anyway if regressions are within 10% and structural improvements are clear; document the misses in v6.0-summary.md and address in a post-v6 sprint.
-- **Beta feedback channel: GitHub Discussions, private Slack, or direct email?** Recommendation: GitHub Discussions (public, archivable, low maintenance). Direct email as backup for users who don't want public visibility.
-- **Rollback plan if a beta user hits a blocker?** Recommendation: backups created by `migrate-v5-to-v6.sh` are the rollback. Document the rollback steps in CHANGELOG and migration-script output.
+- **What if metrics don't hit v6.0 targets?** Resolved: ship anyway if regressions are within 10% and structural improvements are clear; document the misses in v6.0-summary.md and address in a post-v6 sprint.
+- **Beta cohort feedback channel?** Resolved: T5 removed entirely. Beta-cohort framing was the wrong fit for a solo OSS project. Existing channels (GitHub issues, X/Twitter, LinkedIn, blog) handle post-launch feedback without explicit recruitment.
+- **Rollback plan if a user hits a blocker after migration?** Resolved: backups created by `migrate-v5-to-v6.sh` are the rollback. Document the rollback steps in CHANGELOG and migration-script output.
 
 ---
 
 ## Notes for Execution
 
 - T1 is gating. Without metrics, T2's summary is fiction.
-- T3 (migration script) and T4 (docs) can run in parallel.
-- T5 (beta) starts as soon as T4 is committed — recruitment doesn't block on T6's checklist.
-- T7 (retrospective) is the literal last task of the v6.0 evolution. Don't skip — the captured lessons feed every future sprint.
-- After T7, the v6.0 evolution is **complete**. Hand off to ongoing maintenance and any post-v6 backlog work as separate (non-Sprint-4) initiatives.
+- T3 (migration script) and T4 (docs) can run in parallel after T2.
+- T6 (retrospective) is the literal last task of the v6.0 evolution. Don't skip — the captured lessons feed every future sprint.
+- After T6, the v6.0 evolution is **complete**. Hand off to ongoing maintenance and any post-v6 backlog work as separate (non-Sprint-4) initiatives.
