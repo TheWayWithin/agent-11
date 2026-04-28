@@ -1,5 +1,6 @@
 ---
 name: saas-multitenancy
+description: Implement multi-tenancy in SaaS applications — organisation/workspace isolation, row-level security (RLS), tenant routing, role-based access control, and tenant lifecycle management. Use when building tenant, organisation, workspace, RLS, or multi-tenant data-isolation features.
 version: 1.0.0
 category: database
 triggers:

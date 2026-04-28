@@ -1,5 +1,6 @@
 ---
 name: saas-onboarding
+description: Build SaaS user onboarding flows — multi-step wizards, progress tracking, activation milestones, product tours, empty-state guidance, and time-to-value optimisation. Use when building onboarding, wizard, activation, product tour, or first-run experience features.
 version: 1.0.0
 category: infrastructure
 triggers:

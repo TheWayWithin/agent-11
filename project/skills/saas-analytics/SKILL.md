@@ -1,5 +1,6 @@
 ---
 name: saas-analytics
+description: Implement product analytics for SaaS applications using PostHog or similar — event tracking, funnels, retention cohorts, feature adoption metrics, and dashboard wiring. Use when building analytics, event tracking, metrics, conversion, retention, or PostHog integration features.
 version: 1.0.0
 category: analytics
 triggers:

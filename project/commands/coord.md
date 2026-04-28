@@ -51,11 +51,54 @@ Valid prefixes: `mode:greenfield` (A), `mode:surgical` (B1), `mode:maintenance` 
 
 ## Dispatch Behaviour
 
-1. Parse first argument. If it starts with `mode:`, consume it; the next arg is the mission name.
-2. Validate mission name against the routing table or control-command list.
-3. If unknown, print the unknown-mission error (below) and stop. No NLP inference.
-4. Load mission file if applicable: `project/missions/mission-[name].md` (or `[name].md` for `dev-setup`/`dev-alignment`).
-5. Hand off to THE COORDINATOR with mission name, mode, and input paths. The coordinator's DYNAMIC CONTEXT LOADING protocol applies the per-mode rules.
+1. **Routine detection** (run first). If the arguments contain cadence keywords (see below), do NOT delegate — print the Routine pointer (below) and stop.
+2. Parse first argument. If it starts with `mode:`, consume it; the next arg is the mission name.
+3. Validate mission name against the routing table or control-command list.
+4. If unknown, print the unknown-mission error (below) and stop. No NLP inference.
+5. Load mission file if applicable: `project/missions/mission-[name].md` (or `[name].md` for `dev-setup`/`dev-alignment`).
+6. Hand off to THE COORDINATOR with mission name, mode, and input paths. The coordinator's DYNAMIC CONTEXT LOADING protocol applies the per-mode rules.
+
+## Routine Detection (Mode C — operational work)
+
+Recurring or scheduled work belongs in Claude Code Routines, not `/coord`. Routines run on Anthropic-managed cloud, no local session needed.
+
+**Cadence keywords that trigger Routine detection** (case-insensitive, requires explicit cadence):
+- Time keywords: `daily`, `weekly`, `monthly`, `hourly`, `nightly`
+- Day-of-week patterns: `every Monday`, `every Tuesday`, …, `every weekend`, `every weekday`
+- Frequency patterns: `every N hours`, `every N days`, `every N minutes`
+- Setup keywords paired with cadence: `schedule`, `set up automatic`, `set up recurring`, `recurring`
+
+**Specific operational phrases** (also trigger):
+- `pr review`, `code review on every PR`, `review PRs automatically`
+- `nightly QA`, `nightly tests`, `daily smoke test`
+- `weekly triage`, `backlog triage`, `triage on Monday`
+- `daily report`, `weekly report` (when paired with cadence intent)
+
+**When detected, print this pointer** (don't execute, don't delegate):
+
+```
+This looks like recurring/operational work. Claude Code Routines handle this
+natively (Anthropic-managed cloud, scheduled, no local session needed).
+
+Closest matching template: project/routines/[NAME].md
+  - pr-review.md       → PR-triggered code review
+  - nightly-qa.md      → scheduled QA sweep
+  - backlog-triage.md  → scheduled backlog review
+
+To set up:
+  1. Open claude.ai/code/routines and click "New routine".
+  2. Paste the prompt block from project/routines/[NAME].md into the prompt field.
+  3. Configure repos, trigger, connectors per the template's setup notes.
+
+To run once now (no schedule), invoke /coord with the appropriate mission and
+no cadence keywords. Examples:
+  /coord document       (one-time doc pass)
+  /coord refactor       (one-time refactor)
+```
+
+If no template clearly matches, point to `project/routines/README.md` instead and let the user pick.
+
+**Do NOT** trigger Routine detection for plain mission names without cadence words. `/coord deploy` executes; `/coord set up daily deploys` outputs the Routine pointer.
 
 ## Unknown Mission Behaviour
 

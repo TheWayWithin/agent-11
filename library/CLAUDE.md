@@ -32,21 +32,21 @@ Control: `/coord continue`, `/coord complete phase N`, `/coord vision-check`.
 
 Coordinator owns these. Full protocols in `.claude/agents/coordinator.md`.
 
-**Active** (read per mode at start): `project-plan.md`, `agent-context.md` (accumulated findings + Phase Handoff blocks).
-**On-demand**: `evidence-repository.md` (loaded only when an artefact is needed).
-**Write-only**: `progress.md` (changelog — appended when issues/fixes/deliverables occur; read only on staleness checks or post-`/clear` reconstruction).
+**Active** (read per mode at start): `project-plan.md`, `agent-context.md` (findings + Phase Handoff blocks). **On-demand**: `evidence-repository.md`. **Write-only**: `progress.md` (changelog — appended on issues/fixes/deliverables; read only on staleness checks or post-`/clear` reconstruction).
 
 **v5.x → v6.0 migration** (one-time): `cat handoff-notes.md >> agent-context.md && rm handoff-notes.md`. Phase Handoff discipline now lives as structured blocks inside agent-context.md.
 
 ## Foundation files
 
-`ideation.md`, `architecture.md`, `PRD.md`, `product-specs.md` are the source of truth. They live in repo root or `/docs/`. Specialists must verify against these before deciding.
-
-For BOS-AI structured ingestion, see `.claude/commands/foundations.md`.
+`ideation.md`, `architecture.md`, `PRD.md`, `product-specs.md` are the source of truth (in repo root or `/docs/`). Verify against these before deciding. For BOS-AI ingestion, see `.claude/commands/foundations.md`.
 
 ## Skills
 
-Domain skills load on trigger keywords. Catalogue: `.claude/skills/*/SKILL.md`. SaaS skills available: auth, payments, multitenancy, billing, email, onboarding, analytics. See `field-manual/skills-guide.md`.
+3 tiers: behavioural (Karpathy in this file), project-domain (user `skills/`), marketplace (`.claude/skills/*/SKILL.md` — 7 SaaS skills: auth, payments, multitenancy, billing, email, onboarding, analytics). Aligned with [Anthropic's open standard](https://agentskills.io/specification). See `field-manual/skills-guide.md`.
+
+## Routines (Mode C — operational)
+
+Recurring/scheduled work runs as Claude Code Routines on Anthropic-managed cloud. Templates in `routines/`: `pr-review.md`, `nightly-qa.md`, `backlog-triage.md`. `/coord` detects cadence keywords ("daily", "every Monday", etc.) and points to the matching template. Set up at `claude.ai/code/routines`.
 
 ## MCP tools
 
@@ -65,7 +65,7 @@ Setup and full list: `field-manual/mcp-integration.md`. The previous `.mcp-profi
 
 ## Hooks
 
-`.claude/settings.json` runs `tsc`/`ruff`/`rubocop` on Edit/Write and prompts on destructive Bash. Advisory by default (`|| true`); promote to blocking with `|| exit 2`, or remove the entry to disable.
+`.claude/settings.json` runs `tsc`/`ruff`/`rubocop` on Edit/Write; prompts on destructive Bash. Advisory by default (`|| true`); promote to blocking with `|| exit 2`.
 
 ## Security
 
@@ -75,4 +75,4 @@ Setup and full list: `field-manual/mcp-integration.md`. The previous `.mcp-profi
 
 ## Plan-driven workflow
 
-`/coord continue` runs autonomously from `project-plan.md` until blocked; quality gates enforce at phase transitions. Guide: `field-manual/plan-driven-development.md`.
+`/coord continue` runs from `project-plan.md` until blocked. Guide: `field-manual/plan-driven-development.md`.

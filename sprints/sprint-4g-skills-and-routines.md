@@ -3,7 +3,7 @@
 **Part of**: Agent-11 v6.0 Evolution (Sprint 4 umbrella)
 **Predecessor**: Sprint 4f — Dynamic MCP Tool Search ✅ (T1, T2, T3, T5, T6, T8 shipped; T7 deferred)
 **Successor**: Sprint 4h — Validation + Migration
-**Status**: Detailed spec ready for Jamie's review; execution can start once Sprint 4f is committed
+**Status**: Spec recalibrated 2026-04-27 after pre-execution platform check; execution in progress
 
 ---
 
@@ -12,15 +12,26 @@
 Two parallel structural moves:
 
 1. **Adopt the 3-tier skills architecture** with Anthropic's Agent Skills open standard (`SKILL.md`). Existing AGENT-11 skills already use a SKILL.md-shaped frontmatter — verify alignment with the open standard, document the tier model, position Tier 3 (marketplace) skills for future publishing.
-2. **Integrate Claude Code Routines for Mode C** (operational) work. Daily reports, blog posts, PR reviews, nightly QA — these don't need a human-driven session. Produce Routine configs the user pastes into the web UI. `/coord` detects operational intent and outputs the Routine config instead of executing the work itself.
+2. **Integrate Claude Code Routines for Mode C** (operational) work. Daily reports, PR reviews, nightly QA — these don't need a human-driven session. Produce **prompt templates** users paste into `claude.ai/code/routines` to set up scheduled cloud-hosted agents. `/coord` detects operational intent and outputs the prompt template instead of executing the work itself.
+
+## Pre-Execution Platform Check (2026-04-27)
+
+Before designing T4-T7, verified Claude Code Routines' actual mechanism (per [docs](https://code.claude.com/docs/en/routines)):
+
+- **Routines are live and stable** (research preview phase, production-ready for Pro/Max/Team/Enterprise).
+- **Run on Anthropic-managed cloud**, not locally.
+- **Created via three paths to the same cloud account**: web UI at `claude.ai/code/routines`, `/schedule` slash command, or desktop app.
+- **No JSON/YAML config files**. Web form collects: prompt (natural language), repos, environment (network/env vars/setup script), triggers (schedule/API/GitHub webhooks), connectors (MCP), permissions.
+
+This corrected the original "paste JSON config" framing. Templates are now **prompt text** plus setup notes for the UI fields users will fill in.
 
 ## Why This Sprint
 
 Three observations:
 
 1. **Skills already exist but aren't formalised.** AGENT-11 ships 7 SaaS skills (auth, payments, multitenancy, billing, email, onboarding, analytics). They use SKILL.md frontmatter and load on trigger keywords (Sprint 4d/4e left this in place). What's missing: explicit tier classification, alignment with Anthropic's published spec, and a clean migration path if/when AGENT-11 publishes Tier 3 skills to a marketplace.
-2. **Mode C work is consuming session-cost it shouldn't.** Daily reports, blog generation, scheduled triage — these are operational workflows that fire on a clock or a webhook, not on user prompts. Running them as `/coord` invocations costs context and human attention that Routines would handle natively.
-3. **The blueprint says paste, not commit.** Routines run from configs the user pastes into the Claude Code web UI. We don't ship them in-repo as the canonical artefact; we ship the *snippet* and the user pastes. This matches the v6.0 "platform-native primitives over custom frameworks" direction.
+2. **Mode C work is consuming session-cost it shouldn't.** Daily reports, scheduled triage, PR review — these are operational workflows that fire on a clock or a webhook, not on user prompts. Running them as `/coord` invocations costs context and human attention that Routines would handle natively.
+3. **The blueprint says paste, not commit.** Confirmed by the platform check: Routines accept a prompt typed into a web form. We don't ship in-repo configs that get loaded by the runtime; we ship prompt templates as documentation that users copy-paste.
 
 ## Scope Reminder
 
@@ -79,77 +90,88 @@ Library surface only: `project/skills/`, `project/routines/` (new), `library/CLA
 
 ---
 
-### T4. Routine config templates — pr-review
+### T4. Routine prompt template — pr-review
 
-**Deliverable**: `project/routines/pr-review.md` — a paste-ready Routine config for GitHub-PR-triggered code review.
+**Deliverable**: `project/routines/pr-review.md` — a markdown file containing a paste-ready prompt for the user to drop into `claude.ai/code/routines`, plus setup notes for the UI fields.
 
-**Content**:
-- Trigger: GitHub webhook on PR open or PR push.
-- Specialists invoked: developer (code review), tester (test coverage), designer (visual changes if frontend touched).
-- Output format: GitHub PR review comment with structured findings.
-- Stop conditions: review complete, or 3+ specialists provided no actionable feedback.
+**Content** (the file users read; the prompt block is what they paste):
+- **Prompt** (natural language, self-contained — copy this into the web UI form): how to review the PR, what specialists' lenses to apply (code, test coverage, design impact), the structure of the GitHub PR review comment to post.
+- **Setup notes** for the form's other fields:
+  - Repos: which repos the routine should watch.
+  - Trigger: GitHub webhook on PR open or PR push.
+  - Connectors: GitHub MCP required.
+  - Permissions: comment-only on PRs, no merges or branch pushes.
+  - Environment: standard.
 
-**Format**: a markdown file containing the JSON config + a prose explanation. User copies the JSON, pastes into Claude Code web UI's Routines panel, fills in API keys.
+**Format**: prose explanation followed by a fenced code block containing only the prompt. User copies the prompt block; the rest is documentation.
 
-**Acceptance**: `pr-review.md` is paste-ready. Jamie can copy it into the web UI without manual transformation.
-
----
-
-### T5. Routine config templates — nightly-qa
-
-**Deliverable**: `project/routines/nightly-qa.md` — paste-ready Routine for scheduled QA sweep.
-
-**Content**:
-- Trigger: cron, e.g., 02:00 daily.
-- Specialists: tester (smoke test all critical paths), designer (visual regression spot-check), operator (deployment health check).
-- Output: post to a configured Slack channel or write to `qa-reports/YYYY-MM-DD.md`.
-- Stop conditions: all checks complete, or critical regression found (escalate).
-
-**Acceptance**: `nightly-qa.md` paste-ready; specifies cron syntax expected by Claude Code Routines; identifies any prerequisites (Slack webhook URL, target environment).
+**Acceptance**: `pr-review.md` ships a working prompt that produces a useful PR review when pasted into a routine. Setup notes cover all UI fields.
 
 ---
 
-### T6. Routine config templates — backlog-triage
+### T5. Routine prompt template — nightly-qa
 
-**Deliverable**: `project/routines/backlog-triage.md` — paste-ready Routine for scheduled backlog sweep.
+**Deliverable**: `project/routines/nightly-qa.md` — paste-ready prompt + setup notes for a scheduled QA sweep.
 
 **Content**:
-- Trigger: cron, e.g., Monday 09:00 weekly.
-- Specialists: strategist (priority review), analyst (data on what's been used recently), support (recent issues).
-- Output: prioritised triage list posted to a designated location (Slack thread, GitHub Project board, or `triage/YYYY-MM-DD.md`).
-- Stop conditions: triage complete; if zero new issues, exit silently.
+- **Prompt**: instructs the routine to run smoke tests on critical paths (tester lens), do a visual regression spot-check (designer lens), check deployment health (operator lens), and post findings to a designated location.
+- **Setup notes**:
+  - Trigger: schedule, default cron 02:00 daily.
+  - Connectors: Playwright MCP (testing), Railway/Netlify MCP (deployment), optionally Slack (output).
+  - Permissions: read-only (no PRs created).
+  - Environment: setup script installs Playwright dependencies if needed.
+  - Output destination: `qa-reports/YYYY-MM-DD.md` in the configured repo, or post to a Slack channel.
 
-**Acceptance**: `backlog-triage.md` paste-ready; cron + outputs documented.
+**Acceptance**: `nightly-qa.md` ships a working prompt + setup notes. Cron syntax matches Claude Code Routines' scheduling format (per docs).
+
+---
+
+### T6. Routine prompt template — backlog-triage
+
+**Deliverable**: `project/routines/backlog-triage.md` — paste-ready prompt + setup notes for a scheduled backlog sweep.
+
+**Content**:
+- **Prompt**: instructs the routine to review open issues and recent feedback (strategist lens for priority, analyst lens for usage data, support lens for recurring complaints) and produce a prioritised triage list.
+- **Setup notes**:
+  - Trigger: schedule, default cron Monday 09:00 weekly.
+  - Connectors: GitHub MCP (issues), optionally Linear/Notion MCP if user has them, optionally Slack (output).
+  - Permissions: comment-only on issues, no closures.
+  - Output destination: GitHub Project board, Slack thread, or `triage/YYYY-MM-DD.md` in the configured repo.
+
+**Acceptance**: `backlog-triage.md` ships a working prompt + setup notes.
 
 ---
 
 ### T7. `/coord` operational-intent detection
 
-**Deliverable**: `/coord` recognises operational-intent prompts and outputs a Routine config snippet instead of executing the workflow.
+**Deliverable**: `/coord` recognises operational-intent prompts and points the user to Routines instead of executing once.
 
 **Trigger phrases** (initial set — refine during execution):
-- "run daily report" / "run a daily report"
-- "schedule a weekly triage"
-- "set up automatic PR review"
-- "every Monday do X"
-- Any prompt mentioning a cadence (daily, weekly, hourly, every N hours).
+- Cadence keywords: "daily", "weekly", "monthly", "hourly", "every Monday/Tuesday/...", "every N hours/days"
+- Set-up keywords paired with cadence: "schedule", "set up", "automatic", "recurring"
+- Common operational phrases: "run a daily report", "weekly triage", "nightly QA", "PR review"
 
 **Behaviour**: when a trigger phrase is detected, `/coord` does NOT delegate. Instead it prints:
 
 ```
-This looks like recurring/operational work. Routines handle this natively.
+This looks like recurring/operational work. Claude Code Routines handle this
+natively (cloud-hosted, scheduled, no local session needed).
 
-Suggested Routine config (paste into Claude Code web UI):
+Closest matching template: project/routines/[NAME].md
 
-[CONFIG SNIPPET — based on closest matching template from project/routines/]
+To set up:
+1. Open claude.ai/code/routines and click "New routine".
+2. Paste the prompt block from project/routines/[NAME].md into the prompt field.
+3. Configure repos, trigger (schedule/webhook), connectors per the setup notes.
 
-Or run once now: /coord [mission] (without the cadence).
+Or run once now (no schedule): /coord [mission] (without cadence keywords).
 ```
 
 **Coordinator changes**:
-- Add a "ROUTINE DETECTION" section to `coordinator.md` (or the `/coord` command) describing the trigger phrases and the response template.
+- Add a "ROUTINE DETECTION" section to `project/commands/coord.md` describing the trigger phrases and the response template.
+- The coordinator specialist itself does not need to know about Routines — the dispatch happens in the `/coord` command, before the coordinator is invoked.
 
-**Acceptance**: `/coord set up nightly QA` outputs the nightly-qa Routine config. `/coord every Monday triage backlog` outputs backlog-triage. `/coord build feature` (no cadence) executes normally.
+**Acceptance**: `/coord set up nightly QA` outputs the pointer to `project/routines/nightly-qa.md`. `/coord every Monday triage backlog` points to `backlog-triage.md`. `/coord build feature` (no cadence) executes normally.
 
 ---
 

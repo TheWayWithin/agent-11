@@ -1,5 +1,6 @@
 ---
 name: saas-email
+description: Implement transactional email for SaaS applications using Resend or Postmark — welcome emails, password resets, email verification, notifications, and plain-text/HTML templates. Use when building email, transactional email, email-sending, notification, or messaging features.
 version: 1.0.0
 category: communication
 triggers:

@@ -425,6 +425,73 @@ The Sprint 11 `dynamic-mcp.json` was a useful reminder that the Claude API's MCP
 
 ---
 
+### [2026-04-27] — Sprint 4g (T1-T8, T10) Complete — Recalibrated After Pre-Execution Platform Check ✅
+
+**Summary**: Skills audited against Anthropic's Agent Skills open standard ([agentskills.io/specification](https://agentskills.io/specification)) — required `description` field added to all 7 SaaS skills. 3-tier model documented in `field-manual/skills-guide.md`. Three Routine prompt templates shipped in `project/routines/` (pr-review, nightly-qa, backlog-triage). `/coord` now detects cadence keywords and points to the matching template instead of executing. Sprint 4h detailed spec authored.
+
+**Pre-execution platform check (2026-04-27)**:
+
+Before designing T4-T7, verified Claude Code Routines' actual mechanism (per [routines docs](https://code.claude.com/docs/en/routines)):
+- Routines run on **Anthropic-managed cloud**, not locally. Live and stable (research preview phase).
+- Created via three paths to the same cloud account: web UI at `claude.ai/code/routines`, `/schedule` slash command, or desktop app.
+- **No JSON/YAML config files**. The web form collects: prompt (natural language), repos, environment (network/env vars/setup script), triggers (schedule/API/GitHub webhooks), connectors (MCP integrations), permissions.
+
+This corrected the original "paste JSON config" framing in the spec. Templates are now **prompt text** + setup notes for the UI fields users will fill in. Same lesson as Sprint 4f's T1: verify platform mechanics against canonical docs before designing.
+
+**Skills audit findings (T1)**:
+
+Per the open standard:
+- **Required frontmatter**: `name` (lowercase, hyphens, matches dir) + `description` (1-1024 chars, what + when, embeds trigger keywords for progressive-disclosure loading).
+- **Optional frontmatter**: `license`, `compatibility`, `metadata`, `allowed-tools`.
+- **Custom fields** (`triggers`, `specialist`, `complexity`, etc.) are NOT in the spec.
+
+AGENT-11's existing 7 SaaS skills had `name` ✓ but were missing `description`. Custom fields are needed for AGENT-11's coordinator-driven trigger matching. **Hybrid approach**: add `description` to frontmatter (open-standard compliance + forward compatibility for marketplace publishing); keep custom fields for backward-compat with existing skill-loading.
+
+**Deliverables**:
+
+- `project/skills/saas-{auth,payments,multitenancy,billing,email,onboarding,analytics}/SKILL.md` — `description` field added to all 7 skills. Each description 1-1024 chars, includes trigger keywords, describes what + when. Verified all 7 have descriptions (script confirmed).
+- `project/field-manual/skills-guide.md` — 3-tier model documented (Tier 1 behavioural / Tier 2 project-domain / Tier 3 marketplace), open-standard alignment explained, hybrid frontmatter format documented. v6.0 publishes for the standard but does NOT publish to a public marketplace (per project-plan.md's "format-only intent").
+- `project/routines/pr-review.md` — paste-ready prompt template + setup notes for GitHub-PR-triggered code review. Multi-disciplinary (developer/tester/designer lenses).
+- `project/routines/nightly-qa.md` — scheduled QA sweep prompt: smoke tests on critical paths (Playwright), visual regression spot-check, deployment health (Railway/Netlify connector). Cron `0 2 * * *` default.
+- `project/routines/backlog-triage.md` — weekly backlog triage prompt: priority review (strategist lens), usage signal (analyst lens), customer impact (support lens). Cron `0 9 * * 1` default. Outputs prioritised list to `triage/YYYY-MM-DD.md` and optional Slack thread.
+- `project/routines/README.md` — overview of the Routines directory, how to use templates, when /coord points users here, links to canonical docs.
+- `project/commands/coord.md` — added `## Routine Detection (Mode C — operational work)` section. Cadence keywords (daily/weekly/monthly/hourly/nightly + "every Monday/...") and operational phrases (PR review, nightly QA, weekly triage) trigger a pointer to the matching Routine template instead of delegation. coord.md grew 91 → 134 lines (still well under v5.x's 549).
+- `library/CLAUDE.md` — Skills section now describes the 3-tier model + open-standard alignment. New Routines section (one paragraph) describing Mode C work + template pointers. Still 78 lines.
+- `sprints/sprint-4g-skills-and-routines.md` — spec recalibrated to match verified Routines mechanism. T4-T6 reframed as prompt templates (not JSON configs). T7 reframed as pointer output (not config snippet output).
+- `sprints/sprint-4h-validation-and-migration.md` — outline replaced with detailed spec.
+  - 7 tasks: harness batch (5 milestones for 4c, 4d, 4e, 4f, 4g), v6.0 cumulative metrics report, v5→v6 migration script, consolidated docs update (README/CHANGELOG/MCP-GUIDE/RELEASE-HISTORY), private beta cohort, release-readiness checklist, retrospective + post-v6 backlog.
+  - 4h is the close-out sprint — no new structural changes; everything ships, gets measured, gets documented, gets tagged.
+
+**Tasks parked for Jamie's terminal session**:
+- **T9** (harness re-run for milestone-4g) — joins parked T7s for 4c, 4d, 4e, 4f. Sprint 4h's T1 batches them all.
+
+**User-Facing Changes** (for Sprint 4h docs consolidation):
+- All 7 SaaS skills now have a proper `description` field aligned with [Anthropic's Agent Skills spec](https://agentskills.io/specification). Forward-compatible with future marketplace publishing.
+- 3-tier skills model documented in `field-manual/skills-guide.md`.
+- `routines/` directory ships with 3 paste-ready Routine prompt templates. Users paste the prompt block into `claude.ai/code/routines` and configure repos/triggers/connectors via the form.
+- `/coord` recognises cadence keywords (daily, weekly, every Monday, schedule, nightly, etc.) and recommends the matching Routine template instead of executing the work as a one-time delegation.
+- `library/CLAUDE.md` mentions Routines and the 3-tier skills model; still 78 lines.
+
+**Files touched**:
+- `project/skills/saas-*/SKILL.md` × 7 — `description` field added.
+- `project/field-manual/skills-guide.md` — 3-tier model + open-standard alignment.
+- `project/routines/{pr-review,nightly-qa,backlog-triage,README}.md` × 4 — new directory of prompt templates.
+- `project/commands/coord.md` — Routine Detection section added.
+- `library/CLAUDE.md` — Skills + Routines sections updated.
+- `sprints/sprint-4g-skills-and-routines.md` — spec recalibrated.
+- `sprints/sprint-4h-validation-and-migration.md` — detailed spec.
+- `progress.md`, `handoff-notes.md`, `project-plan.md` — close-out updates.
+
+**Sprint 4g status**: ✅ **Complete** for solo-executable scope (T1-T8, T10). T9 parked. Recommend proceeding to Sprint 4h once Jamie has reviewed.
+
+**v6.0 evolution status**: 7 of 8 sub-sprints complete. Sprint 4h is the close-out (validation, migration, beta, docs, retrospective). After 4h, v6.0 is shipped.
+
+**What's next**:
+- **Sprint 4h is the final v6.0 sprint.** T1 (the harness batch) is gating — without measurement we can't claim v6.0 delivers. T3 (migration script) is the ergonomic upgrade for v5.x users. T4 is the consolidated docs pass deferred since 4a.
+- T9 from 4g rolls into 4h's T1 batch.
+
+---
+
 ### [2026-04-19] — v6.0 Evolution Kickoff
 
 Continuing from the v6.0 planning session committed in `aa6ecdb`. Historic context (pre-v6 plan, Sprint 9/11 work) preserved in `.archive/2026-04-17-pre-v6/`.

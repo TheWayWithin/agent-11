@@ -80,8 +80,8 @@ The v6.0 evolution is delivered as **8 sub-sprints under the "Sprint 4" umbrella
 | **4d** | Native Primitives + CLAUDE.md Shrink | `settings.json` hooks for quality; `.claude/CLAUDE.md` ≤80 lines; Meta-Dev Skill for agent-11 repo | ✅ T1-T6, T8 complete; T7 (harness) parked |
 | **4e** | Context Consolidation (5→3) | `handoff-notes.md` folded; `progress.md` write-only (rename of `agent-context.md` skipped) | ✅ T1, T3-T6, T8 complete; T7 (harness) parked |
 | **4f** | Dynamic MCP Tool Search | `ENABLE_TOOL_SEARCH=auto` enables native deferring; Tool-Centric Workflow in 7 specialists; profile-switching residue retired (recalibrated mid-sprint after schema audit) | ✅ T1, T2, T3, T5, T6, T8 complete; T4 removed; T7 (harness) parked |
-| **4g** | Skills + Routines | 3-tier skills model formalised; 3 Routine config templates; `/coord` detects operational intent | Detailed spec ready |
-| **4h** | Validation + Migration | Harness on v6.0 vs baseline; v5.2→v6.0 migration script; private beta | Outline only |
+| **4g** | Skills + Routines | 3-tier skills model formalised; open-standard `description` added to all 7 SaaS skills; 3 Routine prompt templates; `/coord` detects operational intent | ✅ T1-T8, T10 complete; T9 (harness) parked |
+| **4h** | Validation + Migration | Harness batch (5 milestones); v5.2→v6.0 migration script; consolidated docs; private beta; retrospective | Detailed spec ready |
 
 ---
 

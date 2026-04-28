@@ -1,5 +1,6 @@
 ---
 name: saas-auth
+description: Implement production-ready authentication for SaaS applications — email/password, OAuth social login (Google, GitHub), session management, JWT handling, password reset, email verification, and magic links. Use when building signup, sign-in, login, signup, password reset, or any auth-related feature.
 version: 1.0.0
 category: authentication
 triggers:

@@ -1,5 +1,6 @@
 ---
 name: saas-billing
+description: Implement SaaS billing logic — pricing plans, usage metering, quota enforcement, free trials, plan upgrades and downgrades, prorations, and dunning. Use when building billing, plan, quota, trial, upgrade, downgrade, or subscription-management features (works alongside saas-payments for the Stripe integration layer).
 version: 1.0.0
 category: payments
 triggers:

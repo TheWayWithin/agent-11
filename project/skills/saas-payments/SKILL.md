@@ -1,5 +1,6 @@
 ---
 name: saas-payments
+description: Integrate Stripe payments and subscriptions for SaaS applications — checkout flows, subscription billing, webhooks, customer portal, invoices, and refunds. Use when building Stripe checkout, subscription, payment, or billing integration features.
 version: 1.0.0
 category: payments
 triggers:

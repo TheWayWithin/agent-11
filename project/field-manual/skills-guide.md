@@ -1,11 +1,27 @@
 # Skills Guide
 
-**Version**: 1.0.0 (Sprint 9)
-**Last Updated**: 2025-12-30
+**Version**: 2.0.0 (Sprint 4g — v6.0 evolution)
+**Last Updated**: 2026-04-27
 
 ## Overview
 
-Skills are domain-specific knowledge packages that the Coordinator automatically loads based on task context. They provide production-ready code patterns, best practices, and implementation guidance for common SaaS features.
+Skills are domain-specific knowledge packages that the Coordinator loads based on task context. They provide production-ready code patterns, best practices, and implementation guidance for common features.
+
+## 3-Tier Architecture
+
+AGENT-11 organises skills in three tiers:
+
+| Tier | What | Where it lives | Audience |
+|------|------|----------------|----------|
+| **Tier 1 — Behavioural** | Cross-cutting principles every specialist applies | `.claude/CLAUDE.md` (Karpathy constitution — shipped Sprint 4d) | Framework-internal |
+| **Tier 2 — Project Domain** | Project-specific decisions, conventions, business logic | User project's local `skills/` directory (create post-install if needed) | Project-specific |
+| **Tier 3 — Marketplace** | Curated reusable patterns | `.claude/skills/` (shipped by AGENT-11 install.sh) | Library users |
+
+The 7 SaaS skills documented below are **Tier 3**. They align with Anthropic's [Agent Skills open standard](https://agentskills.io/specification): each ships with `name` + `description` in frontmatter (the spec's required fields), plus AGENT-11-specific custom fields (`triggers`, `specialist`, `complexity`, etc.) that our coordinator's loading mechanism uses today.
+
+This hybrid format keeps skills forward-compatible with future marketplace publishing (the `description` field embeds trigger keywords for Anthropic's progressive-disclosure loading) while remaining fully functional under our existing `triggers`-array matching.
+
+**Note on publishing**: v6.0 formats Tier 3 skills for the open standard but does **not** publish to a public marketplace. Publishing is a future decision.
 
 ## Available Skills
 
