@@ -492,6 +492,68 @@ AGENT-11's existing 7 SaaS skills had `name` ✓ but were missing `description`.
 
 ---
 
+### [2026-05-01] — Sprint 4h T3: v5→v6 Migration Script Shipped ✅
+
+**Summary**: `migrate-v5-to-v6.sh` shipped and tested across four scenarios. Solo work in parallel with parked T1 (harness batch). Users on v5.x can now run a one-command migration to bring their projects into v6.0 shape — handoff-notes folded into agent-context, .mcp-profiles/ retired, obsolete dynamic-mcp.json removed, all originals backed up.
+
+**Deliverable**: `project/deployment/scripts/migrate-v5-to-v6.sh` — 218 lines, executable.
+
+**What it does**:
+1. Detects AGENT-11 install (refuses if not present).
+2. Detects v5.x markers (`handoff-notes.md`, `.mcp-profiles/`, `mcp/dynamic-mcp.json`, `templates/handoff-notes-template.md`). Exits cleanly if none found ("already v6.0").
+3. Confirms with the user before any destructive op (with `--yes` for automation, `--dry-run` for preview).
+4. Backs up everything that will change to `.claude/backups/v5-to-v6-YYYYMMDD-HHMMSS/`.
+5. Folds `handoff-notes.md` into `agent-context.md` (Sprint 4e) with a clear separator and timestamp; promotes handoff-notes to agent-context if no agent-context exists yet.
+6. Retires `.mcp-profiles/` (Sprint 4f profile-switching system retired).
+7. Removes obsolete `mcp/dynamic-mcp.json` (Sprint 4f schema-mismatch finding).
+8. Retires `templates/handoff-notes-template.md` (Sprint 4e).
+9. Checks `.claude/settings.json` for `ENABLE_TOOL_SEARCH`; warns if missing rather than overwriting user customisations.
+10. Prints summary with backup location and rollback instructions.
+
+**Safety properties**:
+- `--dry-run` mode shows all planned operations without touching the filesystem.
+- `--yes` mode skips interactive confirmation (for CI/automation).
+- Refuses to run on directories without an AGENT-11 install (no `.claude/CLAUDE.md` or `.claude/agents/coordinator.md`).
+- Refuses to run if backup directory cannot be written.
+- Idempotent — running on an already-migrated v6.0 install detects no markers and exits cleanly.
+- Never overwrites existing `.claude/settings.json` user customisations; warns and points at template instead.
+- Never modifies `.mcp.json` (the server registry) — separate concern from the retired profile-switching system.
+- Never modifies code files in user's project.
+- All originals backed up before any destructive op.
+
+**Test scenarios validated** (2026-05-01, on /tmp/ scratch dirs):
+
+| Test | Setup | Expected | Actual |
+|------|-------|----------|--------|
+| 1 | Empty directory (no AGENT-11) | Refuse with clear error, exit 1 | ✓ Refused, exit 1 |
+| 2 | `.claude/CLAUDE.md` only (no v5.x markers) | Detect already-v6.0, exit 0 | ✓ Detected, exit 0 |
+| 3 (dry-run) | Full v5.x scenario (handoff-notes.md, .mcp-profiles/, dynamic-mcp.json, handoff-notes-template.md, settings.json with custom config) | Show all planned ops, change nothing | ✓ All ops listed, filesystem unchanged |
+| 3 (real, --yes) | Same v5.x scenario | Backup all, fold handoff-notes, retire .mcp-profiles/, remove dynamic-mcp.json, warn on settings.json | ✓ All operations correct; agent-context.md correctly contains original content + appended handoff content with separator and timestamp |
+| 4 (idempotency) | Re-run after Test 3 | Detect no v5.x markers, exit 0 | ✓ Clean exit |
+
+**Initial bug found and fixed**: First test version of script tried to read confirmation from `/dev/tty` when stdin was piped, but failed in test environment with "Device not configured". Fixed by adding `--yes` flag for automation + cleaner branching: TTY-stdin → read from stdin; piped-stdin with TTY available → read from /dev/tty; neither → require `--yes` or error out.
+
+**User-Facing Changes** (for Sprint 4h docs consolidation):
+- New script: `project/deployment/scripts/migrate-v5-to-v6.sh` deployed alongside install.sh. v5.x users can run it standalone to upgrade their existing projects.
+- Usage:
+  - `bash migrate-v5-to-v6.sh` — interactive
+  - `bash migrate-v5-to-v6.sh --dry-run` — preview without changes
+  - `bash migrate-v5-to-v6.sh --yes` — skip confirmation (automation/CI)
+- Migration is reversible: copy files from `.claude/backups/v5-to-v6-YYYYMMDD-HHMMSS/` back to project root.
+
+**Files touched**:
+- `project/deployment/scripts/migrate-v5-to-v6.sh` — new file (executable).
+- `progress.md` — close-out entry.
+
+**Sprint 4h status**: T3 complete. T1 still parked (harness batch — needs Jamie's terminal). T4 (docs consolidation) can run solo next session if Jamie wants forward motion before the harness session.
+
+**What's next**:
+- T1 (harness batch) — Jamie's terminal session.
+- T4 (consolidated docs) — solo-doable; mostly mechanical README/CHANGELOG/MCP-GUIDE/RELEASE-HISTORY pass.
+- T2 (cumulative metrics report) — gated on T1.
+
+---
+
 ### [2026-04-19] — v6.0 Evolution Kickoff
 
 Continuing from the v6.0 planning session committed in `aa6ecdb`. Historic context (pre-v6 plan, Sprint 9/11 work) preserved in `.archive/2026-04-17-pre-v6/`.

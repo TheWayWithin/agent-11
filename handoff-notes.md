@@ -43,11 +43,15 @@ Full close-out in `progress.md` under `[2026-04-27] — Sprint 4g (T1-T8, T10) C
 
 ## Next Actions (locked checklist for v6.0 close-out)
 
-Sprint 4h is now **6 tasks** (T5 beta cohort dropped on 2026-04-27 — wrong fit for solo OSS context; replaced with: ship publicly when T1-T4 done, respond to GitHub issues as they come up).
+Sprint 4h is **6 tasks** (T5 beta cohort dropped on 2026-04-27 — wrong fit for solo OSS context).
 
+**Sprint 4h progress**:
+- ✅ **T3 — v5→v6 migration script** shipped 2026-05-01 (out-of-order; doesn't depend on T1). Tested across 4 scenarios. See progress.md `[2026-05-01] — Sprint 4h T3` for details.
+
+**Remaining**:
 1. **You** — run the harness batch (T1) in terminal against v5.2 baseline. Five milestones to produce: 4c (Tasks 3, 4, 5), 4d (Tasks 1, 2, 5), 4e (Tasks 1, 2, 3), 4f (Tasks 1, 2, 3), 4g (Tasks 4, 5). Splittable across multiple sessions; produce them in any order.
 2. **Me** — draft T2 (cumulative v6.0 metrics report) from your T1 results. Solo, fast.
-3. **Me** — ship T3 (migration script) and T4 (consolidated docs) after T2 lands. Solo, mostly mechanical.
+3. **Me** — ship T4 (consolidated docs) — README/CHANGELOG/MCP-GUIDE/RELEASE-HISTORY pass. Solo, mostly mechanical. Some metric references need T2 data; rest is structural.
 4. **You + me** — T5 (release-readiness checklist sync). One short pass before tagging v6.0.0.
 5. **Me** — T6 (v6.0 retrospective + post-v6 backlog). Solo close-out.
 
