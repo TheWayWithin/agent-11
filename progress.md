@@ -554,6 +554,73 @@ AGENT-11's existing 7 SaaS skills had `name` ✓ but were missing `description`.
 
 ---
 
+### [2026-05-01] — Sprint 4h T4: Consolidated docs pass shipped ✅
+
+**Summary**: README, CHANGELOG, MCP-GUIDE, and RELEASE-HISTORY updated for v6.0. Pulls the "User-Facing Changes" running list from sprints 4a-4g into a coherent set of public-facing docs. Solo work in parallel with parked T1 (harness batch). Some metric references in RELEASE-HISTORY/CHANGELOG carry placeholders (`v6.0-summary.md` from T2) that will fill in after the harness session.
+
+**Deliverables**:
+
+- `CHANGELOG.md` — full v6.0.0 entry. Sections:
+  - Migration pointer (one-line `bash <(curl -sSL ...)` for v5.x users)
+  - Added: Universal Router, Karpathy constitution, Dynamic context loading, Phase Handoff blocks, Quality-gate hooks, Native MCP tool deferring, Routines (Mode C), 3-tier skills model, migrate-v5-to-v6.sh, mode override, Routine detection
+  - Changed: line counts (`library/CLAUDE.md` 575 → 78; `coord.md` 549 → 134), session-start protocol, `progress.md` write-only, MCP server registry unchanged but profile-switching retired, all 7 MCP-using specialists, install.sh deploys settings.json/constitution/mcp-integration
+  - Deprecated: `install.sh [core|full|minimal]` arguments
+  - Removed: `handoff-notes.md`, `.mcp-profiles/`, `/mcp-switch`/`/mcp-list`/`/mcp-status`, `templates/handoff-notes-template.md`, `project/mcp/dynamic-mcp.json`, `mcp-optimization-guide.md`, `validate-mcp-profiles.sh`, root `mcp-setup.sh`
+  - Architecture: 8-sprint summary covering 4a → 4h
+- `docs/MCP-GUIDE.md` — rewritten for v6.0. **673 → 218 lines** (-68%). Sections:
+  - What is MCP, common AGENT-11 MCP servers
+  - How v6.0 loads MCP tools (native auto-deferring via `ENABLE_TOOL_SEARCH=auto` + Tool Search workflow)
+  - Setup (4 steps: install, API keys, server packages, restart)
+  - Verifying MCP tools (Tool Search examples)
+  - Specialist → Server mapping table
+  - v5.x → v6.0 migration (script + manual fallback)
+  - Troubleshooting (Tool Search returns nothing, tool not found, hooks blocking, migration script refuses, stale agent context)
+  - Reference + "what v6.0 does NOT do" (Sprint 4f schema-mismatch lesson captured)
+- `docs/RELEASE-HISTORY.md` — v6.0 entry prepended. Headline changes, structural shifts, validation metrics (placeholder for T1 results), 8-sprint roadmap table, migration commands, links to CHANGELOG and MCP-GUIDE.
+- `README.md` — targeted edits (1864-line file, not a full rewrite):
+  - Version section bumped from v5.2.0 to **v6.0 — The Lean Orchestrator**, with the substantive v6.0 changes summarised in 6 bullets.
+  - v5.x → v6.0 migration block added inline (one-command migrate + reinstall).
+  - "Mission MCP Profile Guide" section heading and content replaced with "Mission MCP Tools (v6.0)" describing native deferring.
+  - System Architecture diagram updated to show v6.0's 3-active-file model (project-plan.md, agent-context.md with Phase Handoff blocks, evidence-repository.md on-demand) plus progress.md as write-only.
+  - Mission Workflow sequence diagram updated: removed `handoff-notes.md` participant; specialists now read agent-context.md and append Phase Handoff blocks.
+  - Context Management diagram updated for the 3-file model with Phase Handoff schema.
+  - Three remaining `handoff-notes.md` mentions are intentional v5.x→v6.0 migration context (not stale).
+  - Bulk of README (mission descriptions, agent profiles, workflow examples, etc.) untouched — content is timeless and accurate under v6.0.
+
+**What was deliberately NOT done**:
+- Full README rewrite. The README is 1864 lines covering timeless concepts (what AGENT-11 is, agent profiles, mission descriptions). v6.0 doesn't change those. Targeted edits over rewrite.
+- `library/CLAUDE.md` updates. Already lean at 78 lines (Sprint 4d/4g); Sprint 4h spec said "verify still accurate" — verified, no changes needed.
+- Metrics filled into placeholders. Those need T1 harness results. Marked clearly with "*pending T1*" notes; T2 (cumulative metrics report) fills these in.
+- Public release announcement. Per Sprint 4h spec, "handled separately, not in this sprint" — Jamie's voice, separate workstream.
+
+**User-Facing Changes** (full list now lives in CHANGELOG.md v6.0 entry):
+- README's version section reflects v6.0 with migration command for v5.x users
+- CHANGELOG documents every breaking change, addition, and deprecation since v5.0
+- MCP-GUIDE rewritten for native tool deferring; all `.mcp-profiles/` / profile-switching docs retired
+- RELEASE-HISTORY surfaces the 8-sprint v6.0 roadmap and migration story
+
+**Files touched**:
+- `CHANGELOG.md` — full v6.0 entry (~70 lines added).
+- `docs/MCP-GUIDE.md` — full rewrite (-455 lines).
+- `docs/RELEASE-HISTORY.md` — v6.0 entry prepended (~70 lines added).
+- `README.md` — targeted edits (version section, migration block, 3 diagrams, MCP profile section heading, 2 prose mentions).
+- `progress.md` — close-out entry (this).
+
+**Sprint 4h status**:
+- ✅ T3 (migration script) — shipped 2026-05-01
+- ✅ T4 (consolidated docs) — shipped 2026-05-01
+- ⏸ T1 (harness batch) — terminal-required, parked
+- ⏸ T2 (cumulative metrics report) — gated on T1
+- 📋 T5 (release-readiness checklist) — gated on T1-T4
+- 📋 T6 (retrospective) — gated on T1-T5
+
+**v6.0 status**: structurally complete. T1 batch is the last terminal-required step. T2/T5/T6 are mostly close-out paperwork that I can ship solo after T1 results are in.
+
+**What's next**:
+- T1 harness batch in your terminal session — the gate for T2/T5/T6.
+
+---
+
 ### [2026-04-19] — v6.0 Evolution Kickoff
 
 Continuing from the v6.0 planning session committed in `aa6ecdb`. Historic context (pre-v6 plan, Sprint 9/11 work) preserved in `.archive/2026-04-17-pre-v6/`.

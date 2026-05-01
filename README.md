@@ -269,11 +269,31 @@ cp ~/Documents/BOS-AI/*.md ./documents/foundations/
 
 ---
 
-## 🆕 Current Version: v5.2.0
+## 🆕 Current Version: v6.0 — The Lean Orchestrator
 
-**Latest**: Dynamic MCP tool loading with 93% token reduction (51K → 3.3K). No more manual profile switching.
+**Latest** (2026-05-XX, pending T1 harness validation): structural evolution leveraging Claude Code's native primitives.
 
-[→ Full Release History](docs/RELEASE-HISTORY.md) - Complete sprint-by-sprint changelog
+- `library/CLAUDE.md` shrunk **575 → 78 lines** (-86%)
+- Active context tracking: 5 files → 3 (`handoff-notes.md` folded into `agent-context.md` as Phase Handoff blocks; `progress.md` write-only)
+- MCP loading: profile-switching retired, replaced by Claude Code's native `ENABLE_TOOL_SEARCH=auto`
+- Quality-gate hooks (`tsc`/`ruff`/`rubocop`) ship with the install
+- Three paste-ready Routine templates for scheduled/operational work (`pr-review`, `nightly-qa`, `backlog-triage`)
+- Karpathy operating constitution applied by every specialist
+- One-command migration for v5.x projects: `migrate-v5-to-v6.sh`
+
+[→ v6.0 Release History](docs/RELEASE-HISTORY.md) · [→ CHANGELOG](CHANGELOG.md) · [→ MCP Guide](docs/MCP-GUIDE.md)
+
+### v5.x users: upgrading to v6.0
+
+```bash
+# In your existing project root:
+bash <(curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/migrate-v5-to-v6.sh)
+
+# Then re-run install.sh to deploy v6.0 library files:
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash
+```
+
+The migration script backs up everything before any change, supports `--dry-run` to preview, and is fully reversible.
 
 ---
 
@@ -539,12 +559,12 @@ graph TB
         M2["Custom Workflows"]
     end
 
-    subgraph Coord["🎖️ Coordination Layer"]
+    subgraph Coord["🎖️ Coordination Layer (v6.0)"]
         C[Coordinator Agent]
         PP["project-plan.md<br/>(Planning)"]
-        AC["agent-context.md<br/>(Knowledge)"]
-        HN["handoff-notes.md<br/>(Handoffs)"]
-        PR["progress.md<br/>(History)"]
+        AC["agent-context.md<br/>(Knowledge + Phase Handoff blocks)"]
+        ER["evidence-repository.md<br/>(on-demand)"]
+        PR["progress.md<br/>(write-only changelog)"]
     end
 
     subgraph Agents["🤖 Specialist Layer"]
@@ -637,12 +657,10 @@ sequenceDiagram
     participant A as 🏗️ Architect
     participant D as 💻 Developer
     participant T as ✅ Tester
-    participant AC as 📝 agent-context.md
-    participant HN as 🤝 handoff-notes.md
+    participant AC as 📝 agent-context.md (with Phase Handoff blocks)
 
     U->>C: /coord build requirements.md
     C->>AC: Read mission context
-    C->>HN: Initialize handoff system
 
     Note over C: Phase 1: Analysis
     C->>S: Analyze requirements
@@ -661,29 +679,25 @@ sequenceDiagram
 
     Note over C: Phase 3: Implementation
     C->>D: Implement feature
-    D->>AC: Read all prior context
-    D->>HN: Read architect specs
+    D->>AC: Read full context + most recent Phase Handoff block
     D->>D: Write code + tests (2-4 hours)
-    D->>HN: Document implementation
-    D->>AC: Update with code decisions
+    D->>AC: Append Phase Handoff block (Findings/Decisions/Warnings/Open Items/Evidence)
 
     Note over C: Phase 4: Validation
     C->>T: Validate quality
-    T->>AC: Read full mission context
-    T->>HN: Read developer notes
+    T->>AC: Read full mission context + most recent Phase Handoff block
     T->>T: Run comprehensive tests (1 hour)
-    T->>HN: Report test results
-    T->>AC: Final quality assessment
+    T->>AC: Append Phase Handoff block with test results
 
     C->>U: Mission complete ✅
 
-    Note over AC,HN: Zero context loss!<br/>100% knowledge preserved
+    Note over AC: Zero context loss!<br/>100% knowledge preserved in agent-context.md
 ```
 
-**Key Collaboration Principles:**
-- **Sequential Handoffs** - Each agent reads context from previous agents via handoff-notes.md
-- **Cumulative Knowledge** - All decisions stored in agent-context.md for mission-wide awareness
-- **Zero Loss** - Every finding, decision, and issue preserved across the entire mission
+**Key Collaboration Principles (v6.0):**
+- **Phase Handoff blocks** — each specialist appends a 5-field block (Findings, Decisions, Warnings & Gotchas, Open Items, Evidence) to agent-context.md at task close. Replaces the v5.x separate `handoff-notes.md` file.
+- **Cumulative Knowledge** — all decisions stored in agent-context.md for mission-wide awareness.
+- **Zero Loss** — every finding, decision, and issue preserved across the mission.
 
 ---
 
@@ -697,10 +711,9 @@ flowchart TD
         MI["/coord build requirements.md"]
     end
 
-    subgraph Context["🧠 Context Files"]
-        AC["agent-context.md<br/>━━━━━━━━━━━<br/>• Mission objectives<br/>• All findings (cumulative)<br/>• Technical decisions<br/>• Known issues<br/>• Dependencies"]
-        HN["handoff-notes.md<br/>━━━━━━━━━━━<br/>• Immediate task<br/>• Critical context<br/>• Warnings/blockers<br/>• Specific instructions<br/>• Test results"]
-        ER["evidence-repository.md<br/>━━━━━━━━━━━<br/>• Screenshots<br/>• Code snippets<br/>• Test results<br/>• API responses<br/>• Error logs"]
+    subgraph Context["🧠 Context Files (v6.0 — 3-file model)"]
+        AC["agent-context.md<br/>━━━━━━━━━━━<br/>• Mission objectives<br/>• Cumulative findings<br/>• Technical decisions<br/>• Phase Handoff blocks<br/>  (5-field schema)<br/>• Known issues<br/>• Dependencies"]
+        ER["evidence-repository.md<br/>━━━━━━━━━━━<br/>(on-demand only)<br/>• Screenshots<br/>• Code snippets<br/>• Test results<br/>• API responses<br/>• Error logs"]
     end
 
     subgraph Memory["💾 Persistent Memory"]
@@ -720,10 +733,8 @@ flowchart TD
     end
 
     MI --> AC
-    MI --> HN
 
     AC --> A1
-    HN --> A1
     MEM --> A1
 
     A1 --> A2
@@ -731,19 +742,15 @@ flowchart TD
     A2 --> A3
 
     A3 --> AC
-    A3 --> HN
     A3 --> ER
     A3 --> MEM
 
     AC --> PP
     AC --> PR
-    HN --> PP
-    HN --> PR
 
     A2 --> CODE
 
     style AC fill:#e3f2fd
-    style HN fill:#f3e5f5
     style ER fill:#fff3e0
     style MEM fill:#e8f5e9
     style A1 fill:#fffde7
@@ -751,14 +758,14 @@ flowchart TD
     style A3 fill:#fffde7
 ```
 
-**Context Preservation Protocol:**
+**Context Preservation Protocol (v6.0):**
 
-1. **Before Task** - Agent reads agent-context.md + handoff-notes.md + /memories/
-2. **During Task** - Agent maintains awareness of all prior decisions
-3. **After Task** - Agent updates handoff-notes.md with findings for next specialist
-4. **Coordinator** - Merges findings into agent-context.md for mission-wide knowledge
+1. **Before Task** — Agent reads agent-context.md (most recent Phase Handoff block) + /memories/
+2. **During Task** — Agent maintains awareness of all prior decisions
+3. **After Task** — Agent appends a Phase Handoff block to agent-context.md (5 fields: Findings, Decisions, Warnings & Gotchas, Open Items, Evidence) for the next specialist
+4. **Coordinator** — verifies the Phase Handoff block exists before marking the phase complete
 
-**Result**: Zero context loss, 100% knowledge retention across sessions
+**Result**: Zero context loss, 100% knowledge retention across sessions, 3 active files instead of 5.
 
 [→ Complete context management guide](project/field-manual/memory-management.md)
 
@@ -846,7 +853,7 @@ stateDiagram-v2
 
 ### Key Concepts
 
-**Context Preservation**: Zero loss via agent-context.md + handoff-notes.md + /memories/. **Extended Thinking**: Ultrathink/Think harder/Think modes (39% effectiveness improvement). **Tool Permissions**: Least-privilege security model (64% read-only agents). **Parallel Execution**: Independent tasks run simultaneously for speed.
+**Context Preservation**: Zero loss via agent-context.md (with Phase Handoff blocks) + /memories/. **Extended Thinking**: Ultrathink/Think harder/Think modes (39% effectiveness improvement). **Tool Permissions**: Least-privilege security model (64% read-only agents). **Parallel Execution**: Independent tasks run simultaneously for speed.
 
 [→ Memory Management](project/field-manual/memory-management.md) | [→ Extended Thinking](project/field-manual/extended-thinking-guide.md) | [→ Tool Permissions](project/field-manual/tool-permissions-guide.md)
 
@@ -884,7 +891,7 @@ Complete overview of AGENT-11's capabilities organized by category.
 
 ### Context Management
 
-100% knowledge retention with native memory API, zero-loss context preservation (agent-context.md, handoff-notes.md), and strategic /clear usage (84% token reduction enabling 30+ hour missions).
+100% knowledge retention with native memory API, zero-loss context preservation (agent-context.md with Phase Handoff blocks; v5.x's separate handoff-notes.md was folded in v6.0), and strategic /clear usage (84% token reduction enabling 30+ hour missions).
 
 [→ Memory Management](project/field-manual/memory-management.md) | [→ Context Editing](project/field-manual/context-editing-guide.md)
 
@@ -1776,9 +1783,9 @@ Estimated token savings: ~4,250 tokens (63% reduction)
 **Input File Templates**: Available in `/templates/mission-inputs/`
 **Legend**: ✅ Required input file | ❌ No input needed
 
-### Mission MCP Profile Guide
+### Mission MCP Tools (v6.0)
 
-> **Deprecation notice (v6.0 evolution in progress)**: the `/mcp-switch`, `/mcp-list`, `/mcp-status` profile commands have been retired. A dynamic tool-search replacement ships in a later sprint (see `project-plan.md` Sprint 4f). Until then, all MCP tools remain available and are loaded on demand — no profile switching needed.
+> **v6.0**: profile-switching is retired. MCP tools defer-load via Claude Code's native `ENABLE_TOOL_SEARCH=auto` (set in `.claude/settings.json`). Specialists discover what they need at runtime: `tool_search_tool_regex_20251119(pattern="mcp__SERVERNAME")`. No profile selection, no restarts. See [docs/MCP-GUIDE.md](docs/MCP-GUIDE.md) for setup. v5.x users migrate via [`migrate-v5-to-v6.sh`](project/deployment/scripts/migrate-v5-to-v6.sh).
 
 [📋 Complete Mission Library →](project/missions/library.md)
 

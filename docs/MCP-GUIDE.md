@@ -1,673 +1,218 @@
-# MCP System Guide
+# MCP Guide (v6.0)
+
+**Version**: 2.0.0 (v6.0)
+**Last Updated**: 2026-05-01
+
+This guide covers Model Context Protocol (MCP) integration in AGENT-11 v6.0. The previous `.mcp-profiles/` profile-switching system is **retired**; v6.0 uses Claude Code's native tool deferring instead.
+
+---
 
 ## What is MCP?
 
-**Model Context Protocol (MCP)** is a system that allows Claude Code to connect to external services and tools. AGENT-11 uses MCP to provide agents with capabilities like:
+The Model Context Protocol lets Claude Code talk to external services (databases, deployment platforms, payment processors, browsers, version control) through standardised tools. MCP tools appear with the `mcp__` prefix and provide direct integration without writing custom code.
 
-- **GitHub Integration** - Repository management, PRs, issues
-- **Database Access** - Supabase for data operations
-- **Browser Automation** - Playwright for testing
-- **Payment Processing** - Stripe integration
-- **Deployment Tools** - Netlify and Railway
-- **Documentation** - Context7 for library docs
-- **File Operations** - Filesystem access
-
----
-
-## 🚀 NEW: Dynamic Tool Loading (v5.2.0+)
-
-> **Sprint 11 Update**: AGENT-11 now supports **dynamic MCP tool loading** which eliminates manual profile switching and reduces context usage by 93%.
-
-### How It Works
-
-Instead of pre-loading all tools (51K tokens) or switching profiles manually, agents now:
-
-1. **Search** for tools on-demand using Tool Search
-2. **Load** only the specific tools needed
-3. **Execute** with minimal context overhead
-
-### Token Savings
-
-| Approach | Initial Context | Reduction |
-|----------|-----------------|-----------|
-| All Tools (static) | 51,000 tokens | baseline |
-| Profile-based | 3,000-15,000 tokens | 40-80% |
-| **Dynamic Loading** | **3,300 tokens** | **93%** |
-
-### Quick Start (Dynamic)
-
-If you're setting up a new project, use the dynamic configuration:
-
-```bash
-# Copy dynamic MCP configuration
-cp project/mcp/dynamic-mcp.json .mcp.json
-
-# Configure environment variables
-cp .env.mcp.template .env.mcp
-# Edit .env.mcp with your API keys
-
-# Restart Claude Code
-```
-
-### Migration from Profiles
-
-If you're currently using MCP profiles, see:
-- **[MCP Migration Guide](./MCP-MIGRATION-GUIDE.md)** - Step-by-step migration instructions
-
-### Tool Search Patterns
-
-Agents discover tools using regex patterns:
-
-| Need | Search Pattern | Discovers |
-|------|----------------|-----------|
-| Database | `mcp__supabase` | Supabase tools |
-| Testing | `mcp__playwright` | Browser automation |
-| Deployment | `mcp__railway` | Railway deploys |
-| Payments | `mcp__stripe` | Stripe billing |
-| Documentation | `mcp__context7` | Library docs |
-| Version Control | `mcp__github` | GitHub tools |
+**Common AGENT-11 MCP servers**:
+- `mcp__supabase` — PostgreSQL, auth, RLS, storage, real-time
+- `mcp__playwright` — browser automation, screenshots, accessibility
+- `mcp__railway` — backend deployment, services, logs
+- `mcp__netlify` — frontend hosting, edge functions
+- `mcp__stripe` — payments, subscriptions, webhooks
+- `mcp__github` — PRs, issues, releases, CI/CD
+- `mcp__context7` — library documentation, code patterns
+- `mcp__firecrawl` — web scraping, market research
 
 ---
 
-## Legacy: MCP Profiles
+## How v6.0 Loads MCP Tools
 
-> **Note**: Profile-based MCP switching is still supported but deprecated in favor of dynamic tool loading. The sections below document the legacy profile system.
+**Native auto-deferring** (the v6.0 mechanism):
 
-### Why Use MCP Profiles? (Legacy)
+`.claude/settings.json` ships with:
 
-Without profiles, all MCP servers load every time, consuming 15,000+ tokens of context. This limits the space available for your actual code and conversation.
-
-**With MCP profiles**, you load only what you need:
-
-| Profile | MCPs Loaded | Context Used | Reduction |
-|---------|-------------|--------------|-----------|
-| core | 3 | 3,000 tokens | 80% |
-| testing | 4 | 5,500 tokens | 63% |
-| database-staging | 4 | 8,000 tokens | 47% |
-| payments | 4 | 7,000 tokens | 53% |
-| deployment | 5 | 9,000 tokens | 40% |
-| fullstack | 8 | 15,000 tokens | baseline |
-
-**Key Benefits:**
-- 40-80% reduction in context usage
-- Faster agent responses
-- More room for code and conversation
-- Environment safety (production read-only enforced)
-- Task-appropriate tooling
-
-## Quick Start
-
-### 1. Install MCP Servers
-
-First-time setup requires installing the MCP servers:
-
-```bash
-cd ~/DevProjects/agent-11
-./project/deployment/scripts/mcp-setup.sh
+```json
+{
+  "env": { "ENABLE_TOOL_SEARCH": "auto" }
+}
 ```
 
-This installs:
-- @context7/mcp-server
-- @edjl/github-mcp
-- @modelcontextprotocol/server-filesystem
-- @playwright/mcp
-- @supabase/mcp-server
-- @stripe/mcp-server
-- @netlify/mcp
-- @railway/mcp-server
+This activates Claude Code's threshold-based tool loading. When you have many MCP servers configured, Claude Code auto-defers most tools at session start and loads them on demand when specialists request them via Tool Search.
 
-### 2. Configure Environment Variables
+**Specialist workflow** (Tool-Centric):
 
-Copy the template and add your API keys:
+```
+1. Identify the capability you need.
+2. Search for tools: tool_search_tool_regex_20251119(pattern="mcp__supabase")
+3. Matching tools auto-load on first call.
+4. Execute the task.
+```
+
+No manual profile switching. No restarts when changing what tools you need. The right tools load when called for.
+
+---
+
+## Setup
+
+### 1. Install AGENT-11
 
 ```bash
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash
+```
+
+This deploys:
+- `.claude/settings.json` with `ENABLE_TOOL_SEARCH=auto`
+- `.mcp.json` (the server registry — stdio config for each MCP server)
+- `.env.mcp.template` (API key template)
+- `mcp-setup.sh` (helper for installing MCP server packages)
+
+### 2. Configure API keys
+
+```bash
+# Copy the template
 cp .env.mcp.template .env.mcp
+
+# Edit with your keys
+# Common ones: SUPABASE_ACCESS_TOKEN, GITHUB_PERSONAL_ACCESS_TOKEN,
+#              STRIPE_API_KEY, RAILWAY_API_TOKEN, NETLIFY_AUTH_TOKEN
 ```
 
-Edit `.env.mcp` and add your credentials:
+### 3. Install MCP server packages
 
 ```bash
-# Required for all profiles
-CONTEXT7_API_KEY=your_context7_key
-GITHUB_PERSONAL_ACCESS_TOKEN=your_github_token
-
-# Required for database profiles
-SUPABASE_STAGING_TOKEN=your_staging_token
-SUPABASE_STAGING_REF=your_staging_ref
-SUPABASE_PRODUCTION_TOKEN=your_production_token
-SUPABASE_PRODUCTION_REF=your_production_ref
-
-# Required for payments profile
-STRIPE_API_KEY=your_stripe_key
-
-# Required for deployment profile
-NETLIFY_ACCESS_TOKEN=your_netlify_token
-RAILWAY_API_TOKEN=your_railway_token
+./mcp-setup.sh
 ```
 
-**Security Note:** `.env.mcp` is in `.gitignore` - never commit credentials to git.
-
-### 3. Choose Your Profile (Easy Way)
-
-**Simple slash commands - no complex syntax to remember:**
-
-```bash
-/mcp-switch core          # For general development
-/mcp-switch testing       # For testing with Playwright
-/mcp-switch database-staging      # For database work (full access)
-/mcp-switch database-production   # For production queries (read-only)
-/mcp-switch payments      # For payment integration
-/mcp-switch deployment    # For deployments
-/mcp-switch fullstack     # For everything (uses more context)
-```
-
-**Other helpful commands:**
-```bash
-/mcp-list    # See all available profiles with descriptions
-/mcp-status  # Check which profile is currently active
-```
-
-<details>
-<summary><strong>Advanced: Manual Profile Switching (click to expand)</strong></summary>
-
-If you prefer manual control, you can use symlinks directly:
-
-```bash
-# For general development
-ln -sf .mcp-profiles/core.json .mcp.json
-
-# For testing with Playwright
-ln -sf .mcp-profiles/testing.json .mcp.json
-
-# For database work (staging)
-ln -sf .mcp-profiles/database-staging.json .mcp.json
-
-# For production queries (read-only)
-ln -sf .mcp-profiles/database-production.json .mcp.json
-
-# For payment integration
-ln -sf .mcp-profiles/payments.json .mcp.json
-
-# For deployments
-ln -sf .mcp-profiles/deployment.json .mcp.json
-
-# For everything (development only)
-ln -sf .mcp-profiles/fullstack.json .mcp.json
-```
-</details>
+This installs the npm packages each MCP server needs.
 
 ### 4. Restart Claude Code
 
-After switching profiles, restart Claude Code when prompted:
-
 ```bash
-# Type: /exit
-# Then run: claude
+# Type /exit in Claude Code, then:
+claude
 ```
 
-### 5. Verify Active Profile
+After restart, Tool Search is active and your configured MCP servers are available on demand.
 
-Check which profile is active:
+---
 
-```bash
-/mcp-status
+## Verifying MCP Tools
+
+Inside a Claude Code session:
+
+```
+# List all available MCP tools
+tool_search_tool_regex_20251119(pattern="mcp__.*")
+
+# Find database tools
+tool_search_tool_regex_20251119(pattern="mcp__supabase")
+
+# Find browser automation tools
+tool_search_tool_regex_20251119(pattern="mcp__playwright")
 ```
 
-Or manually:
-```bash
-ls -l .mcp.json
-```
+If a server isn't appearing, check:
+1. `.env.mcp` has the required API keys
+2. `.mcp.json` lists the server
+3. The MCP server's npm package is installed (`./mcp-setup.sh`)
+4. You restarted Claude Code after configuration changes
 
-Output shows: `.mcp.json -> .mcp-profiles/testing.json`
+---
 
-## Profile Selection Guide
+## Specialist → Server Mapping
 
-### When to Use Each Profile
+Each specialist's primary MCP search patterns:
 
-**core** - Lightweight development
-- Code review and analysis
-- Documentation writing
-- Planning and strategy
-- Git operations
-- File operations
-- When you don't need specialized tools
+| Specialist | Primary patterns | Common use cases |
+|------------|------------------|------------------|
+| `@developer` | `mcp__supabase`, `mcp__context7`, `mcp__github` | DB operations, library docs, repo work |
+| `@tester` | `mcp__playwright` | Browser automation, E2E tests |
+| `@operator` | `mcp__railway`, `mcp__netlify`, `mcp__github` | Deployment, CI/CD |
+| `@architect` | `mcp__context7`, `mcp__github`, `mcp__firecrawl` | Architecture research |
+| `@analyst` | `mcp__supabase`, `mcp__firecrawl` | Data analysis, metrics |
+| `@marketer` | `mcp__firecrawl`, `mcp__stripe` | Research, revenue analytics |
+| `@designer` | `mcp__playwright`, `mcp__firecrawl` | Visual checks, competitor research |
 
-**testing** - Quality assurance
-- Writing Playwright tests
-- Running browser automation
-- Visual regression testing
-- Accessibility testing
-- Integration testing
-- UI testing
+Specialists search for these patterns themselves when delegated work needs MCP capabilities. You don't need to pre-load anything.
 
-**database-staging** - Database development
-- Schema migrations
-- Data modeling
-- Query development
-- Database testing
-- Staging data operations
-- Full read/write access
+---
 
-**database-production** - Production queries
-- Read-only production access
-- Data analysis
-- Report generation
-- Production debugging
-- Safety-enforced (no writes possible)
+## v5.x → v6.0 Migration
 
-**payments** - Payment integration
-- Stripe integration
-- Payment testing
-- Subscription management
-- Invoice generation
-- Revenue analytics
-
-**deployment** - Shipping code
-- Netlify deployments
-- Railway deployments
-- Environment configuration
-- Production releases
-- Infrastructure management
-
-**fullstack** - Development mode
-- All development MCPs combined
-- Maximum capabilities
-- Higher context usage
-- Use when you need multiple MCP types
-- Excludes production database (safety)
-
-## Workflow Examples
-
-### Example 1: Testing Workflow
+If you were using AGENT-11 v5.x with the `.mcp-profiles/` system:
 
 ```bash
-# Switch to testing profile
-/mcp-switch testing
-
-# Claude Code will prompt you to restart
-
-# Ask agent to create tests
-@tester Create Playwright tests for the login flow
-
-# Agent automatically uses Playwright MCP
-# Tests are created and executed
+# Run the migration script in your project root
+bash <(curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/migrate-v5-to-v6.sh)
 ```
 
-### Example 2: Database Migration
+The script:
+- Backs up your existing `.mcp-profiles/`, `handoff-notes.md`, and other v5.x files to `.claude/backups/v5-to-v6-YYYYMMDD-HHMMSS/`
+- Retires `.mcp-profiles/` (the profile-switching system is replaced by native deferring)
+- Folds `handoff-notes.md` into `agent-context.md` as a Phase Handoff block
+- Leaves your `.mcp.json` (server registry) untouched
+- Leaves your `.env.mcp` (API keys) untouched
+- Warns if your `.claude/settings.json` doesn't have `ENABLE_TOOL_SEARCH=auto` (you'll need to add it manually if you have customisations)
 
+After migration, run `install.sh` again to deploy the v6.0 library files (lean CLAUDE.md, updated agents, hooks, constitution).
+
+**Rollback**: copy files from `.claude/backups/v5-to-v6-*/` back to project root.
+
+**Manual migration** (if you prefer):
 ```bash
-# Switch to staging database
-/mcp-switch database-staging
+# Move handoff-notes content into agent-context
+cat handoff-notes.md >> agent-context.md && rm handoff-notes.md
 
-# Restart when prompted
+# Retire profile-switching directory
+mv .mcp-profiles .claude/backups/
 
-# Ask agent to create migration
-@developer Create a migration to add user preferences table
-
-# Agent uses Supabase MCP (staging, read/write)
-# Migration is created and tested
+# Add ENABLE_TOOL_SEARCH to settings.json
+# (use library/settings.json.template from the AGENT-11 repo as reference)
 ```
 
-### Example 3: Production Analysis
-
-```bash
-# Switch to production database (read-only)
-/mcp-switch database-production
-
-# Restart when prompted
-
-# Ask agent to analyze data
-@analyst Generate report on user activity last month
-
-# Agent uses Supabase MCP (production, read-only enforced)
-# No risk of accidental writes
-```
-
-### Example 4: Deployment
-
-```bash
-# Switch to deployment profile
-/mcp-switch deployment
-
-# Restart when prompted
-
-# Ask agent to deploy
-@operator Deploy the latest version to production
-
-# Agent uses Netlify/Railway MCPs
-# Deployment proceeds with appropriate tools
-```
-
-## Best Practices
-
-### 1. Start Small
-Begin with the smallest profile that meets your needs. You can always switch to a larger profile if needed.
-
-### 2. Profile Per Session
-Set the appropriate profile at the start of your work session and stick with it. Switching mid-session requires a restart.
-
-### 3. Production Safety
-Always use `database-production.json` for production queries. The read-only flag prevents accidental writes.
-
-### 4. Check Before Operations
-Before any critical operation, verify your active profile:
-
-```bash
-/mcp-status
-```
-
-### 5. Environment Separation
-Use separate profiles for staging vs production to enforce clear boundaries:
-- `database-staging.json` - Full access for development
-- `database-production.json` - Read-only for queries
-
-### 6. Task-Appropriate Tooling
-Match your profile to your task:
-- Testing? Use testing profile
-- Database work? Use database profile
-- Deployment? Use deployment profile
-
-### 7. Context Management
-Monitor context usage. If you're hitting limits, switch to a smaller profile:
-- core: 80% reduction
-- testing: 63% reduction
-- database-staging: 47% reduction
-
-### 8. Documentation
-When asking agents to work, mention if a specific profile is needed:
-
-```bash
-# Good
-@tester (testing profile) Create Playwright tests for checkout
-
-# Better (let agent guide you)
-@tester I need to create tests for checkout flow
-# Agent will tell you which profile to use
-```
-
-## Advanced Usage
-
-### Creating Custom Profiles
-
-You can create custom profiles for specific workflows:
-
-```bash
-# Create new profile
-cp .mcp-profiles/core.json .mcp-profiles/custom.json
-
-# Edit to add only the MCPs you need
-# Then switch to it
-ln -sf .mcp-profiles/custom.json .mcp.json
-```
-
-### Checking MCP Server Status
-
-Verify MCP servers are running:
-
-```bash
-./project/deployment/scripts/mcp-setup.sh --verify
-```
-
-### Environment-Specific Variables
-
-Use different environment files for different contexts:
-
-```bash
-# Development environment
-cp .env.mcp .env.mcp.dev
-
-# Production environment (read-only tokens only)
-cp .env.mcp .env.mcp.prod
-```
-
-### Profile Switching Commands
-
-**Built-in slash commands** (recommended - no setup needed):
-```bash
-/mcp-switch testing
-/mcp-switch database-staging
-```
-
-**Advanced: Custom Shell Script** (if you prefer terminal-based switching):
-
-Create a helper script for quick switching:
-
-```bash
-#!/bin/bash
-# save as ~/bin/mcp-profile
-
-profile=$1
-ln -sf .mcp-profiles/${profile}.json .mcp.json
-echo "Switched to ${profile} profile"
-echo "Restart Claude Code for changes to take effect"
-```
-
-Usage:
-```bash
-mcp-profile testing
-mcp-profile database-staging
-```
-
-**Note:** The built-in `/mcp-switch` commands are simpler and provide better guidance.
-
-## Integration with Agents
-
-AGENT-11 agents are MCP-aware and will guide you on profile selection:
-
-### Coordinator
-When starting missions, coordinator checks active profile and recommends switches:
-
-```bash
-/coord test
-# Coordinator: "I recommend the testing profile for this mission."
-# "Run: /mcp-switch testing"
-```
-
-### Tester
-Before testing work, tester verifies testing profile is active:
-
-```bash
-@tester Create tests
-# Tester: "I need the testing profile for Playwright."
-# "Run: /mcp-switch testing"
-```
-
-### Developer
-Before database operations, developer checks environment:
-
-```bash
-@developer Update user table
-# Developer: "I need database access. For staging (read/write), run: /mcp-switch database-staging"
-```
-
-### Operator
-Before deployments, operator verifies deployment profile:
-
-```bash
-@operator Deploy to production
-# Operator: "I need deployment tools. Run: /mcp-switch deployment"
-```
+---
 
 ## Troubleshooting
 
-### Profile Not Taking Effect
+### Tool Search returns no results
 
-**Symptom:** Switched profiles but MCPs haven't changed
+1. Verify pattern syntax: `mcp__supabase` (double underscore)
+2. Try the broadest pattern: `tool_search_tool_regex_20251119(pattern="mcp__.*")`
+3. Check `.env.mcp` has the required API keys
+4. Check the MCP server's npm package is installed
 
-**Solution:** Always restart Claude Code after switching profiles
+### Specialist says "tool not found"
 
-```bash
-# After using /mcp-switch, you'll be prompted to restart
-# Type: /exit
-# Then run: claude
+The specialist may have searched with the wrong pattern. The server might also not be configured. Check `.mcp.json` — if the server isn't listed there, add it via `.mcp.json.template` and restart.
 
-# Verify the switch worked:
-/mcp-status
-```
+### Hooks blocking my work
 
-### MCP Server Not Found
+`.claude/settings.json` ships with **advisory** hooks (`tsc`/`ruff`/`rubocop` on save, destructive Bash confirmation). To promote a hook to **blocking**, change `|| true` at the end of its command to `|| exit 2`. To **disable** a hook, remove its entry from the array.
 
-**Symptom:** "MCP server not installed" errors
+### Migration script refuses to run
 
-**Solution:** Run the setup script
+The script refuses on:
+- Directories without an AGENT-11 install (no `.claude/CLAUDE.md` or `.claude/agents/coordinator.md`) — install AGENT-11 first.
+- Already-v6.0 installs (no v5.x markers detected) — nothing to migrate.
 
-```bash
-./project/deployment/scripts/mcp-setup.sh
-```
+### Stale agent context after migration
 
-### Environment Variables Not Loading
+If specialists seem confused after migration, check:
+- `agent-context.md` exists and has both your original content and the appended Phase Handoff content (look for "Migrated from handoff-notes.md" separator).
+- `progress.md` is no longer being read at session start (this is correct — it's write-only in v6.0).
 
-**Symptom:** "Missing API key" errors
-
-**Solution:** Check `.env.mcp` exists and has correct values
-
-```bash
-# Verify file exists
-ls -la .env.mcp
-
-# Check contents (don't commit this!)
-cat .env.mcp
-
-# Ensure proper format (no spaces around =)
-GITHUB_PERSONAL_ACCESS_TOKEN=ghp_your_token_here
-```
-
-### Production Write Blocked
-
-**Symptom:** "Operation not permitted" on production database
-
-**Solution:** This is expected! Production profile is read-only.
-
-```bash
-# For write operations, switch to staging
-ln -sf .mcp-profiles/database-staging.json .mcp.json
-
-# Restart Claude Code
-```
-
-### Symlink Not Working
-
-**Symptom:** `.mcp.json` is a regular file, not a symlink
-
-**Solution:** Remove the file and create proper symlink
-
-```bash
-# Remove regular file
-rm .mcp.json
-
-# Create symlink
-ln -sf .mcp-profiles/core.json .mcp.json
-
-# Verify it's a symlink
-ls -l .mcp.json
-```
-
-### Unknown Profile
-
-**Symptom:** Profile doesn't exist in `.mcp-profiles/`
-
-**Solution:** Use one of the 7 standard profiles
-
-```bash
-# List available profiles
-ls -la .mcp-profiles/
-
-# Should show:
-# core.json
-# testing.json
-# database-staging.json
-# database-production.json
-# payments.json
-# deployment.json
-# fullstack.json
-```
+---
 
 ## Reference
 
-### Available MCPs by Profile
+- **`field-manual/mcp-integration.md`** — deeper MCP integration patterns (AGENT-11-specific).
+- **Anthropic MCP docs**: https://code.claude.com/docs/en/mcp
+- **Tool Search**: built into Claude Code; no separate setup beyond `ENABLE_TOOL_SEARCH=auto` in `.claude/settings.json`.
 
-**core** (3 MCPs):
-- context7 - Library documentation
-- github - Repository management
-- filesystem - File operations
+---
 
-**testing** (4 MCPs):
-- core MCPs +
-- playwright - Browser automation
+## What v6.0 Does NOT Do
 
-**database-staging** (4 MCPs):
-- core MCPs +
-- supabase-staging - Database (read/write)
+- **Per-tool `defer_loading` config in `.mcp.json`**. That's a Claude API feature, not Claude Code. v6.0's Sprint 11 attempt at this (`project/mcp/dynamic-mcp.json`) was based on a schema misreading — caught and archived in Sprint 4f.
+- **Profile switching**. Retired. Native deferring replaces it.
+- **Manual MCP optimisation**. The `mcp-optimization-guide.md` from v5.x is archived; its premise no longer applies.
 
-**database-production** (4 MCPs):
-- core MCPs +
-- supabase-production - Database (read-only)
-
-**payments** (4 MCPs):
-- core MCPs +
-- stripe - Payment processing
-
-**deployment** (5 MCPs):
-- core MCPs +
-- netlify - Frontend hosting
-- railway - Backend services
-
-**fullstack** (8 MCPs):
-- core MCPs +
-- playwright
-- supabase-staging
-- stripe
-- netlify
-- railway
-- (excludes production database)
-
-### Context Usage Table
-
-| Profile | MCPs | Tokens | Reduction |
-|---------|------|--------|-----------|
-| core | 3 | 3,000 | 80% |
-| testing | 4 | 5,500 | 63% |
-| database-staging | 4 | 8,000 | 47% |
-| database-production | 4 | 8,000 | 47% |
-| payments | 4 | 7,000 | 53% |
-| deployment | 5 | 9,000 | 40% |
-| fullstack | 8 | 15,000 | baseline |
-
-### Profile Files Location
-
-All profiles are stored in:
-```
-.mcp-profiles/
-├── core.json
-├── testing.json
-├── database-staging.json
-├── database-production.json
-├── payments.json
-├── deployment.json
-└── fullstack.json
-```
-
-Active profile symlink:
-```
-.mcp.json -> .mcp-profiles/[profile].json
-```
-
-### Related Documentation
-
-- **Profile Reference**: docs/MCP-PROFILES.md
-- **Troubleshooting**: docs/MCP-TROUBLESHOOTING.md
-- **Installation Guide**: project/deployment/README.md
-- **Agent Integration**: project/agents/specialists/
-
-## Next Steps
-
-1. **Install MCP servers** if you haven't already
-2. **Configure environment variables** in `.env.mcp`
-3. **Choose a profile** based on your current task
-4. **Restart Claude Code** to activate the profile
-5. **Verify activation** with `ls -l .mcp.json`
-6. **Start working** - agents will guide you on profile needs
-
-For more details on each profile, see [MCP-PROFILES.md](./MCP-PROFILES.md).
-
-For common issues and solutions, see [MCP-TROUBLESHOOTING.md](./MCP-TROUBLESHOOTING.md).
+If something in your workflow expects the v5.x patterns, run `migrate-v5-to-v6.sh` to bring your project up to date.

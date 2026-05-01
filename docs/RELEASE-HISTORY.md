@@ -4,6 +4,65 @@ Complete history of AGENT-11 development sprints and releases.
 
 ---
 
+## v6.0: The Lean Orchestrator
+**Released**: 2026-05-XX (pending T1 harness validation)
+
+v6.0 is a structural evolution. AGENT-11 stops reinventing what Claude Code's platform now provides natively (hooks, tool deferring, Routines, the Agent Skills open standard) and shrinks the framework's own surface dramatically. Public-facing API is largely backwards-compatible; the wins are mostly invisible structural improvements.
+
+### Headline Changes
+
+- **`library/CLAUDE.md`**: 575 → 78 lines (-86%)
+- **`/coord` command**: 549 → 134 lines (-76%)
+- **Active context tracking surface**: 5 files → 3 (`progress.md` demoted to write-only; `handoff-notes.md` folded into `agent-context.md`)
+- **MCP loading**: profile-switching retired in favour of Claude Code's native `ENABLE_TOOL_SEARCH=auto`
+- **New primitive integrations**: hooks (`PostToolUse` for `tsc`/`ruff`/`rubocop`, `PreToolUse` for destructive Bash), Routines (3 paste-ready prompt templates for Mode C operational work)
+- **One-command migration**: `migrate-v5-to-v6.sh` upgrades v5.x projects with full backup
+
+### Structural Shifts
+
+1. **Deterministic routing over inference** — `/coord [mission]` dispatches on explicit mission name, never NLP intent.
+2. **Karpathy operating discipline** — seven principles every specialist applies (read before writing, state assumptions, prefer minimal diffs, verify by running, avoid speculative refactors, lightest valid path, present alternatives explicitly).
+3. **Mode-aware context loading** — coordinator reads only what the mission's mode requires. Mode A loads tracking files; Mode B1 (`fix`) loads only the bug report; Mode B2 loads `project-plan.md` if present.
+4. **Native primitives over custom prompts** — hooks replace prompt-based "remember to lint" instructions. Tool Search replaces profile-switching. Routines replace one-time `/coord` invocations of recurring work.
+5. **Skills aligned with Anthropic's open standard** — all 7 SaaS skills now have proper `description` fields per [agentskills.io/specification](https://agentskills.io/specification). Forward-compatible with future marketplace publishing.
+
+### Validation Metrics
+
+*Harness re-run for milestones-4c/4d/4e/4f/4g pending. Will be filled in here from `project/validation/v6.0-summary.md` upon T1 completion.*
+
+Sprint 4b (the only v6.0 milestone harness run to date) showed **Task 4 wall-clock dropped 75%** (6:07 → 1:33) — driven by the prompt-hygiene and budget-control changes. Sprints 4c-4g are projected to extend M2 (session-start tokens) reductions further; T1 of Sprint 4h validates this.
+
+### Sprint Roadmap (v6.0 evolution)
+
+The v6.0 evolution was delivered as 8 sub-sprints under the "Sprint 4" umbrella, using a rolling-wave protocol where the next sprint's spec was the closing task of the current sprint:
+
+| Sprint | Focus | Headline |
+|--------|-------|----------|
+| **4a** | Baseline + Great Deletion | Validation harness; v5.2 baseline measured; MCP profile system, backups, ASCII art deleted |
+| **4b** | Prompt Hygiene & Budget Controls | Karpathy constitution; PAUSE-AND-PLAN; mission budgets; Task 4 dropped 75% |
+| **4c** | The Universal Router | `/coord` rewritten 549 → 91 lines; 13 missions across Modes A/B1/B2; mode override; deterministic routing |
+| **4d** | Native Primitives + CLAUDE.md Shrink | `library/CLAUDE.md` 575 → 79 lines; quality-gate hooks; constitution deployment fix |
+| **4e** | Context Consolidation 5→3 | `handoff-notes.md` folded into `agent-context.md` as Phase Handoff blocks; `progress.md` write-only |
+| **4f** | Dynamic MCP Tool Search | Recalibrated mid-sprint after schema audit; `ENABLE_TOOL_SEARCH=auto` enables native deferring |
+| **4g** | Skills + Routines | Skills aligned with open standard; 3 Routine prompt templates; `/coord` operational-intent detection |
+| **4h** | Validation + Migration | Harness validates v6.0 vs baseline; migration script; consolidated docs (this entry) |
+
+### Migration
+
+```bash
+# In your existing v5.x project root:
+bash <(curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/migrate-v5-to-v6.sh)
+
+# Then re-run install.sh to deploy v6.0 library files:
+curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash
+```
+
+The migration script backs up everything before any change, supports `--dry-run` and `--yes` flags, is idempotent, and produces a fully reversible upgrade.
+
+See [CHANGELOG.md](../CHANGELOG.md) v6.0 entry for the complete list of additions, changes, and removals. See [docs/MCP-GUIDE.md](MCP-GUIDE.md) for the new MCP setup.
+
+---
+
 ## Sprint 11: Dynamic MCP Tooling & Context Optimization (v5.2.0)
 **Released**: 2026-01-17
 

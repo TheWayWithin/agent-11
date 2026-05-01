@@ -8,19 +8,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- `install.sh` now always installs all 11 specialists (previously defaulted to "core" 4-agent squad). Disk and session-start cost of having all 11 is negligible because Claude Code lazy-loads custom agents. Removes a class of bugs caused by squad-argument handling (notably the `secure-install.sh` argument-drop regression found in the v6.0 baseline).
 - Upgraded Opus tier references from 4.5 to 4.6 across all documentation
 - Updated model-selection-guide.md (v1.1.0) with Opus 4.6 tier
-- Added Opus 4.6 (`claude-opus-4-6`) to memory-management.md supported models
-- Added Opus 4.6 to extended-thinking-guide.md supported models
-- Updated agent-schema.json descriptions for Opus 4.6
-- Updated architect specialist Opus reasoning reference
+
+## [6.0.0] - 2026-05-XX - The Lean Orchestrator
+
+v6.0 is a structural evolution. AGENT-11 stops reinventing what Claude Code's platform now provides natively (hooks, native tool deferring, Routines, the Agent Skills open standard) and shrinks the framework's own surface dramatically — `library/CLAUDE.md` from **575 lines to 78** (-86%), context tracking from **5 active files to 3**, MCP startup cost reduced via `ENABLE_TOOL_SEARCH=auto`. Public-facing API is largely backwards-compatible (`/coord build` still works the same); the wins are mostly invisible structural improvements that ship cleaner sessions.
+
+**Migration**: existing v5.x users run `bash <(curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/migrate-v5-to-v6.sh)` (or download and run manually). The script detects v5.x markers, backs up everything before any change, and guides through the upgrade. See [Migration Guide](docs/MCP-GUIDE.md) for details.
+
+### Added
+
+- **Universal Router (`/coord [mission]`)** — deterministic mission-based routing. 13 missions across Mode A (greenfield: `build`, `mvp`, `dev-setup`, `dev-alignment`, `integrate`, `migrate`), Mode B1 (surgical: `fix`), Mode B2 (maintenance: `refactor`, `optimize`, `document`, `release`, `deploy`, `security`). Mode override syntax: `/coord mode:maintenance security`. Unknown missions fail with a clear error and the valid list — no NLP "did you mean..." inference.
+- **Karpathy operating constitution** — seven principles applied by every specialist: read before writing, state assumptions, prefer minimal diffs, verify by running, avoid speculative refactors, lightest valid path, present alternatives explicitly when uncertain. Replaces the previous "always delegate" discipline. Deployed to `.claude/constitution/karpathy-constitution.md`.
+- **Dynamic context loading** — coordinator reads only the files the mission's mode requires. Mode A loads `project-plan.md` + `agent-context.md` + mission file; Mode B1 (`fix`) loads only the bug report; Mode B2 loads `project-plan.md` if it exists. `evidence-repository.md` and `progress.md` are on-demand only.
+- **Phase Handoff blocks** — structured 5-field schema (Findings / Decisions / Warnings & Gotchas / Open Items / Evidence) appended to `agent-context.md` at phase boundaries. Replaces the separate `handoff-notes.md` file.
+- **Quality-gate hooks** — `.claude/settings.json` ships with advisory `PostToolUse` hooks for `tsc`/`ruff`/`rubocop` on Edit/Write/MultiEdit (auto-skip when toolchain absent — `package.json`/`pyproject.toml`/`Gemfile` gates) and a `PreToolUse` confirmation prompt for destructive Bash (`rm -rf`, `git push --force`, `git reset --hard`, etc.). Advisory by default (`|| true`); promote to blocking by changing to `|| exit 2`.
+- **Native MCP tool deferring** — `.claude/settings.json` ships `ENABLE_TOOL_SEARCH=auto`, leveraging Claude Code's threshold-based tool loading. Specialists discover MCP tools on demand via `tool_search_tool_regex_20251119(pattern="mcp__SERVERNAME")`.
+- **Routines for Mode C (operational work)** — three paste-ready prompt templates in `routines/`: `pr-review.md` (GitHub webhook), `nightly-qa.md` (cron), `backlog-triage.md` (cron). `/coord` detects cadence keywords ("daily", "every Monday", "schedule", etc.) and points users at the matching template instead of executing one-time work. Routines run on Anthropic-managed cloud via `claude.ai/code/routines`.
+- **3-tier skills model** — Tier 1 (behavioural, in CLAUDE.md), Tier 2 (project-domain, in user `skills/`), Tier 3 (marketplace, in `.claude/skills/`). All 7 SaaS skills aligned with Anthropic's [Agent Skills open standard](https://agentskills.io/specification): each has a proper `description` field. Custom AGENT-11 fields preserved for backward-compat.
+- **`migrate-v5-to-v6.sh`** — one-command migration script for v5.x users. Detects markers, backs up before changes, folds `handoff-notes.md` into `agent-context.md`, retires `.mcp-profiles/`. Supports `--dry-run` and `--yes` flags. Idempotent.
+- **`/coord` mode override** — `/coord mode:greenfield|surgical|maintenance [mission]` forces a specific mode regardless of mission name.
+- **`/coord` Routine detection** — cadence keywords trigger a pointer to the matching Routine template instead of one-time delegation.
+
+### Changed
+
+- `library/CLAUDE.md` shrunk from 575 lines to **78 lines** (-86%). Most content was duplicate of canonical sources elsewhere (coordinator.md, field-manual/, command files); lean version points at them.
+- `project/commands/coord.md` shrunk from 549 lines to **134 lines**. Old briefing duplicated content already in coordinator.md; thin dispatcher only.
+- Coordinator's session-start protocol now mode-aware. Staleness check only runs on resumed missions (where tracking files exist), not blindly on every fresh start.
+- `progress.md` demoted to **write-only** by default. Coordinator appends entries (issues, fixes, deliverables) but doesn't read at session start. Reads happen on staleness checks (resumed missions) or post-`/clear` reconstruction.
+- MCP server registry (`.mcp.json`) deployment unchanged — it's correctly Claude Code's stdio config. v5.x's `.mcp-profiles/` profile-switching system is retired entirely.
+- All 7 MCP-using specialists (`developer`, `tester`, `operator`, `architect`, `analyst`, `marketer`, `designer`) updated with concise Tool-Centric Workflow guidance. Long static MCP tool listings replaced with Tool Search references.
+- `install.sh` deploys: `library/settings.json.template` → `.claude/settings.json` (new); `project/constitution/karpathy-constitution.md` → `.claude/constitution/` (new — was referenced by coordinator but missing pre-v6.0); `field-manual/mcp-integration.md` (added to deployment list).
+- `install.sh` always installs all 11 specialists (previously defaulted to "core" 4-agent squad). The squad selector argument is accepted but ignored with a deprecation notice.
 
 ### Deprecated
-- `install.sh [core|full|minimal]` arguments are accepted but ignored (with a notice); all installs get all 11 agents regardless. The selector will be removed in a future release.
+
+- `install.sh [core|full|minimal]` arguments accepted but ignored (deprecation notice). Removal scheduled for v7.0.
 
 ### Removed
-- `/mcp-switch`, `/mcp-list`, `/mcp-status` profile commands retired (v6.0 Sprint 4a). Replacement is dynamic tool search (v6.0 Sprint 4f). Brief deprecation notice added to README.
+
+- `handoff-notes.md` retired as a separate active-context file. Folded into `agent-context.md` as Phase Handoff blocks. v5.x users migrate via `migrate-v5-to-v6.sh` (one line: `cat handoff-notes.md >> agent-context.md && rm handoff-notes.md`).
+- `.mcp-profiles/` directory and the profile-switching system retired. Replaced by native tool deferring (`ENABLE_TOOL_SEARCH=auto`).
+- `/mcp-switch`, `/mcp-list`, `/mcp-status` slash commands retired (Sprint 4a).
+- `templates/handoff-notes-template.md` retired (folded into `agent-context-template.md`).
+- `project/mcp/dynamic-mcp.json` removed — Sprint 11 artefact based on Claude API schema (per-tool `defer_loading`), which doesn't apply to Claude Code's `.mcp.json`. Caught at Sprint 4f T1 audit. Native deferring replaces it.
+- `project/field-manual/mcp-optimization-guide.md` archived — its entire premise was the retired profile-switching optimisation. `field-manual/mcp-integration.md` is now the canonical MCP doc.
+- `project/deployment/scripts/validate-mcp-profiles.sh` archived — validated profiles that no longer exist.
+- `mcp-setup.sh` at repo root (root-level MCP setup helper) retired in Sprint 4a alongside the profile system.
+
+### Architecture
+
+v6.0 is delivered as 8 sub-sprints under the "Sprint 4" umbrella. Each followed a rolling-wave protocol where the next sprint's spec was the closing task of the current sprint:
+
+- **4a — Baseline + Great Deletion**: validation harness; v5.2 baseline measured; MCP profile system, backups, ASCII art deleted.
+- **4b — Prompt Hygiene & Budget Controls**: Karpathy constitution shipped; PAUSE-AND-PLAN replaces NO-WAITING; mission budget frontmatter; subagent hardening. Headline measurement: Task 4 (refactor) dropped 75% (6:07 → 1:33).
+- **4c — The Universal Router**: `/coord` rewritten 549 → 91 lines; deterministic mission routing; dynamic context loading.
+- **4d — Native Primitives + CLAUDE.md Shrink**: hooks in `settings.json`; `library/CLAUDE.md` 575 → 79 lines; Meta-Dev skill for the agent-11 repo; constitution deployment fix.
+- **4e — Context Consolidation 5→3**: `handoff-notes.md` folded into `agent-context.md` as Phase Handoff blocks; `progress.md` demoted to write-only.
+- **4f — Dynamic MCP Tool Search**: recalibrated mid-sprint after T1 audit caught a schema mismatch; `ENABLE_TOOL_SEARCH=auto` enabled native deferring; `dynamic-mcp.json` archived; profile-switching residue retired.
+- **4g — Skills + Routines**: skills audited against open standard; 3-tier model documented; 3 paste-ready Routine templates; `/coord` operational-intent detection.
+- **4h — Validation + Migration**: harness validates v6.0 vs baseline; `migrate-v5-to-v6.sh` for v5.x upgrades; consolidated docs (this CHANGELOG entry).
 
 ## [5.0.0] - 2025-12-31 - SaaS Boilerplate Killer Architecture
 

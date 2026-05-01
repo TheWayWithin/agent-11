@@ -46,16 +46,18 @@ Full close-out in `progress.md` under `[2026-04-27] — Sprint 4g (T1-T8, T10) C
 Sprint 4h is **6 tasks** (T5 beta cohort dropped on 2026-04-27 — wrong fit for solo OSS context).
 
 **Sprint 4h progress**:
-- ✅ **T3 — v5→v6 migration script** shipped 2026-05-01 (out-of-order; doesn't depend on T1). Tested across 4 scenarios. See progress.md `[2026-05-01] — Sprint 4h T3` for details.
+- ✅ **T3 — v5→v6 migration script** shipped 2026-05-01 (tested across 4 scenarios)
+- ✅ **T4 — consolidated docs** shipped 2026-05-01 (CHANGELOG v6.0 entry, MCP-GUIDE rewrite, RELEASE-HISTORY v6.0 summary, README targeted updates)
 
 **Remaining**:
 1. **You** — run the harness batch (T1) in terminal against v5.2 baseline. Five milestones to produce: 4c (Tasks 3, 4, 5), 4d (Tasks 1, 2, 5), 4e (Tasks 1, 2, 3), 4f (Tasks 1, 2, 3), 4g (Tasks 4, 5). Splittable across multiple sessions; produce them in any order.
-2. **Me** — draft T2 (cumulative v6.0 metrics report) from your T1 results. Solo, fast.
-3. **Me** — ship T4 (consolidated docs) — README/CHANGELOG/MCP-GUIDE/RELEASE-HISTORY pass. Solo, mostly mechanical. Some metric references need T2 data; rest is structural.
-4. **You + me** — T5 (release-readiness checklist sync). One short pass before tagging v6.0.0.
-5. **Me** — T6 (v6.0 retrospective + post-v6 backlog). Solo close-out.
+2. **Me** — draft T2 (cumulative v6.0 metrics report) from your T1 results. Fast; fills the "*pending T1*" placeholders left in CHANGELOG and RELEASE-HISTORY.
+3. **You + me** — T5 (release-readiness checklist sync). One short pass before tagging v6.0.0.
+4. **Me** — T6 (v6.0 retrospective + post-v6 backlog). Solo close-out.
 
 **v6.0 ships when T6 commits.** No beta gate, no formal cohort recruitment.
+
+**Pre-T1 state**: structurally, v6.0 is complete. Migration path exists, docs are aligned, all 8 sprints' library work is on `main`. T1 is the empirical validation step — without it, the metric placeholders in CHANGELOG/RELEASE-HISTORY can't be filled in and we ship v6.0 without proof of the M2 reductions we projected.
 
 ---
 
