@@ -621,6 +621,36 @@ AGENT-11's existing 7 SaaS skills had `name` ✓ but were missing `description`.
 
 ---
 
+### [2026-05-03] — Sprint 4h T1: v6.0 harness re-verified ✅
+
+**Summary**: Re-ran the greenfield T1 harness against the v6.0 build mission after both blocker fixes. Both held. `/coord build` completed cleanly through Phase 6 against the Tinylink fixture; 32/32 automated tests pass (870ms).
+
+**Verification target**: `test-projects/t1-greenfield-run/` (greenfield Tinylink MVP fixture, gitignored — verification artefacts live there, key findings lifted here).
+
+**Phases executed**:
+1. ✅ Phase 1-2: Strategist + Architect (real specialist hops via direct Task tool spawning from top-level Claude — not via coordinator subagent)
+2. ✅ Phase 3: Story locking
+3. ✅ Phase 4: Developer — 20 files, EJS partials pattern honoured (no `views/layout.ejs` wrapper, locked architecture invariant held)
+4. ✅ Phase 4 walkthrough: 8/8 manual acceptance steps green (signup → login → session persistence → shorten → incognito click count → soft-delete → 404)
+5. ✅ Phase 5: Tester — 32/32 automated tests, 870ms, 6 KPI suites + 3 helpers
+6. ✅ Phase 5 cleanup: `createApp` factory refactor (option C: kill the only real maintenance trap, accept 3 cosmetic findings as documented)
+7. ✅ Phase 6: Documenter — README in place
+8. ⏭ Phase 7: deploy artefacts deferred — no remote / Railway service yet; will run `/coord fix add-ci-and-dockerfile` when actually deploying
+
+**Blocker validation**:
+- **#1 (flat-frontmatter for tool provisioning)**: Held. Specialists spawned with correct tool sets each phase.
+- **#2 (mission-complete verification + anti-fabrication)**: Gate fired correctly. After Phase 4 the outer Claude reported "20 files verified on disk" with specific evidence (ls -la, grep, node --check) and asked for browser walkthrough before declaring success — exactly the behaviour the fix was designed to produce.
+
+**Process learning**: Top-level Claude spawning specialists directly via Task tool worked cleanly (~6.5 min Phase 4 implementation, no timeouts). Coordinator-as-subagent caused nested-Task / stream-timeout issues in earlier iterations — direct-spawn is the durable pattern.
+
+**EJS lesson captured**: `views/layout.ejs` wrapper pattern forbidden; use `<%- include('partials/...') %>` partials. Saved to user memory so it carries to future EJS work.
+
+**Sprint 4h status**: T1 complete. T2 (cumulative metrics) and T5 (release-readiness checklist) now unblocked.
+
+**v6.0 status**: Release-ready. Remaining = T2/T5/T6 close-out paperwork plus release ceremony (tag, GitHub release, announce).
+
+---
+
 ### [2026-04-19] — v6.0 Evolution Kickoff
 
 Continuing from the v6.0 planning session committed in `aa6ecdb`. Historic context (pre-v6 plan, Sprint 9/11 work) preserved in `.archive/2026-04-17-pre-v6/`.
