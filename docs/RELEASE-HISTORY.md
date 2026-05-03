@@ -5,7 +5,7 @@ Complete history of AGENT-11 development sprints and releases.
 ---
 
 ## v6.0: The Lean Orchestrator
-**Released**: 2026-05-XX (pending T1 harness validation)
+**Released**: 2026-05-03
 
 v6.0 is a structural evolution. AGENT-11 stops reinventing what Claude Code's platform now provides natively (hooks, tool deferring, Routines, the Agent Skills open standard) and shrinks the framework's own surface dramatically. Public-facing API is largely backwards-compatible; the wins are mostly invisible structural improvements.
 
@@ -28,9 +28,9 @@ v6.0 is a structural evolution. AGENT-11 stops reinventing what Claude Code's pl
 
 ### Validation Metrics
 
-*Harness re-run for milestones-4c/4d/4e/4f/4g pending. Will be filled in here from `project/validation/v6.0-summary.md` upon T1 completion.*
+Sprint 4h T1 (2026-05-03) re-ran the greenfield harness against `/coord build`. Result: clean run through Phase 6 against the Tinylink fixture; 32/32 automated tests pass; both pre-release blockers (flat-frontmatter tool provisioning, mission-complete verification) held. Full cross-sprint cumulative metrics (M1-M5 across 4c-4g) deferred to post-release; will be linked here from `project/validation/v6.0-summary.md` when T2 ships.
 
-Sprint 4b (the only v6.0 milestone harness run to date) showed **Task 4 wall-clock dropped 75%** (6:07 → 1:33) — driven by the prompt-hygiene and budget-control changes. Sprints 4c-4g are projected to extend M2 (session-start tokens) reductions further; T1 of Sprint 4h validates this.
+Sprint 4b harness showed **Task 4 wall-clock dropped 75%** (6:07 → 1:33) from the prompt-hygiene and budget-control changes. Sprint 4h T1 confirmed structural changes from 4c-4g hold under a full `/coord build` run; explicit cross-sprint M2 (session-start tokens) deltas await the cumulative metrics report (T2).
 
 ### Sprint Roadmap (v6.0 evolution)
 

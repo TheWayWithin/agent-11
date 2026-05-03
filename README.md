@@ -271,7 +271,7 @@ cp ~/Documents/BOS-AI/*.md ./documents/foundations/
 
 ## 🆕 Current Version: v6.0 — The Lean Orchestrator
 
-**Latest** (2026-05-XX, pending T1 harness validation): structural evolution leveraging Claude Code's native primitives.
+**Latest** (2026-05-03): structural evolution leveraging Claude Code's native primitives.
 
 - `library/CLAUDE.md` shrunk **575 → 78 lines** (-86%)
 - Active context tracking: 5 files → 3 (`handoff-notes.md` folded into `agent-context.md` as Phase Handoff blocks; `progress.md` write-only)
@@ -281,7 +281,7 @@ cp ~/Documents/BOS-AI/*.md ./documents/foundations/
 - Karpathy operating constitution applied by every specialist
 - One-command migration for v5.x projects: `migrate-v5-to-v6.sh`
 
-[→ v6.0 Release History](docs/RELEASE-HISTORY.md) · [→ CHANGELOG](CHANGELOG.md) · [→ MCP Guide](docs/MCP-GUIDE.md)
+[→ Release v6.0.0](https://github.com/TheWayWithin/agent-11/releases/tag/v6.0.0-lean-orchestrator) · [→ Release History](docs/RELEASE-HISTORY.md) · [→ CHANGELOG](CHANGELOG.md) · [→ MCP Guide](docs/MCP-GUIDE.md)
 
 ### v5.x users: upgrading to v6.0
 
