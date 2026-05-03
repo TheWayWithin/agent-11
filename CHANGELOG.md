@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Upgraded Opus tier references from 4.5 to 4.6 across all documentation
 - Updated model-selection-guide.md (v1.1.0) with Opus 4.6 tier
 
-## [6.0.0] - 2026-05-XX - The Lean Orchestrator
+## [6.0.0] - 2026-05-03 - The Lean Orchestrator
 
 v6.0 is a structural evolution. AGENT-11 stops reinventing what Claude Code's platform now provides natively (hooks, native tool deferring, Routines, the Agent Skills open standard) and shrinks the framework's own surface dramatically — `library/CLAUDE.md` from **575 lines to 78** (-86%), context tracking from **5 active files to 3**, MCP startup cost reduced via `ENABLE_TOOL_SEARCH=auto`. Public-facing API is largely backwards-compatible (`/coord build` still works the same); the wins are mostly invisible structural improvements that ship cleaner sessions.
 
