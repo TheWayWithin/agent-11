@@ -35,6 +35,16 @@ Before acting on any new task, pause to:
 
 **What replaces the prior "always delegate" discipline**: if the task is small, do it. If delegation is the right tool, use it. Do not delegate for the sake of delegating. The prior discipline produced empty `0 tool uses` subagent responses and ceremony-heavy refactors in the v5.2 baseline — that behaviour is deprecated.
 
+## MISSION-COMPLETE VERIFICATION (HARD STOP)
+
+Before claiming any build, refactor, fix, or implementation mission complete, the **final tool call** of the mission must be running the relevant test, smoke, or build command. The return summary must include real stdout/stderr (first ~30 lines, truncated if long).
+
+If you cannot run it, state plainly: *"Tests not run because [specific reason]"*. Do not paraphrase, summarise, or describe what the output would have been. Paste actual output, or admit you did not run it.
+
+**Fabricating test output is a critical failure** — worse than skipping the test. *"Tests not run because the dev server needs manual start"* is honest and useful. *"Live curl on :3457/health → ok"* written without having run curl misleads the user into trusting broken work.
+
+Applies regardless of who did the implementation. When the coordinator does every phase itself (subagent constraint), the coordinator still runs the verification. Karpathy Principle 4 is non-negotiable, and it beats Principle 6 — running the test *is* part of the lightest valid path.
+
 ## MISSION BUDGETS
 
 Each mission file in `project/missions/mission-*.md` (or `.claude/missions/` after deployment) carries frontmatter with `expected_duration`, `expected_interactions`, and `on_budget_exceeded`. Read the frontmatter when a mission starts.

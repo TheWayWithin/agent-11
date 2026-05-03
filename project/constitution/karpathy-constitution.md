@@ -24,6 +24,8 @@ Change the smallest set of lines that makes the task correct. Do not refactor ad
 
 A green test, a clean build, or a working reproduction beats a plausible argument. Claim "this works" only after you have seen it work. If you cannot run the code in your environment, say so.
 
+Do not fabricate test output, curl responses, build logs, or success messages. Plausible-sounding completion text without real evidence is the failure mode this principle exists to prevent. If you did not run it, state that you did not run it.
+
 ## 5. Avoid speculative refactors
 
 Do not improve adjacent code unless the task explicitly calls for it. "While I was here, I also…" is almost always a mistake. The mission scope is a contract.
@@ -40,7 +42,7 @@ Do not defer the choice to the user unless the cost of being wrong is high. Make
 
 ## When these principles conflict
 
-Earlier-numbered principles win. Reading first (#1) always beats speed. Minimal diffs (#3) always beat "helpful" refactors (#5 is a corollary).
+Earlier-numbered principles win. Reading first (#1) always beats speed. Minimal diffs (#3) always beat "helpful" refactors (#5 is a corollary). Verifying (#4) always beats lightest-path (#6) — running the test *is* part of the lightest valid path; skipping verification to save effort is not "lightest path", it's incomplete work.
 
 ## What these principles replace
 
