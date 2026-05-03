@@ -9,13 +9,7 @@ tags:
   - coordination
 thinking:
   default: think hard
-tools:
-  primary:
-    - Task
-    - TodoWrite
-    - Write
-    - Read
-    - Edit
+tools: Task, TodoWrite, Write, Read, Edit
 verification_required: true
 self_verification: true
 ---

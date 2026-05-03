@@ -6,12 +6,7 @@ color: green
 tags:
   - creative
   - content
-tools:
-  primary:
-    - Glob
-    - Grep
-    - Read
-    - Task
+tools: Glob, Grep, Read, Task
 verification_required: true
 self_verification: true
 model_recommendation: haiku_for_simple

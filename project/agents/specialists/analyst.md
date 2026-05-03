@@ -6,10 +6,7 @@ color: orange
 tags:
   - analysis
   - data
-tools:
-  primary:
-    - Read
-    - Task
+tools: Read, Task
 verification_required: true
 self_verification: true
 model_recommendation: sonnet_default

@@ -10,12 +10,7 @@ tags:
   - design
 thinking:
   default: ultrathink
-tools:
-  primary:
-    - Read
-    - Grep
-    - Glob
-    - Task
+tools: Read, Grep, Glob, Task
 coordinates_with:
   - strategist
   - developer

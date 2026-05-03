@@ -6,10 +6,7 @@ color: cyan
 tags:
   - support
   - customer
-tools:
-  primary:
-    - Read
-    - Task
+tools: Read, Task
 verification_required: true
 self_verification: true
 ---

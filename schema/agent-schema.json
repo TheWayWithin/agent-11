@@ -102,49 +102,49 @@
     },
 
     "tools": {
-      "type": "object",
-      "description": "Tool permissions - structured for validation",
-      "properties": {
-        "primary": {
-          "type": "array",
-          "description": "Essential tools for agent's core responsibilities",
-          "items": {
-            "type": "string",
-            "pattern": "^[A-Z][A-Za-z]*$"
-          },
-          "uniqueItems": true,
+      "description": "Tool permissions. Claude Code's runtime parses tools as a flat comma-separated string; that is the canonical form. The legacy nested object form (primary/mcp/restricted) is accepted by this schema for backward compatibility but is NOT honored by the runtime — agents declared in nested form launch without tools. Use the flat string form for any new or modified agent.",
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Canonical runtime form: comma-separated tool names",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\s*,\\s*[A-Za-z_][A-Za-z0-9_]*)*$",
           "examples": [
-            ["Read", "Write", "Edit", "Bash", "Task"],
-            ["Read", "Grep", "Glob", "WebSearch", "Task"]
+            "Task, TodoWrite, Write, Read, Edit",
+            "Read, Grep, Glob, Task",
+            "Edit, Glob, Grep, Read, Task, WebSearch, Write"
           ]
         },
-        "mcp": {
-          "type": "array",
-          "description": "MCP tools agent can use when available",
-          "items": {
-            "type": "string",
-            "pattern": "^mcp__[a-z0-9_-]+$"
+        {
+          "type": "object",
+          "description": "DEPRECATED nested form. Not parsed by the runtime. Migrate to the flat string form.",
+          "properties": {
+            "primary": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Z][A-Za-z]*$"
+              },
+              "uniqueItems": true
+            },
+            "mcp": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^mcp__[a-z0-9_-]+$"
+              },
+              "uniqueItems": true
+            },
+            "restricted": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
           },
-          "uniqueItems": true,
-          "examples": [
-            ["mcp__github", "mcp__context7", "mcp__playwright"],
-            ["mcp__supabase", "mcp__stripe", "mcp__netlify"]
-          ]
-        },
-        "restricted": {
-          "type": "array",
-          "description": "Tools agent is NOT permitted to use",
-          "items": {
-            "type": "string"
-          },
-          "uniqueItems": true,
-          "examples": [
-            ["WebSearch", "MultiEdit"],
-            ["Bash", "mcp__stripe"]
-          ]
+          "additionalProperties": false
         }
-      },
-      "additionalProperties": false
+      ]
     },
 
     "coordinates_with": {

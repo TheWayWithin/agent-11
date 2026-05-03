@@ -9,12 +9,7 @@ tags:
   - analysis
 thinking:
   default: think harder
-tools:
-  primary:
-    - Read
-    - Grep
-    - Glob
-    - Task
+tools: Read, Grep, Glob, Task
 verification_required: true
 self_verification: true
 ---

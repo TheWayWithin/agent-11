@@ -6,10 +6,7 @@ color: red
 tags:
   - ops
   - technical
-tools:
-  primary:
-    - Read
-    - Task
+tools: Read, Task
 coordinates_with:
   - developer
   - architect

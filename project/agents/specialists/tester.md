@@ -6,13 +6,7 @@ color: purple
 tags:
   - core
   - qa
-tools:
-  primary:
-    - Read
-    - Bash
-    - Grep
-    - Glob
-    - Task
+tools: Read, Bash, Grep, Glob, Task
 coordinates_with:
   - developer
   - designer

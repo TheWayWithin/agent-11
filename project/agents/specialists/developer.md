@@ -6,11 +6,7 @@ color: blue
 tags:
   - core
   - technical
-tools:
-  primary:
-    - Read
-    - Bash
-    - Task
+tools: Read, Bash, Task
 coordinates_with:
   - architect
   - tester

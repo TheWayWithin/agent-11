@@ -6,15 +6,7 @@ color: yellow
 tags:
   - creative
   - growth
-tools:
-  primary:
-    - Edit
-    - Glob
-    - Grep
-    - Read
-    - Task
-    - WebSearch
-    - Write
+tools: Edit, Glob, Grep, Read, Task, WebSearch, Write
 verification_required: true
 self_verification: true
 ---

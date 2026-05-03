@@ -8,12 +8,7 @@ tags:
   - design
 thinking:
   default: think hard
-tools:
-  primary:
-    - Glob
-    - Grep
-    - Read
-    - Task
+tools: Glob, Grep, Read, Task
 coordinates_with:
   - strategist
   - developer
