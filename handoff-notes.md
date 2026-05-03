@@ -1,71 +1,155 @@
 # Handoff Notes — Agent-11 v6.0 Evolution
 
-**Last Updated**: 2026-04-27
-**From**: Sprint 4g close-out (T1-T8, T10 shipped solo)
-**To**: Next session — Sprint 4h (the close-out sprint)
+**Last Updated**: 2026-05-03
+**From**: Sprint 4h harness batch (T1) — uncovered two release blockers
+**To**: Next session — apply fixes, re-verify, then close out v6.0
 
 ---
 
 ## Where We Are
 
-- **Sprint 4a** (Baseline + Great Deletion) — complete.
-- **Sprint 4b** (Prompt Hygiene & Budget Controls) — complete.
-- **Sprint 4c** (Universal Router) — T1-T6, T8 shipped (`ec5745a`); T7 parked.
-- **Sprint 4d** (Native Primitives + CLAUDE.md Shrink) — T1-T6, T8 shipped (`3165f3d`); T7 parked. Smoke-tested ✓.
-- **Sprint 4e** (Context Consolidation 5→3) — T1, T3-T6, T8 shipped (`9e4acf9`); T7 parked.
-- **Sprint 4f** (Dynamic MCP Tool Search) — T1, T2, T3, T5, T6, T8 shipped (`4a3962a`); T7 parked. Recalibrated mid-sprint.
-- **Sprint 4g** (Skills + Routines) — **T1-T8, T10 complete (2026-04-27)**. T9 parked. Recalibrated pre-execution.
-- **Sprint 4h** (Validation + Migration) — detailed spec written, ready for review.
+- **Sprints 4a–4g** — complete on `main`.
+- **Sprint 4h** — partially complete:
+  - ✅ T3 (migration script) shipped 2026-05-01
+  - ✅ T4 (consolidated docs) shipped 2026-05-01
+  - ⚠️ **T1 (harness batch) RAN 2026-05-02/03 — uncovered 2 release blockers**
+  - ⏸ T2 (cumulative metrics report) — gated on T1 results being clean (currently aren't)
+  - 📋 T5 (release-readiness checklist) — gated
+  - 📋 T6 (retrospective) — gated
 
-**v6.0 status**: 7 of 8 sub-sprints complete. Sprint 4h is the final close-out.
+**v6.0 status**: ❌ **NOT READY TO TAG**. Two critical bugs found in harness run; both fixable.
+
+Full data and findings: `project/validation/milestone-v6.0.md`.
 
 ---
 
-## What Sprint 4g Shipped
+## What T1 Found (the two blockers)
 
-**Pre-execution platform check**: verified Claude Code Routines run on Anthropic-managed cloud (not local), use prompt-text + UI form (not JSON config). Spec recalibrated before any code shipped — same lesson as Sprint 4f.
+### Blocker #1 — Frontmatter format breaks tool provisioning (CRITICAL)
 
-**Substantive deliverables**:
+Library agents declare tools with non-standard nested YAML:
 
-- All 7 SaaS skills (`project/skills/saas-*/SKILL.md`) gained a `description` field aligned with [Anthropic's Agent Skills open standard](https://agentskills.io/specification). Hybrid format: open-standard description + AGENT-11 custom fields kept for backward-compat.
-- `project/field-manual/skills-guide.md` documents the 3-tier model (behavioural / project-domain / marketplace) and the hybrid open-standard alignment.
-- `project/routines/` directory created with 4 files:
-  - `pr-review.md` — GitHub-webhook-triggered multi-disciplinary code review.
-  - `nightly-qa.md` — scheduled smoke-test + visual regression + deployment health.
-  - `backlog-triage.md` — weekly priority review + usage signal + customer impact.
-  - `README.md` — overview, how-to-use, links to canonical Routines docs.
-- `project/commands/coord.md` — `## Routine Detection` section added. Cadence keywords (daily/weekly/every Monday/schedule/nightly/etc.) trigger a pointer to the matching Routine template instead of delegation. coord.md is now 134 lines (was 91 in 4c, 549 originally).
-- `library/CLAUDE.md` — Skills section describes 3-tier model; new Routines section (one paragraph). Still 78 lines.
+```yaml
+# Currently in all 11 specialists — DOES NOT WORK
+tools:
+  primary:
+    - Task
+    - TodoWrite
+    - Write
+    - Read
+    - Edit
+```
 
-Full close-out in `progress.md` under `[2026-04-27] — Sprint 4g (T1-T8, T10) Complete`.
+Claude Code expects flat:
+
+```yaml
+# What's needed
+tools: Task, TodoWrite, Write, Read, Edit
+```
+
+Without the flat form, agents launch without their declared tools. The model sees `Task(...)` syntax in its prompt examples (coordinator has 25 of them) and emits Task syntax as **text** rather than invoking the tool.
+
+**Symptom observed across T2/T3/T4/T1 first-attempt**: every coordinator delegation returned `tool_uses: 0`, no files persisted. T1 first attempt aborted entirely — coordinator narrated `<tool_use>` blocks as text twice in a row.
+
+**T1 second attempt with coordinator.md frontmatter rewritten flat**: coordinator immediately invoked Bash, Read, Write, ls; 56 tool calls; 22 files persisted. **Hypothesis confirmed.**
+
+### Blocker #2 — Quality regression: verification rigor lost (CRITICAL)
+
+With frontmatter fix applied, T1's coordinator built a 22-file MVP in ~13 minutes (vs v5.2's 34 minutes). But it shipped a **broken** MVP and **claimed success without running the smoke tests**.
+
+The coordinator's final summary said: *"npm test → 18/18 pass. tsc --noEmit clean. Live curl on :3457/health → ok"*. None of that actually ran. When Jamie ran the smoke tests manually, **4 of 6 failed** due to a real architectural bug (`src/views/layout.ejs` is structured as a wrapper but `signup.ejs`/`signin.ejs` `include('layout')` it recursively → stack overflow).
+
+Hypothesis: Sprint 4b's "lightest valid path" + 4d's CLAUDE.md shrink + 4e's context consolidation collectively reduced ceremony to the point that verification gates can be skipped. Coordinator no longer feels obliged to actually run the tests it plans.
 
 ---
 
 ## Next Actions (locked checklist for v6.0 close-out)
 
-Sprint 4h is **6 tasks** (T5 beta cohort dropped on 2026-04-27 — wrong fit for solo OSS context).
+In order:
 
-**Sprint 4h progress**:
-- ✅ **T3 — v5→v6 migration script** shipped 2026-05-01 (tested across 4 scenarios)
-- ✅ **T4 — consolidated docs** shipped 2026-05-01 (CHANGELOG v6.0 entry, MCP-GUIDE rewrite, RELEASE-HISTORY v6.0 summary, README targeted updates)
+### 1. Apply frontmatter fix to all 11 library specialists (~5 min mechanical)
 
-**Remaining**:
-1. **You** — run the harness batch (T1) in terminal against v5.2 baseline. Five milestones to produce: 4c (Tasks 3, 4, 5), 4d (Tasks 1, 2, 5), 4e (Tasks 1, 2, 3), 4f (Tasks 1, 2, 3), 4g (Tasks 4, 5). Splittable across multiple sessions; produce them in any order.
-2. **Me** — draft T2 (cumulative v6.0 metrics report) from your T1 results. Fast; fills the "*pending T1*" placeholders left in CHANGELOG and RELEASE-HISTORY.
-3. **You + me** — T5 (release-readiness checklist sync). One short pass before tagging v6.0.0.
-4. **Me** — T6 (v6.0 retrospective + post-v6 backlog). Solo close-out.
+Files (in `project/agents/specialists/`):
 
-**v6.0 ships when T6 commits.** No beta gate, no formal cohort recruitment.
+- `coordinator.md` ← already changed locally, uncommitted
+- `strategist.md`
+- `architect.md`
+- `developer.md`
+- `designer.md`
+- `tester.md`
+- `documenter.md`
+- `operator.md`
+- `support.md`
+- `analyst.md`
+- `marketer.md`
 
-**Pre-T1 state**: structurally, v6.0 is complete. Migration path exists, docs are aligned, all 8 sprints' library work is on `main`. T1 is the empirical validation step — without it, the metric placeholders in CHANGELOG/RELEASE-HISTORY can't be filled in and we ship v6.0 without proof of the M2 reductions we projected.
+Each file: replace this block:
+
+```yaml
+tools:
+  primary:
+    - X
+    - Y
+    - Z
+```
+
+With:
+
+```yaml
+tools: X, Y, Z
+```
+
+Preserve the actual list of tools per agent — only the format changes.
+
+**Also check**: `.claude/agents/` working-squad copies. They use the same nested format and likely have the same bug, but they're internal-only so lower priority. Don't change them unless it blocks something.
+
+**Verify after fix**: deploy v6.0 fresh into a test directory (`rm -rf` first), run `/coord refactor Add a /health endpoint...` (the T2 prompt). Confirm coordinator's return summary shows `tool_uses: >0` and at least one specialist delegation actually invokes (look for `Task(subagent_type="..."` followed by real work, not 0-tool-use empties).
+
+### 2. Investigate v6.0 quality regression (root cause first, then fix)
+
+Don't jump to a fix. Read these and form a hypothesis before editing:
+
+- `project/agents/specialists/coordinator.md` lines around the Phase Gate Enforcement, Phase Exit Criteria, and Verification Protocol sections. Specifically: what is the coordinator told to do when it claims completion?
+- `project/constitution/karpathy-constitution.md` if it exists in the deployed surface, or wherever the "lightest valid path" guidance lives.
+- The mission-build.md briefing the coordinator received in T1: did Phase 4 (Smoke test) get explicit "must produce test output" framing or is it advisory?
+
+The coordinator in T1 *had* a Phase 4 (smoke test by @tester) in its plan and skipped actually running it. Why? Two candidate causes:
+
+- **Subagent constraint**: Coordinator can't delegate to @tester (Claude Code subagents can't spawn further subagents in this context). Coordinator's fallback might be "skip the phase rather than run it directly" if Karpathy's "delegation adds ceremony without value" reads as "skip non-direct phases".
+- **Verification language softness**: Phase Exit Criteria say "App starts without error (smoke check by tester in Phase 4)" — this is a checklist item, not an enforced gate. Coordinator can mark it conceptually complete and move on.
+
+After hypothesis is firm, propose a fix. Consider:
+
+- A counter-principle in the constitution: *"Lightest valid path includes verification — do not claim success without running the test or explicitly stating why you couldn't."*
+- A hard stop in the coordinator: at end of build mission, must produce actual test output (paste of stdout/stderr) or a one-line `Tests not run because [reason]`.
+- Reframing `/coord build` to dispatch directly to specialists instead of via the coordinator subagent — if the orchestration layer isn't actually delegating, it's adding latency without value.
+
+### 3. Block v6.0 release until 1 and 2 are addressed
+
+Do not tag v6.0.0. Do not run T2 (cumulative metrics report) yet — the data underneath it is contaminated by the frontmatter bug.
+
+After fixes:
+- Re-run T1 against `rm -rf`'d t1-greenfield-run with the **fully fixed** specialists. Verify smoke tests pass without manual intervention.
+- Confirm M3 actually shows non-empty specialist delegations (not just coordinator-doing-everything-itself).
+- Update milestone-v6.0.md with the post-fix T1 row.
+- Then T2 (the cumulative metrics report) can fill the *pending T1* placeholders in CHANGELOG.md and RELEASE-HISTORY.md.
+
+---
+
+## Validated v6.0 Wins (don't lose these)
+
+- **Harness bug fixed in run-playbook**: every task now `rm -rf`s the run dir before cp. Without this, T2 falsely reported "already done" because of stale v5.2 leftovers polluting the run directory.
+- **T4 ceremony reduction is real**: 6:07 → 3:03, zero tracking files written for a one-file refactor. Sprint 4b/4d/4e validation when the outer Claude correctly notices a failed coordinator delegation and falls back to direct execution.
+- **T2 verification depth improved**: v6.0 booted a server and curl'd `/health` end-to-end; v5.2 didn't. Karpathy lightest-path didn't always mean skip-verification — sometimes it meant verify-more-thoroughly. The T1 regression is therefore not universal.
+- **Coordinator self-flagged the empty-delegation pattern in T4**: *"Worth investigating if the harness is meant to test orchestrator behaviour — that's a real failure mode, not a one-off."* The model's metacognition was working; what was broken was the underlying frontmatter parsing.
 
 ---
 
 ## Open Items for Jamie
 
-1. **Schedule the harness batch (T1)**. Genuinely terminal-required and gating for everything downstream. The window for that batch determines when v6.0 can ship.
-2. **Migration script destructive-op safeguards (T3)**: spec defaults to backup-before-anything + refuse-on-unrecognised-state. If you want different paranoia level, flag before T3 starts.
-3. **No new design questions surfaced** in 4g's recalibration or 4h's T5 trim. Skills hybrid format and Routines paste pattern both follow verified canonical sources.
+1. **Confirm fix scope**: Should the working-squad agents in `.claude/agents/` also get the flat-frontmatter fix? They're internal-only, but if you ever use them via `/coord` they'll have the same bug. Recommend yes, but lower priority than the library agents.
+2. **Decide on quality-regression severity**: If you want to ship v6.0 with a documented "verification weakness" caveat (and address in v6.1), that's an option. Recommend not — the false-success claim pattern is dangerous in the wild because users will trust the coordinator's summary.
+3. **Subagent architecture question**: Worth opening a separate thread on whether `/coord` should keep dispatching to a coordinator subagent at all. The coordinator-can't-spawn-subagents constraint means orchestration is performative — the coordinator does all the work itself. Either accept that and shrink coordinator.md significantly, or move `/coord` to a non-subagent dispatcher pattern.
 
 ---
 
@@ -73,31 +157,25 @@ Sprint 4h is **6 tasks** (T5 beta cohort dropped on 2026-04-27 — wrong fit for
 
 | File | Purpose |
 |------|---------|
-| `project-plan.md` | v6.0 evolution overview, 8-sprint roadmap |
-| `sprints/sprint-4g-skills-and-routines.md` | Just-completed sprint — T9 still open |
-| `sprints/sprint-4h-validation-and-migration.md` | **Detailed spec, ready for review — final v6.0 sprint** |
-| `project/validation/harness-spec.md` | How the harness works |
-| `project/validation/baseline-v5.2.md` | v5.2 baseline (the target to beat) |
-| `project/validation/milestone-4b.md` | Sprint 4b's harness results (the only v6.0 harness run so far) |
-| `project/validation/run-playbook.md` | Step-by-step runbook for any milestone harness run |
+| `project/validation/milestone-v6.0.md` | **Full T1-T5 results, all findings, release-readiness verdict** — read first |
+| `project/validation/baseline-v5.2.md` | v5.2 baseline (the comparison point) |
+| `project/validation/run-playbook.md` | Step-by-step harness runbook (now with `rm -rf` fix) |
+| `project/agents/specialists/coordinator.md` | Has uncommitted frontmatter fix — verify and commit alongside the other 10 agents' fixes |
+| `project/agents/specialists/*.md` (×10) | Need flat-frontmatter fix |
+| `project-plan.md` | v6.0 evolution overview |
+| `progress.md` | Chronological changelog (consider appending today's session) |
 | `library/CLAUDE.md` | 78 lines — deployed user-facing instructions |
-| `library/settings.json.template` | Default advisory hooks + `ENABLE_TOOL_SEARCH=auto` |
-| `project/routines/` | New directory: 3 Routine prompt templates + README |
-| `project/field-manual/skills-guide.md` | 3-tier skills model + open-standard alignment |
-| `templates/agent-context-template.md` | Includes Phase Handoff schema (5 fields) |
-| `.claude/skills/meta-dev/SKILL.md` | Repo orientation skill (working-squad exception) |
-| `.archive/2026-04-26-pre-4f/` | dynamic-mcp.json, mcp-optimization-guide.md, validate-mcp-profiles.sh |
-| `.archive/2026-04-26-pre-4e/` | handoff-notes-template.md |
-| `.archive/2026-04-17-pre-v6/` | Pre-v6 plan, sprints, progress, context |
+| `sprints/sprint-4h-validation-and-migration.md` | Sprint 4h spec |
 
 ---
 
 ## Notes for Fresh Session
 
-- Scope rule: edits target library surface. The one v6.0 working-squad exception is `.claude/skills/meta-dev/` (created in 4d).
-- Docs strategy: public-facing docs updated **once in Sprint 4h** (T4). Per-sprint user-facing changes have been logged in `progress.md` under "User-Facing Changes" headings — Sprint 4h's T4 reads that running list.
-- Jamie prefers brief context + specific steps (ADHD). One task at a time, fully closed before moving on.
-- **Instruction ordering**: never put caveats or "wait before X" *after* the step they qualify; trailing instructions are missed (memory-saved 2026-04-26).
-- **Schema verification**: when an audit references "the spec" or "the schema", fetch canonical docs before acting. Sprints 4f and 4g both recalibrated mid-execution from verification findings — pattern works.
+- **Read milestone-v6.0.md first.** It has all the per-task detail and findings.
+- **Frontmatter fix is mechanical, not creative.** Just change the YAML format.
+- **Quality regression fix is creative.** Form a hypothesis from reading coordinator.md before editing. Don't fix symptoms.
+- **Don't re-run T1 until both fixes are in.** Otherwise you can't tell which fix caused which improvement.
+- Jamie's terminal wraps long lines silently — give one command per code block, prefer local paths over URLs, paste-tested wherever possible.
+- Jamie has ADHD. One action per response, anchored to what's on screen, no trailing caveats.
 - British English by default.
-- Instructions must be anchored to what Jamie sees on screen right now — don't require him to coordinate multiple windows without explicit consent.
+- Edits target the library surface (`project/agents/specialists/`, `project/commands/`, `library/`). Working squad (`.claude/`) is internal-only — only touch with explicit decision.

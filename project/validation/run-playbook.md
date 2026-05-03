@@ -53,6 +53,7 @@ Each task follows the same shape:
 **Prep** (copy fixture, init git, deploy Agent-11, then start):
 ```bash
 mkdir -p test-projects
+rm -rf test-projects/t1-greenfield-run
 cp -R project/validation/fixtures/t1-greenfield test-projects/t1-greenfield-run
 cd test-projects/t1-greenfield-run
 git init -q && git add . && git commit -q -m "fixture: t1 greenfield initial state"
@@ -80,6 +81,7 @@ claude
 **Prep**:
 ```bash
 mkdir -p test-projects
+rm -rf test-projects/t2-feature-add-run
 cp -R project/validation/fixtures/t2-feature-add test-projects/t2-feature-add-run
 cd test-projects/t2-feature-add-run
 git init -q && git add . && git commit -q -m "fixture: t2 feature-add initial state"
@@ -107,6 +109,7 @@ claude
 **Prep**:
 ```bash
 mkdir -p test-projects
+rm -rf test-projects/t3-bug-fix-run
 cp -R project/validation/fixtures/t3-bug-fix test-projects/t3-bug-fix-run
 cd test-projects/t3-bug-fix-run
 git init -q && git add . && git commit -q -m "fixture: t3 bug-fix initial state"
@@ -134,6 +137,7 @@ claude
 **Prep**:
 ```bash
 mkdir -p test-projects
+rm -rf test-projects/t4-refactor-run
 cp -R project/validation/fixtures/t4-refactor test-projects/t4-refactor-run
 cd test-projects/t4-refactor-run
 git init -q && git add . && git commit -q -m "fixture: t4 refactor initial state"
@@ -163,6 +167,7 @@ Runs in a clean deployed Agent-11 project so the test reflects normal-user exper
 **Prep**:
 ```bash
 mkdir -p test-projects
+rm -rf test-projects/t5-commit-review-run
 cp -R project/validation/fixtures/t5-commit-review test-projects/t5-commit-review-run
 cd test-projects/t5-commit-review-run
 git init -q && git add . && git commit -q -m "fixture: t5 commit-review initial state"
