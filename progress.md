@@ -8,6 +8,44 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
+### [2026-05-06] — Sprint 5a T7+T8: rollback restore script + CLI flags + upgrade docs ✅
+
+**Summary**: Added `restore-pre-upgrade.sh` to undo a v5→v6 upgrade from backups, `--dry-run` and `--non-interactive`/`--batch-safe` flags to install.sh, and a focused `docs/UPGRADE.md` covering the upgrade flow, backup contents, rollback procedures, and known limitations. install.sh and migrate.sh warning messages now point at the new doc and the restore script. The `--non-interactive` flag is the contract Sprint 5b's bulk wrapper depends on.
+
+**Deliverables**:
+- `project/deployment/scripts/restore-pre-upgrade.sh` (new, ~190 lines):
+  - `--list` / interactive selector / `--latest` / `--backup <path>` modes
+  - Known-mapping restore: handoff-notes.md, agent-context.md, .mcp-profiles/, dynamic-mcp.json (→ mcp/dynamic-mcp.json), handoff-notes-template.md (→ templates/), CLAUDE.md (→ .claude/), settings.json (→ .claude/)
+  - Separate `--settings <path>` mode for restoring a single settings.json backup without touching v5 markers
+  - TTY-aware confirmation; `--yes` for non-interactive use
+- `project/deployment/scripts/install.sh`:
+  - Three new flags: `--dry-run`, `--non-interactive`, `--batch-safe` (alias)
+  - `print_dry_run_plan` function: inspects v5 markers, settings.json state, execution mode; itemises what would happen
+  - `--help` rewritten with full flag table + examples
+  - `docs/UPGRADE.md` added to both local-copy and GitHub-download branches of doc deployment
+  - Warning messages now point at docs/UPGRADE.md and the curl-streamable restore script
+- `project/deployment/scripts/migrate-v5-to-v6.sh`:
+  - Final-summary "Rollback:" line now references the restore script + UPGRADE.md
+- `docs/UPGRADE.md` (new):
+  - TL;DR one-liner upgrade
+  - Why `--upgrade` flag is required (explicit consent)
+  - What the upgrade does (6 numbered steps)
+  - Backup table (two locations, what's in each)
+  - Preview / dry-run instructions
+  - Rolling back via the restore script + manual recovery steps
+  - Bulk-upgrade pattern using `--non-interactive`
+  - Known limitations (Python 3 dep, lossy nested-file backup, opt-in rationale)
+  - Troubleshooting section for the common failure modes
+
+**Verified**:
+- T7 — 19/19 checks across 4 fixtures: end-to-end migrate-then-restore (v5 markers come back, content matches, backup directory preserved); `--list` mode; `--settings` flag for settings-only restoration; clear error when no backups exist.
+- T8 — 29/29 checks across 9 fixtures: `--help` shows all flags + examples; greenfield `--dry-run` correctly identifies "fresh install"; v5 fixture without `--upgrade` reports "would EXIT 1"; v5 fixture with `--upgrade` reports "would invoke migrate"; `--dry-run` against already-v6 settings.json reports "no-op"; `--dry-run` against custom settings.json reports "would merge"; `--non-interactive` and `--batch-safe` accepted; `--upgrade --dry-run --non-interactive` composable.
+- Sanity check: T1's warn-and-exit still works correctly (exit 1) with the updated message pointing at docs/UPGRADE.md.
+
+**Next**: T6 (canonicalise the test fixtures under `test-projects/` — currently testing happens via `/tmp` shell scripts), then T9 (release v6.1.0).
+
+---
+
 ### [2026-05-06] — Sprint 5a T5: migrate.sh output clarity ✅
 
 **Summary**: Three previously-ambiguous output cases now distinguished. The original UX wart: re-running the script after a successful migration produced output identical to the "you were always on v6" case. Users couldn't tell whether their previous migration had run. Fix detects the prior backup directory and tailors the message accordingly, plus the success summary now itemises what work actually got done.

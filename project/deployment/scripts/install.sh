@@ -378,6 +378,74 @@ find_or_fetch_settings_merger() {
     return 1
 }
 
+# Sprint 5a T8: print a high-level "what would happen" plan and exit 0.
+# Triggered by --dry-run. Inspects the cwd for v5 markers, settings.json
+# state, and execution mode, then itemises every step the install would take.
+# No directories created, no files written, no subprocesses started.
+print_dry_run_plan() {
+    echo
+    log "=== DRY RUN — would perform the following: ==="
+    echo "  Target directory: $(pwd)"
+    local execution_mode
+    execution_mode=$(detect_execution_mode)
+    echo "  Execution mode: $execution_mode"
+    echo
+
+    # v5 detection
+    local v5_markers
+    if v5_markers=$(detect_v5_markers_in_cwd); then
+        if $UPGRADE_MODE; then
+            echo "  v5.x markers detected — would invoke migrate-v5-to-v6.sh:"
+            echo "$v5_markers" | sed 's/^/    - /'
+            echo "    Run \`bash migrate-v5-to-v6.sh --dry-run\` separately for migration plan."
+        else
+            echo "  v5.x markers detected — would EXIT 1 with upgrade instructions:"
+            echo "$v5_markers" | sed 's/^/    - /'
+            echo "    (re-run with --upgrade to proceed)"
+            echo
+            echo "DRY RUN COMPLETE — no changes were made."
+            return 0
+        fi
+    else
+        echo "  No v5.x markers — fresh install or already on v6"
+    fi
+    echo
+
+    # settings.json plan
+    local dest="$(pwd)/.claude/settings.json"
+    if [[ -f "$dest" ]]; then
+        local has_hooks=false has_tool_search=false
+        grep -q '"hooks"' "$dest" 2>/dev/null && has_hooks=true
+        grep -q "ENABLE_TOOL_SEARCH" "$dest" 2>/dev/null && has_tool_search=true
+        if $has_hooks && $has_tool_search; then
+            echo "  settings.json: already on v6 — would no-op (no backup, no diff)"
+        elif command -v python3 >/dev/null 2>&1; then
+            echo "  settings.json: existing file detected — would merge v6 template"
+            echo "    (user values win on conflict; backup created at .claude/settings.json.backup-<ts>)"
+        else
+            echo "  settings.json: existing file detected, python3 NOT available"
+            echo "    Would write template as .claude/settings.json.new (manual merge required)"
+        fi
+    else
+        echo "  settings.json: no existing file — would deploy template verbatim"
+    fi
+    echo
+
+    echo "  Would deploy:"
+    echo "    - 11 specialist agents to .claude/agents/"
+    echo "    - library/CLAUDE.md to .claude/CLAUDE.md"
+    echo "    - Karpathy constitution to .claude/constitution/"
+    echo "    - mission templates to ./missions/"
+    echo "    - utility templates to ./templates/"
+    echo "    - field manual docs to ./field-manual/"
+    echo "    - MCP system files (.mcp.json.template, .env.mcp.template, mcp-setup.sh)"
+    echo "    - SaaS skills to .claude/skills/"
+    echo "    - schemas + gates + stack-profiles + docs"
+    echo
+    echo "DRY RUN COMPLETE — no changes were made. Re-run without --dry-run to install."
+    return 0
+}
+
 # Locate library/settings.json.template. Returns path on stdout, non-zero on
 # failure. In remote mode, downloads to a tempfile.
 find_or_fetch_settings_template() {
@@ -755,7 +823,7 @@ install_settings_template() {
                 warn "Wrote v6 template to $new_file"
                 warn "Manually merge the contents of settings.json.new into settings.json"
                 warn "  to enable v6 features (ENABLE_TOOL_SEARCH + advisory hooks)."
-                warn "Reference: docs/MCP-GUIDE.md (settings.json migration)"
+                warn "Reference: docs/UPGRADE.md"
             else
                 warn "Could not retrieve settings.json template — install python3 and re-run."
             fi
@@ -1424,6 +1492,10 @@ install_mcp_system() {
                 if [[ -f "$PROJECT_ROOT/docs/MCP-MIGRATION-GUIDE.md" ]]; then
                     cp "$PROJECT_ROOT/docs/MCP-MIGRATION-GUIDE.md" "$TARGET_DIR/docs/"
                 fi
+                # Sprint 5a T7: v5→v6 upgrade guide + rollback instructions
+                if [[ -f "$PROJECT_ROOT/docs/UPGRADE.md" ]]; then
+                    cp "$PROJECT_ROOT/docs/UPGRADE.md" "$TARGET_DIR/docs/"
+                fi
                 success "MCP documentation installed"
             fi
         fi
@@ -1444,6 +1516,10 @@ install_mcp_system() {
         # NEW: Download dynamic MCP migration guide
         if download_file_from_github "docs/MCP-MIGRATION-GUIDE.md" "$TARGET_DIR/docs/MCP-MIGRATION-GUIDE.md"; then
             log "Downloaded: MCP-MIGRATION-GUIDE.md"
+        fi
+        # Sprint 5a T7: v5→v6 upgrade guide + rollback instructions
+        if download_file_from_github "docs/UPGRADE.md" "$TARGET_DIR/docs/UPGRADE.md"; then
+            log "Downloaded: UPGRADE.md"
         fi
     fi
 
@@ -1607,7 +1683,8 @@ show_post_install_instructions() {
     else
         echo -e "  ${YELLOW}⚠ Tool deferring NOT enabled${NC} — settings.json was preserved without v6 changes."
         echo "    See backup at .claude/settings.json.backup-* and merge manually."
-        echo "    Reference: docs/MCP-GUIDE.md"
+        echo "    Reference: docs/UPGRADE.md"
+        echo "    Roll back: bash <(curl -sSL https://raw.githubusercontent.com/$GITHUB_REPO/$GITHUB_BRANCH/project/deployment/scripts/restore-pre-upgrade.sh) --list"
     fi
     echo "  ✓ MCP documentation in docs/"
     echo "  ✓ Environment template: .env.mcp.template"
@@ -1637,24 +1714,46 @@ show_post_install_instructions() {
 # Main installation function
 main() {
     UPGRADE_MODE=false
+    DRY_RUN=false
+    NON_INTERACTIVE=false
     SETTINGS_HAS_V6_FEATURES=false  # set by install_settings_template
     local legacy_arg=""
 
     # Parse args: flags + optional legacy squad-type positional.
-    # Other flags (--dry-run, --non-interactive) land in Sprint 5a T8.
     for arg in "$@"; do
         case "$arg" in
             --upgrade)
                 UPGRADE_MODE=true
                 ;;
+            --dry-run)
+                DRY_RUN=true
+                ;;
+            --non-interactive|--batch-safe)
+                NON_INTERACTIVE=true
+                ;;
             --help|-h)
-                echo "Usage: $0 [--upgrade] [core|full|minimal (deprecated)]"
-                echo "  --upgrade   Migrate v5.x install to v6.0 before deploying"
+                cat <<HELP
+Usage: $0 [flags] [core|full|minimal (deprecated)]
+
+Flags:
+  --upgrade            Migrate v5.x install to v6.0 before deploying
+  --dry-run            Print the plan, make zero changes, exit 0
+  --non-interactive    Promise no prompts; fail fast on conditions that
+  (or --batch-safe)    would require human input. (Composable with the others.)
+  --help, -h           Show this help
+
+Examples:
+  bash $0                            Fresh install on a v6 / greenfield repo
+  bash $0 --upgrade                  Migrate v5.x then install v6.0
+  bash $0 --dry-run                  Show what would happen without changing anything
+  bash $0 --upgrade --dry-run        Preview a v5→v6 upgrade run
+  bash $0 --upgrade --non-interactive  Bulk-mode: never prompts, exits non-zero on input demand
+HELP
                 exit 0
                 ;;
             -*)
                 error "Unknown flag: $arg"
-                error "Usage: $0 [--upgrade] [core|full|minimal (deprecated)]"
+                error "Run $0 --help for usage."
                 exit 1
                 ;;
             *)
@@ -1689,6 +1788,12 @@ main() {
             ;;
     esac
 
+    # Sprint 5a T8: --dry-run short-circuits before any work. Print plan and exit.
+    if $DRY_RUN; then
+        print_dry_run_plan
+        exit 0
+    fi
+
     # ----- Sprint 5a T1: v5.x → v6.0 upgrade detection -----
     local v5_markers
     if v5_markers=$(detect_v5_markers_in_cwd); then
@@ -1708,8 +1813,11 @@ main() {
             warn "Re-run with --upgrade to migrate before installing v6.0:"
             warn "  bash $0 --upgrade"
             echo
-            warn "Or run the migration script manually first:"
-            warn "  bash <(curl -sSL https://raw.githubusercontent.com/$GITHUB_REPO/$GITHUB_BRANCH/project/deployment/scripts/migrate-v5-to-v6.sh)"
+            warn "Preview the plan first with --dry-run:"
+            warn "  bash $0 --upgrade --dry-run"
+            echo
+            warn "Full upgrade guide: docs/UPGRADE.md"
+            warn "  https://github.com/$GITHUB_REPO/blob/$GITHUB_BRANCH/docs/UPGRADE.md"
             exit 1
         fi
     fi

@@ -333,6 +333,8 @@ echo "  3. Note: progress.md is now write-only by default. The coordinator appen
 echo "     to it (issues, fixes, deliverables) but doesn't read it at session start."
 echo
 if ! $DRY_RUN; then
-    echo "Rollback: copy files from $BACKUP_DIR back to project root."
+    echo "Rollback: bash <(curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/restore-pre-upgrade.sh) --latest"
+    echo "  Or manually: copy files from $BACKUP_DIR back to project root."
+    echo "  See: docs/UPGRADE.md"
     echo
 fi
