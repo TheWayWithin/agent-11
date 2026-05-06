@@ -8,6 +8,29 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
+### [2026-05-06] — Sprint 5a T6: canonical install fixtures under test-projects/ ✅
+
+**Summary**: Five canonical end-to-end test fixtures live under `test-projects/install-fixtures/`. Each spins up a self-contained pre-state under `mktemp -d`, runs `install.sh --upgrade`, and asserts post-conditions. The five scenarios were chosen post-review to cover the realistic shapes a v5→v6 upgrade hits in the wild — replacing the single happy-path fixture the original spec proposed.
+
+**Deliverables**:
+- `test-projects/install-fixtures/`:
+  - `README.md` — index + scenario table + how-to-run + rationale for the five-fixture set
+  - `run-all.sh` — aggregate runner; pass/fail summary
+  - `01-clean-v5/` — minimal v5 install (4 markers, no settings.json) → asserts markers cleaned, agent-context.md created, 11 specialists deployed, settings.json deployed verbatim
+  - `02-custom-mcp/` — v5 + user-customised settings.json (rich permissions, _comment, custom env keys) → asserts every user value survives the merge; ENABLE_TOOL_SEARCH and hooks added alongside
+  - `03-malformed-json/` — v5 + settings.json with trailing comma → asserts merge fails cleanly, original restored from backup, summary truthful, rest of install completes
+  - `04-partial-migration/` — interrupted prior migration (one marker remaining + stale backup directory) → asserts recovery notice in output, remaining marker cleaned, both backups preserved
+  - `05-already-v6/` — fully v6 install → asserts no migration triggered, semantic-hash match on settings.json (content unchanged through the no-op merge), summary truthful
+- Each fixture has its own `README.md` (scenario + expected outcome) and self-contained `run-test.sh` (sets up pre-state, runs installer, runs assertions, traps cleanup on exit)
+
+**Verified**: 43/43 individual checks across 5 fixtures via `bash test-projects/install-fixtures/run-all.sh`. All workdirs cleaned up on exit.
+
+**Why five not one**: Architect + dev review of the spec flagged that a single happy-path fixture was insufficient. These five cover the canonical happy path (01), the user-values-must-survive risk (02), bad-input handling without state corruption (03), idempotency of partial state (04), and true no-op on already-v6 (05). The runner fails if any regress in future sprints.
+
+**Next**: T9 — v6.1.0 release (CHANGELOG entry, RELEASE-HISTORY entry, README v5.x section update, tag, GitHub release).
+
+---
+
 ### [2026-05-06] — Sprint 5a T7+T8: rollback restore script + CLI flags + upgrade docs ✅
 
 **Summary**: Added `restore-pre-upgrade.sh` to undo a v5→v6 upgrade from backups, `--dry-run` and `--non-interactive`/`--batch-safe` flags to install.sh, and a focused `docs/UPGRADE.md` covering the upgrade flow, backup contents, rollback procedures, and known limitations. install.sh and migrate.sh warning messages now point at the new doc and the restore script. The `--non-interactive` flag is the contract Sprint 5b's bulk wrapper depends on.
