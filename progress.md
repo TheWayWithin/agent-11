@@ -8,6 +8,30 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
+### [2026-05-06] — Sprint 5a T1+T2: install.sh v5→v6 upgrade detection ✅
+
+**Summary**: install.sh now detects v5.x markers at entry and either warns-and-exits (default — preserves user agency) or runs migrate-v5-to-v6.sh as a subprocess (`--upgrade` flag, opt-in for v6.1.0 first release). T2's subprocess invocation contract — local-first script lookup with GitHub fallback, explicit `$?` check rather than relying on `set -e` propagation, working-directory contract documented — landed alongside T1 since the two are joined at the hip.
+
+**Deliverables**:
+- `project/deployment/scripts/install.sh` — three new helper functions (`detect_v5_markers_in_cwd`, `find_or_fetch_migrate_script`, `run_v5_to_v6_migration`); main() args parser rewritten to handle flags + legacy positional; v5-detection branch with three behaviours per spec matrix.
+- New CLI surface: `--upgrade`, `--help`, unknown-flag rejection. (`--dry-run` and `--non-interactive` deferred to T8.)
+
+**Verified end-to-end** (fixture at `~/sprint-5a-test/v5-fixture`):
+- `bash -n` syntax clean.
+- `--help` → prints flag doc, exits 0.
+- `--bogus` → "Unknown flag" error, exits 1.
+- v5 fixture, no flag → warns with all 4 markers listed, suggests `--upgrade` and curl-fallback, exits 1.
+- v5 fixture + `--upgrade` → migration subprocess runs, all 4 markers cleaned, agent-context.md created from folded handoff-notes, install resumes and deploys all 11 specialists + missions/templates/field-manual end-to-end.
+
+**Locked decisions reflected in code**:
+- Auto-migrate gated behind explicit `--upgrade` opt-in (architect's safety concern; default-on deferred to v6.2 after production validation).
+- Single source of truth: install.sh invokes migrate-v5-to-v6.sh, does not inline.
+- Subprocess error handling: explicit `rc=$?` check, abort install on non-zero with diagnostic.
+
+**Next**: T3 (settings.json surgical merge — Python 3 with bash fallback, JSON edge-case handling, user-value-wins conflict rule, backup→validate→auto-restore).
+
+---
+
 ### [2026-04-19] — Sprint 4a Complete ✅
 
 **Summary**: Sprint 4a (Baseline + Great Deletion) complete. Harness spec locked, full v5.2 baseline measured across 5 tasks, MCP profile system deleted, `.backup` files removed, coordinator prompt stripped of ASCII decoration, historic context files archived, Sprint 4b detailed spec authored.

@@ -311,6 +311,80 @@ detect_execution_mode() {
     fi
 }
 
+# ---------- Sprint 5a: v5→v6 upgrade detection (T1) + subprocess invocation (T2) ----------
+
+# Detect v5.x markers in the user's cwd. Mirrors migrate-v5-to-v6.sh's marker set.
+# Returns 0 + prints markers when found, 1 + no output when clean.
+detect_v5_markers_in_cwd() {
+    local found=()
+    [[ -f "$(pwd)/handoff-notes.md" ]] && found+=("handoff-notes.md")
+    [[ -d "$(pwd)/.mcp-profiles" ]] && found+=(".mcp-profiles/")
+    [[ -f "$(pwd)/mcp/dynamic-mcp.json" ]] && found+=("mcp/dynamic-mcp.json")
+    [[ -f "$(pwd)/templates/handoff-notes-template.md" ]] && found+=("templates/handoff-notes-template.md")
+
+    if [[ ${#found[@]} -eq 0 ]]; then
+        return 1
+    fi
+    printf '%s\n' "${found[@]}"
+    return 0
+}
+
+# Locate migrate-v5-to-v6.sh: prefer a co-located copy (local clone), else fetch
+# from main into a tempfile. Returns path on stdout, non-zero on failure.
+find_or_fetch_migrate_script() {
+    local execution_mode
+    execution_mode=$(detect_execution_mode)
+
+    if [[ "$execution_mode" == "local" ]]; then
+        local local_path="$PROJECT_ROOT/project/deployment/scripts/migrate-v5-to-v6.sh"
+        if [[ -f "$local_path" ]]; then
+            echo "$local_path"
+            return 0
+        fi
+    fi
+
+    local tmp_script
+    tmp_script="$(mktemp -t migrate-v5-to-v6.XXXXXX)" || return 1
+    if download_file_from_github "project/deployment/scripts/migrate-v5-to-v6.sh" "$tmp_script"; then
+        chmod +x "$tmp_script"
+        echo "$tmp_script"
+        return 0
+    fi
+    rm -f "$tmp_script"
+    return 1
+}
+
+# Run v5→v6 migration as subprocess. Working-directory contract: caller is in
+# target repo root. Explicit $? check — set -e does not propagate cleanly through
+# function returns when the caller checks the return value with `if`.
+run_v5_to_v6_migration() {
+    local script_path
+    if ! script_path="$(find_or_fetch_migrate_script)"; then
+        error "Could not locate or download migrate-v5-to-v6.sh"
+        error "Run the migration manually first, then re-run install:"
+        error "  bash <(curl -sSL https://raw.githubusercontent.com/$GITHUB_REPO/$GITHUB_BRANCH/project/deployment/scripts/migrate-v5-to-v6.sh)"
+        return 1
+    fi
+
+    log "Running v5.x → v6.0 migration..."
+    log "  Script: $script_path"
+    log "  Target: $(pwd)"
+    echo
+
+    bash "$script_path" --yes
+    local rc=$?
+
+    if [[ $rc -ne 0 ]]; then
+        error "Migration failed (exit code $rc). See messages above for details."
+        error "Aborting install. Re-run after resolving migration issues."
+        return $rc
+    fi
+
+    success "Migration complete. Continuing with v6.0 install..."
+    echo
+    return 0
+}
+
 # Validate environment before installation
 validate_environment() {
     log "Validating installation environment..."
@@ -1434,7 +1508,36 @@ show_post_install_instructions() {
 
 # Main installation function
 main() {
-    local legacy_arg="${1:-}"
+    UPGRADE_MODE=false
+    local legacy_arg=""
+
+    # Parse args: flags + optional legacy squad-type positional.
+    # Other flags (--dry-run, --non-interactive) land in Sprint 5a T8.
+    for arg in "$@"; do
+        case "$arg" in
+            --upgrade)
+                UPGRADE_MODE=true
+                ;;
+            --help|-h)
+                echo "Usage: $0 [--upgrade] [core|full|minimal (deprecated)]"
+                echo "  --upgrade   Migrate v5.x install to v6.0 before deploying"
+                exit 0
+                ;;
+            -*)
+                error "Unknown flag: $arg"
+                error "Usage: $0 [--upgrade] [core|full|minimal (deprecated)]"
+                exit 1
+                ;;
+            *)
+                if [[ -z "$legacy_arg" ]]; then
+                    legacy_arg="$arg"
+                else
+                    error "Unexpected argument: $arg"
+                    exit 1
+                fi
+                ;;
+        esac
+    done
 
     echo "🚁 AGENT-11 Deployment System"
     echo "=============================="
@@ -1452,10 +1555,36 @@ main() {
             echo
             ;;
         *)
-            echo "Usage: $0 [core|full|minimal (all deprecated — always installs all 11)]"
+            echo "Usage: $0 [--upgrade] [core|full|minimal (all deprecated — always installs all 11)]"
             exit 1
             ;;
     esac
+
+    # ----- Sprint 5a T1: v5.x → v6.0 upgrade detection -----
+    local v5_markers
+    if v5_markers=$(detect_v5_markers_in_cwd); then
+        if $UPGRADE_MODE; then
+            log "v5.x install detected. Running migration before deploying v6.0..."
+            log "v5 markers found:"
+            echo "$v5_markers" | sed 's/^/  - /'
+            echo
+            if ! run_v5_to_v6_migration; then
+                fatal "v5→v6 migration failed; install aborted."
+            fi
+        else
+            warn "v5.x install detected. AGENT-11 v6.0 has retired several v5 components."
+            warn "v5 markers found:"
+            echo "$v5_markers" | sed 's/^/  - /'
+            echo
+            warn "Re-run with --upgrade to migrate before installing v6.0:"
+            warn "  bash $0 --upgrade"
+            echo
+            warn "Or run the migration script manually first:"
+            warn "  bash <(curl -sSL https://raw.githubusercontent.com/$GITHUB_REPO/$GITHUB_BRANCH/project/deployment/scripts/migrate-v5-to-v6.sh)"
+            exit 1
+        fi
+    fi
+    # ----- end T1 -----
 
     log "Installing Agent-11 squad (${#SQUAD_FULL[@]} specialists)"
     echo
