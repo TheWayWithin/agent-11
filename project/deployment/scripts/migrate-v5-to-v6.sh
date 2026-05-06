@@ -44,6 +44,16 @@ PROJECT_DIR="$(pwd)"
 TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
 BACKUP_DIR="$PROJECT_DIR/.claude/backups/v5-to-v6-$TIMESTAMP"
 
+# Sprint 5a T5: detect prior migration backup so we can distinguish
+# "already on v6 (was always on v6)" from "already on v6 (we migrated last time)".
+LATEST_PRIOR_BACKUP=""
+if [[ -d "$PROJECT_DIR/.claude/backups" ]]; then
+    LATEST_PRIOR_BACKUP=$(find "$PROJECT_DIR/.claude/backups" -maxdepth 1 -type d -name "v5-to-v6-*" 2>/dev/null | sort | tail -1)
+fi
+
+# Track what work actually got done — populated as steps run.
+ACTIONS_PERFORMED=()
+
 DRY_RUN=false
 AUTO_CONFIRM=false
 for arg in "$@"; do
@@ -112,9 +122,26 @@ fi
 log "AGENT-11 install detected."
 
 if ! V5_MARKERS=$(detect_v5_markers); then
-    success "No v5.x markers detected — this looks like a v6.0 install already."
-    success "No migration needed."
+    # Sprint 5a T5: distinguish "already on v6 (we migrated previously)" from
+    # "already on v6 (was always v6)" — the previous behaviour gave identical
+    # output for both, which left users unsure whether their migration ran.
+    if [[ -n "$LATEST_PRIOR_BACKUP" ]]; then
+        success "No v5.x markers detected. Migration was completed previously."
+        success "Most recent migration backup: $LATEST_PRIOR_BACKUP"
+        log "Already on v6.0 — no further action needed."
+    else
+        success "No v5.x markers detected. Already on v6.0 — no migration needed."
+    fi
     exit 0
+fi
+
+# Sprint 5a T5: if markers ARE present but a prior backup exists, this is an
+# idempotent re-run after a partial migration. Flag it so the user knows what
+# they're seeing.
+if [[ -n "$LATEST_PRIOR_BACKUP" ]]; then
+    warn "Prior migration backup found: $LATEST_PRIOR_BACKUP"
+    warn "v5 markers still present — completing the remaining migration steps."
+    echo
 fi
 
 echo
@@ -215,6 +242,7 @@ if [[ -f "$PROJECT_DIR/handoff-notes.md" ]]; then
 
     run_or_log "Remove handoff-notes.md (backup is in $BACKUP_DIR)" \
         rm -- "$PROJECT_DIR/handoff-notes.md"
+    $DRY_RUN || ACTIONS_PERFORMED+=("Folded handoff-notes.md into agent-context.md")
 fi
 
 # ---------- Migrate MCP (Sprint 4f) ----------------------------------------
@@ -224,6 +252,7 @@ if [[ -d "$PROJECT_DIR/.mcp-profiles" ]]; then
     log "Retiring .mcp-profiles/ (Sprint 4f — profile-switching system retired)..."
     run_or_log "Remove .mcp-profiles/ (backup is in $BACKUP_DIR)" \
         rm -rf -- "$PROJECT_DIR/.mcp-profiles"
+    $DRY_RUN || ACTIONS_PERFORMED+=("Retired .mcp-profiles/")
 fi
 
 if [[ -f "$PROJECT_DIR/mcp/dynamic-mcp.json" ]]; then
@@ -233,6 +262,7 @@ if [[ -f "$PROJECT_DIR/mcp/dynamic-mcp.json" ]]; then
         rm -- "$PROJECT_DIR/mcp/dynamic-mcp.json"
     if ! $DRY_RUN; then
         rmdir "$PROJECT_DIR/mcp" 2>/dev/null || true
+        ACTIONS_PERFORMED+=("Removed obsolete mcp/dynamic-mcp.json")
     fi
 fi
 
@@ -241,6 +271,7 @@ if [[ -f "$PROJECT_DIR/templates/handoff-notes-template.md" ]]; then
     log "Retiring templates/handoff-notes-template.md (Sprint 4e)..."
     run_or_log "Remove templates/handoff-notes-template.md (backup is in $BACKUP_DIR)" \
         rm -- "$PROJECT_DIR/templates/handoff-notes-template.md"
+    $DRY_RUN || ACTIONS_PERFORMED+=("Retired templates/handoff-notes-template.md")
 fi
 
 # ENABLE_TOOL_SEARCH check
@@ -270,7 +301,18 @@ if $DRY_RUN; then
     echo -e "${YELLOW}DRY RUN COMPLETE — no changes were made${NC}"
     echo "Re-run without --dry-run to perform the migration."
 else
-    success "v5.x → v6.0 migration complete"
+    # Sprint 5a T5: itemise what was actually done so the user can tell a real
+    # run apart from a no-op re-run.
+    if [[ ${#ACTIONS_PERFORMED[@]} -eq 0 ]]; then
+        success "v5.x → v6.0 migration complete (no changes needed — markers already cleared)"
+    else
+        success "v5.x → v6.0 migration complete"
+        echo
+        echo "Performed:"
+        for a in "${ACTIONS_PERFORMED[@]}"; do
+            echo "  - $a"
+        done
+    fi
 fi
 echo "==============================="
 echo

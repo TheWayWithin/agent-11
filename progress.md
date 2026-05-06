@@ -8,6 +8,28 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
+### [2026-05-06] — Sprint 5a T5: migrate.sh output clarity ✅
+
+**Summary**: Three previously-ambiguous output cases now distinguished. The original UX wart: re-running the script after a successful migration produced output identical to the "you were always on v6" case. Users couldn't tell whether their previous migration had run. Fix detects the prior backup directory and tailors the message accordingly, plus the success summary now itemises what work actually got done.
+
+**Deliverables**:
+- `project/deployment/scripts/migrate-v5-to-v6.sh`:
+  - Top-of-script: detect most-recent `v5-to-v6-*` backup directory if present.
+  - No-markers branch: now distinguishes "completed previously (backup at <path>)" from "always on v6.0 — no migration needed".
+  - Markers + prior backup branch: explicit "Prior migration backup found … completing the remaining migration steps" notice.
+  - Each migration step pushes a label into `ACTIONS_PERFORMED[]` when it actually does work (skipping during `--dry-run`).
+  - Final success summary: itemises `ACTIONS_PERFORMED` as bullets after "Migration complete". When the array is empty (e.g. all markers individually skipped), says so explicitly.
+
+**Verified**: 15/15 checks across 4 fixtures:
+- already-v6 / no prior backup → "Already on v6.0 — no migration needed"
+- already-v6 / prior backup → "Migration was completed previously" + backup path
+- v5 markers / fresh first run → "Performed:" list with all 3 actions
+- v5 markers + prior backup (interrupted previous run) → "completing the remaining migration steps" notice + only-remaining-item in Performed list
+
+**Next**: T8 (install.sh `--dry-run` + `--non-interactive` flags), then T7 (rollback restore script + docs), then T6 (canonical fixtures), then T9 (release).
+
+---
+
 ### [2026-05-06] — Sprint 5a T3+T4: settings.json surgical merge + truthful summary ✅
 
 **Summary**: `install.sh` now merges the v6 template into existing `settings.json` instead of leaving-and-warning. User values win on every conflict (template only fills gaps). Backup → merge → re-validate → auto-restore-on-fail protects against silent corruption. The post-install summary message is no longer a lie — it conditionally renders based on whether `ENABLE_TOOL_SEARCH` and `hooks` actually landed in the on-disk file.
