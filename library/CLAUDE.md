@@ -34,7 +34,7 @@ Coordinator owns these. Full protocols in `.claude/agents/coordinator.md`.
 
 **Active** (read per mode at start): `project-plan.md`, `agent-context.md` (findings + Phase Handoff blocks). **On-demand**: `evidence-repository.md`. **Write-only**: `progress.md` (changelog — appended on issues/fixes/deliverables; read only on staleness checks or post-`/clear` reconstruction).
 
-**v5.x → v6.0 migration** (one-time): `cat handoff-notes.md >> agent-context.md && rm handoff-notes.md`. Phase Handoff discipline now lives as structured blocks inside agent-context.md.
+**v5.x → v6.0 migration** (one-time, v6.1+): `bash install.sh --upgrade` from project root. See [`docs/UPGRADE.md`](../docs/UPGRADE.md). Phase Handoff discipline now lives as structured blocks inside agent-context.md.
 
 ## Foundation files
 

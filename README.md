@@ -279,7 +279,7 @@ cp ~/Documents/BOS-AI/*.md ./documents/foundations/
 - Quality-gate hooks (`tsc`/`ruff`/`rubocop`) ship with the install
 - Three paste-ready Routine templates for scheduled/operational work (`pr-review`, `nightly-qa`, `backlog-triage`)
 - Karpathy operating constitution applied by every specialist
-- One-command migration for v5.x projects: `migrate-v5-to-v6.sh`
+- One-command migration for v5.x projects: `bash install.sh --upgrade` (v6.1.0+)
 
 [→ Release v6.0.0](https://github.com/TheWayWithin/agent-11/releases/tag/v6.0.0-lean-orchestrator) · [→ Release History](docs/RELEASE-HISTORY.md) · [→ CHANGELOG](CHANGELOG.md) · [→ MCP Guide](docs/MCP-GUIDE.md)
 
@@ -287,13 +287,12 @@ cp ~/Documents/BOS-AI/*.md ./documents/foundations/
 
 ```bash
 # In your existing project root:
-bash <(curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/migrate-v5-to-v6.sh)
-
-# Then re-run install.sh to deploy v6.0 library files:
-curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh | bash
+bash <(curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh) --upgrade
 ```
 
-The migration script backs up everything before any change, supports `--dry-run` to preview, and is fully reversible.
+That's it. The installer detects v5 markers, runs the migration, merges your existing `.claude/settings.json` (your custom permissions and env keys are preserved), then deploys v6.0.
+
+Add `--dry-run` to preview without changes. Add `--non-interactive` for CI/scripts. Roll back any time via the [restore script](project/deployment/scripts/restore-pre-upgrade.sh) — full guide in [docs/UPGRADE.md](docs/UPGRADE.md).
 
 ---
 
@@ -1785,7 +1784,7 @@ Estimated token savings: ~4,250 tokens (63% reduction)
 
 ### Mission MCP Tools (v6.0)
 
-> **v6.0**: profile-switching is retired. MCP tools defer-load via Claude Code's native `ENABLE_TOOL_SEARCH=auto` (set in `.claude/settings.json`). Specialists discover what they need at runtime: `tool_search_tool_regex_20251119(pattern="mcp__SERVERNAME")`. No profile selection, no restarts. See [docs/MCP-GUIDE.md](docs/MCP-GUIDE.md) for setup. v5.x users migrate via [`migrate-v5-to-v6.sh`](project/deployment/scripts/migrate-v5-to-v6.sh).
+> **v6.0**: profile-switching is retired. MCP tools defer-load via Claude Code's native `ENABLE_TOOL_SEARCH=auto` (set in `.claude/settings.json`). Specialists discover what they need at runtime: `tool_search_tool_regex_20251119(pattern="mcp__SERVERNAME")`. No profile selection, no restarts. See [docs/MCP-GUIDE.md](docs/MCP-GUIDE.md) for setup. v5.x users upgrade via `bash install.sh --upgrade` (see [docs/UPGRADE.md](docs/UPGRADE.md)).
 
 [📋 Complete Mission Library →](project/missions/library.md)
 

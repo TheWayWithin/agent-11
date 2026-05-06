@@ -4,6 +4,50 @@ Complete history of AGENT-11 development sprints and releases.
 
 ---
 
+## v6.1: Hardened Upgrade Path
+**Released**: 2026-05-06
+
+v6.1 closes the v5→v6 upgrade-path gap that surfaced in the first weeks after the v6.0 launch. Three sharp edges hit any v5.x user upgrading: a brittle two-script flow, a post-install summary that lied about whether `settings.json` got updated, and a migration script whose success message after a real run was indistinguishable from the no-op case. v6.1 fixes all three behind an opt-in `--upgrade` flag with full rollback support, hardened JSON merge logic, and five end-to-end test fixtures.
+
+### Headline Changes
+
+- **`install.sh --upgrade`** — single-command v5→v6 upgrade. Opt-in for first release; default-on auto-detection deferred to v6.2 after production validation.
+- **Settings.json surgical merge** — user values win on every conflict; template only fills gaps. JSON edge cases (BOM, trailing commas, duplicate keys, `$schema`, `_comment`) handled. Backup → merge → re-validate → auto-restore-on-fail.
+- **`restore-pre-upgrade.sh`** — first-class rollback. Lists backups, interactive selector, `--latest` shortcut, `--settings`-only mode.
+- **`--dry-run` and `--non-interactive` / `--batch-safe` flags** — preview before running; bulk-mode for CI and Sprint 5b's wrapper.
+- **`docs/UPGRADE.md`** — focused upgrade guide separate from the MCP guide.
+- **5 canonical test fixtures** under `test-projects/install-fixtures/` — happy path, custom settings preservation, malformed JSON, partial-migration recovery, already-v6 idempotency. 43/43 individual checks.
+
+### Why v6.1.0 (minor) not v6.0.1 (patch)
+
+v6.1 adds new CLI flags, new behaviour gated behind opt-in, and settings.json mutation logic. Per semver, that's a minor — patches are bug-fix-only.
+
+### Sprint Roadmap (5a)
+
+| Task | Focus | Headline |
+|------|-------|----------|
+| T1 | v5 detection + `--upgrade` gate | install.sh detects markers at entry; warns-and-exits by default |
+| T2 | Subprocess invocation contract | local-first script lookup with GitHub fallback; explicit `$?` check |
+| T3 | settings.json surgical merge | Python 3 helper; user values win; backup→validate→auto-restore |
+| T4 | Truthful post-install summary | conditional render based on actual on-disk state |
+| T5 | `migrate.sh` output clarity | distinguishes "completed previously" from "always on v6" |
+| T6 | Five canonical test fixtures | replaces the original spec's single happy-path fixture |
+| T7 | Rollback restore script + `docs/UPGRADE.md` | first-class undo path |
+| T8 | `--dry-run` and `--non-interactive` flags | preview + Sprint 5b's wrapper contract |
+| T9 | v6.1.0 release | this entry |
+
+### Convergent review concerns addressed
+
+The dev + architect reviews of the original spec converged on four concerns; all were folded into the path-A spec before execution:
+1. **Wrong version label** — fixed: minor not patch.
+2. **Auto-migrate without consent is risky** — fixed: opt-in via `--upgrade` flag for first release.
+3. **Rollback path missing** — fixed: `restore-pre-upgrade.sh` plus full doc section.
+4. **T6 fixture too thin** — fixed: 5 fixtures covering realistic v5 shapes in the wild.
+
+Plus dev-specific edge cases: Python 3 fallback, JSON edge cases, conflict-resolution rule, subprocess error handling, `--dry-run` flag.
+
+---
+
 ## v6.0: The Lean Orchestrator
 **Released**: 2026-05-03
 

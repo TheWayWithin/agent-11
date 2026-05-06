@@ -8,6 +8,29 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
+### [2026-05-06] — Sprint 5a T9 (docs portion): v6.1.0 release prep ✅
+
+**Summary**: All v6.1.0 release docs ready. The tag and GitHub release itself are held pending Jamie's explicit approval (per the never-tag-without-confirmation rule).
+
+**Deliverables**:
+- `CHANGELOG.md` — new v6.1.0 section ("Hardened Upgrade Path"). Released-on-2026-05-06. Added/Changed/Fixed/Reference subsections covering T1–T8.
+- `docs/RELEASE-HISTORY.md` — new v6.1 section at the top. Headline changes, why-v6.1.0-not-v6.0.1 rationale, sprint roadmap table for 5a's nine tasks, summary of how the dev + architect convergent concerns got addressed.
+- `README.md`:
+  - Line 282 (v6.0 highlights bullet) — updated to mention `bash install.sh --upgrade` as the v6.1.0+ command.
+  - "v5.x users: upgrading to v6.0" section — replaced two-step with single command; added `--dry-run` / `--non-interactive` / restore-script pointers; linked `docs/UPGRADE.md`.
+  - Line 1788 (MCP profile retirement note) — updated v5.x migration link.
+- `docs/MCP-GUIDE.md` — migration section rewritten to point at the single-command flow + `docs/UPGRADE.md` + the restore script.
+- `library/CLAUDE.md` (deployed to user `.claude/CLAUDE.md`) — v5→v6 migration line updated from the old `cat handoff-notes.md >> agent-context.md` recipe to `bash install.sh --upgrade` (v6.1+).
+
+**Held pending explicit approval**:
+- `git tag v6.1.0` annotated tag
+- Push to `origin/main` (currently 7 commits ahead)
+- GitHub release creation
+
+**Next**: Jamie reviews the doc commits, gives explicit go-ahead for the tag + release.
+
+---
+
 ### [2026-05-06] — Sprint 5a T6: canonical install fixtures under test-projects/ ✅
 
 **Summary**: Five canonical end-to-end test fixtures live under `test-projects/install-fixtures/`. Each spins up a self-contained pre-state under `mktemp -d`, runs `install.sh --upgrade`, and asserts post-conditions. The five scenarios were chosen post-review to cover the realistic shapes a v5→v6 upgrade hits in the wild — replacing the single happy-path fixture the original spec proposed.

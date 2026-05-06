@@ -11,6 +11,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Upgraded Opus tier references from 4.5 to 4.6 across all documentation
 - Updated model-selection-guide.md (v1.1.0) with Opus 4.6 tier
 
+## [6.1.0] - 2026-05-06 - Hardened Upgrade Path
+
+v6.1.0 closes the v5→v6 upgrade-path gap that surfaced in the first weeks after the v6.0 launch. Three sharp edges hit any v5.x user upgrading: install.sh + migrate-v5-to-v6.sh as a brittle two-script flow, install.sh refusing to update existing `settings.json` while still claiming it had ("Tool deferring enabled") in the post-install summary, and migrate.sh's success message being indistinguishable from the no-op case after a real run. v6.1 fixes all three behind an opt-in `--upgrade` flag, with full rollback support, hardened JSON merge logic, and five end-to-end test fixtures.
+
+**Migration**: existing v5.x users now upgrade with a single command:
+
+```bash
+bash <(curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh) --upgrade
+```
+
+Preview with `--dry-run`. Roll back any time via `restore-pre-upgrade.sh`. Full guide: [docs/UPGRADE.md](docs/UPGRADE.md).
+
+### Added
+
+- **`install.sh --upgrade`** — opt-in flag that detects v5 markers and runs the migration as a subprocess before deploying v6.0 library files. Single command replaces the previous two-step flow. Default behaviour (no flag) on a v5 install is detect-and-warn-and-exit, preserving user agency. Auto-on detection deferred to v6.2 after `--upgrade` validates in the wild.
+- **`install.sh --dry-run`** — print the plan without making changes. Inspects v5 markers, settings.json state, execution mode; itemises what would happen. Exits 0.
+- **`install.sh --non-interactive` / `--batch-safe`** — promise no prompts; fail fast on conditions that would require human input. Composable with the other flags. Designed for CI / bulk-upgrade wrappers.
+- **Settings.json surgical merge** (`merge-settings.py`) — Python 3 helper merges the v6 template into existing `settings.json`. User values win on every conflict; the template only fills gaps. Backup → merge → re-validate → auto-restore-on-fail. Edge cases handled: BOM strip, trailing commas rejected, duplicate keys rejected, `$schema`/`_comment`/custom env keys preserved.
+- **`restore-pre-upgrade.sh`** — undoes a v5→v6 upgrade from backups. Modes: `--list` (show available), interactive selector, `--latest`, `--backup <path>`, and `--settings <path>` (restore just settings.json without touching v5 markers).
+- **`docs/UPGRADE.md`** — focused upgrade guide: TL;DR, why `--upgrade` is required, what gets done, backup table, preview/dry-run, rollback procedures, manual recovery, bulk-upgrade pattern, known limitations, troubleshooting.
+- **Five end-to-end test fixtures** under `test-projects/install-fixtures/` — clean v5, custom settings, malformed JSON, partial migration, already-v6. `run-all.sh` aggregate runner. 43/43 individual checks.
+
+### Changed
+
+- **`migrate-v5-to-v6.sh` output clarity** — three previously-ambiguous cases now distinguished: "no markers + no prior backup" → "Already on v6.0"; "no markers + prior backup" → "Migration was completed previously" (with backup path); "markers + prior backup" → "completing the remaining migration steps". Final success summary itemises what actions were performed.
+- **Post-install summary** — no longer claims `ENABLE_TOOL_SEARCH=auto` is enabled when the merge didn't actually happen. Conditional render: true → "Tool deferring enabled"; false → "Tool deferring NOT enabled" + backup pointer + manual merge instructions + restore script reference.
+- **`install.sh --help`** — rewritten with a full flag table and usage examples.
+- **README v5.x → v6.0 section** — single command replaces the two-step.
+- **`docs/MCP-GUIDE.md` migration section** — same simplification, pointer to `docs/UPGRADE.md`.
+
+### Fixed
+
+- v5 install + `bash install.sh` (no migration first) no longer leaves the project in a hybrid v6-library + v5-residue state. Detection happens at script entry; user gets clear instructions with `--upgrade` as the next step.
+- `install.sh` no longer prints "✓ Tool deferring enabled" when it didn't actually update `settings.json`.
+- `migrate-v5-to-v6.sh` after a real run no longer prints output identical to the "you were always on v6" no-op.
+- Subprocess error handling: install.sh now uses explicit `rc=$?` after invoking migrate.sh rather than relying on `set -e` propagation through function returns.
+
+### Reference
+
+- **Sprint spec**: [`sprints/sprint-5a-install-upgrade-path.md`](sprints/sprint-5a-install-upgrade-path.md)
+- **Upgrade guide**: [`docs/UPGRADE.md`](docs/UPGRADE.md)
+- **Test fixtures**: [`test-projects/install-fixtures/`](test-projects/install-fixtures/)
+
 ## [6.0.0] - 2026-05-03 - The Lean Orchestrator
 
 v6.0 is a structural evolution. AGENT-11 stops reinventing what Claude Code's platform now provides natively (hooks, native tool deferring, Routines, the Agent Skills open standard) and shrinks the framework's own surface dramatically — `library/CLAUDE.md` from **575 lines to 78** (-86%), context tracking from **5 active files to 3**, MCP startup cost reduced via `ENABLE_TOOL_SEARCH=auto`. Public-facing API is largely backwards-compatible (`/coord build` still works the same); the wins are mostly invisible structural improvements that ship cleaner sessions.

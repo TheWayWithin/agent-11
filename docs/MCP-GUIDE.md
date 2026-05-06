@@ -137,24 +137,27 @@ Specialists search for these patterns themselves when delegated work needs MCP c
 
 ## v5.x → v6.0 Migration
 
-If you were using AGENT-11 v5.x with the `.mcp-profiles/` system:
+**v6.1.0+ (recommended)** — single command:
 
 ```bash
-# Run the migration script in your project root
-bash <(curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/migrate-v5-to-v6.sh)
+bash <(curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh) --upgrade
 ```
 
-The script:
-- Backs up your existing `.mcp-profiles/`, `handoff-notes.md`, and other v5.x files to `.claude/backups/v5-to-v6-YYYYMMDD-HHMMSS/`
-- Retires `.mcp-profiles/` (the profile-switching system is replaced by native deferring)
-- Folds `handoff-notes.md` into `agent-context.md` as a Phase Handoff block
-- Leaves your `.mcp.json` (server registry) untouched
-- Leaves your `.env.mcp` (API keys) untouched
-- Warns if your `.claude/settings.json` doesn't have `ENABLE_TOOL_SEARCH=auto` (you'll need to add it manually if you have customisations)
+The installer:
+- Detects v5 markers and runs `migrate-v5-to-v6.sh` automatically
+- Backs up everything before any change to `.claude/backups/v5-to-v6-YYYYMMDD-HHMMSS/`
+- Folds `handoff-notes.md` into `agent-context.md`, retires `.mcp-profiles/`, removes `mcp/dynamic-mcp.json`
+- **Merges your existing `.claude/settings.json`** (user values win; only fills gaps with `ENABLE_TOOL_SEARCH=auto` and the advisory `hooks` block)
+- Deploys the v6.0 library files
 
-After migration, run `install.sh` again to deploy the v6.0 library files (lean CLAUDE.md, updated agents, hooks, constitution).
+Preview before running: add `--dry-run`. Bulk-mode for CI/scripts: add `--non-interactive`. Full guide and rollback flow: **[docs/UPGRADE.md](UPGRADE.md)**.
 
-**Rollback**: copy files from `.claude/backups/v5-to-v6-*/` back to project root.
+`.mcp.json` (server registry) and `.env.mcp` (API keys) are untouched.
+
+**Rollback**: use the restore script:
+```bash
+bash <(curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/restore-pre-upgrade.sh) --list
+```
 
 **Manual migration** (if you prefer):
 ```bash
@@ -215,4 +218,4 @@ If specialists seem confused after migration, check:
 - **Profile switching**. Retired. Native deferring replaces it.
 - **Manual MCP optimisation**. The `mcp-optimization-guide.md` from v5.x is archived; its premise no longer applies.
 
-If something in your workflow expects the v5.x patterns, run `migrate-v5-to-v6.sh` to bring your project up to date.
+If something in your workflow expects the v5.x patterns, run `bash install.sh --upgrade` (v6.1.0+) to bring your project up to date.
