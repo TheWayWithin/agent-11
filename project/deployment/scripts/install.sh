@@ -354,6 +354,54 @@ find_or_fetch_migrate_script() {
     return 1
 }
 
+# Locate merge-settings.py for T3 settings.json merge. Same pattern as the
+# migrate-script lookup. Returns path on stdout, non-zero on failure.
+find_or_fetch_settings_merger() {
+    local execution_mode
+    execution_mode=$(detect_execution_mode)
+
+    if [[ "$execution_mode" == "local" ]]; then
+        local local_path="$PROJECT_ROOT/project/deployment/scripts/merge-settings.py"
+        if [[ -f "$local_path" ]]; then
+            echo "$local_path"
+            return 0
+        fi
+    fi
+
+    local tmp_script
+    tmp_script="$(mktemp -t merge-settings.XXXXXX)" || return 1
+    if download_file_from_github "project/deployment/scripts/merge-settings.py" "$tmp_script"; then
+        echo "$tmp_script"
+        return 0
+    fi
+    rm -f "$tmp_script"
+    return 1
+}
+
+# Locate library/settings.json.template. Returns path on stdout, non-zero on
+# failure. In remote mode, downloads to a tempfile.
+find_or_fetch_settings_template() {
+    local execution_mode
+    execution_mode=$(detect_execution_mode)
+
+    if [[ "$execution_mode" == "local" ]]; then
+        local local_path="$PROJECT_ROOT/library/settings.json.template"
+        if [[ -f "$local_path" ]]; then
+            echo "$local_path"
+            return 0
+        fi
+    fi
+
+    local tmp_template
+    tmp_template="$(mktemp -t settings-template.XXXXXX.json)" || return 1
+    if download_file_from_github "library/settings.json.template" "$tmp_template"; then
+        echo "$tmp_template"
+        return 0
+    fi
+    rm -f "$tmp_template"
+    return 1
+}
+
 # Run v5→v6 migration as subprocess. Working-directory contract: caller is in
 # target repo root. Explicit $? check — set -e does not propagate cleanly through
 # function returns when the caller checks the return value with `if`.
@@ -670,12 +718,15 @@ install_claude_md() {
     return 0
 }
 
-# Install settings.json template with default hooks (Sprint 4d)
+# Install settings.json template with default hooks (Sprint 4d, hardened in 5a-T3)
 # Deploys library/settings.json.template to .claude/settings.json
 # - Fresh install (no existing file): copy verbatim
-# - Existing settings.json without "hooks" key: skip with notice (don't risk merge corruption)
-# - Existing settings.json with "hooks": skip with notice (respect user customization)
-# Always backs up existing file before any change
+# - Existing settings.json: surgical merge via merge-settings.py (Python 3)
+#     - User values win on conflict; template only fills gaps
+#     - Backup → merge → re-validate → auto-restore on failure
+#     - Python 3 missing: write template as settings.json.new with manual instructions
+# Always backs up existing file before any change. Tracks SETTINGS_HAS_V6_FEATURES
+# global flag for the post-install summary (T4 — fix the lying summary).
 install_settings_template() {
     local execution_mode
     execution_mode=$(detect_execution_mode)
@@ -688,20 +739,85 @@ install_settings_template() {
     local backup_file="$CLAUDE_DIR/settings.json.backup-$(date +%Y%m%d_%H%M%S)"
     local source_path="library/settings.json.template"
 
-    # If user already has a settings.json, do not overwrite
+    # ===== Existing settings.json: T3 surgical merge =====
     if [[ -f "$dest_file" ]]; then
-        # Backup unconditionally before any inspection
+        # Always backup before any change.
         cp "$dest_file" "$backup_file"
-        log "Backed up existing .claude/settings.json"
+        log "Backed up existing .claude/settings.json to $(basename "$backup_file")"
 
-        if grep -q '"hooks"' "$dest_file" 2>/dev/null; then
-            warn "Existing .claude/settings.json already defines hooks - leaving it alone"
-        else
-            warn "Existing .claude/settings.json found without hooks - leaving it alone (manual merge recommended)"
-            echo "  See: $(dirname "$source_path")/$(basename "$source_path") for the AGENT-11 hook template"
+        # Python 3 fallback: write .new alongside, leave original intact.
+        if ! command -v python3 >/dev/null 2>&1; then
+            warn "python3 not found — cannot perform automatic settings.json merge"
+            local new_file="$dest_file.new"
+            local template_path
+            if template_path="$(find_or_fetch_settings_template)"; then
+                cp "$template_path" "$new_file"
+                warn "Wrote v6 template to $new_file"
+                warn "Manually merge the contents of settings.json.new into settings.json"
+                warn "  to enable v6 features (ENABLE_TOOL_SEARCH + advisory hooks)."
+                warn "Reference: docs/MCP-GUIDE.md (settings.json migration)"
+            else
+                warn "Could not retrieve settings.json template — install python3 and re-run."
+            fi
+            SETTINGS_HAS_V6_FEATURES=false
+            return 0
         fi
+
+        # Resolve helper + template paths.
+        local merger_path template_path
+        if ! merger_path="$(find_or_fetch_settings_merger)"; then
+            warn "Could not locate merge-settings.py — leaving settings.json unchanged"
+            SETTINGS_HAS_V6_FEATURES=false
+            return 0
+        fi
+        if ! template_path="$(find_or_fetch_settings_template)"; then
+            warn "Could not locate settings.json.template — leaving settings.json unchanged"
+            SETTINGS_HAS_V6_FEATURES=false
+            return 0
+        fi
+
+        # Run merger; capture stdout (status line) and exit code separately.
+        local merger_out merger_rc
+        merger_out="$(python3 "$merger_path" "$dest_file" "$template_path" 2>&1)"
+        merger_rc=$?
+
+        if [[ $merger_rc -ne 0 ]]; then
+            warn "settings.json merge failed (exit $merger_rc):"
+            echo "$merger_out" | sed 's/^/  /'
+            # The merger's atomic write means dest_file is unchanged on failure,
+            # but restore from backup defensively in case anything slipped through.
+            cp "$backup_file" "$dest_file"
+            warn "settings.json restored from backup; v6 features not enabled."
+            SETTINGS_HAS_V6_FEATURES=false
+            return 0
+        fi
+
+        # Defense in depth: re-validate the merged JSON. The merger validates
+        # internally, but we re-check from bash to catch any post-write surprise.
+        if ! python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$dest_file" >/dev/null 2>&1; then
+            error "Merged settings.json is invalid JSON — auto-restoring from backup"
+            cp "$backup_file" "$dest_file"
+            SETTINGS_HAS_V6_FEATURES=false
+            return 0
+        fi
+
+        case "$merger_out" in
+            *NOOP_ALREADY_V6*)
+                log "Existing settings.json already on v6 (ENABLE_TOOL_SEARCH + hooks present)"
+                SETTINGS_HAS_V6_FEATURES=true
+                ;;
+            *MERGED*)
+                success "Merged v6 template into existing settings.json (user values preserved)"
+                SETTINGS_HAS_V6_FEATURES=true
+                ;;
+            *)
+                warn "settings.json merger returned unexpected output: $merger_out"
+                SETTINGS_HAS_V6_FEATURES=false
+                ;;
+        esac
         return 0
     fi
+    # ===== End T3 merge path =====
 
     # Fresh install - deploy template verbatim
     if [[ "$execution_mode" == "local" ]]; then
@@ -709,17 +825,22 @@ install_settings_template() {
         if [[ -f "$source_file" ]]; then
             if cp "$source_file" "$dest_file"; then
                 success "Default hooks installed: .claude/settings.json"
+                SETTINGS_HAS_V6_FEATURES=true
             else
                 warn "Failed to install settings.json - hooks not deployed"
+                SETTINGS_HAS_V6_FEATURES=false
             fi
         else
             warn "library/settings.json.template not found - hooks not deployed"
+            SETTINGS_HAS_V6_FEATURES=false
         fi
     else
         if download_file_from_github "$source_path" "$dest_file"; then
             success "Default hooks downloaded: .claude/settings.json"
+            SETTINGS_HAS_V6_FEATURES=true
         else
             warn "Failed to download settings.json template - hooks not deployed"
+            SETTINGS_HAS_V6_FEATURES=false
         fi
     fi
 
@@ -1480,7 +1601,14 @@ show_post_install_instructions() {
     echo
 
     echo -e "${BLUE}🔧 MCP Configured!${NC}"
-    echo "  ✓ Tool deferring enabled (ENABLE_TOOL_SEARCH=auto in .claude/settings.json)"
+    # T4: tell the truth about whether v6 features actually landed in settings.json.
+    if [[ "${SETTINGS_HAS_V6_FEATURES:-false}" == "true" ]]; then
+        echo "  ✓ Tool deferring enabled (ENABLE_TOOL_SEARCH=auto in .claude/settings.json)"
+    else
+        echo -e "  ${YELLOW}⚠ Tool deferring NOT enabled${NC} — settings.json was preserved without v6 changes."
+        echo "    See backup at .claude/settings.json.backup-* and merge manually."
+        echo "    Reference: docs/MCP-GUIDE.md"
+    fi
     echo "  ✓ MCP documentation in docs/"
     echo "  ✓ Environment template: .env.mcp.template"
     echo
@@ -1509,6 +1637,7 @@ show_post_install_instructions() {
 # Main installation function
 main() {
     UPGRADE_MODE=false
+    SETTINGS_HAS_V6_FEATURES=false  # set by install_settings_template
     local legacy_arg=""
 
     # Parse args: flags + optional legacy squad-type positional.
