@@ -1,8 +1,8 @@
-# Handoff Notes — Agent-11 (Sprint 5a CLOSED, Sprint 5b ready to start)
+# Handoff Notes — Agent-11 (Sprints 5a + 5b CLOSED)
 
 **Last Updated**: 2026-05-07
-**From**: Sprint 5a (v6.1.0 — Hardened Upgrade Path) shipped end-to-end
-**To**: Next session — start Sprint 5b (bulk-migrate Jamie's 17 priority repos), or pick up other open threads
+**From**: Sprint 5b (bulk migration of 17/17 priority repos to v6.1.1) shipped end-to-end
+**To**: Next session — open threads only (no active sprint queued)
 
 ---
 
@@ -28,25 +28,26 @@ Detect-and-warn-and-exit. Preserves user agency. Auto-on detection deferred to v
 
 ---
 
-## Sprint 5b — Bulk migration of Jamie's 17 priority repos (NEXT)
+## Sprint 5b — Bulk migration (CLOSED 2026-05-07)
 
-**The contract is in place**: `--non-interactive` was added in T8 specifically so a bulk wrapper can loop over repos without prompts.
+**17/17 priority repos migrated to v6.1.1**:
+- Pilots that drove the v6.1.1 advisory-cleanup patch (2): aisearchmastery, freecalchub
+- Top 6 batch: BOS-AI, aimpactscanner-mvp, Trader-7, llm-txt-mastery, aisearcharena, aimpactmonitor
+- Normal 8 batch: PlebTest, SEOAgent, ISOTracker, modeloptix, solomarket, evolve-7, agent-11-website, Socrates
+- Outlier 1: `mastery-ai Framework` (1-marker, path-with-space) — same code path, clean
 
-**Top-priority subset (8 repos)**:
-BOS-AI, aimpactscanner-mvp, aisearchmastery, freecalchub, Trader-7 (= "llm-trading-system"), llm-txt-mastery, ai-search-arena, aimpactmonitor
+All 15 of the bulk sweep: `rc=0`, 0 markers remaining, settings preserved (where existing), 0/15 stale-advisory regressions (v6.1.1 fix held in real-world bulk).
 
-**Rest of active 17**:
-PlebTest, SEOAgent, mastery-ai-Framework, ISOTracker, modeloptix, solomarket, evolve-7, agent-11-website, Socrates
+**Logs**: `/tmp/agent11-bulk-5b/`. Per-repo backups under each `.claude/backups/v5-to-v6-<ts>/`.
 
-**Skip**: geo-benchmark-framework (no `.claude/` deployed — fresh install if needed, not migration)
+**Naming notes for future reference**:
+- "ai-search-arena" in earlier handoff = `/Users/jamiewatters/DevProjects/aisearcharena` (no hyphens).
+- "Trader-7" = `/Users/jamiewatters/DevProjects/Trader-7` (was previously also called "llm-trading-system").
+- `mastery-ai Framework` has a literal space in the directory name — quote when scripting.
 
-**Out of current scope**: 14 BusinessProjects with `.claude/` deployed — same v5 trap likely; triage separately.
+**Skip (still applies if any future bulk sweep)**: geo-benchmark-framework — no `.claude/` deployed.
 
-**Suggested 5b structure**:
-- Small batch wrapper (`scripts/bulk-upgrade.sh`?) that loops `cd $repo && bash install.sh --upgrade --non-interactive` and logs results
-- `--dry-run` first across all 17 to surface any oddities
-- Backups preserved per-repo at `.claude/backups/v5-to-v6-*/` — nothing global to track
-- One-liner per repo to verify post-state (markers gone, settings merged, summary truthful)
+**BusinessProjects with `.claude/`**: Those are BOS-AI projects (different framework), NOT agent-11. They do not need agent-11 v5→v6 migration. Earlier handoff had this line wrong.
 
 ---
 
@@ -83,4 +84,4 @@ PlebTest, SEOAgent, mastery-ai-Framework, ISOTracker, modeloptix, solomarket, ev
 - British English by default.
 - **Library vs working squad**: edits target `project/agents/specialists/`, `project/commands/`, `library/` (deployed). `.claude/agents/` and `.claude/commands/` are internal — only touch with explicit decision.
 - **Never commit, push, or deploy without explicit confirmation**. Same for any destructive git op.
-- **First action for Sprint 5b**: confirm scope (the 8 top-priority subset, or all 17 in one go), then write the batch wrapper, then dry-run across all targets before any real run.
+- **No active sprint queued.** Open threads above are the only candidates. v6.2 (auto-on detection of v5 markers without `--upgrade` flag) was deferred from Sprint 5a pending production validation of `--upgrade`; that validation now exists (17 successful real-world upgrades), so v6.2 is unblocked when ready.

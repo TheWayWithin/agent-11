@@ -8,6 +8,37 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
+### [2026-05-07] — Sprint 5b CLOSED: bulk v5→v6.1.1 migration of 17/17 priority repos ✅
+
+**Summary**: Sprint 5b complete. After the v6.1.1 patch shipped, ran the bulk migration across the remaining 15 repos (top-priority subset minus the 2 pilots already done). Combined with the aisearchmastery and freecalchub pilots that drove the v6.1.1 advisory-cleanup patch, **17 of 17 priority repos** are now on v6.1.1.
+
+**Repos migrated this sweep (15)**:
+- Top 6: BOS-AI, aimpactscanner-mvp, Trader-7, llm-txt-mastery, aisearcharena, aimpactmonitor (run + verified, paused for go-ahead)
+- Normal 8: PlebTest, SEOAgent, ISOTracker, modeloptix, solomarket, evolve-7, agent-11-website, Socrates
+- Outlier 1: `mastery-ai Framework` (the 1-marker outlier from the 17-repo dry-run survey, plus a path-with-space — handled by the same code path)
+
+**Pre-flight (dry-run sweep, 15/15)**:
+- All 15 returned `rc=0` on `bash install.sh --upgrade --dry-run --non-interactive`.
+- All 15 had v5 markers (uniform with the dry-run survey expectations).
+- 9 had existing settings.json (would surgical-merge); 6 fresh-deploy. Matched real-run outcome 1:1.
+- Dirty-tree state (uncommitted changes per repo before upgrade): ranged 0 to 141 (solomarket worst). Pilot results validated dirty trees up to 95 changes; held in this sweep too.
+
+**Real-run outcome (15/15 clean)**:
+- All 15: `rc=0` and 0 markers remaining post-install.
+- All 15: per-repo backup directory created at `.claude/backups/v5-to-v6-<ts>/`.
+- 9/9 settings merges: succeeded with `Merged v6 template into existing settings.json (user values preserved)`. Sample spot-check (BOS-AI): 31 allow + 1 ask + 13 deny + custom `AGENT_11_PROJECT` env var + hooks — all preserved.
+- 6/6 fresh-deploy repos: clean install of v6 settings template, no merge needed.
+- **0/15 repos showed the stale "Manual merge recommended" advisory** — v6.1.1 cosmetic fix held in real-world bulk run.
+- mastery-ai Framework outlier (1 marker, path with space): clean — marker gone, settings merged, no advisory.
+
+**Logs**: `/tmp/agent11-bulk-5b/` (dry-run + real per-repo).
+
+**Out of scope, deferred**: BusinessProjects with `.claude/` deployed are BOS-AI projects (different framework), not agent-11 — no migration needed from this repo's installer. Earlier handoff line had this wrong; correcting in handoff-notes.md.
+
+**Sprint 5b status**: CLOSED. The contract introduced in Sprint 5a (`--non-interactive` + `--dry-run`) worked exactly as designed for bulk use.
+
+---
+
 ### [2026-05-07] — v6.1.1 patch: subprocess advisory cleanup ✅
 
 **Summary**: Cosmetic patch surfaced during the first real-world v5→v6 pilot runs (aisearchmastery, freecalchub). `migrate-v5-to-v6.sh` was emitting a stale "Manual merge recommended" `[WARN]` immediately before install.sh's surgical merger ran and succeeded — the warning looked like a merge failure. Suppressed when migrate.sh is invoked as a subprocess of install.sh (gated by `AGENT11_INSTALL_INVOKED=1` env var). Standalone use still surfaces the advisory, now reworded to point at `install.sh --upgrade` as the recommended automatic path.
