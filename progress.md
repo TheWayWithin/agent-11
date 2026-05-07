@@ -8,6 +8,32 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
+### [2026-05-07] — v6.1.1 patch: subprocess advisory cleanup ✅
+
+**Summary**: Cosmetic patch surfaced during the first real-world v5→v6 pilot runs (aisearchmastery, freecalchub). `migrate-v5-to-v6.sh` was emitting a stale "Manual merge recommended" `[WARN]` immediately before install.sh's surgical merger ran and succeeded — the warning looked like a merge failure. Suppressed when migrate.sh is invoked as a subprocess of install.sh (gated by `AGENT11_INSTALL_INVOKED=1` env var). Standalone use still surfaces the advisory, now reworded to point at `install.sh --upgrade` as the recommended automatic path.
+
+**Pilot results that drove this patch** (Sprint 5b dry-run survey + first two real-run pilots):
+- 17-repo dry-run survey: all 17 confirmed on v5 (11 would-merge, 6 fresh-deploy, 0 already-v6, 0 python3 issues, 1 outlier — `mastery-ai Framework` with 1 marker, deferred for separate look).
+- aisearchmastery pilot: 16/16 checks. Rich permissions (30+ allow rules + ask + deny + custom `AGENT_11_PROJECT` env var) all preserved through the surgical merge.
+- freecalchub pilot: 15/15 checks. 31 permissions + env preserved.
+- Both pilots had heavily dirty trees pre-upgrade (61 + 95 uncommitted changes respectively) — install correctly only mutated framework files and v5 markers, leaving genuine project content (Ideation/, Docs/, sitemap, etc.) untouched.
+
+**Deliverables**:
+- `project/deployment/scripts/install.sh` — sets `AGENT11_INSTALL_INVOKED=1` before invoking migrate-v5-to-v6.sh subprocess.
+- `project/deployment/scripts/migrate-v5-to-v6.sh` — new conditional branch in the ENABLE_TOOL_SEARCH check: when invoked under install.sh, prints a single-line note instead of the stale advisory; standalone path reworded to point at `install.sh --upgrade` and `docs/UPGRADE.md`.
+- `CHANGELOG.md` — v6.1.1 entry (Patch).
+- `docs/RELEASE-HISTORY.md` — v6.1.1 section.
+
+**Verified**:
+- bash -n syntax clean on both modified scripts.
+- Fixture 02 (custom-mcp regression) — 10/10.
+- Subprocess mode: stale "Manual merge recommended" gone; new "install.sh will merge it next" note present; final summary truthful.
+- Standalone mode: original advisory preserved (with new wording); install.sh --upgrade pointer present.
+
+**Next**: tag v6.1.1, then resume bulk migration of remaining 15 repos.
+
+---
+
 ### [2026-05-07] — Sprint 5a T9: v6.1.0 released ✅ (Sprint 5a CLOSED)
 
 **Summary**: v6.1.0 — "Hardened Upgrade Path" — tagged and released. All 9 commits ahead of main pushed; tag `v6.1.0-hardened-upgrade-path` pushed; GitHub release live with full notes. Sprint 5a is closed.

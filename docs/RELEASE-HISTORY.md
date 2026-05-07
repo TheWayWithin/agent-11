@@ -4,6 +4,15 @@ Complete history of AGENT-11 development sprints and releases.
 
 ---
 
+## v6.1.1: Subprocess advisory cleanup
+**Released**: 2026-05-07
+
+Cosmetic patch surfaced during the first real-world v5→v6 pilot runs after v6.1.0 shipped. `migrate-v5-to-v6.sh` was emitting a stale "Manual merge recommended" warning just before install.sh's surgical merger ran and succeeded — the warning looked like a failure. v6.1.1 suppresses the advisory when migrate.sh runs as a subprocess of install.sh (gated by `AGENT11_INSTALL_INVOKED=1`); standalone invocation still surfaces it (now with a pointer to the install.sh --upgrade path as the recommended approach).
+
+Pilot results that drove this patch: 31/31 individual post-upgrade checks across two real-world dirty-tree repos (aisearchmastery: 16/16, freecalchub: 15/15) — every existing user value (rich permissions, custom env keys, ask/deny lists) preserved through the surgical merge.
+
+---
+
 ## v6.1: Hardened Upgrade Path
 **Released**: 2026-05-07
 

@@ -11,6 +11,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Upgraded Opus tier references from 4.5 to 4.6 across all documentation
 - Updated model-selection-guide.md (v1.1.0) with Opus 4.6 tier
 
+## [6.1.1] - 2026-05-07 - Subprocess advisory cleanup
+
+Patch release. Surfaced during real-world v5→v6 pilot runs after v6.1.0 shipped.
+
+### Fixed
+
+- `migrate-v5-to-v6.sh` no longer prints a stale "Manual merge recommended" advisory when invoked as a subprocess by `install.sh --upgrade`. The advisory was a false alarm in chained mode — install.sh's surgical merger handles the merge immediately after, but the warning text appeared just before the success line and looked like the merge had failed. Suppression is gated by an `AGENT11_INSTALL_INVOKED=1` env var that install.sh sets before subprocess invocation.
+- Standalone `migrate-v5-to-v6.sh` still surfaces the advisory, but now points at `install.sh --upgrade` as the recommended automatic path and references `docs/UPGRADE.md` (rather than the raw `library/settings.json.template` file).
+
+### Verified
+
+- 31/31 checks across two real-world pilot repos (aisearchmastery, freecalchub) — both have rich existing settings.json with custom permissions and env keys; merge preserved everything.
+- 10/10 fixture 02 (custom-mcp) regression test still green.
+- Standalone migrate.sh advisory still fires when not invoked via install.sh.
+
 ## [6.1.0] - 2026-05-07 - Hardened Upgrade Path
 
 v6.1.0 closes the v5→v6 upgrade-path gap that surfaced in the first weeks after the v6.0 launch. Three sharp edges hit any v5.x user upgrading: install.sh + migrate-v5-to-v6.sh as a brittle two-script flow, install.sh refusing to update existing `settings.json` while still claiming it had ("Tool deferring enabled") in the post-install summary, and migrate.sh's success message being indistinguishable from the no-op case after a real run. v6.1 fixes all three behind an opt-in `--upgrade` flag, with full rollback support, hardened JSON merge logic, and five end-to-end test fixtures.

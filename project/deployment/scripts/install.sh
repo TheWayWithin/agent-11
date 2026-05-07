@@ -487,7 +487,10 @@ run_v5_to_v6_migration() {
     log "  Target: $(pwd)"
     echo
 
-    bash "$script_path" --yes
+    # AGENT11_INSTALL_INVOKED tells migrate-v5-to-v6.sh to suppress its
+    # ENABLE_TOOL_SEARCH manual-merge advisory — install.sh runs the surgical
+    # merger right after, so the advisory was a false alarm in chained mode.
+    AGENT11_INSTALL_INVOKED=1 bash "$script_path" --yes
     local rc=$?
 
     if [[ $rc -ne 0 ]]; then

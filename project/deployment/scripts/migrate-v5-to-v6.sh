@@ -281,11 +281,17 @@ log "Checking .claude/settings.json for ENABLE_TOOL_SEARCH (Sprint 4f)..."
 if [[ -f "$SETTINGS_FILE" ]]; then
     if grep -q "ENABLE_TOOL_SEARCH" "$SETTINGS_FILE"; then
         log "  Already has ENABLE_TOOL_SEARCH — leaving alone."
+    elif [[ "${AGENT11_INSTALL_INVOKED:-}" == "1" ]]; then
+        # install.sh runs the surgical merger right after this — skip the
+        # manual-merge advisory to avoid a confusing false alarm.
+        log "  Existing settings.json without ENABLE_TOOL_SEARCH — install.sh will merge it next."
     else
         warn "  Existing .claude/settings.json found WITHOUT ENABLE_TOOL_SEARCH."
-        warn "  Manual merge recommended. Add this to the top level of settings.json:"
+        warn "  Recommended: re-run with install.sh's automatic merger:"
+        warn "    bash <(curl -sSL https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/install.sh) --upgrade"
+        warn "  Or manually add to the top level of settings.json:"
         warn '    "env": { "ENABLE_TOOL_SEARCH": "auto" }'
-        warn "  Reference: library/settings.json.template in the AGENT-11 repo."
+        warn "  Reference: docs/UPGRADE.md"
         warn "  Backup of current settings.json is at $BACKUP_DIR"
     fi
 else
