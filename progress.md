@@ -8,26 +8,45 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
-### [2026-05-06] — Sprint 5a T9 (docs portion): v6.1.0 release prep ✅
+### [2026-05-07] — Sprint 5a T9: v6.1.0 released ✅ (Sprint 5a CLOSED)
 
-**Summary**: All v6.1.0 release docs ready. The tag and GitHub release itself are held pending Jamie's explicit approval (per the never-tag-without-confirmation rule).
+**Summary**: v6.1.0 — "Hardened Upgrade Path" — tagged and released. All 9 commits ahead of main pushed; tag `v6.1.0-hardened-upgrade-path` pushed; GitHub release live with full notes. Sprint 5a is closed.
 
-**Deliverables**:
-- `CHANGELOG.md` — new v6.1.0 section ("Hardened Upgrade Path"). Released-on-2026-05-06. Added/Changed/Fixed/Reference subsections covering T1–T8.
-- `docs/RELEASE-HISTORY.md` — new v6.1 section at the top. Headline changes, why-v6.1.0-not-v6.0.1 rationale, sprint roadmap table for 5a's nine tasks, summary of how the dev + architect convergent concerns got addressed.
-- `README.md`:
-  - Line 282 (v6.0 highlights bullet) — updated to mention `bash install.sh --upgrade` as the v6.1.0+ command.
-  - "v5.x users: upgrading to v6.0" section — replaced two-step with single command; added `--dry-run` / `--non-interactive` / restore-script pointers; linked `docs/UPGRADE.md`.
-  - Line 1788 (MCP profile retirement note) — updated v5.x migration link.
-- `docs/MCP-GUIDE.md` — migration section rewritten to point at the single-command flow + `docs/UPGRADE.md` + the restore script.
-- `library/CLAUDE.md` (deployed to user `.claude/CLAUDE.md`) — v5→v6 migration line updated from the old `cat handoff-notes.md >> agent-context.md` recipe to `bash install.sh --upgrade` (v6.1+).
+**Release artefacts**:
+- Tag: `v6.1.0-hardened-upgrade-path` (annotated, includes one-command upgrade snippet + doc pointers)
+- GitHub release: https://github.com/TheWayWithin/agent-11/releases/tag/v6.1.0-hardened-upgrade-path
+- CHANGELOG.md, docs/RELEASE-HISTORY.md dated 2026-05-07
+- README.md: 3 surgical edits (v6.0 highlights bullet, v5.x upgrading section, MCP profile retirement note) — single-command upgrade replaces the two-step
+- docs/MCP-GUIDE.md: migration section rewritten
+- library/CLAUDE.md (deployed file): migration line updated to point at `bash install.sh --upgrade` (this ships in every new v6.1+ install)
 
-**Held pending explicit approval**:
-- `git tag v6.1.0` annotated tag
-- Push to `origin/main` (currently 7 commits ahead)
-- GitHub release creation
+**Sprint 5a final commit history** (9 commits on main):
+- `94ad691` — spec hardened post-review (path A locked)
+- `356e444` — T1+T2: install.sh detects v5, invokes migrate as subprocess
+- `412ef2f` — T3+T4: settings.json surgical merge + truthful summary
+- `532d913` — T5: migrate.sh output clarity
+- `c8e58f8` — T7+T8: rollback restore script + CLI flags + upgrade docs
+- `a0c336d` — T6: canonical install fixtures
+- `29db9c4` — T9 docs prep
+- `bd6412e` — date bump (2026-05-06 → 2026-05-07 to match tag day)
+- (this entry)
 
-**Next**: Jamie reviews the doc commits, gives explicit go-ahead for the tag + release.
+**Sprint stats**:
+- 9 commits / ~1,974 lines added / 25 files
+- 3 new scripts: merge-settings.py (157 lines), restore-pre-upgrade.sh (247 lines), 5 fixture run-test.sh (~240 lines combined)
+- 5 canonical end-to-end fixtures, 43/43 checks passing
+- New user-facing doc: docs/UPGRADE.md (139 lines)
+
+**Convergent review concerns from path-A spec — all addressed in shipped code**:
+1. Wrong version label → v6.1.0 minor (not v6.0.1 patch) ✅
+2. Auto-migrate without consent risky → opt-in via `--upgrade` flag ✅
+3. Rollback path missing → `restore-pre-upgrade.sh` + UPGRADE.md rollback section ✅
+4. T6 fixture too thin → 5 fixtures covering realistic v5 shapes ✅
+Plus dev-specific edges: Python 3 fallback, JSON edge cases, conflict semantics, subprocess error handling, `--dry-run` flag ✅
+
+**Next sprint (5b)**: bulk migration of Jamie's 17 active priority repos using `bash install.sh --upgrade --non-interactive` in a small batch wrapper. The `--non-interactive` flag was added in T8 specifically for this contract.
+
+---
 
 ---
 
