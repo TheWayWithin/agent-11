@@ -5,7 +5,7 @@ Complete history of AGENT-11 development sprints and releases.
 ---
 
 ## v6.1: Hardened Upgrade Path
-**Released**: 2026-05-06
+**Released**: 2026-05-07
 
 v6.1 closes the v5→v6 upgrade-path gap that surfaced in the first weeks after the v6.0 launch. Three sharp edges hit any v5.x user upgrading: a brittle two-script flow, a post-install summary that lied about whether `settings.json` got updated, and a migration script whose success message after a real run was indistinguishable from the no-op case. v6.1 fixes all three behind an opt-in `--upgrade` flag with full rollback support, hardened JSON merge logic, and five end-to-end test fixtures.
 

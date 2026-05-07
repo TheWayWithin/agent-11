@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Upgraded Opus tier references from 4.5 to 4.6 across all documentation
 - Updated model-selection-guide.md (v1.1.0) with Opus 4.6 tier
 
-## [6.1.0] - 2026-05-06 - Hardened Upgrade Path
+## [6.1.0] - 2026-05-07 - Hardened Upgrade Path
 
 v6.1.0 closes the v5→v6 upgrade-path gap that surfaced in the first weeks after the v6.0 launch. Three sharp edges hit any v5.x user upgrading: install.sh + migrate-v5-to-v6.sh as a brittle two-script flow, install.sh refusing to update existing `settings.json` while still claiming it had ("Tool deferring enabled") in the post-install summary, and migrate.sh's success message being indistinguishable from the no-op case after a real run. v6.1 fixes all three behind an opt-in `--upgrade` flag, with full rollback support, hardened JSON merge logic, and five end-to-end test fixtures.
 
