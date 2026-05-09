@@ -8,6 +8,31 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
+### [2026-05-09] — Sprint 5b push phase complete: 17/19 user repos pushed to github ✅
+
+**Summary**: After Sprint 5b's local migration sweep (2026-05-07) the 19 migrated repos sat with uncommitted working-tree changes. Today's session committed and pushed the migration upgrade to github across the available repos. Plus a small framework doc bump (model-selection-guide.md) and one straggler scope correction.
+
+**Push results (19 repos)**:
+- **Pushed to github (17)**: SEOAgent, aisearchmastery, freecalchub, BOS-AI, aimpactscanner-mvp, Trader-7, llm-txt-mastery, aisearcharena, aimpactmonitor, PlebTest, ISOTracker, modeloptix, solomarket, evolve-7, agent-11-website, mastery-ai Framework, ASMGE.
+- **Local-only (2)**: Socrates, SoloCMD — no `origin` remote configured. User decision to leave the migration commits sitting on local main; no path to publish without setting up a remote.
+- **Deferred (3, unchanged)**: mcp-7, mcp-11, test-project — older / sandbox-like, not actively used.
+
+**Process notes worth keeping**:
+- **Hardened staging script** (`/tmp/agent11-bulk-5b/push-migration.sh`) used a strict allowlist for migration paths (`.claude/agents`, `.claude/commands`, `.claude/CLAUDE.md`, `.claude/constitution`, `.claude/data`, `.claude/skills`, `.claude/settings.json`, `missions/`, `templates/`, `field-manual/`, `gates/`, `schemas/`, `stack-profiles/`, root MCP files, `docs/MCP-*`, `docs/UPGRADE.md`, `agent-context.md`). Per-repo audit confirmed: no backup artefacts staged, no user-content files (`progress.md`, `project-plan.md`, root `CLAUDE.md`, project ideation/) staged.
+- **Trader-7 edge case handled correctly**: Jamie had recreated `handoff-notes.md` with new Sprint 141 content after the migration ran. The script's D-vs-M check (`stage_v5_marker_if_deleted`) only stages a v5-marker path when its git status is `D`, never `M` — so Trader-7's new project-content `handoff-notes.md` correctly stayed unstaged.
+- **4 repos hit non-fast-forward push rejection** (aisearcharena, ISOTracker, solomarket, evolve-7) — remote had a "feat: add CI failure alert" commit pushed from elsewhere (likely scheduled job). Resolved with stash → `git pull --rebase origin main` → push → stash pop. Stash was needed because the user-content files we'd deliberately NOT staged still blocked rebase.
+- **2 repos had no `origin`**: Socrates and SoloCMD are local-only repos. Migration commits sit on local main waiting for a remote.
+
+**Commit SHAs (for traceability)**:
+- SEOAgent: af65710 | aisearchmastery: 70f5e01 | freecalchub: 87f4d4a | BOS-AI: dcb592e | aimpactscanner-mvp: dcb1b94 | Trader-7: 6ac1dd7 | llm-txt-mastery: 39ffec4 | aisearcharena: e155ca4 (rebased) | aimpactmonitor: b289bb3 (develop) | PlebTest: 7003376 (develop) | ISOTracker: 41dc0e4 (rebased) | modeloptix: 4f9c14f (develop) | solomarket: c82dfab (rebased) | evolve-7: 6435bc0 (rebased) | agent-11-website: 25066f9 | mastery-ai Framework: d563ea8 | ASMGE: 545dd1a | (Socrates: b838f90 local-only) | (SoloCMD: fe2b703 local-only).
+
+**Side deliverable**:
+- `project/field-manual/model-selection-guide.md` — bumped Opus 4.6 → 4.7 and Sonnet 4.5 → 4.6 across 7 prose/table refs. Added v1.2.0 changelog entry (2026-05-09); preserved v1.1.0 and v1.0.0 historical entries. Library agents already use model aliases, so this is doc-rot only — no runtime effect.
+
+**Sprint 5b status**: Fully closed. Bulk migration delivery confirmed end-to-end: dry-run survey → pilots → patch (v6.1.1) → real-run sweep → verification → commit → push.
+
+---
+
 ### [2026-05-07] — Sprint 5b CLOSED: bulk v5→v6.1.1 migration of 17/17 priority repos ✅
 
 **Summary**: Sprint 5b complete. After the v6.1.1 patch shipped, ran the bulk migration across the remaining 15 repos (top-priority subset minus the 2 pilots already done). Combined with the aisearchmastery and freecalchub pilots that drove the v6.1.1 advisory-cleanup patch, **17 of 17 priority repos** are now on v6.1.1.

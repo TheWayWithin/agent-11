@@ -1,7 +1,7 @@
-# Handoff Notes — Agent-11 (Sprints 5a + 5b CLOSED)
+# Handoff Notes — Agent-11 (Sprints 5a + 5b CLOSED, push phase done)
 
-**Last Updated**: 2026-05-07
-**From**: Sprint 5b (bulk migration of 17/17 priority repos to v6.1.1) shipped end-to-end
+**Last Updated**: 2026-05-09
+**From**: Sprint 5b push phase — 17/19 user repos pushed to github; agent-11 framework repo doc updates committed
 **To**: Next session — open threads only (no active sprint queued)
 
 ---
@@ -28,17 +28,20 @@ Detect-and-warn-and-exit. Preserves user agency. Auto-on detection deferred to v
 
 ---
 
-## Sprint 5b — Bulk migration (CLOSED 2026-05-07)
+## Sprint 5b — Bulk migration + push (CLOSED 2026-05-09)
 
-**17/17 priority repos migrated to v6.1.1**:
-- Pilots that drove the v6.1.1 advisory-cleanup patch (2): aisearchmastery, freecalchub
-- Top 6 batch: BOS-AI, aimpactscanner-mvp, Trader-7, llm-txt-mastery, aisearcharena, aimpactmonitor
-- Normal 8 batch: PlebTest, SEOAgent, ISOTracker, modeloptix, solomarket, evolve-7, agent-11-website, Socrates
-- Outlier 1: `mastery-ai Framework` (1-marker, path-with-space) — same code path, clean
+**Local migration sweep (2026-05-07)**: 17/17 priority repos migrated to v6.1.1, plus 2 stragglers (ASMGE, SoloCMD) added during push phase. All 19: `rc=0`, markers gone, settings preserved where existing, 0/15 stale-advisory regressions (v6.1.1 fix held in real-world bulk).
 
-All 15 of the bulk sweep: `rc=0`, 0 markers remaining, settings preserved (where existing), 0/15 stale-advisory regressions (v6.1.1 fix held in real-world bulk).
+**Push phase (2026-05-09)**: 17/19 pushed to github. Hardened staging script (`/tmp/agent11-bulk-5b/push-migration.sh`) used a strict allowlist + per-repo audit; smart D-vs-M check on v5 marker paths correctly handled the Trader-7 case (handoff-notes.md re-introduced as Sprint 141 project content stayed unstaged).
 
-**Logs**: `/tmp/agent11-bulk-5b/`. Per-repo backups under each `.claude/backups/v5-to-v6-<ts>/`.
+**Status**:
+- **Pushed (17)**: SEOAgent, aisearchmastery, freecalchub, BOS-AI, aimpactscanner-mvp, Trader-7, llm-txt-mastery, aisearcharena (rebased), aimpactmonitor (develop), PlebTest (develop), ISOTracker (rebased), modeloptix (develop), solomarket (rebased), evolve-7 (rebased), agent-11-website, mastery-ai Framework, ASMGE.
+- **Local-only (2)**: Socrates, SoloCMD — no `origin` configured. Migration commits sit on local main waiting for a remote (user decision).
+- **Deferred (3)**: mcp-7, mcp-11, test-project — older / sandbox-like, not actively used.
+
+**4 repos needed a stash → pull-rebase → push → stash-pop dance**: aisearcharena, ISOTracker, solomarket, evolve-7 had a "feat: add CI failure alert" commit on remote (likely scheduled job). Resolved cleanly. Stash was needed because user-content files we deliberately left unstaged (`progress.md`, `project-plan.md`, root `CLAUDE.md`) blocked rebase.
+
+**Logs**: `/tmp/agent11-bulk-5b/` (dry-run + real per-repo + push + rebase + stash logs).
 
 **Naming notes for future reference**:
 - "ai-search-arena" in earlier handoff = `/Users/jamiewatters/DevProjects/aisearcharena` (no hyphens).
@@ -47,7 +50,9 @@ All 15 of the bulk sweep: `rc=0`, 0 markers remaining, settings preserved (where
 
 **Skip (still applies if any future bulk sweep)**: geo-benchmark-framework — no `.claude/` deployed.
 
-**BusinessProjects with `.claude/`**: Those are BOS-AI projects (different framework), NOT agent-11. They do not need agent-11 v5→v6 migration. Earlier handoff had this line wrong.
+**BusinessProjects with `.claude/`**: Those are BOS-AI projects (different framework), NOT agent-11. They do not need agent-11 v5→v6 migration.
+
+**Side deliverable in agent-11 repo**: `project/field-manual/model-selection-guide.md` bumped to Opus 4.7 / Sonnet 4.6 (commit `43b2011`). Doc-rot fix only — library agents use model aliases that already auto-resolve.
 
 ---
 

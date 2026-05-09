@@ -6,7 +6,7 @@
 Companion: `Ideation/Dynamic MCP Tooling for Agent-11_ Context Optimization and Agent Routing.md`
 
 **Created**: 2026-04-17
-**Status**: Planning — Sprint 4a detailed, 4b–4h outlined only (rolling wave)
+**Status**: v6.0 SHIPPED. v6.1.1 SHIPPED 2026-05-07 (Sprint 5a — Hardened Upgrade Path). Sprint 5b CLOSED 2026-05-09 — 17/19 user repos bulk-migrated to v6.1.1 and pushed to github (2 local-only by user choice; 3 deferred).
 
 ---
 
@@ -82,6 +82,14 @@ The v6.0 evolution is delivered as **8 sub-sprints under the "Sprint 4" umbrella
 | **4f** | Dynamic MCP Tool Search | `ENABLE_TOOL_SEARCH=auto` enables native deferring; Tool-Centric Workflow in 7 specialists; profile-switching residue retired (recalibrated mid-sprint after schema audit) | ✅ T1, T2, T3, T5, T6, T8 complete; T4 removed; T7 (harness) parked |
 | **4g** | Skills + Routines | 3-tier skills model formalised; open-standard `description` added to all 7 SaaS skills; 3 Routine prompt templates; `/coord` detects operational intent | ✅ T1-T8, T10 complete; T9 (harness) parked |
 | **4h** | Validation + Migration | Harness batch (5 milestones); v5.2→v6.0 migration script; consolidated docs; private beta; retrospective | Detailed spec ready |
+
+### Post-v6.0 sprints (added after v6.0 shipped)
+
+| Sprint | Major Feature | Primary Outcome | Status |
+|--------|---------------|-----------------|--------|
+| **5a** | Hardened Upgrade Path (v6.1.0) | Single-command `install.sh --upgrade`; settings.json surgical merge; `restore-pre-upgrade.sh`; 5 canonical fixtures (43/43); `docs/UPGRADE.md` | ✅ Complete (2026-05-07, tag `v6.1.0-hardened-upgrade-path`) |
+| **5a.1** | Subprocess advisory cleanup (v6.1.1) | Suppress stale "Manual merge recommended" warning when migrate.sh runs under install.sh; reword standalone path | ✅ Complete (2026-05-07, tag `v6.1.1`) |
+| **5b** | Bulk migration of priority repos | Dry-run sweep + real run + per-repo verification across 19 user repos (17 priority + ASMGE + SoloCMD); commit + push migration to github | ✅ Complete (2026-05-09) — 17/19 pushed to github, 2/19 local-only (no remote configured: Socrates, SoloCMD), 3 deferred (mcp-7, mcp-11, test-project) |
 
 ---
 
