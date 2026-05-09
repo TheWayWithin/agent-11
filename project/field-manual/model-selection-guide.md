@@ -6,7 +6,7 @@
 
 ## Overview
 
-AGENT-11 v4.0.0 introduces intelligent model selection to optimize cost and performance. The Task tool's `model` parameter enables dynamic selection between Claude Opus 4.6, Sonnet 4.5, and Haiku based on task complexity.
+AGENT-11 v4.0.0 introduces intelligent model selection to optimize cost and performance. The Task tool's `model` parameter enables dynamic selection between Claude Opus 4.7, Sonnet 4.6, and Haiku based on task complexity.
 
 **Key Benefits**:
 - **+15% mission success rate** - Better orchestration decisions
@@ -22,11 +22,11 @@ AGENT-11 uses a three-tier model deployment strategy:
 
 | Tier | Model | Primary Use | Cost/1M Tokens |
 |------|-------|-------------|----------------|
-| **1** | **Opus 4.6** | Complex orchestration, strategic reasoning | Highest |
-| **2** | **Sonnet 4.5** | Standard implementation, testing (default) | Medium |
+| **1** | **Opus 4.7** | Complex orchestration, strategic reasoning | Highest |
+| **2** | **Sonnet 4.6** | Standard implementation, testing (default) | Medium |
 | **3** | **Haiku** | Simple tasks, quick operations | Lowest |
 
-### Tier 1: Opus 4.6 (Frontier Intelligence)
+### Tier 1: Opus 4.7 (Frontier Intelligence)
 
 **Best for**: Complex reasoning that requires sustained attention and multi-step planning.
 
@@ -47,7 +47,7 @@ AGENT-11 uses a three-tier model deployment strategy:
 - Code migration or major refactoring planning
 - Complex coordination across specialists
 
-### Tier 2: Sonnet 4.5 (Standard Intelligence)
+### Tier 2: Sonnet 4.6 (Standard Intelligence)
 
 **Best for**: Well-defined tasks with clear requirements.
 
@@ -105,8 +105,8 @@ Task(
 
 | Value | Model | When to Use |
 |-------|-------|-------------|
-| `"opus"` | Claude Opus 4.6 | Complex, ambiguous, multi-phase tasks |
-| `"sonnet"` | Claude Sonnet 4.5 | Standard tasks (default if omitted) |
+| `"opus"` | Claude Opus 4.7 | Complex, ambiguous, multi-phase tasks |
+| `"sonnet"` | Claude Sonnet 4.6 | Standard tasks (default if omitted) |
 | `"haiku"` | Claude Haiku | Simple, routine, speed-critical tasks |
 
 ### Examples
@@ -438,6 +438,9 @@ Documenter: Sonnet (main documentation)
 ---
 
 ## Changelog
+
+### v1.2.0 (2026-05-09)
+- Updated Opus tier from 4.6 to 4.7 and Sonnet tier from 4.5 to 4.6 following model releases
 
 ### v1.1.0 (2026-02-07)
 - Updated Opus tier from 4.5 to 4.6 following model release
