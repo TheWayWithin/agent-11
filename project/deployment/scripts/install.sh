@@ -1213,6 +1213,16 @@ install_mission_system() {
             mkdir -p "$SKILLS_DIR/$skill"
             if download_file_from_github "project/skills/$skill/SKILL.md" "$SKILLS_DIR/$skill/SKILL.md"; then
                 log "Installed skill: $skill"
+                # Stack-specific references for skills that ship them.
+                # Not every skill has references/; failure here is non-fatal.
+                if [[ "$skill" == "saas-payments" || "$skill" == "saas-auth" ]]; then
+                    mkdir -p "$SKILLS_DIR/$skill/references"
+                    for ref in "nextjs-supabase.md" "remix-railway.md"; do
+                        download_file_from_github "project/skills/$skill/references/$ref" "$SKILLS_DIR/$skill/references/$ref" 2>/dev/null \
+                            && log "Installed reference: $skill/references/$ref" \
+                            || warn "Could not download reference: $skill/references/$ref"
+                    done
+                fi
             else
                 warn "Could not download skill: $skill"
             fi
@@ -1259,7 +1269,7 @@ install_mission_system() {
             log "Installed: gates README.md"
         fi
         # Gate templates
-        for template in "nodejs-saas.json" "python-api.json" "minimal.json"; do
+        for template in "nodejs-saas.json" "python-api.json" "minimal.json" "saas-skills-advisory.json"; do
             if [[ -f "$PROJECT_ROOT/project/gates/templates/$template" ]]; then
                 cp "$PROJECT_ROOT/project/gates/templates/$template" "$GATES_DIR/templates/"
                 log "Installed gate template: $template"
@@ -1269,7 +1279,7 @@ install_mission_system() {
         download_file_from_github "project/gates/run-gates.py" "$GATES_DIR/run-gates.py" && chmod +x "$GATES_DIR/run-gates.py"
         download_file_from_github "project/gates/gate-types.yaml" "$GATES_DIR/gate-types.yaml"
         download_file_from_github "project/gates/README.md" "$GATES_DIR/README.md"
-        for template in "nodejs-saas.json" "python-api.json" "minimal.json"; do
+        for template in "nodejs-saas.json" "python-api.json" "minimal.json" "saas-skills-advisory.json"; do
             download_file_from_github "project/gates/templates/$template" "$GATES_DIR/templates/$template"
         done
     fi
