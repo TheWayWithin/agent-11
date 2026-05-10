@@ -1,0 +1,66 @@
+# AGENT-11 Fleet Registry — Template
+#
+# Copy this file to your preferred location (e.g. ~/agent-11-fleet/registry.yaml
+# or ~/shared/tools/agent-11-fleet/registry.yaml) and edit. Point the bulk-ops
+# scripts at it via the AGENT11_FLEET_REGISTRY env var or the --registry flag.
+#
+# Tier values:
+#   active             — maintained, gets all updates, has working remote
+#   local-only         — agent-11-using but no `origin` remote (push impossible)
+#   dormant            — agent-11-using but not actively maintained; updates optional
+#   sandbox            — disposable test/scratch repo; updates optional
+#   skip               — explicitly excluded from all bulk operations
+#   different-framework — uses a different framework; must not be touched
+#
+# Field meanings:
+#   name      — short display name
+#   path      — absolute filesystem path
+#   remote    — git remote URL (or "none" for local-only)
+#   branch    — working branch (main / develop / etc)
+#   tier      — one of the values above
+#   notes     — free-text context for future reference
+#
+# Conventions:
+#   - Paths with spaces must be quoted.
+#   - Add new repos here when deployed; mark deprecated ones `tier: skip` rather
+#     than deleting (preserves history).
+
+last_updated: "YYYY-MM-DD"
+last_bulk_op: "describe most recent bulk operation here"
+
+repos:
+  # ── Active fleet ─────────────────────────────────────────────────────
+
+  - name: example-repo
+    path: /Users/you/DevProjects/example-repo
+    remote: https://github.com/you/example-repo.git
+    branch: main
+    tier: active
+    notes: "Replace this entry with your real repos."
+
+  # ── Local-only (no remote configured) ────────────────────────────────
+
+  # - name: local-scratch
+  #   path: /Users/you/DevProjects/local-scratch
+  #   remote: none
+  #   branch: main
+  #   tier: local-only
+  #   notes: "No origin configured."
+
+  # ── Dormant / sandbox ────────────────────────────────────────────────
+
+  # - name: old-prototype
+  #   path: /Users/you/DevProjects/old-prototype
+  #   remote: https://github.com/you/old-prototype.git
+  #   branch: main
+  #   tier: dormant
+  #   notes: "Last touched Q3 2025."
+
+  # ── Source / tooling repos that must NOT be touched ──────────────────
+
+  # - name: agent-11
+  #   path: /Users/you/DevProjects/agent-11
+  #   remote: https://github.com/TheWayWithin/agent-11.git
+  #   branch: main
+  #   tier: skip
+  #   notes: "The framework source itself. Skip from all bulk operations."
