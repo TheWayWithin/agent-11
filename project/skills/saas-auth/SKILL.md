@@ -312,284 +312,31 @@ async function login(email: string, password: string, ip: string) {
 
 ## Stack-Specific Implementation
 
-### nextjs-supabase
+Stack-specific code is held in `references/`. Load only the file matching the project's stack:
 
-**Setup**: Supabase Auth handles most complexity. Configure in dashboard and use client.
+- `references/nextjs-supabase.md` for Next.js 14+ with Supabase Auth.
+- `references/remix-railway.md` for Remix with Lucia + Railway PostgreSQL.
 
-```bash
-# Install Supabase client
-npm install @supabase/supabase-js @supabase/ssr
-```
+For other stacks (Express + Passport, Django + django-allauth, Rails + Devise, etc.) apply the patterns above using the framework's idioms: hashing on the way in, httpOnly cookies for sessions, rate limiting on auth endpoints, time-limited reset tokens.
 
-```typescript
-// lib/supabase/server.ts
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+## Exit Criteria
 
-export async function createClient() {
-  const cookieStore = await cookies();
+Before declaring this skill's work complete, run each check below and paste the output. "Looks right" is not sufficient. Items marked **gateable** can be wired into `project/gates/` for automated phase-exit checks.
 
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set(name, value, options)
-          );
-        },
-      },
-    }
-  );
-}
-```
+| # | Check | Verification | Pass condition | Gateable |
+|---|-------|-------------|----------------|----------|
+| 1 | Passwords hashed in code | `grep -rEn "bcrypt\.hash\|argon2.*hash\|Argon2id" --include="*.ts" --include="*.js" --include="*.py" .` | Match in registration and password-reset paths. | yes |
+| 2 | No tokens in localStorage | `grep -rEn "localStorage\.setItem.*(token\|session\|jwt\|auth)" --include="*.ts" --include="*.js" --include="*.tsx" --include="*.jsx" .` | Zero matches. | yes |
+| 3 | Session cookies are httpOnly | `grep -rEn "httpOnly|http_only" --include="*.ts" --include="*.js" --include="*.py" . \| grep -i -E "true\|cookie"` | At least one match in session/cookie configuration. | yes |
+| 4 | Rate limiting on login/signup/reset | `grep -rEn "rateLimit\|rate_limit\|ratelimit" --include="*.ts" --include="*.js" --include="*.py" .` | Match attached to login, signup, and password-reset routes. | yes |
+| 5 | Password reset tokens expire | Read the password-reset model/schema. | `expires_at` or equivalent column with TTL ≤ 1 hour. | manual |
+| 6 | All sessions invalidated on password change | `grep -rEn "deleteUserSessions\|invalidate.*sessions\|sessions.*deleteAll" --include="*.ts" --include="*.js" --include="*.py" .` | Match in password-update handler. | yes |
+| 7 | OAuth state parameter validated | `grep -rEn "state.*validate\|verify.*state\|state.*token" --include="*.ts" --include="*.js" --include="*.py" .` (only if OAuth is in use) | Match in OAuth callback handler. | conditional |
+| 8 | Constant-time password comparison | Read login handler. | Uses `bcrypt.compare`/`argon2.verify` or library equivalent; never `===` on hashes. | manual |
+| 9 | Email enumeration mitigation | Read password-reset handler response. | Returns the same message for both "email sent" and "email not found". | manual |
+| 10 | Tests cover failure paths | `npm test -- --testPathPattern=auth` or equivalent. | Tests for invalid credentials, rate limit, expired token, password mismatch. | yes |
 
-```typescript
-// app/auth/signup/route.ts
-import { createClient } from '@/lib/supabase/server';
-import { NextResponse } from 'next/server';
-
-export async function POST(request: Request) {
-  const { email, password } = await request.json();
-  const supabase = await createClient();
-
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
-    },
-  });
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
-  }
-
-  return NextResponse.json({ user: data.user });
-}
-```
-
-```typescript
-// app/auth/callback/route.ts
-import { createClient } from '@/lib/supabase/server';
-import { NextResponse } from 'next/server';
-
-export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
-  const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/';
-
-  if (code) {
-    const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
-    }
-  }
-
-  return NextResponse.redirect(`${origin}/auth/error`);
-}
-```
-
-```typescript
-// middleware.ts
-import { createServerClient } from '@supabase/ssr';
-import { NextResponse, type NextRequest } from 'next/server';
-
-export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({ request });
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          response = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          );
-        },
-      },
-    }
-  );
-
-  const { data: { user } } = await supabase.auth.getUser();
-
-  // Protect dashboard routes
-  if (request.nextUrl.pathname.startsWith('/dashboard') && !user) {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
-
-  return response;
-}
-
-export const config = {
-  matcher: ['/dashboard/:path*', '/api/:path*'],
-};
-```
-
-**OAuth Configuration**: Configure providers in Supabase Dashboard > Authentication > Providers.
-
-```typescript
-// OAuth login
-async function signInWithGoogle() {
-  const supabase = createBrowserClient();
-  await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      redirectTo: `${window.location.origin}/auth/callback`,
-    },
-  });
-}
-```
-
-### remix-railway
-
-**Setup**: Use Lucia Auth for session management with Railway PostgreSQL.
-
-```bash
-# Install dependencies
-npm install lucia @lucia-auth/adapter-postgresql oslo
-npm install -D @types/pg
-```
-
-```typescript
-// app/lib/auth.server.ts
-import { Lucia } from 'lucia';
-import { PostgresJsAdapter } from '@lucia-auth/adapter-postgresql';
-import postgres from 'postgres';
-
-const sql = postgres(process.env.DATABASE_URL!);
-
-const adapter = new PostgresJsAdapter(sql, {
-  user: 'users',
-  session: 'sessions',
-});
-
-export const lucia = new Lucia(adapter, {
-  sessionCookie: {
-    attributes: {
-      secure: process.env.NODE_ENV === 'production',
-    },
-  },
-  getUserAttributes: (attributes) => {
-    return {
-      email: attributes.email,
-      emailVerified: attributes.email_verified,
-    };
-  },
-});
-
-declare module 'lucia' {
-  interface Register {
-    Lucia: typeof lucia;
-    DatabaseUserAttributes: {
-      email: string;
-      email_verified: boolean;
-    };
-  }
-}
-```
-
-```typescript
-// app/routes/auth.signup.tsx
-import { ActionFunctionArgs, json, redirect } from '@remix-run/node';
-import { lucia } from '~/lib/auth.server';
-import { generateId } from 'lucia';
-import { Argon2id } from 'oslo/password';
-import { db } from '~/lib/db.server';
-
-export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const email = formData.get('email') as string;
-  const password = formData.get('password') as string;
-
-  // Validate
-  if (!email || !password || password.length < 8) {
-    return json({ error: 'Invalid input' }, { status: 400 });
-  }
-
-  const hashedPassword = await new Argon2id().hash(password);
-  const userId = generateId(15);
-
-  try {
-    await db.user.create({
-      data: {
-        id: userId,
-        email: email.toLowerCase(),
-        hashedPassword,
-        emailVerified: false,
-      },
-    });
-
-    const session = await lucia.createSession(userId, {});
-    const sessionCookie = lucia.createSessionCookie(session.id);
-
-    return redirect('/verify-email', {
-      headers: {
-        'Set-Cookie': sessionCookie.serialize(),
-      },
-    });
-  } catch (e) {
-    return json({ error: 'Email already exists' }, { status: 400 });
-  }
-}
-```
-
-```typescript
-// app/lib/session.server.ts
-import { lucia } from './auth.server';
-import type { Session, User } from 'lucia';
-
-export async function getSession(
-  request: Request
-): Promise<{ user: User; session: Session } | { user: null; session: null }> {
-  const sessionId = lucia.readSessionCookie(request.headers.get('Cookie') ?? '');
-
-  if (!sessionId) {
-    return { user: null, session: null };
-  }
-
-  const result = await lucia.validateSession(sessionId);
-  return result;
-}
-
-export async function requireAuth(request: Request) {
-  const { user, session } = await getSession(request);
-
-  if (!user) {
-    throw redirect('/login');
-  }
-
-  return { user, session };
-}
-```
-
-## Quality Checklist
-
-- [ ] Passwords hashed with bcrypt (cost 12+) or Argon2id
-- [ ] Session tokens stored in httpOnly cookies (not localStorage)
-- [ ] CSRF protection enabled for state-changing operations
-- [ ] Rate limiting on login (5 attempts/15 min), signup (3/hour), reset (3/hour)
-- [ ] Email verification required before full account access
-- [ ] Password reset tokens expire within 1 hour
-- [ ] Password strength requirements enforced (min 8 chars, complexity)
-- [ ] OAuth state parameter validated to prevent CSRF
-- [ ] Timing-safe comparison for password verification
-- [ ] All sessions invalidated on password change
-- [ ] Secure cookie flags set (httpOnly, secure, sameSite)
-- [ ] No sensitive data in JWT payload if using JWT
+If any check fails, do not declare done. Fix and re-run.
 
 ## Integration Points
 
@@ -598,43 +345,31 @@ export async function requireAuth(request: Request) {
 - **saas-email**: Send verification and password reset emails
 - **saas-api**: Protect API endpoints with session validation middleware
 
-## Anti-Patterns
+## Anti-Patterns (Excuse / Rebuttal)
 
-### JWT in localStorage
+### Excuse: "I'll put the JWT in localStorage; it's easier and the SPA needs to read it."
 
-**Why it's bad**: Vulnerable to XSS attacks. Any JavaScript on the page can read and exfiltrate the token.
+**Rebuttal**: localStorage is readable by every script on the page, including third-party scripts and any future XSS bug you have not found yet. One reflected XSS exfiltrates every active session token from the device. Use httpOnly cookies; the browser sends them automatically, JavaScript cannot read them, and the SPA does not actually need to read the token, only act on the session.
 
-**Instead**: Use httpOnly cookies. The browser automatically sends them and JavaScript cannot access them.
+### Excuse: "We don't need rate limiting yet; we have no traffic."
 
-### No Rate Limiting
+**Rebuttal**: You have no legitimate traffic. Bots find sign-in endpoints within hours of going live and run credential-stuffing lists against them whether you have users or not. Add rate limiting before launch, not after the first compromised account: 5 login attempts per 15 minutes per IP and per email, 3 signups per hour per IP, 3 password resets per hour per email.
 
-**Why it's bad**: Allows brute force attacks on passwords and credential stuffing.
+### Excuse: "We hash the passwords on the way out, that's secure enough."
 
-**Instead**: Implement rate limiting by IP and email. Use exponential backoff after failures.
+**Rebuttal**: The only acceptable place to hash is on the way in, before the password ever touches durable storage or logs. Use bcrypt (cost 12 or higher) or Argon2id. "Plain on the way in, hashed in the database" means the plaintext is in your application logs, your error tracker, and your request traces. There is no acceptable variant of "we'll hash it later".
 
-### Plain Text Passwords
+### Excuse: "Telling the user 'no account with that email' is more helpful UX."
 
-**Why it's bad**: Database breach exposes all user passwords.
+**Rebuttal**: It is also a free email-enumeration oracle for attackers. They get to learn which addresses have accounts on your platform and target those specifically with credential-stuffing or phishing. Return the same message for "email sent" and "email not found" on password reset. The legitimate user who mistyped their email gets the same UX as the attacker, and that is fine.
 
-**Instead**: Always hash with bcrypt (cost 12+) or Argon2id. Never store or log plain passwords.
+### Excuse: "Strict password rules annoy users; let them pick what they want."
 
-### Email Enumeration
+**Rebuttal**: Users pick `password123` and reuse it across sites. The minimum acceptable rules are: 8 characters, not in the top-1000 list, ideally checked against HaveIBeenPwned. These do not annoy real users; they stop one shape of breach. Ship them on day one.
 
-**Why it's bad**: Attackers can determine which emails are registered.
+### Excuse: "Long sessions are convenient; users hate logging in repeatedly."
 
-**Instead**: Return same message for both "email sent" and "email not found" on password reset.
-
-### Weak Password Requirements
-
-**Why it's bad**: Users choose easily guessable passwords.
-
-**Instead**: Require minimum 8 characters. Consider checking against breach databases (HaveIBeenPwned API).
-
-### Long-Lived Sessions
-
-**Why it's bad**: Stolen session tokens remain valid indefinitely.
-
-**Instead**: Implement session expiry (7-30 days) with sliding expiration on activity.
+**Rebuttal**: Convenient sessions are also persistent attack surface; a stolen cookie that lasts forever lasts forever. Set a 7 to 30 day cap with sliding expiration on activity, and invalidate all sessions on password change. Users do not notice sliding expiration; they do notice their account being taken over.
 
 ## References
 

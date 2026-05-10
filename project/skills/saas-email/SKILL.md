@@ -332,22 +332,29 @@ import { ServerClient } from 'postmark';
 const postmark = new ServerClient(process.env.POSTMARK_API_KEY);
 ```
 
-## Quality Checklist
+## Exit Criteria
 
-- [ ] Email service abstracted from provider
-- [ ] All emails queued for reliability
-- [ ] Retry logic with exponential backoff
-- [ ] Email delivery logged for debugging
-- [ ] Unsubscribe links in marketing emails
-- [ ] Reply-to configured appropriately
-- [ ] Templates tested across email clients
-- [ ] Plain text fallback for HTML emails
-- [ ] Rate limiting on email sending
-- [ ] Failed email alerts configured
+Before declaring this skill's work complete, run each check below and paste the output. "Looks right" is not sufficient. Items marked **gateable** can be wired into `project/gates/` for automated phase-exit checks.
 
-## Anti-Patterns
+| # | Check | Verification | Pass condition | Gateable |
+|---|-------|-------------|----------------|----------|
+| 1 | Email sends are queued, not inline | `grep -rEn "emailService\.send\|client\.emails\.send" --include="*.ts" --include="*.js" --include="*.py" . \| grep -v -E "queue\|worker\|test\|spec"` | Zero matches in request-path handlers. Sends happen inside worker/queue consumer. | yes |
+| 2 | Retry with exponential backoff | `grep -rEn "attempts.*[0-9]\+|backoff.*exponential" --include="*.ts" --include="*.js" --include="*.py" .` | Match in queue/job options. | yes |
+| 3 | Email delivery logged | `grep -rEn "logEmailEvent\|email.*log.*sent\|email.*log.*failed" --include="*.ts" --include="*.js" --include="*.py" .` | Match in worker; logs success and failure with correlation ID. | yes |
+| 4 | Templates use a templating system | `grep -rEn "renderTemplate\|@react-email\|MJML\|Jinja2.*email" --include="*.ts" --include="*.js" --include="*.tsx" --include="*.py" .` | Match. No inline HTML strings for templated emails. | yes |
+| 5 | No HTML strings concatenated with user input | `grep -rEn "<.*>.*\$\{.*req\..*\}" --include="*.ts" --include="*.js" .` | Zero matches. (Defends against email-injection.) | yes |
+| 6 | Rate limit on email sending per user | `grep -rEn "rateLimit.*email\|email.*rateLimit" --include="*.ts" --include="*.js" --include="*.py" .` | Match. Prevents abuse of password-reset / invitation as spam relay. | yes |
+| 7 | Failed-email alerts wired | Read worker `failed` handler. | Calls `alertOnEmailFailure` (or equivalent) on final attempt failure. | manual |
+| 8 | Plain-text fallback for HTML | Read one templated email render call. | Render produces both HTML and plain-text, or template framework does so by default. | manual |
 
-### Sending Email Synchronously in Request
+If any check fails, do not declare done. Fix and re-run.
+
+## Anti-Patterns (Excuse / Rebuttal)
+
+### Excuse: "Sending the email inline is simpler; the email provider is fast enough."
+
+**Rebuttal**: Until it isn't. The provider has a five-second outage and your signup endpoint times out. The provider rate-limits you and signups start failing. The provider's TLS cert expires (it happens) and signups 500. Any inline send couples your request path to a third party's availability. Queue every email, retry on failure with exponential backoff, return success to the user as soon as the user record exists.
+
 ```typescript
 // WRONG: Blocks request, no retry on failure
 app.post('/signup', async (req, res) => {
@@ -364,7 +371,10 @@ app.post('/signup', async (req, res) => {
 });
 ```
 
-### Hardcoding Email Content
+### Excuse: "I'll just inline the email HTML; it's only one or two emails."
+
+**Rebuttal**: It is never one or two for long, and inline HTML rots the moment branding changes. Use a template system from the first email; switching costs go up sharply once you have ten. React Email or equivalent gives you components, type-safe props, plain-text fallbacks, and previewable templates.
+
 ```typescript
 // WRONG: HTML in code, hard to maintain
 const html = `<h1>Welcome ${name}</h1><p>Thanks for signing up...</p>`;

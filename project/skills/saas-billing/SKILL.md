@@ -27,6 +27,17 @@ dependencies:
 
 # SaaS Billing & Subscription Management
 
+## Where this skill ends
+
+This skill owns **product-side billing logic**: plan definitions, feature gating, quota tracking, trial state machine, downgrade orchestration, dunning. The patterns describe what our product does given subscription state.
+
+This skill does NOT own:
+
+- Stripe API calls (creating customers, mutating subscriptions, verifying webhooks). Use `saas-payments`.
+- Webhook signature verification or event delivery. Use `saas-payments`.
+
+When implementing a flow that crosses both skills: orchestration logic lives here and calls into `saas-payments` primitives. Webhook handlers live in `saas-payments` and call into update functions defined here.
+
 ## Capability
 
 Implement subscription lifecycle management, plan enforcement, usage tracking, and billing operations. Covers trial periods, plan changes, quota enforcement, and subscription status synchronization with payment providers.
@@ -247,6 +258,9 @@ async function enforceQuota(resource: string) {
 **Implementation**: Handle proration, immediate vs end-of-period changes.
 
 ```typescript
+// Orchestration entry point. Stripe API calls live in saas-payments;
+// this function decides what should happen, then calls into the
+// payments primitive to make it happen at Stripe.
 async function changePlan(
   organizationId: string,
   newPlanId: string,
@@ -261,28 +275,24 @@ async function changePlan(
     throw new Error('Cannot subscribe to free plan via Stripe');
   }
 
-  // Update Stripe subscription
-  const subscription = await stripe.subscriptions.retrieve(
-    org.stripeSubscriptionId
-  );
-
   const isUpgrade = newPlan.price > PLANS[org.plan].price;
 
-  await stripe.subscriptions.update(subscription.id, {
-    items: [{
-      id: subscription.items.data[0].id,
-      price: newPlan.stripePriceId
-    }],
-    proration_behavior: isUpgrade ? 'always_invoice' : 'create_prorations',
-    billing_cycle_anchor: options.immediate ? 'now' : 'unchanged'
+  // Delegate the Stripe mutation to saas-payments.
+  // updateStripeSubscriptionPrice() is the Stripe API primitive defined there.
+  await updateStripeSubscriptionPrice({
+    subscriptionId: org.stripeSubscriptionId,
+    newPriceId: newPlan.stripePriceId,
+    prorationBehavior: isUpgrade ? 'always_invoice' : 'create_prorations',
+    billingCycleAnchor: options.immediate ? 'now' : 'unchanged',
   });
 
-  // Update local record (webhook will also fire)
+  // Product-side state. The webhook from Stripe will also fire and
+  // confirm; this is an optimistic update for snappier UX.
   await db.update(organizations)
     .set({ plan: newPlanId })
     .where(eq(organizations.id, organizationId));
 
-  // Check if downgrade violates limits
+  // Downgrade enforcement is product logic, lives here.
   if (!isUpgrade) {
     await enforceDowngradeLimits(organizationId, newPlanId);
   }
@@ -335,22 +345,30 @@ export default async function BillingPage() {
 }
 ```
 
-## Quality Checklist
+## Exit Criteria
 
-- [ ] Plan limits enforced at API layer
-- [ ] Usage tracking accurate and performant
-- [ ] Trial expiration handled gracefully
-- [ ] Downgrade limits communicated clearly
-- [ ] Webhook subscription status sync reliable
-- [ ] Proration calculated correctly
-- [ ] Billing history accessible to users
-- [ ] Failed payment recovery flow implemented
-- [ ] Plan changes audit logged
-- [ ] Grace period for limit violations
+Before declaring this skill's work complete, run each check below and paste the output. "Looks right" is not sufficient. Items marked **gateable** can be wired into `project/gates/` for automated phase-exit checks.
 
-## Anti-Patterns
+| # | Check | Verification | Pass condition | Gateable |
+|---|-------|-------------|----------------|----------|
+| 1 | Plan limits enforced server-side, not just UI | `grep -rEn "enforceQuota\|requireFeature\|checkLimit" --include="*.ts" --include="*.js" --include="*.py" .` | Match in API route handlers, not only React components. | yes |
+| 2 | Usage counters increment on each gated action | Read API handler for one gated action; trace path. | `trackUsage(...)` called inside the handler before returning. | manual |
+| 3 | Trial expiration triggers plan downgrade | `grep -rEn "trialEndsAt\|trial_ends_at\|handleTrialExpired" --include="*.ts" --include="*.js" --include="*.py" .` | Job/cron entry that runs daily, downgrades expired-trial orgs to free. | yes |
+| 4 | Downgrade enforces limits without hard delete | `grep -rEn "deleteExcessProjects\|hard.*delete.*projects" --include="*.ts" --include="*.js" --include="*.py" .` | Zero matches; archival/grace-period pattern only. | yes |
+| 5 | Webhook updates subscription state | `grep -rEn "subscription_status\|subscriptionStatus" --include="*.ts" --include="*.js" --include="*.py" . \| grep -i webhook` | Webhook handler writes subscription status; matches saas-payments contract. | manual |
+| 6 | Failed payment recovery wired | `grep -rEn "invoice.payment_failed\|past_due\|dunning" --include="*.ts" --include="*.js" --include="*.py" .` | Match in webhook handler with notification + grace period. | yes |
+| 7 | Plan change audit logged | `grep -rEn "audit.*log.*plan\|plan.*change.*log" --include="*.ts" --include="*.js" --include="*.py" .` | Entry in audit table on plan change. | manual |
+| 8 | Quota errors communicate the upgrade path | Read one quota-exceeded error response. | Includes `currentPlan`, `upgradeUrl`, or equivalent so the client can present the call to action. | manual |
+| 9 | Tests cover trial-expired and downgrade-with-limits | `npm test -- --testPathPattern=billing` or equivalent. | Tests for expired trial → free, and downgrade where org exceeds new limits. | yes |
 
-### Checking Limits Only in UI
+If any check fails, do not declare done. Fix and re-run.
+
+## Anti-Patterns (Excuse / Rebuttal)
+
+### Excuse: "Hiding the upgrade button in the UI is enough; users on the free plan won't access pro features."
+
+**Rebuttal**: They will, via direct API calls, third-party clients, or by editing the JSX in DevTools. UI gating is for guidance, not enforcement. Every plan gate must be enforced in the API layer, where the request actually does something.
+
 ```typescript
 // WRONG: Only hiding buttons in frontend
 {plan === 'pro' && <CreateProjectButton />}
@@ -359,7 +377,10 @@ export default async function BillingPage() {
 app.post('/projects', enforceQuota('projects'), createProject);
 ```
 
-### Hard Deleting on Downgrade
+### Excuse: "On downgrade we should just delete the projects over the limit; the user knows what they signed up for."
+
+**Rebuttal**: Hard-deleting customer data without consent is a support nightmare and, in some jurisdictions, a legal one. Archive instead, notify the user, give them a grace period to either upgrade back or pick which projects to keep. Restore is cheap; recovery from a deleted-by-mistake escalation is not.
+
 ```typescript
 // WRONG: Delete user's projects immediately
 await deleteExcessProjects(orgId, limits.projects);

@@ -29,6 +29,18 @@ dependencies:
 
 # SaaS Payments & Stripe Integration
 
+## Where this skill ends
+
+This skill owns the **Stripe API surface**: checkout sessions, customer creation, webhook signature verification, raw subscription mutations, metered usage reporting. The patterns describe what we say to Stripe.
+
+This skill does NOT own:
+
+- Plan definitions, feature gating, or quota tracking. Use `saas-billing`.
+- Trial state machines or downgrade orchestration. Use `saas-billing`.
+- The product-side response to webhook events (updating internal state beyond the simple `profiles` row write shown in references). Use `saas-billing`.
+
+When implementing a flow that crosses both skills (e.g. user upgrades plan): orchestration logic lives in `saas-billing` and calls into the primitives here. Webhook handlers live here and call `saas-billing` update functions for product-side state.
+
 ## Capability
 
 Implement production-ready payment processing with Stripe including one-time payments, recurring subscriptions, customer portal, metered billing, and webhook handling. This skill covers the complete billing lifecycle from checkout through subscription management.
@@ -383,295 +395,65 @@ async function reportDailyUsage() {
 }
 ```
 
-### Plan Upgrades/Downgrades
+### Plan Upgrades/Downgrades (Stripe primitive)
 
-**When to use**: Changing subscription plans mid-cycle
+**When to use**: This is the Stripe API primitive. `saas-billing` calls into it from its `changePlan` orchestration. Do not duplicate the orchestration here; this function takes Stripe inputs and returns the Stripe response.
 
-**Implementation**: Use Stripe's proration or let users manage via portal.
+**Implementation**: Mutate the subscription, return the result. Proration choices and product-side state changes belong to the caller.
 
 ```typescript
-// Upgrade/downgrade subscription
-async function changePlan(userId: string, newPriceId: string) {
-  const user = await db.user.findUnique({ where: { id: userId } });
+// Stripe primitive: update a subscription's price.
+// Called by saas-billing's changePlan orchestration.
+async function updateStripeSubscriptionPrice(params: {
+  subscriptionId: string;
+  newPriceId: string;
+  prorationBehavior: 'create_prorations' | 'always_invoice' | 'none';
+  billingCycleAnchor: 'now' | 'unchanged';
+}) {
+  const subscription = await stripe.subscriptions.retrieve(params.subscriptionId);
 
-  if (!user.subscriptionId) {
-    throw new Error('No active subscription');
-  }
-
-  const subscription = await stripe.subscriptions.retrieve(user.subscriptionId);
-
-  // Update subscription with proration
-  const updated = await stripe.subscriptions.update(user.subscriptionId, {
+  const updated = await stripe.subscriptions.update(params.subscriptionId, {
     items: [
       {
         id: subscription.items.data[0].id,
-        price: newPriceId,
+        price: params.newPriceId,
       },
     ],
-    proration_behavior: 'create_prorations', // or 'none', 'always_invoice'
+    proration_behavior: params.prorationBehavior,
+    billing_cycle_anchor: params.billingCycleAnchor,
   });
 
-  // Database update happens via webhook
   return { subscription: updated };
 }
 ```
 
 ## Stack-Specific Implementation
 
-### nextjs-supabase
+Stack-specific code is held in `references/`. Load only the file matching the project's stack:
 
-**Setup**: Install Stripe, configure webhooks, set up API routes.
+- `references/nextjs-supabase.md` for Next.js 14+ with Supabase Auth.
+- `references/remix-railway.md` for Remix with Railway PostgreSQL.
 
-```bash
-npm install stripe
-```
+For other stacks (Express, Fastify, Django, Rails, etc.) apply the patterns above using the framework's idioms: a server-side handler that creates a Stripe customer if absent, creates a checkout session with `customer:` set, and a webhook route that verifies the signature before processing events.
 
-```typescript
-// lib/stripe.ts
-import Stripe from 'stripe';
+## Exit Criteria
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20',
-  typescript: true,
-});
-```
+Before declaring this skill's work complete, run each check below and paste the output. "Looks right" is not sufficient. Items marked **gateable** can be wired into `project/gates/` for automated phase-exit checks.
 
-```typescript
-// app/api/checkout/route.ts
-import { createClient } from '@/lib/supabase/server';
-import { stripe } from '@/lib/stripe';
-import { NextResponse } from 'next/server';
+| # | Check | Verification | Pass condition | Gateable |
+|---|-------|-------------|----------------|----------|
+| 1 | Webhook signature verification implemented | `grep -rn "stripe.webhooks.constructEvent" --include="*.ts" --include="*.js" .` | At least one match in webhook handler; verify it raises on failure. | yes |
+| 2 | No client-supplied prices | `grep -rEn "stripe.checkout.sessions.create" -A 20 --include="*.ts" --include="*.js" . \| grep -E "price_data\|amount.*req\.body"` | Zero matches (only `price:` references, no `price_data` or amount-from-request). | yes |
+| 3 | Idempotency keys on mutations | `grep -rn "idempotencyKey\|idempotency_key" --include="*.ts" --include="*.js" .` | Match in usage reporting and any retried mutation path. | yes |
+| 4 | Test mode key in dev/staging | `printenv STRIPE_SECRET_KEY \| head -c 8` in dev; `sk_test_` prefix expected. | Output begins `sk_test_` in dev; `sk_live_` only in production. | yes |
+| 5 | API version pinned | `grep -rn "apiVersion:" --include="*.ts" --include="*.js" . \| grep -i stripe` | Explicit `apiVersion:` string set; no implicit defaults. | yes |
+| 6 | Subscription state synced via webhook, not success page | Read the success page handler (`/api/checkout/success` or equivalent). | Handler does not write subscription state; only displays status while webhook lands. | manual |
+| 7 | Failed payment handler exists | `grep -rn "invoice.payment_failed" --include="*.ts" --include="*.js" .` | Match in webhook handler with notification + grace period logic. | yes |
+| 8 | Customer portal configured | Stripe Dashboard → Settings → Billing → Customer portal: subscription cancellation, plan switching, payment method updates enabled. | Manual screenshot or settings export. | manual |
+| 9 | No card data stored locally | `grep -rEn "card_number\|cvv\|card.*token" --include="*.ts" --include="*.js" .` | Zero matches in application code (Stripe.js / Elements only). | yes |
+| 10 | Price IDs in env, not source | `grep -rn "price_[A-Za-z0-9]\{14,\}" --include="*.ts" --include="*.js" . \| grep -v ".test.\|.spec." \| grep -v "process.env"` | Zero non-test, non-env matches. | yes |
 
-export async function POST(request: Request) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const { priceId } = await request.json();
-
-  // Get or create customer
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('stripe_customer_id')
-    .eq('id', user.id)
-    .single();
-
-  let customerId = profile?.stripe_customer_id;
-
-  if (!customerId) {
-    const customer = await stripe.customers.create({
-      email: user.email,
-      metadata: { userId: user.id },
-    });
-    customerId = customer.id;
-
-    await supabase
-      .from('profiles')
-      .update({ stripe_customer_id: customerId })
-      .eq('id', user.id);
-  }
-
-  // Create checkout session
-  const session = await stripe.checkout.sessions.create({
-    customer: customerId,
-    mode: 'subscription',
-    line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?upgraded=true`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
-    subscription_data: {
-      metadata: { userId: user.id },
-    },
-  });
-
-  return NextResponse.json({ url: session.url });
-}
-```
-
-```typescript
-// app/api/webhooks/stripe/route.ts
-import { stripe } from '@/lib/stripe';
-import { createClient } from '@supabase/supabase-js';
-import { headers } from 'next/headers';
-import { NextResponse } from 'next/server';
-import Stripe from 'stripe';
-
-// Use service role for webhook (no user context)
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
-export async function POST(request: Request) {
-  const body = await request.text();
-  const headersList = await headers();
-  const sig = headersList.get('stripe-signature')!;
-
-  let event: Stripe.Event;
-
-  try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
-  } catch (err) {
-    return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
-  }
-
-  switch (event.type) {
-    case 'customer.subscription.created':
-    case 'customer.subscription.updated': {
-      const subscription = event.data.object as Stripe.Subscription;
-      const userId = subscription.metadata.userId;
-
-      await supabase
-        .from('profiles')
-        .update({
-          subscription_id: subscription.id,
-          subscription_status: subscription.status,
-          plan: getPlanFromPrice(subscription.items.data[0].price.id),
-          current_period_end: new Date(
-            subscription.current_period_end * 1000
-          ).toISOString(),
-        })
-        .eq('id', userId);
-      break;
-    }
-
-    case 'customer.subscription.deleted': {
-      const subscription = event.data.object as Stripe.Subscription;
-      const userId = subscription.metadata.userId;
-
-      await supabase
-        .from('profiles')
-        .update({
-          subscription_status: 'canceled',
-          plan: 'free',
-        })
-        .eq('id', userId);
-      break;
-    }
-  }
-
-  return NextResponse.json({ received: true });
-}
-```
-
-### remix-railway
-
-**Setup**: Configure Stripe with Remix action handlers.
-
-```typescript
-// app/lib/stripe.server.ts
-import Stripe from 'stripe';
-
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20',
-});
-```
-
-```typescript
-// app/routes/api.checkout.ts
-import { ActionFunctionArgs, json } from '@remix-run/node';
-import { stripe } from '~/lib/stripe.server';
-import { requireAuth } from '~/lib/session.server';
-import { db } from '~/lib/db.server';
-
-export async function action({ request }: ActionFunctionArgs) {
-  const { user } = await requireAuth(request);
-  const formData = await request.formData();
-  const priceId = formData.get('priceId') as string;
-
-  // Get or create customer
-  let customerId = user.stripeCustomerId;
-
-  if (!customerId) {
-    const customer = await stripe.customers.create({
-      email: user.email,
-      metadata: { userId: user.id },
-    });
-    customerId = customer.id;
-
-    await db.user.update({
-      where: { id: user.id },
-      data: { stripeCustomerId: customerId },
-    });
-  }
-
-  const session = await stripe.checkout.sessions.create({
-    customer: customerId,
-    mode: 'subscription',
-    line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${process.env.APP_URL}/dashboard?upgraded=true`,
-    cancel_url: `${process.env.APP_URL}/pricing`,
-    subscription_data: {
-      metadata: { userId: user.id },
-    },
-  });
-
-  return json({ url: session.url });
-}
-```
-
-```typescript
-// app/routes/api.webhooks.stripe.ts
-import { ActionFunctionArgs } from '@remix-run/node';
-import { stripe } from '~/lib/stripe.server';
-import { db } from '~/lib/db.server';
-
-export async function action({ request }: ActionFunctionArgs) {
-  const payload = await request.text();
-  const sig = request.headers.get('stripe-signature')!;
-
-  let event;
-
-  try {
-    event = stripe.webhooks.constructEvent(
-      payload,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
-  } catch (err) {
-    return new Response('Invalid signature', { status: 400 });
-  }
-
-  switch (event.type) {
-    case 'customer.subscription.updated': {
-      const subscription = event.data.object;
-      await db.user.update({
-        where: { id: subscription.metadata.userId },
-        data: {
-          subscriptionId: subscription.id,
-          subscriptionStatus: subscription.status,
-          currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-        },
-      });
-      break;
-    }
-    // Handle other events...
-  }
-
-  return new Response('OK', { status: 200 });
-}
-```
-
-## Quality Checklist
-
-- [ ] Webhook signature verification implemented (NEVER trust unverified webhooks)
-- [ ] Idempotency keys used for all mutations (prevent duplicate charges)
-- [ ] Test mode verification before any production deployment
-- [ ] Card failure error handling with user-friendly messages
-- [ ] Subscription state synced via webhooks (not checkout success page)
-- [ ] Customer portal configured for self-service
-- [ ] Price IDs stored as environment variables (not hardcoded)
-- [ ] Stripe API version pinned in client initialization
-- [ ] Failed payment email notifications configured
-- [ ] Subscription cancellation grace period set
-- [ ] Tax calculation enabled if required by jurisdiction
-- [ ] PCI compliance maintained (no card data on your servers)
+If any check fails, do not declare done. Fix and re-run.
 
 ## Integration Points
 
@@ -680,43 +462,31 @@ export async function action({ request }: ActionFunctionArgs) {
 - **saas-email**: Send payment receipts, failed payment notices, cancellation confirmations
 - **saas-api**: Gate API access based on subscription plan/status
 
-## Anti-Patterns
+## Anti-Patterns (Excuse / Rebuttal)
 
-### Trusting Client-Side Prices
+### Excuse: "I'll trust the client to send the right price; we control the JavaScript."
 
-**Why it's bad**: Users can modify JavaScript to send any price. You'll charge wrong amounts.
+**Rebuttal**: You don't control the JavaScript at runtime. Users can modify any value in DevTools. Accept only price IDs created in the Stripe Dashboard server-side; never accept an amount from the client. The day you accept a client-supplied amount is the day someone buys the enterprise plan for £0.01.
 
-**Instead**: Always use price IDs created in Stripe Dashboard. Never accept amounts from the client.
+### Excuse: "Webhook signature verification is overkill; we're behind a private gateway."
 
-### Skipping Webhook Signature Verification
+**Rebuttal**: The gateway is one config change away from being public, and the webhook URL is going to leak into Stripe-side logs and your error tracker regardless. Your handler is a public RPC into your subscription database. Add the four lines: `stripe.webhooks.constructEvent(body, signature, secret)` and reject failures. There is no scenario where skipping this saves more time than it costs.
 
-**Why it's bad**: Anyone can POST fake events to your webhook endpoint.
+### Excuse: "I'll hardcode the API key for now and clean it up before commit."
 
-**Instead**: Always call `stripe.webhooks.constructEvent()` with your webhook secret. Reject invalid signatures.
+**Rebuttal**: You will not. Hardcoded keys reach git, then build artefacts, then logs, then the public internet. Use environment variables from the first line of code, and use restricted keys (separate read, write, webhook) so a leak has bounded blast radius.
 
-### Hardcoding API Keys
+### Excuse: "The checkout success page handler is fine; users always get redirected back."
 
-**Why it's bad**: Keys in code get committed to git, exposed in builds, leaked in logs.
+**Rebuttal**: They don't. Browsers crash, networks drop, users close the tab between the Stripe redirect and your success page. If the success page is your only place that records "they paid", you will silently lose subscriptions. Webhooks are the source of truth; the success page should display "processing your subscription" until the webhook confirms.
 
-**Instead**: Use environment variables. Use restricted keys with minimal permissions.
+### Excuse: "Failed payments are rare, I'll handle them when it happens."
 
-### Relying on Checkout Success Page
+**Rebuttal**: Failed payments are not rare; they are 5-10% of recurring SaaS volume. Without `invoice.payment_failed` handling, those users continue accessing your product while their payment lapses, and you find out at month-end when MRR drops. Wire the event now: notify the user, set a grace period, restrict access at the end of it. Three event handlers, ~30 lines.
 
-**Why it's bad**: Users may close browser before redirect. Success page may not load.
+### Excuse: "I'll keep subscription state in our database and update it manually when things change."
 
-**Instead**: Use webhooks as source of truth. Success page should just say "processing" until webhook confirms.
-
-### Not Handling Failed Payments
-
-**Why it's bad**: Users with failed payments continue using service. Revenue lost.
-
-**Instead**: Listen for `invoice.payment_failed`, notify users, implement grace period, then restrict access.
-
-### Manual Subscription State
-
-**Why it's bad**: Your database and Stripe get out of sync. Users access features they shouldn't.
-
-**Instead**: Sync ALL subscription state changes via webhooks. Stripe is the source of truth.
+**Rebuttal**: Your database and Stripe will drift the first time a webhook fails or a manual change happens via the Stripe Dashboard. Stripe is the source of truth; sync every state change via webhooks (`customer.subscription.created`, `updated`, `deleted`, `invoice.payment_succeeded`, `invoice.payment_failed`). Your database stores what Stripe last told you, never anything Stripe didn't.
 
 ## References
 

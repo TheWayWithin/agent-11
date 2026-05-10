@@ -395,22 +395,29 @@ export async function middleware(request: NextRequest) {
 }
 ```
 
-## Quality Checklist
+## Exit Criteria
 
-- [ ] Onboarding state persisted to database
-- [ ] Progress visible to user at all times
-- [ ] Skip option available (but discouraged)
-- [ ] Steps can be resumed after browser close
-- [ ] Different flows for different user types
-- [ ] Activation events tracked to analytics
-- [ ] Time-to-activation measured
-- [ ] Re-engagement emails for incomplete onboarding
-- [ ] Mobile-friendly wizard design
-- [ ] A/B testing hooks for optimization
+Before declaring this skill's work complete, run each check below and paste the output. "Looks right" is not sufficient. Items marked **gateable** can be wired into `project/gates/` for automated phase-exit checks.
 
-## Anti-Patterns
+| # | Check | Verification | Pass condition | Gateable |
+|---|-------|-------------|----------------|----------|
+| 1 | Onboarding state persisted to DB, not localStorage | `grep -rEn "localStorage.*onboarding" --include="*.ts" --include="*.js" --include="*.tsx" --include="*.jsx" .` | Zero matches (state in DB; localStorage acceptable only for tooltips/transient). | yes |
+| 2 | Progress visible to user | Read wizard component. | Renders a progress bar or step indicator before each step. | manual |
+| 3 | Optional steps marked optional | `grep -rEn "required:.*true" --include="*.ts" --include="*.js" --include="*.tsx" .` (in onboarding config) | Only steps that genuinely block product use are `required: true`. | manual |
+| 4 | Skip path exists and works | Functional test: signup → click "Skip onboarding" → land on dashboard with `isSkipped` true. | Dashboard accessible; user not redirected back into wizard. | yes |
+| 5 | App access not blocked by incomplete onboarding | Read route middleware for app routes. | Middleware nudges, does not block, except for genuinely-required-first-step pages. | manual |
+| 6 | Activation events tracked | `grep -rEn "trackActivation\|activation.*event" --include="*.ts" --include="*.js" .` | Match for at least: signed_up, completed_profile, used_core_feature. | yes |
+| 7 | Time-to-activation measured | `grep -rEn "activatedAt\|activated_at" --include="*.ts" --include="*.js" --include="*.py" .` | Column on user table; populated by `checkActivationComplete`. | yes |
+| 8 | Re-engagement scheduled for incomplete onboarding | `grep -rEn "scheduleTrialReminders\|onboarding.*reminder\|incomplete.*nudge" --include="*.ts" --include="*.js" --include="*.py" .` | Match: scheduled job that emails users who started but did not finish. | manual |
 
-### Forcing All Steps
+If any check fails, do not declare done. Fix and re-run.
+
+## Anti-Patterns (Excuse / Rebuttal)
+
+### Excuse: "Every step is important, so every step is required."
+
+**Rebuttal**: Every step you mark required is a step where users drop off if it does not apply to them. A user who does not use a calendar will quit the wizard on "connect calendar required". Mark only the steps without which the product genuinely cannot function as required; everything else is optional with sensible defaults. The activation rate gain from making three steps optional is usually larger than the engagement gain from forcing them.
+
 ```typescript
 // WRONG: No way to skip
 const steps = [
@@ -425,7 +432,10 @@ const steps = [
 ];
 ```
 
-### Blocking App Access
+### Excuse: "Blocking the app until onboarding is done makes sure they finish it."
+
+**Rebuttal**: It also makes sure they leave and never come back. Users who hit a wall on first visit close the tab. Allow exploration with the wizard available, gentle nudges for incomplete steps, and explicit "skip for now" with re-engagement later. Forced onboarding is a churn machine.
+
 ```typescript
 // WRONG: Can't use app until all steps done
 if (!onboarding.isComplete) return <OnboardingWizard />;

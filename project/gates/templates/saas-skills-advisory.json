@@ -1,0 +1,248 @@
+{
+  "$schema": "../../../project/schemas/quality-gate.schema.yaml",
+  "version": "1.0",
+  "name": "saas-skills-advisory",
+  "description": "Advisory gates derived from saas-* skill Exit Criteria. Every check is severity=warning for v6.2; promote to blocking in v6.3 once teams confirm the checks fit their codebases. Compose alongside nodejs-saas.json or similar via run-gates.py --config <path> --gate <gate-name>.",
+  "framework": "nodejs",
+  "gates": [
+    {
+      "name": "saas-payments-exit",
+      "description": "Skill exit checks for saas-payments. See project/skills/saas-payments/SKILL.md for full criteria.",
+      "phase": "implementation",
+      "trigger": "phase_exit",
+      "checks": [
+        {
+          "type": "lint",
+          "name": "Webhook signature verification present",
+          "command": "grep -rn 'stripe.webhooks.constructEvent' --include='*.ts' --include='*.js' . > /dev/null && echo 'OK' || (echo 'NO MATCH'; exit 1)",
+          "severity": "warning",
+          "timeout": 30,
+          "remediation": {
+            "manual_steps": [
+              "Add stripe.webhooks.constructEvent(body, signature, secret) in your webhook handler.",
+              "Reject events with invalid signatures with HTTP 400."
+            ]
+          }
+        },
+        {
+          "type": "lint",
+          "name": "No price IDs hardcoded in source",
+          "command": "if grep -rEn 'price_[A-Za-z0-9]{14,}' --include='*.ts' --include='*.js' . | grep -v -E 'process\\.env|\\.test\\.|\\.spec\\.'; then echo 'FAIL: hardcoded price IDs'; exit 1; else echo 'OK'; fi",
+          "severity": "warning",
+          "timeout": 30,
+          "remediation": {
+            "manual_steps": [
+              "Move all price_xxx IDs out of source code into environment variables.",
+              "Reference via process.env.STRIPE_PRICE_PRO etc."
+            ]
+          }
+        },
+        {
+          "type": "lint",
+          "name": "Failed-payment handler exists",
+          "command": "grep -rn 'invoice.payment_failed' --include='*.ts' --include='*.js' . > /dev/null && echo 'OK' || (echo 'NO MATCH'; exit 1)",
+          "severity": "warning",
+          "timeout": 30
+        },
+        {
+          "type": "lint",
+          "name": "API version pinned",
+          "command": "grep -rn 'apiVersion:' --include='*.ts' --include='*.js' . | grep -i stripe > /dev/null && echo 'OK' || (echo 'NO MATCH'; exit 1)",
+          "severity": "warning",
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "name": "saas-auth-exit",
+      "description": "Skill exit checks for saas-auth. See project/skills/saas-auth/SKILL.md for full criteria.",
+      "phase": "implementation",
+      "trigger": "phase_exit",
+      "checks": [
+        {
+          "type": "lint",
+          "name": "Passwords hashed in code",
+          "command": "grep -rEn 'bcrypt\\.hash|argon2.*hash|Argon2id' --include='*.ts' --include='*.js' --include='*.py' . > /dev/null && echo 'OK' || (echo 'NO MATCH'; exit 1)",
+          "severity": "warning",
+          "timeout": 30
+        },
+        {
+          "type": "lint",
+          "name": "No tokens in localStorage",
+          "command": "if grep -rEn 'localStorage\\.setItem.*(token|session|jwt|auth)' --include='*.ts' --include='*.js' --include='*.tsx' --include='*.jsx' .; then echo 'FAIL: token in localStorage'; exit 1; else echo 'OK'; fi",
+          "severity": "warning",
+          "timeout": 30,
+          "remediation": {
+            "manual_steps": [
+              "Move auth tokens out of localStorage into httpOnly cookies.",
+              "See project/skills/saas-auth/SKILL.md anti-pattern: 'I'll put the JWT in localStorage'."
+            ]
+          }
+        },
+        {
+          "type": "lint",
+          "name": "Rate limiting present on auth routes",
+          "command": "grep -rEn 'rateLimit|rate_limit|ratelimit' --include='*.ts' --include='*.js' --include='*.py' . > /dev/null && echo 'OK' || (echo 'NO MATCH'; exit 1)",
+          "severity": "warning",
+          "timeout": 30
+        },
+        {
+          "type": "lint",
+          "name": "Sessions invalidated on password change",
+          "command": "grep -rEn 'deleteUserSessions|invalidate.*sessions|sessions.*deleteAll' --include='*.ts' --include='*.js' --include='*.py' . > /dev/null && echo 'OK' || (echo 'NO MATCH'; exit 1)",
+          "severity": "warning",
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "name": "saas-billing-exit",
+      "description": "Skill exit checks for saas-billing. See project/skills/saas-billing/SKILL.md for full criteria.",
+      "phase": "implementation",
+      "trigger": "phase_exit",
+      "checks": [
+        {
+          "type": "lint",
+          "name": "Server-side quota enforcement present",
+          "command": "grep -rEn 'enforceQuota|requireFeature|checkLimit' --include='*.ts' --include='*.js' --include='*.py' . > /dev/null && echo 'OK' || (echo 'NO MATCH'; exit 1)",
+          "severity": "warning",
+          "timeout": 30,
+          "remediation": {
+            "manual_steps": [
+              "Add server-side quota / feature gating middleware.",
+              "UI-only gating is bypassable; see project/skills/saas-billing/SKILL.md anti-pattern."
+            ]
+          }
+        },
+        {
+          "type": "lint",
+          "name": "No hard-delete on downgrade",
+          "command": "if grep -rEn 'deleteExcessProjects|hard.*delete.*projects' --include='*.ts' --include='*.js' --include='*.py' .; then echo 'FAIL: hard delete on downgrade'; exit 1; else echo 'OK'; fi",
+          "severity": "warning",
+          "timeout": 30
+        },
+        {
+          "type": "lint",
+          "name": "Failed payment recovery wired",
+          "command": "grep -rEn 'invoice.payment_failed|past_due|dunning' --include='*.ts' --include='*.js' --include='*.py' . > /dev/null && echo 'OK' || (echo 'NO MATCH'; exit 1)",
+          "severity": "warning",
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "name": "saas-multitenancy-exit",
+      "description": "Skill exit checks for saas-multitenancy. See project/skills/saas-multitenancy/SKILL.md for full criteria.",
+      "phase": "implementation",
+      "trigger": "phase_exit",
+      "checks": [
+        {
+          "type": "lint",
+          "name": "Tenant context middleware exists",
+          "command": "grep -rEn 'setTenantContext|set_config.*current_tenant' --include='*.ts' --include='*.js' --include='*.py' . > /dev/null && echo 'OK' || (echo 'NO MATCH'; exit 1)",
+          "severity": "warning",
+          "timeout": 30
+        },
+        {
+          "type": "lint",
+          "name": "No tenant ID accepted from request body",
+          "command": "if grep -rEn 'req\\.body\\.tenantId|body\\[.tenant_id.\\]|request\\.body\\[.tenantId.\\]' --include='*.ts' --include='*.js' --include='*.py' .; then echo 'FAIL: tenant from body'; exit 1; else echo 'OK'; fi",
+          "severity": "warning",
+          "timeout": 30,
+          "remediation": {
+            "manual_steps": [
+              "Derive tenant ID from authenticated session or auth context, never from request body.",
+              "See project/skills/saas-multitenancy/SKILL.md anti-pattern."
+            ]
+          }
+        },
+        {
+          "type": "lint",
+          "name": "Cache keys namespaced by tenant",
+          "command": "if grep -rEn 'cache\\.(set|get)\\([^)]*[\"\\x27]' --include='*.ts' --include='*.js' --include='*.py' . | grep -v 'tenant:'; then echo 'WARN: unnamespaced cache key'; exit 1; else echo 'OK'; fi",
+          "severity": "warning",
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "name": "saas-email-exit",
+      "description": "Skill exit checks for saas-email. See project/skills/saas-email/SKILL.md for full criteria.",
+      "phase": "implementation",
+      "trigger": "phase_exit",
+      "checks": [
+        {
+          "type": "lint",
+          "name": "Email send goes through queue, not inline",
+          "command": "if grep -rEn 'emailService\\.send|client\\.emails\\.send' --include='*.ts' --include='*.js' --include='*.py' . | grep -v -E 'queue|worker|test|spec'; then echo 'WARN: inline email send found'; exit 1; else echo 'OK'; fi",
+          "severity": "warning",
+          "timeout": 30
+        },
+        {
+          "type": "lint",
+          "name": "Retry / backoff configured",
+          "command": "grep -rEn 'attempts.*[0-9]+|backoff.*exponential' --include='*.ts' --include='*.js' --include='*.py' . > /dev/null && echo 'OK' || (echo 'NO MATCH'; exit 1)",
+          "severity": "warning",
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "name": "saas-onboarding-exit",
+      "description": "Skill exit checks for saas-onboarding. See project/skills/saas-onboarding/SKILL.md for full criteria.",
+      "phase": "implementation",
+      "trigger": "phase_exit",
+      "checks": [
+        {
+          "type": "lint",
+          "name": "Onboarding state persisted to DB, not localStorage",
+          "command": "if grep -rEn 'localStorage.*onboarding' --include='*.ts' --include='*.js' --include='*.tsx' --include='*.jsx' .; then echo 'WARN: onboarding state in localStorage'; exit 1; else echo 'OK'; fi",
+          "severity": "warning",
+          "timeout": 30
+        },
+        {
+          "type": "lint",
+          "name": "Activation events tracked",
+          "command": "grep -rEn 'trackActivation|activation.*event' --include='*.ts' --include='*.js' . > /dev/null && echo 'OK' || (echo 'NO MATCH'; exit 1)",
+          "severity": "warning",
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "name": "saas-analytics-exit",
+      "description": "Skill exit checks for saas-analytics. See project/skills/saas-analytics/SKILL.md for full criteria.",
+      "phase": "implementation",
+      "trigger": "phase_exit",
+      "checks": [
+        {
+          "type": "lint",
+          "name": "Analytics provider abstracted",
+          "command": "grep -rEn 'interface AnalyticsService|class.*Analytics.*implements' --include='*.ts' --include='*.js' --include='*.py' . > /dev/null && echo 'OK' || (echo 'NO MATCH'; exit 1)",
+          "severity": "warning",
+          "timeout": 30
+        },
+        {
+          "type": "lint",
+          "name": "Event names are snake_case",
+          "command": "if grep -rEn 'track\\([\"\\x27][A-Z]|track\\([\"\\x27][a-z]+-' --include='*.ts' --include='*.js' .; then echo 'WARN: non snake_case event name'; exit 1; else echo 'OK'; fi",
+          "severity": "warning",
+          "timeout": 30
+        },
+        {
+          "type": "lint",
+          "name": "Analytics gated by env",
+          "command": "grep -rEn 'NODE_ENV.*test|NODE_ENV.*development' --include='*.ts' --include='*.js' --include='*.py' . | grep -i analytics > /dev/null && echo 'OK' || (echo 'NO MATCH'; exit 1)",
+          "severity": "warning",
+          "timeout": 30
+        }
+      ]
+    }
+  ],
+  "global_options": {
+    "fail_fast": false,
+    "parallel_checks": true,
+    "report_format": "detailed",
+    "notification_channels": ["console", "progress.md"]
+  }
+}

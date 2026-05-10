@@ -30,6 +30,18 @@ You operate under the Karpathy Constitution (`project/constitution/karpathy-cons
 
 This discipline exists because the v5.2 baseline repeatedly found the developer subagent returning "0 tool uses" or producing `old_string` reconstructions that did not match actual file contents (see `project/validation/baseline-v5.2.md`, Tasks 2 and 4). The coordinator had to discard the developer's attempted edits and apply the design manually.
 
+## ANTI-RATIONALIZATION TABLE
+
+Pre-written rebuttals to the shortcuts you will be tempted to take. Anchored in `project/validation/baseline-v5.2.md`.
+
+| Excuse | Rebuttal | Anchor |
+|---|---|---|
+| "I know what the file says, I'll write the edit from memory." | Read it. Your memory of a file is a reconstruction, not a quote. The Edit tool will fail if `old_string` doesn't match exactly, and your reconstruction will silently change the wrong thing if it does match by accident. | Tasks 2 and 4: developer returned `old_string` reconstructions that did not match actual file contents; coordinator had to discard and redo. |
+| "I'll just clean this up while I'm here." | No. Karpathy 3 (minimal diffs) and 5 (avoid speculative refactors). The cleanup belongs in its own task with its own ask. Doing it now bundles your fix with unrelated work and makes the diff hostile to review. | T4 refactor took 6+ min for the same shape of change T3 fixed in 1:30; the difference was unrequested ceremony and adjacent-system edits. |
+| "This fix is one line, no test needed." | A test that would have caught this regression is one line too. Without one, the next regression of the same shape will not be caught. | Karpathy 4 + the general pattern of un-tested one-liners in T2 / T3. |
+| "The linter complains but it's not a real issue." | Karpathy 4: verify by running. The linter is part of the run. If the linter is wrong, fix the rule or add a documented exemption; do not silently override it with `// eslint-disable` or `# noqa`. | General observation; lints exist because someone hit the bug they encode. |
+| "I'll skip the test pass before declaring done." | Karpathy 4 is non-negotiable. If you cannot run the test, say so plainly: "Tests not run because [specific reason]". Do not paraphrase what tests would show. | Coordinator's MISSION-COMPLETE VERIFICATION rule, motivated by repeated v5.2 fabricated test summaries. |
+
 ---
 
 ## MODEL CONFIGURATION

@@ -423,22 +423,29 @@ import Analytics from '@segment/analytics-node';
 const analytics = new Analytics({ writeKey: process.env.SEGMENT_WRITE_KEY });
 ```
 
-## Quality Checklist
+## Exit Criteria
 
-- [ ] Analytics abstracted from provider
-- [ ] Consistent event naming convention
-- [ ] User identification on signup/login
-- [ ] Organization/group association for B2B
-- [ ] Server-side tracking for critical events
-- [ ] Client-side tracking for UI interactions
-- [ ] Key metrics calculated and stored daily
-- [ ] Event schema documented for team
-- [ ] PII handling compliant with privacy laws
-- [ ] Analytics disabled in development/test
+Before declaring this skill's work complete, run each check below and paste the output. "Looks right" is not sufficient. Items marked **gateable** can be wired into `project/gates/` for automated phase-exit checks.
 
-## Anti-Patterns
+| # | Check | Verification | Pass condition | Gateable |
+|---|-------|-------------|----------------|----------|
+| 1 | Analytics behind a single abstraction | `grep -rEn "interface AnalyticsService\|class.*Analytics.*implements" --include="*.ts" --include="*.js" --include="*.py" .` | Match. Direct provider calls (`posthog.capture`, `mixpanel.track`, etc.) appear only in the implementation class. | yes |
+| 2 | Direct provider calls only inside the abstraction | `grep -rEn "posthog\.|mixpanel\.|amplitude\.|@segment" --include="*.ts" --include="*.js" --include="*.py" . \| grep -v -E "AnalyticsService\|analytics/provider\|test\|spec"` | Zero matches outside the analytics module. | yes |
+| 3 | Event names follow `object_action` snake_case | `grep -rEn "track\(['\"][A-Z]\|track\(['\"][a-z]+-" --include="*.ts" --include="*.js" .` | Zero matches (no PascalCase, no kebab-case events). | yes |
+| 4 | User identified on signup and login | `grep -rEn "analytics\.identify\|posthog\.identify\|mixpanel\.identify" --include="*.ts" --include="*.js" --include="*.py" .` | Match in signup handler, login handler, session restore. | yes |
+| 5 | All `track` calls include user ID server-side | Read 5 server-side `track` call sites. | Each passes a user ID as first argument; no anonymous server-side tracks. | manual |
+| 6 | Server-side tracking for critical events | Read handler for: signup, plan_selected, subscription_created, project_created. | Each calls `analytics.track` server-side, not just client-side. | manual |
+| 7 | Analytics off in dev/test | `grep -rEn "NODE_ENV.*test\|NODE_ENV.*development" --include="*.ts" --include="*.js" --include="*.py" . \| grep -i analytics` | Match: analytics initialisation gated on environment. | yes |
+| 8 | PII not sent in event properties | Read 5 most common `track` call sites. | No raw email, password, payment details in `properties`; user ID only. | manual |
 
-### Tracking Everything
+If any check fails, do not declare done. Fix and re-run.
+
+## Anti-Patterns (Excuse / Rebuttal)
+
+### Excuse: "We'll track everything now and decide what's useful later."
+
+**Rebuttal**: Tracking everything produces a wall of noise nobody queries. Storage costs go up, your dashboards get slower, and the events that actually matter drown in mouse-move telemetry. Track meaningful actions, not interactions. If you cannot articulate a question the event answers, it is not worth tracking.
+
 ```typescript
 // WRONG: Noise drowns out signal
 track('button_hovered');
@@ -449,7 +456,10 @@ track('mouse_moved');
 track('feature_used', { feature: 'export', format: 'csv' });
 ```
 
-### No User Context
+### Excuse: "Server-side tracking knows the user from the session, no need to pass it explicitly."
+
+**Rebuttal**: It does not, reliably. Background jobs, webhook handlers, retry workers, anything that runs outside a request context loses the session and silently emits anonymous events. Always pass the user ID explicitly to `track`, even when it feels redundant. The cost of an extra parameter is zero; the cost of an unattributable event is the entire event.
+
 ```typescript
 // WRONG: Can't attribute to user
 analytics.track('project_created');
@@ -458,7 +468,10 @@ analytics.track('project_created');
 analytics.track(userId, 'project_created', { projectId });
 ```
 
-### Inconsistent Naming
+### Excuse: "Each event name is fine on its own; consistency does not matter."
+
+**Rebuttal**: It matters when you need to query. `UserCreatedProject`, `project-deleted`, and `BILLING_UPGRADED` all need different filters in your analytics tool, and joining them across funnels becomes a string-matching exercise. Pick `object_action` snake_case and stick to it from the first event. The cost of changing later is rewriting every dashboard.
+
 ```typescript
 // WRONG: Inconsistent patterns
 track('UserCreatedProject');
