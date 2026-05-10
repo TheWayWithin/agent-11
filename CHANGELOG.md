@@ -7,9 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Bulk-ops toolkit** at `project/deployment/bulk/` for users running AGENT-11 across multiple repos. Three operations, tier-aware, registry-driven:
+  - `audit.sh` — read-only fleet status (v5 markers, library drift, branch, uncommitted count) per repo
+  - `apply-file.sh` — deploy one library file across the fleet, with stash → pull-rebase → push fallback for divergent remotes. Idempotent — re-running with the same source has no effect
+  - `apply-upgrade.sh` — bulk `install.sh --upgrade` across the fleet, using the proven Sprint 5b commit allowlist + smart D-vs-M check on v5 marker paths (handles repos that re-introduced same-named files as project content)
+  - `lib/parse-registry.py` — hand-rolled minimal YAML parser, no PyYAML dependency
+  - `lib/registry-template.yaml` — starter template for users to copy and edit
+  - `README.md` — usage, tier behaviour table, troubleshooting
+- Tier model: `active`, `local-only`, `dormant`, `sandbox`, `skip`, `different-framework` — drives which repos each operation touches by default. Dormant/sandbox/skip excluded by default; `--include-dormant` opts in.
+- Registry file lives outside the framework repo (`AGENT11_FLEET_REGISTRY` env var or `--registry=<path>` flag). Keeps user-specific repo lists out of the framework.
+
 ### Changed
-- Upgraded Opus tier references from 4.5 to 4.6 across all documentation
-- Updated model-selection-guide.md (v1.1.0) with Opus 4.6 tier
+
+- `docs/UPGRADE.md` "Bulk upgrade" section now points at the toolkit as the primary path; the bare-bones bash loop kept as a fallback.
+- `README.md` — added a "Managing AGENT-11 across multiple repos?" subsection under v6 messaging.
+- Upgraded Opus tier references from 4.6 to 4.7 and Sonnet tier from 4.5 to 4.6 across all documentation.
+- Updated `project/field-manual/model-selection-guide.md` (v1.2.0) with Opus 4.7 / Sonnet 4.6 tiers.
 
 ## [6.1.1] - 2026-05-07 - Subprocess advisory cleanup
 

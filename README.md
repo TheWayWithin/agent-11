@@ -294,6 +294,16 @@ That's it. The installer detects v5 markers, runs the migration, merges your exi
 
 Add `--dry-run` to preview without changes. Add `--non-interactive` for CI/scripts. Roll back any time via the [restore script](project/deployment/scripts/restore-pre-upgrade.sh) — full guide in [docs/UPGRADE.md](docs/UPGRADE.md).
 
+### Managing AGENT-11 across multiple repos? Use the bulk-ops toolkit
+
+If you run AGENT-11 in more than a handful of projects, the [bulk-ops toolkit](project/deployment/bulk/) at `project/deployment/bulk/` makes fleet-wide updates a one-liner:
+
+- `audit.sh` — read-only fleet status report (v5 markers, library drift, branch, uncommitted count) per repo
+- `apply-file.sh` — deploy one library file across the fleet (idempotent; stash/rebase/push fallback for divergent remotes)
+- `apply-upgrade.sh` — bulk `install.sh --upgrade` across the fleet, with the proven commit allowlist + smart D-vs-M check on retired marker paths
+
+Driven by a tier-aware registry file you maintain yourself (template at `project/deployment/bulk/lib/registry-template.yaml`). Tiers (`active`, `local-only`, `dormant`, `sandbox`, `skip`, `different-framework`) control which repos each operation touches. Full usage in [`project/deployment/bulk/README.md`](project/deployment/bulk/README.md).
+
 ---
 
 ## Is AGENT-11 Right for You?

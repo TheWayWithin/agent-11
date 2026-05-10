@@ -1,8 +1,47 @@
-# Handoff Notes — Agent-11 (Sprints 5a + 5b CLOSED, push phase done)
+# Handoff Notes — Agent-11 (Bulk-ops toolkit shipped)
 
-**Last Updated**: 2026-05-09
-**From**: Sprint 5b push phase — 17/19 user repos pushed to github; agent-11 framework repo doc updates committed
+**Last Updated**: 2026-05-10
+**From**: Bulk-ops toolkit session — productised the Sprint 5b patterns into reusable scripts; dogfood-tested across 19 repos
 **To**: Next session — open threads only (no active sprint queued)
+
+---
+
+## Bulk-ops toolkit shipped 2026-05-10
+
+The Sprint 5b bulk-migration capability is now a permanent feature, not a one-off scramble.
+
+**What ships** (commit `21555a7`):
+- `project/deployment/bulk/audit.sh` — read-only fleet status (v5 markers, library drift, branch, uncommitted count, status flag) per repo
+- `project/deployment/bulk/apply-file.sh` — deploy one library file across the fleet, with stash → rebase → push fallback. Idempotent
+- `project/deployment/bulk/apply-upgrade.sh` — bulk `install.sh --upgrade` with the proven Sprint 5b commit allowlist + smart D-vs-M check on v5 marker paths
+- `project/deployment/bulk/lib/parse-registry.py` — hand-rolled minimal YAML parser (no PyYAML dependency)
+- `project/deployment/bulk/lib/registry-template.yaml` — starter template for other agent-11 users
+- `project/deployment/bulk/README.md` — usage, tier behaviour table, troubleshooting
+
+**Jamie-personal data** (not in framework repo):
+- `~/shared/tools/agent-11-fleet/registry.yaml` — 23-repo fleet (17 active, 2 local-only, 2 dormant, 1 sandbox, 1 skip)
+- `~/shared/tools/agent-11-fleet/README.md` — explains the split (registry here, scripts in framework)
+
+**Tier model** (drives every script's behaviour):
+
+| Tier | audit | apply-file | apply-upgrade |
+|---|---|---|---|
+| `active` | ✓ | ✓ | ✓ |
+| `local-only` | ✓ | commit only | commit only |
+| `dormant` | ✓ | skipped (`--include-dormant` opts in) | skipped |
+| `sandbox` | excluded | skipped | skipped |
+| `skip` | skipped | skipped | skipped |
+| `different-framework` | skipped | skipped | skipped |
+
+**Dogfood result (apply-file live)**: deployed `project/field-manual/model-selection-guide.md` (the Opus 4.6 → 4.7 / Sonnet 4.5 → 4.6 bump) across the fleet. **19/19 succeeded** in ~60 seconds. 17 pushed, 2 local-only committed. 0 stash conflicts, 0 rebase fallbacks needed, 0 errors. Same operation took 90+ minutes of bespoke scripting in Sprint 5b.
+
+**Why this matters for next time**:
+- New agent-11 release? `apply-upgrade.sh --dry-run` then `apply-upgrade.sh` rolls it across the fleet
+- Single-file fix? `apply-file.sh path/to/file`
+- Need fleet status? `audit.sh`
+- Onboarding a new repo? Add to registry, run `audit.sh` to confirm
+
+**Override convention**: `AGENT11_FLEET_REGISTRY` env var points at any registry; default is `~/shared/tools/agent-11-fleet/registry.yaml`.
 
 ---
 

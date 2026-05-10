@@ -104,7 +104,19 @@ cp .claude/settings.json.backup-<timestamp> .claude/settings.json
 
 ## Bulk upgrade (multiple repos)
 
-For automation across many repos, use `--non-interactive` (or its alias `--batch-safe`):
+If you run AGENT-11 across more than a handful of repos, use the [bulk-ops toolkit](../project/deployment/bulk/):
+
+```bash
+# Dry-run first to see what would happen across the fleet
+bash project/deployment/bulk/apply-upgrade.sh --dry-run
+
+# Run for real — handles stash/rebase/push for divergent remotes
+bash project/deployment/bulk/apply-upgrade.sh
+```
+
+The toolkit reads a registry file you maintain yourself (template at `project/deployment/bulk/lib/registry-template.yaml`). Tier-aware (`active`, `local-only`, `dormant`, etc.) so dormant or non-agent-11 repos don't get swept up. Includes a smart D-vs-M check on retired v5 marker paths — handles repos that have re-introduced same-named files as project content. See [`project/deployment/bulk/README.md`](../project/deployment/bulk/README.md) for full usage.
+
+For ad-hoc loops without the toolkit, the bare-bones pattern still works:
 
 ```bash
 for repo in repo1 repo2 repo3; do
