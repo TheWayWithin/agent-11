@@ -42,6 +42,16 @@ Implement production-ready authentication for SaaS applications including email/
 - Rate limiting and brute force protection
 - Multi-factor authentication setup
 
+## When NOT to use this skill
+
+This skill covers email/password, OAuth social login, sessions, password reset, and rate limiting for typical SaaS web apps. It is not the right fit for:
+
+- **SSO/SAML enterprise integration.** Use a dedicated identity provider (Okta, Auth0, Azure AD) or a SAML library. The patterns here assume self-managed credentials.
+- **OAuth-as-a-provider** (you issuing tokens to third parties). Different shape; build with an OAuth-server library (Hydra, oauth2orize).
+- **Passwordless-only architectures** (magic-link only, no password fallback). The patterns here assume password as a default and treat magic links as recovery, not primary.
+- **Mobile-native auth** (Sign in with Apple, Google iOS SDK, biometrics). Use the platform SDKs; do not retrofit web patterns onto a native flow.
+- **FIDO2 / WebAuthn primary**. Add WebAuthn as a layer if you need it; the patterns here are bcrypt-first and assume password as the recovery primitive.
+
 ## Patterns
 
 ### Email/Password Authentication

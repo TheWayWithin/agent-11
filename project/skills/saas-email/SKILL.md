@@ -36,6 +36,16 @@ Implement reliable transactional email delivery for SaaS applications including 
 - Team invitation emails
 - Digest and summary emails
 
+## When NOT to use this skill
+
+This skill covers transactional email (welcome, verification, password reset, invitations, notifications) via Resend / Postmark / SendGrid with queues and retries. It is not the right fit for:
+
+- **Marketing automation** (drip campaigns, segmentation, behavioural sends). Use Customer.io, Iterable, or Braze. Deliverability and unsubscribe rules differ.
+- **Newsletter publishing.** Use Beehiiv, Substack, ConvertKit, Buttondown.
+- **High-volume cold outbound sales emails.** Use Lemlist, Apollo, Outreach. Deliverability and warmup patterns are different.
+- **SMS or push notifications.** Different transport; use Twilio (SMS) or APNs/FCM (push) with their own queueing.
+- **Operational alerts to on-call.** Use PagerDuty, Opsgenie. Email is not the right channel for incident notifications.
+
 ## Patterns
 
 ### Email Service Abstraction

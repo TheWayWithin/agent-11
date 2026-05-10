@@ -55,6 +55,16 @@ Implement production-ready payment processing with Stripe including one-time pay
 - Handling failed payments and dunning
 - Upgrading/downgrading subscription plans
 
+## When NOT to use this skill
+
+This skill covers Stripe Checkout, subscriptions, webhooks, customer portal, and metered usage for typical SaaS apps. It is not the right fit for:
+
+- **E-commerce for physical goods.** Use Shopify, WooCommerce, or BigCommerce. The fulfilment, shipping, and tax patterns are not in scope.
+- **Regulated payments** (gambling, securities, crypto custody, money transmission). Stripe is not the right backend; engage a regulated processor.
+- **Custodial wallets or stored-value accounts.** Different compliance regime; not Stripe Checkout territory.
+- **Marketplaces with split payments at scale.** Use Stripe Connect (different SDK, different patterns) or Adyen MarketPay.
+- **Pure ACH / direct-debit at high volume.** Stripe ACH works but the patterns here are card-default; volume ACH usually wants GoCardless or a bank API directly.
+
 ## Patterns
 
 ### Stripe Checkout for One-Time Payments

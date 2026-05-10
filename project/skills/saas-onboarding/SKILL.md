@@ -37,6 +37,15 @@ Implement effective user onboarding flows that drive activation and reduce churn
 - Re-engagement for incomplete onboarding
 - Team member onboarding variations
 
+## When NOT to use this skill
+
+This skill covers self-serve multi-step setup wizards, activation tracking, and contextual tooltips for typical SaaS apps. It is not the right fit for:
+
+- **B2B sales-led onboarding with CSM hand-off.** Different flow; the wizard is replaced by scheduled implementation calls. Use a CRM workflow, not an in-app wizard.
+- **Mobile app onboarding** (iOS / Android specific). Use platform-native onboarding patterns; the React patterns here will not translate.
+- **KYC / identity-verification flows.** Use Persona, Sumsub, Veriff, or your processor's KYC API. Do not roll your own.
+- **Onboarding for embedded SDKs or developer tools.** The primary onboarding surface is documentation, not a wizard. Different shape.
+
 ## Patterns
 
 ### Onboarding State Machine

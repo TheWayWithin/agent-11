@@ -51,6 +51,15 @@ Implement subscription lifecycle management, plan enforcement, usage tracking, a
 - Billing history and invoice access
 - Failed payment recovery (dunning)
 
+## When NOT to use this skill
+
+This skill covers plan definitions, feature gating, quota tracking, trial state, and downgrade orchestration for self-serve SaaS. It is not the right fit for:
+
+- **B2B contract billing with negotiated terms** (annual contracts, custom per-customer pricing). Use a CPQ (Salesforce CPQ, HubSpot) or an invoicing-with-terms tool. The flat-plan patterns here do not encode contract-line items.
+- **Wholesale per-unit pricing with negotiated discounts.** Closer to ERP territory; not a SaaS-billing pattern.
+- **Pure usage metering at very high volume** (millions of events per minute). Use Stripe's native metering, Orb, or Metronome directly; the in-app counters here will not scale.
+- **Per-seat enterprise pricing with custom contract terms.** The flat-fee plan patterns here do not fit; use an enterprise billing platform.
+
 ## Patterns
 
 ### Plan Definition & Enforcement

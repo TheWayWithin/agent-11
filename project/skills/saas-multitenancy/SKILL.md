@@ -38,6 +38,15 @@ Implement robust multi-tenant architecture for SaaS applications with proper dat
 - Tenant provisioning and onboarding
 - Cross-tenant admin operations
 
+## When NOT to use this skill
+
+This skill covers shared-database multi-tenancy with row-level security, tenant-scoped queries, and org/team hierarchies. It is not the right fit for:
+
+- **Single-tenant deployments** (one customer per environment, separate DB per customer). RLS-based shared-DB patterns are overkill; use plain auth and treat the database as private.
+- **Per-customer database isolation** (fully separate DB instances per tenant). Different patterns; closer to fleet management. Use a multi-DB orchestrator.
+- **Per-record customer-managed encryption keys** (BYOK). Adds an orthogonal cryptography layer; the RLS patterns here do not address encryption.
+- **Multi-region tenant sharding.** Patterns here assume one logical database. Sharding needs different tooling (Citus, Vitess, custom routing).
+
 ## Patterns
 
 ### Row-Level Security (RLS) Pattern

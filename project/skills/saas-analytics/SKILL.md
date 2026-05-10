@@ -37,6 +37,16 @@ Implement product analytics for understanding user behavior, tracking key metric
 - Funnel analysis and conversion tracking
 - Custom dashboard metrics
 
+## When NOT to use this skill
+
+This skill covers product analytics (event tracking, funnels, retention, activation metrics) via PostHog / Mixpanel / Amplitude. It is not the right fit for:
+
+- **Business intelligence and data warehouse pipelines.** Use Fivetran, Airbyte, dbt, and a warehouse (BigQuery, Snowflake). Product analytics is sampled and event-shaped; BI needs the full warehouse.
+- **Real-time event streaming.** Use Kafka, Kinesis, NATS. Product analytics SDKs are not low-latency event buses.
+- **Tamper-evident audit logs** (compliance, security, regulatory). Use a dedicated audit-log service or an append-only data store.
+- **High-cardinality session replay.** Use Fullstory, LogRocket. PostHog has session-replay but it is not the primary use case.
+- **Operational metrics** (latency, error rate, throughput). Use Prometheus, Datadog, OpenTelemetry. Product analytics is not infrastructure observability.
+
 ## Patterns
 
 ### Analytics Service Abstraction

@@ -23,6 +23,28 @@ This hybrid format keeps skills forward-compatible with future marketplace publi
 
 **Note on publishing**: v6.0 formats Tier 3 skills for the open standard but does **not** publish to a public marketplace. Publishing is a future decision.
 
+## Progressive Disclosure in AGENT-11
+
+A common question when reviewing skills: "should we add a router skill that decides which skills to load?" The answer is no, because progressive disclosure already happens at the platform level. Future contributors should understand this before reimplementing it.
+
+### What v6.0 already does
+
+1. **Skills are loaded on demand by the Skill tool, not at session start.** The Skill tool inspects each skill's `description` frontmatter against the user's intent and loads only the matching skills. None of the 7 SaaS skills sit in context until a task triggers them.
+2. **MCP tools defer-load via `ENABLE_TOOL_SEARCH=auto`** (set in `.claude/settings.json`). Specialists discover MCP tools at runtime via `tool_search_tool_regex_20251119(pattern="mcp__SERVERNAME")`. This is documented in `library/CLAUDE.md` and `field-manual/mcp-integration.md`.
+3. **Coordinator context loading is mode-aware.** Mode A (greenfield) reads `project-plan.md` + `agent-context.md` + mission file; Mode B1 (surgical) reads only the bug report; Mode B2 (maintenance) reads `project-plan.md` if present. `evidence-repository.md` and `progress.md` are on-demand only. See `project/agents/specialists/coordinator.md` `DYNAMIC CONTEXT LOADING` section.
+4. **Specialists carry tool allowlists in frontmatter.** Each specialist declares only the tools it can call (`tools: Read, Bash, Task` for the developer, etc.); the platform enforces the allowlist.
+
+### What this means for skill authors
+
+- **Do not write a "router skill" or `using-skills` meta-skill.** The Skill tool's description-matching is the router. A handwritten router would duplicate it and fight for control.
+- **Make the `description` field carry the trigger semantics.** That is the field the platform matches against. A vague description means the skill fires too often or too rarely.
+- **Keep the main `SKILL.md` lean.** Stack-specific or framework-specific code belongs in `references/` subfolders that the agent loads only when the project's stack matches. `saas-payments` and `saas-auth` follow this pattern (`references/nextjs-supabase.md`, `references/remix-railway.md`).
+- **Trust the platform's lazy-load on MCP tools.** Do not pre-load `mcp__supabase` references inside a skill; the agent will discover them at runtime when needed.
+
+### Anti-pattern
+
+Writing a "skill router" skill that contains a decision tree for which skill to load. This duplicates the platform layer and adds tokens to every session without paying back.
+
 ## Available Skills
 
 | Skill | Triggers | Specialist | Tokens |
