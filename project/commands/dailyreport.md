@@ -483,6 +483,26 @@ Also check and rewrite: rule-of-three adjective stacks, "it's not just X, it's Y
 constructions, em dashes more than twice per 500 words, bullet points starting with
 bolded phrases that the following sentence restates.
 
+**URL consistency check** — the URL in every social post must use the *slug only*,
+not the file name. The `<slug>` is the value of the `slug:` field in the blog
+markdown frontmatter (no date prefix, no `.md` extension).
+
+For each social file (`-twitter.md`, `-linkedin.md`):
+1. Extract the URL after `/journey/` from the "Full post:" line.
+2. Compare it to `meta.slug` from the blog post frontmatter.
+3. If they differ — typically the social URL has a date prefix (`2026-05-09-my-post`)
+   while the actual slug has no date (`my-post`) — rewrite the social URL to match
+   the slug and re-save the file.
+
+Common failure mode: copying the file-name pattern (`YYYY-MM-DD-slug`) into the URL
+instead of using the slug alone. The file naming convention has the date; the URL
+convention does not. Using the file name produces a 404 because `jpub` publishes at
+`/journey/<slug>` (jpub.js: `meta.slug` from frontmatter).
+
+Quick verification: if you ran a dry-run earlier in the same session, the line
+`[DRY RUN] Would publish to <base-url>/journey/<slug>` is the source of truth.
+The URL in every social post must match that exactly.
+
 **Character limit validation** — count the actual characters (not words) in each
 social post's content (the text between the `---` markers, excluding metadata):
 - **Twitter/X**: must be under 280. If over, shorten the post and recount. Do not

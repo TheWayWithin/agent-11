@@ -98,7 +98,7 @@ so the last one wins the preview card.
 
 Try it: <product-url>
 
-Full post: <DAILYREPORT_BASE_URL>/journey/2026-04-11-feature-flags-small-teams
+Full post: <DAILYREPORT_BASE_URL>/journey/feature-flags-small-teams
 
 #BuildInPublic #FeatureFlags #SoloFounder
 ```
@@ -114,7 +114,7 @@ Try it: <product-url>
 
 <plain closing or genuine question>
 
-Full post: <DAILYREPORT_BASE_URL>/journey/2026-04-11-feature-flags-small-teams
+Full post: <DAILYREPORT_BASE_URL>/journey/feature-flags-small-teams
 ```
 
 Both URLs are resolved from env vars at write time:
@@ -237,6 +237,7 @@ beats "Thoughts on Automation." Make it something someone would click.
      - Resolve `<base-url>` from the `DAILYREPORT_BASE_URL` env var at write time (read it with a quick `Bash` call like `echo "$DAILYREPORT_BASE_URL"`)
      - If `DAILYREPORT_BASE_URL` is unset or empty, **omit the "Full post:" line entirely** rather than inventing a URL
      - The path is `/journey/<slug>` to match where `jpub` publishes blog posts (`jamiewatters.work/journey/<slug>`). Do NOT use `/blog/<slug>` — that is not where published posts live.
+     - **`<slug>` is the value of the `slug:` field in the blog frontmatter, NOT the file name.** The file name has a date prefix (`2026-04-11-my-post.md`); the URL slug does not (`my-post`). Using the file name in the URL produces a 404. Always derive the URL from `meta.slug`, never from the file name.
 - **Hashtags: 2-4 total, TitleCase/PascalCase for readability.**
   - Pick 1 community tag from: `#BuildInPublic #SoloFounder #IndieHacker #DevLog`
   - Plus 1-3 topic-specific tags derived from the blog content itself (e.g. `#AlgoTrading #Crypto #Security #Refactoring #Auth #Postgres #LLMs`)
@@ -331,6 +332,26 @@ just warn — this is a slash command, you have full edit control. Fix it now.
 Also check for: rule-of-three adjective stacks, "it's not just X, it's Y"
 constructions, em dashes more than twice per 500 words, bullet points starting with
 bolded phrases that the following sentence restates. Fix each one by rewriting.
+
+**URL consistency check** — the URL in every social post must use the *slug only*,
+not the file name. The `<slug>` is the value of the `slug:` field in the blog
+markdown frontmatter (no date prefix, no `.md` extension).
+
+For each social file (`-twitter.md`, `-linkedin.md`):
+1. Extract the URL after `/journey/` from the "Full post:" line.
+2. Compare it to `meta.slug` from the blog post frontmatter.
+3. If they differ — typically the social URL has a date prefix (`2026-05-09-my-post`)
+   while the actual slug has no date (`my-post`) — rewrite the social URL to match
+   the slug and re-save the file.
+
+Common failure mode: copying the file-name pattern (`YYYY-MM-DD-slug`) into the URL
+instead of using the slug alone. The file naming convention has the date; the URL
+convention does not. Using the file name produces a 404 because `jpub` publishes at
+`/journey/<slug>` (jpub.js: `meta.slug` from frontmatter).
+
+Quick verification: if you ran a dry-run earlier in the same session, the line
+`[DRY RUN] Would publish to <base-url>/journey/<slug>` is the source of truth.
+The URL in every social post must match that exactly.
 
 **Character limit validation** — count the actual characters (not words) in each
 social post's content (the text between the `---` markers, excluding metadata):
