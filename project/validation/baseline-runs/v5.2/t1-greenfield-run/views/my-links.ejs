@@ -1,0 +1,69 @@
+<%- include('partials/header', { title: title, email: email, csrfToken: csrfToken }) %>
+
+<section class="card">
+  <h1>My links</h1>
+
+  <form method="post" action="/shorten" class="row" autocomplete="off" novalidate>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+    <input
+      type="url"
+      name="long_url"
+      placeholder="https://example.com/your-long-url"
+      value="<%= longUrlInput %>"
+      required
+      maxlength="2048"
+      autofocus
+    />
+    <button type="submit" class="primary">Shorten</button>
+  </form>
+
+  <% if (error) { %>
+    <p class="error" role="alert"><%= error %></p>
+  <% } %>
+</section>
+
+<section class="card">
+  <h2>Your links</h2>
+
+  <% if (!links || links.length === 0) { %>
+    <p class="muted">no links yet — paste a URL above to create your first one.</p>
+  <% } else { %>
+    <table class="links">
+      <thead>
+        <tr>
+          <th>short</th>
+          <th>destination</th>
+          <th class="num">clicks</th>
+          <th>created</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% links.forEach(function(link) { %>
+          <tr>
+            <td>
+              <a href="<%= baseUrl %>/<%= link.code %>" target="_blank" rel="noopener noreferrer">
+                <%= baseUrl %>/<%= link.code %>
+              </a>
+            </td>
+            <td class="long">
+              <span title="<%= link.long_url %>"><%= link.long_url %></span>
+            </td>
+            <td class="num"><%= link.click_count %></td>
+            <td><%= new Date(link.created_at).toISOString().slice(0, 10) %></td>
+            <td>
+              <form method="post" action="/links/<%= link.id %>/delete" class="inline">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                <button type="submit" class="danger" onclick="return confirm('delete this link?');">
+                  delete
+                </button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</section>
+
+<%- include('partials/footer') %>

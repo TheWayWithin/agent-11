@@ -1,0 +1,24 @@
+{
+  "_description": "Frontend deployment MCP profile with Netlify. Token footprint: ~12-15K.",
+  "_metadata": {
+    "profile_name": "frontend-deploy",
+    "purpose": "Static site and frontend deployments via Netlify",
+    "estimated_tokens": "12-15K",
+    "created": "2025-11-28",
+    "version": "1.0",
+    "sprint": "Sprint 5 - MCP Context Optimization"
+  },
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-filesystem", "${HOME}/DevProjects"]
+    },
+    "netlify": {
+      "command": "npx",
+      "args": ["-y", "@netlify/mcp"],
+      "env": {
+        "NETLIFY_ACCESS_TOKEN": "${NETLIFY_ACCESS_TOKEN}"
+      }
+    }
+  }
+}

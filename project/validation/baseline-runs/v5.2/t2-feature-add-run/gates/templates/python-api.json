@@ -1,0 +1,247 @@
+{
+  "$schema": "../../../project/schemas/quality-gate.schema.yaml",
+  "version": "1.0",
+  "name": "python-api",
+  "description": "Quality gates for Python API projects with FastAPI/Flask, pytest, and production-grade requirements",
+  "framework": "python",
+  "gates": [
+    {
+      "name": "foundation-exit",
+      "description": "Gate at end of foundation phase - ensures clean codebase before implementation",
+      "phase": "foundation",
+      "trigger": "phase_exit",
+      "checks": [
+        {
+          "type": "lint",
+          "name": "Ruff Linter",
+          "command": "ruff check .",
+          "severity": "blocking",
+          "timeout": 60,
+          "remediation": {
+            "auto_fix": "ruff check --fix .",
+            "manual_steps": [
+              "Run ruff check --fix . for auto-fixable issues",
+              "Review remaining errors and fix manually",
+              "Configure rules in pyproject.toml [tool.ruff] section"
+            ]
+          }
+        },
+        {
+          "type": "lint",
+          "name": "Ruff Formatter",
+          "command": "ruff format --check .",
+          "severity": "blocking",
+          "timeout": 60,
+          "remediation": {
+            "auto_fix": "ruff format .",
+            "manual_steps": [
+              "Run ruff format . to auto-format all files",
+              "Commit formatted files"
+            ]
+          }
+        },
+        {
+          "type": "lint",
+          "name": "Type Checking",
+          "command": "mypy . --ignore-missing-imports || echo 'MyPy not configured'",
+          "severity": "warning",
+          "timeout": 120,
+          "remediation": {
+            "manual_steps": [
+              "Review mypy errors for type annotation issues",
+              "Add type hints to function signatures",
+              "Configure mypy in pyproject.toml or mypy.ini"
+            ]
+          }
+        },
+        {
+          "type": "security",
+          "name": "Dependency Audit",
+          "command": "pip-audit",
+          "severity": "blocking",
+          "timeout": 120,
+          "remediation": {
+            "auto_fix": "pip-audit --fix",
+            "manual_steps": [
+              "Run pip-audit to see vulnerability details",
+              "Update vulnerable packages in requirements.txt",
+              "Run pip-audit --fix for automatic updates",
+              "Re-run pip install -r requirements.txt"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "implementation-exit",
+      "description": "Gate at end of implementation phase - ensures code quality and test coverage",
+      "phase": "implementation",
+      "trigger": "phase_exit",
+      "checks": [
+        {
+          "type": "build",
+          "name": "Syntax Validation",
+          "command": "python -m py_compile $(find . -name '*.py' -not -path './venv/*' -not -path './.venv/*')",
+          "severity": "blocking",
+          "timeout": 60,
+          "remediation": {
+            "manual_steps": [
+              "Check error output for syntax errors",
+              "Fix Python syntax issues in reported files",
+              "Ensure all imports are valid"
+            ]
+          }
+        },
+        {
+          "type": "test",
+          "name": "Unit Tests",
+          "command": "pytest --cov=. --cov-report=term-missing --cov-fail-under=70",
+          "severity": "blocking",
+          "timeout": 300,
+          "options": {
+            "coverage_threshold": 70
+          },
+          "remediation": {
+            "manual_steps": [
+              "Run pytest locally to see failing tests",
+              "Check test output for assertion failures",
+              "Review coverage report to identify untested code",
+              "Add tests for uncovered functions and branches"
+            ]
+          }
+        },
+        {
+          "type": "lint",
+          "name": "Code Quality",
+          "command": "ruff check . && ruff format --check .",
+          "severity": "warning",
+          "timeout": 60,
+          "remediation": {
+            "auto_fix": "ruff check --fix . && ruff format ."
+          }
+        }
+      ]
+    },
+    {
+      "name": "integration-exit",
+      "description": "Gate at end of integration phase - full quality check before deployment prep",
+      "phase": "integration",
+      "trigger": "phase_exit",
+      "checks": [
+        {
+          "type": "build",
+          "name": "Full Syntax Check",
+          "command": "python -m py_compile $(find . -name '*.py' -not -path './venv/*' -not -path './.venv/*')",
+          "severity": "blocking",
+          "timeout": 60
+        },
+        {
+          "type": "test",
+          "name": "Full Test Suite",
+          "command": "pytest --cov=. --cov-report=term-missing --cov-report=html --cov-fail-under=75",
+          "severity": "blocking",
+          "timeout": 600,
+          "options": {
+            "coverage_threshold": 75
+          }
+        },
+        {
+          "type": "test",
+          "name": "Integration Tests",
+          "command": "pytest tests/integration/ -v || echo 'No integration tests found'",
+          "severity": "warning",
+          "timeout": 600,
+          "remediation": {
+            "manual_steps": [
+              "Run integration tests locally: pytest tests/integration/ -v",
+              "Ensure test database/services are running",
+              "Check for environment variable configuration"
+            ]
+          }
+        },
+        {
+          "type": "security",
+          "name": "Dependency Audit",
+          "command": "pip-audit",
+          "severity": "blocking",
+          "timeout": 120
+        },
+        {
+          "type": "security",
+          "name": "Code Security (Bandit)",
+          "command": "bandit -r . -ll -x ./venv,./.venv,./tests",
+          "severity": "blocking",
+          "timeout": 120,
+          "remediation": {
+            "manual_steps": [
+              "Review bandit output for security issues",
+              "Fix high and medium severity issues",
+              "Use # nosec comments sparingly for false positives",
+              "Run bandit -r . -f json for detailed output"
+            ]
+          }
+        },
+        {
+          "type": "lint",
+          "name": "All Linters",
+          "command": "ruff check . && ruff format --check . && mypy . --ignore-missing-imports",
+          "severity": "blocking",
+          "timeout": 180
+        }
+      ]
+    },
+    {
+      "name": "pre-deploy",
+      "description": "Final gate before production deployment",
+      "phase": "deploy",
+      "trigger": "phase_entry",
+      "checks": [
+        {
+          "type": "build",
+          "name": "Production Verification",
+          "command": "python -c 'import app' || python -c 'import main'",
+          "severity": "blocking",
+          "timeout": 60
+        },
+        {
+          "type": "test",
+          "name": "Smoke Tests",
+          "command": "pytest tests/smoke/ -v || pytest -k smoke -v || echo 'No smoke tests'",
+          "severity": "warning",
+          "timeout": 180
+        },
+        {
+          "type": "security",
+          "name": "Critical Vulnerabilities",
+          "command": "pip-audit --severity critical",
+          "severity": "blocking",
+          "timeout": 120
+        },
+        {
+          "type": "review",
+          "name": "Deployment Approval",
+          "command": "echo 'Awaiting deployment approval'",
+          "severity": "blocking",
+          "options": {
+            "approval_required": true,
+            "approvers": ["tech-lead", "maintainer"]
+          },
+          "remediation": {
+            "manual_steps": [
+              "Request deployment approval from tech lead",
+              "Ensure all PR reviews are complete",
+              "Verify staging deployment was successful"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "global_options": {
+    "fail_fast": false,
+    "parallel_checks": false,
+    "report_format": "detailed",
+    "notification_channels": ["console", "progress.md"],
+    "virtual_env_paths": ["./venv", "./.venv", "./env"]
+  }
+}

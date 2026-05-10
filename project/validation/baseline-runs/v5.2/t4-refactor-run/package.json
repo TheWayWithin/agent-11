@@ -1,0 +1,23 @@
+{
+  "name": "t4-refactor",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Small Express + TS fixture for Agent-11 harness task 4 (refactor duplicate auth into middleware)",
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "express": "4.21.2"
+  },
+  "devDependencies": {
+    "@types/express": "5.0.0",
+    "@types/node": "22.10.2",
+    "supertest": "7.0.0",
+    "@types/supertest": "6.0.2",
+    "tsx": "4.19.2",
+    "typescript": "5.7.2",
+    "vitest": "2.1.8"
+  }
+}

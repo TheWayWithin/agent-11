@@ -1,0 +1,133 @@
+# project-plan.schema.yaml
+# The DNA of Plan-Driven Orchestration
+# Version: 1.0.0
+# Target: <100 lines for readability
+
+---
+meta:
+  description: "Project metadata and versioning"
+  fields:
+    name: string          # Project name
+    created: date         # ISO 8601 date
+    last_updated: date    # ISO 8601 date
+    version: semver       # e.g., "1.0.0"
+    status: enum          # draft | active | paused | complete | archived
+
+vision:
+  description: "High-level project objectives and constraints"
+  fields:
+    objective: string     # One-line project goal
+    success_criteria:     # Array of measurable outcomes
+      - string
+    constraints:
+      timeline: string    # Optional deadline
+      budget: string      # Cost constraints
+      technical: [string] # Platform/tech limits
+    foundation_manifest:  # BOS-AI handoff integration (Sprint 9)
+      manifest_path: string         # Path to handoff-manifest.json
+      summaries_dir: string         # Path to .context/summaries/
+      initialized: boolean          # Has /foundations init been run?
+      token_budget_total: integer   # Total allocated (default: 1200)
+      documents:                    # Quick reference to foundation docs
+        prd: string                 # Path to prd-summary.md
+        vision: string              # Path to vision-summary.md
+        icp: string                 # Path to icp-summary.md (optional)
+        brand: string               # Path to brand-summary.md (optional)
+
+phases:
+  description: "Development phases with tasks and gates"
+  type: array
+  item_fields:
+    id: string            # Unique phase ID (e.g., "foundation")
+    name: string          # Human-readable name
+    status: enum          # not_started | in_progress | blocked | complete
+    objectives: [string]  # What this phase accomplishes
+    tasks:
+      - id: string        # Unique task ID (e.g., "1.1")
+        description: string
+        status: enum      # pending | in_progress | blocked | review | complete
+        assigned_to: agent # @developer, @tester, etc.
+        estimate: string  # Time estimate
+        dependencies: [string]  # Task IDs or "phase:X.gate"
+        context: string   # Optional accumulated context
+    gate:
+      type: enum          # build | test | lint | security | review | deploy
+      blocking: boolean   # true = must pass to proceed
+      criteria: string    # What must pass
+      status: enum        # pending | passed | failed
+    deliverables: [string]
+
+current_state:
+  description: "Active execution state for coordinator"
+  fields:
+    phase_id: string      # Reference to active phase
+    task_id: string       # Reference to active task
+    status: enum          # executing | waiting | blocked | gate_pending
+    blockers: [string]    # Current blocking issues
+    next_action: string   # What happens next
+    last_activity: datetime
+
+quality_gates:
+  description: "Gate definitions (referenced by phases)"
+  type: array
+  item_fields:
+    gate_id: string       # Reference ID (e.g., "build_phase1")
+    ref: string           # Link to quality-gate.schema.yaml definition
+
+specialist_routing:
+  description: "Task-to-agent routing rules"
+  type: array
+  item_fields:
+    pattern: regex        # Task description pattern match
+    agent: string         # Target specialist (@developer, etc.)
+    context_requirements: [string]  # What context to load
+
+# --- Example ---
+example:
+  meta:
+    name: "SaaS MVP"
+    created: "2025-01-15"
+    last_updated: "2025-01-20"
+    version: "1.2.0"
+    status: active
+  vision:
+    objective: "Subscription management platform for solopreneurs"
+    success_criteria:
+      - "User can sign up and subscribe"
+      - "Stripe integration handles payments"
+    constraints:
+      timeline: "Launch by Feb 1"
+      budget: "$0 (free tier only)"
+    foundation_manifest:
+      manifest_path: ".context/handoff-manifest.json"
+      summaries_dir: ".context/summaries/"
+      initialized: true
+      token_budget_total: 1200
+      documents:
+        prd: ".context/summaries/prd-summary.md"
+        vision: ".context/summaries/vision-summary.md"
+        icp: ".context/summaries/icp-summary.md"
+        brand: null
+  phases:
+    - id: foundation
+      name: "Foundation"
+      status: complete
+      objectives: ["Project setup", "Auth config"]
+      tasks:
+        - id: "1.1"
+          description: "Initialize Next.js project"
+          status: complete
+          assigned_to: "@developer"
+          estimate: "30m"
+          dependencies: []
+      gate:
+        type: build
+        blocking: true
+        criteria: "npm run build passes"
+        status: passed
+  current_state:
+    phase_id: "core-features"
+    task_id: "2.1"
+    status: executing
+    blockers: []
+    next_action: "Implement Stripe webhook handler"

@@ -1,0 +1,224 @@
+{
+  "$schema": "../../../project/schemas/quality-gate.schema.yaml",
+  "version": "1.0",
+  "name": "nodejs-saas",
+  "description": "Quality gates for Node.js SaaS applications with TypeScript, React/Next.js, and production-grade requirements",
+  "framework": "nodejs",
+  "gates": [
+    {
+      "name": "foundation-exit",
+      "description": "Gate at end of foundation phase - ensures clean codebase before implementation",
+      "phase": "foundation",
+      "trigger": "phase_exit",
+      "checks": [
+        {
+          "type": "lint",
+          "name": "ESLint Check",
+          "command": "npm run lint",
+          "severity": "blocking",
+          "timeout": 120,
+          "remediation": {
+            "auto_fix": "npm run lint:fix",
+            "manual_steps": [
+              "Review ESLint errors in the output",
+              "Run npm run lint:fix for auto-fixable issues",
+              "Manually fix remaining issues",
+              "Consider adjusting .eslintrc for project-specific rules"
+            ]
+          }
+        },
+        {
+          "type": "lint",
+          "name": "TypeScript Check",
+          "command": "npx tsc --noEmit",
+          "severity": "blocking",
+          "timeout": 180,
+          "remediation": {
+            "manual_steps": [
+              "Review TypeScript errors - these cannot be auto-fixed",
+              "Fix type annotations and imports",
+              "Ensure all dependencies have @types packages if needed",
+              "Run npx tsc --noEmit locally to verify fixes"
+            ]
+          }
+        },
+        {
+          "type": "security",
+          "name": "Dependency Audit",
+          "command": "npm audit --audit-level=high",
+          "severity": "blocking",
+          "timeout": 120,
+          "remediation": {
+            "auto_fix": "npm audit fix",
+            "manual_steps": [
+              "Run npm audit to see vulnerability details",
+              "Run npm audit fix for compatible updates",
+              "For breaking changes: npm audit fix --force (test thoroughly)",
+              "Review npm audit --json for detailed CVE information"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "implementation-exit",
+      "description": "Gate at end of implementation phase - ensures code quality and test coverage",
+      "phase": "implementation",
+      "trigger": "phase_exit",
+      "checks": [
+        {
+          "type": "build",
+          "name": "Production Build",
+          "command": "npm run build",
+          "severity": "blocking",
+          "timeout": 300,
+          "remediation": {
+            "manual_steps": [
+              "Check build output for compilation errors",
+              "Ensure all imports resolve correctly",
+              "Verify environment variables are defined",
+              "Check for circular dependencies"
+            ]
+          }
+        },
+        {
+          "type": "test",
+          "name": "Unit Tests",
+          "command": "npm test -- --coverage --passWithNoTests",
+          "severity": "blocking",
+          "timeout": 300,
+          "options": {
+            "coverage_threshold": 70
+          },
+          "remediation": {
+            "manual_steps": [
+              "Run npm test locally to see failing tests",
+              "Check test output for assertion failures",
+              "If coverage is low, add tests for uncovered code",
+              "Review coverage report: npm test -- --coverage"
+            ]
+          }
+        },
+        {
+          "type": "lint",
+          "name": "Code Style",
+          "command": "npm run lint && npx prettier --check .",
+          "severity": "warning",
+          "timeout": 120,
+          "remediation": {
+            "auto_fix": "npm run lint:fix && npx prettier --write .",
+            "manual_steps": [
+              "Run auto-fix commands above",
+              "Review remaining issues manually"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "integration-exit",
+      "description": "Gate at end of integration phase - full quality check before deployment prep",
+      "phase": "integration",
+      "trigger": "phase_exit",
+      "checks": [
+        {
+          "type": "build",
+          "name": "Production Build",
+          "command": "npm run build",
+          "severity": "blocking",
+          "timeout": 300
+        },
+        {
+          "type": "test",
+          "name": "Full Test Suite",
+          "command": "npm test -- --coverage",
+          "severity": "blocking",
+          "timeout": 600,
+          "options": {
+            "coverage_threshold": 75
+          }
+        },
+        {
+          "type": "test",
+          "name": "E2E Tests",
+          "command": "npm run test:e2e || echo 'No E2E tests configured'",
+          "severity": "warning",
+          "timeout": 600,
+          "remediation": {
+            "manual_steps": [
+              "Run E2E tests locally: npm run test:e2e",
+              "Check for flaky tests that may need retry logic",
+              "Ensure test environment is properly configured"
+            ]
+          }
+        },
+        {
+          "type": "security",
+          "name": "Security Audit",
+          "command": "npm audit --audit-level=moderate",
+          "severity": "blocking",
+          "timeout": 120
+        },
+        {
+          "type": "lint",
+          "name": "All Linters",
+          "command": "npm run lint && npx tsc --noEmit",
+          "severity": "blocking",
+          "timeout": 180
+        }
+      ]
+    },
+    {
+      "name": "pre-deploy",
+      "description": "Final gate before production deployment",
+      "phase": "deploy",
+      "trigger": "phase_entry",
+      "checks": [
+        {
+          "type": "build",
+          "name": "Production Build Verification",
+          "command": "npm run build",
+          "severity": "blocking",
+          "timeout": 300
+        },
+        {
+          "type": "test",
+          "name": "Smoke Tests",
+          "command": "npm test -- --testPathPattern=smoke",
+          "severity": "blocking",
+          "timeout": 180
+        },
+        {
+          "type": "security",
+          "name": "Critical Vulnerabilities",
+          "command": "npm audit --audit-level=critical",
+          "severity": "blocking",
+          "timeout": 120
+        },
+        {
+          "type": "review",
+          "name": "Deployment Approval",
+          "command": "echo 'Awaiting deployment approval'",
+          "severity": "blocking",
+          "options": {
+            "approval_required": true,
+            "approvers": ["tech-lead", "maintainer"]
+          },
+          "remediation": {
+            "manual_steps": [
+              "Request deployment approval from tech lead",
+              "Ensure all PR reviews are complete",
+              "Verify staging deployment was successful"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "global_options": {
+    "fail_fast": false,
+    "parallel_checks": false,
+    "report_format": "detailed",
+    "notification_channels": ["console", "progress.md"]
+  }
+}

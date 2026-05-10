@@ -1,0 +1,17 @@
+{
+  "_description": "Ultra-lean minimal-core MCP profile. Contains ONLY filesystem operations. Token footprint: ~3-5K.",
+  "_metadata": {
+    "profile_name": "minimal-core",
+    "purpose": "Fast local development, file operations only",
+    "estimated_tokens": "3-5K",
+    "created": "2025-11-28",
+    "version": "1.0",
+    "sprint": "Sprint 5 - MCP Context Optimization"
+  },
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-filesystem", "${HOME}/DevProjects"]
+    }
+  }
+}

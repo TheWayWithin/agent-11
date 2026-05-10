@@ -1,0 +1,267 @@
+# Template: SaaS MVP Project Plan
+# Version: 1.0
+# Compatible with: /bootstrap command
+# Purpose: Generate lean project plans for rapid MVP validation
+
+template:
+  type: saas-mvp
+  description: "Lean startup approach for rapid SaaS MVP validation"
+  target_audience: "Solo founders, small teams, rapid validation scenarios"
+  typical_timeline: "4-12 weeks"
+  philosophy: "Speed over polish, validate before scaling"
+
+defaults:
+  phase_count: 4
+  schema_version: "1.0"
+  quality_gates:
+    - build
+    - test
+    - lint
+  agent_distribution:
+    architect: 10
+    developer: 55
+    designer: 15
+    tester: 15
+    documenter: 5
+  context_preservation:
+    - file: project-plan.md
+      update_frequency: phase-start
+    - file: progress.md
+      update_frequency: daily
+    - file: handoff-notes.md
+      update_frequency: task-completion
+    - file: agent-context.md
+      update_frequency: phase-completion
+
+phase_templates:
+  - id: phase-1
+    name: "Foundation"
+    description: "Project setup, architecture decisions, core infrastructure"
+    typical_duration: "1-2 weeks"
+    typical_tasks:
+      - name: "Project scaffolding and repository setup"
+        agent: developer
+        priority: p0
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "Repository initialized with proper structure"
+          - "Development environment documented"
+          - "CI/CD pipeline configured"
+      - name: "Architecture documentation"
+        agent: architect
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Technology stack documented with rationale"
+          - "Data model defined"
+          - "API structure outlined"
+      - name: "Authentication system setup"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "User registration functional"
+          - "Login/logout working"
+          - "Password reset implemented"
+      - name: "Database schema implementation"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Core tables created"
+          - "Migrations configured"
+          - "Seed data for development"
+    deliverables:
+      - "architecture.md"
+      - "Working authentication"
+      - "Database schema"
+      - "CI/CD pipeline"
+    quality_gates:
+      - gate: build
+        command: "npm run build"
+        required: true
+      - gate: lint
+        command: "npm run lint"
+        required: true
+
+  - id: phase-2
+    name: "Core Features"
+    description: "MVP functionality that delivers primary value proposition"
+    typical_duration: "2-4 weeks"
+    typical_tasks:
+      - name: "Primary feature implementation"
+        agent: developer
+        priority: p0
+        estimated_effort: large
+        typical_acceptance_criteria:
+          - "Core user journey functional"
+          - "Data persists correctly"
+          - "Error states handled"
+      - name: "UI implementation for core flows"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Responsive design"
+          - "Accessible UI elements"
+          - "Loading states implemented"
+      - name: "API endpoints for core features"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "REST/GraphQL endpoints functional"
+          - "Input validation"
+          - "Proper error responses"
+      - name: "Core feature testing"
+        agent: tester
+        priority: p1
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Unit tests for business logic"
+          - "Integration tests for API"
+          - "E2E tests for critical paths"
+    deliverables:
+      - "Working MVP features"
+      - "API documentation"
+      - "Test suite"
+    quality_gates:
+      - gate: build
+        command: "npm run build"
+        required: true
+      - gate: test
+        command: "npm run test"
+        required: true
+      - gate: lint
+        command: "npm run lint"
+        required: true
+
+  - id: phase-3
+    name: "Polish & Integration"
+    description: "Payment integration, UX refinement, production readiness"
+    typical_duration: "1-3 weeks"
+    typical_tasks:
+      - name: "Payment/billing integration"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Stripe/payment provider connected"
+          - "Subscription flows working"
+          - "Webhook handlers implemented"
+      - name: "UI/UX polish"
+        agent: designer
+        priority: p1
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Consistent styling"
+          - "Smooth transitions"
+          - "Mobile responsiveness verified"
+      - name: "Error handling and edge cases"
+        agent: developer
+        priority: p1
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "Graceful error messages"
+          - "Retry logic for transient failures"
+          - "Logging configured"
+      - name: "Security review"
+        agent: tester
+        priority: p0
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "Input sanitization verified"
+          - "Authentication flows secure"
+          - "No exposed secrets"
+    deliverables:
+      - "Working payment system"
+      - "Polished UI"
+      - "Security checklist complete"
+    quality_gates:
+      - gate: build
+        command: "npm run build"
+        required: true
+      - gate: test
+        command: "npm run test"
+        required: true
+
+  - id: phase-4
+    name: "Launch"
+    description: "Deployment, monitoring, and initial user onboarding"
+    typical_duration: "1 week"
+    typical_tasks:
+      - name: "Production deployment"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Production environment configured"
+          - "DNS and SSL configured"
+          - "Environment variables set"
+      - name: "Monitoring and alerting setup"
+        agent: developer
+        priority: p1
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "Error tracking enabled"
+          - "Performance monitoring active"
+          - "Alert thresholds configured"
+      - name: "User documentation"
+        agent: documenter
+        priority: p1
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "Getting started guide"
+          - "FAQ section"
+          - "Contact/support information"
+      - name: "Launch verification"
+        agent: tester
+        priority: p0
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "Production smoke tests pass"
+          - "Critical user journeys verified"
+          - "Payment flows confirmed"
+    deliverables:
+      - "Live production application"
+      - "Monitoring dashboard"
+      - "User documentation"
+    quality_gates:
+      - gate: build
+        command: "npm run build"
+        required: true
+      - gate: test
+        command: "npm run test"
+        required: true
+
+risk_templates:
+  - risk: "Scope creep delays MVP launch"
+    probability: high
+    impact: high
+    mitigation: "Strict MVP scope definition, defer nice-to-haves"
+  - risk: "Technical debt accumulation"
+    probability: medium
+    impact: medium
+    mitigation: "Document shortcuts taken, plan refactoring sprint"
+  - risk: "Authentication/security vulnerabilities"
+    probability: medium
+    impact: high
+    mitigation: "Use established auth libraries, security review before launch"
+  - risk: "Payment integration issues"
+    probability: medium
+    impact: high
+    mitigation: "Test with sandbox/test mode extensively, webhook retry logic"
+
+customization_hints:
+  - "Extend Phase 2 duration for complex domain logic"
+  - "Add Phase 0 for extensive research/discovery if problem space unclear"
+  - "Reduce designer tasks if using established design system"
+  - "Add analytics setup task if data-driven decisions critical"
+  - "Consider splitting Phase 3 if payment integration is complex"
+  - "Skip payment phase entirely for freemium MVP validation"
+
+anti_patterns:
+  - "Adding enterprise features (SSO, teams) before validation"
+  - "Over-engineering infrastructure before product-market fit"
+  - "Comprehensive test coverage at expense of shipping speed"
+  - "Perfect UI polish before core value validation"

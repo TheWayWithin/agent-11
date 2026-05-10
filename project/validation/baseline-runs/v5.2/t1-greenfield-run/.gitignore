@@ -1,0 +1,15 @@
+# Node
+node_modules/
+npm-debug.log*
+
+# Environment
+.env
+
+# SQLite local-dev databases
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+
+# OS
+.DS_Store

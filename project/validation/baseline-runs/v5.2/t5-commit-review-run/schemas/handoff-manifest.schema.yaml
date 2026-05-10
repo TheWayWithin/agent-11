@@ -1,0 +1,315 @@
+# handoff-manifest.schema.yaml
+# BOS-AI to Agent-11 Foundation Document Handoff
+# Version: 2.0.0
+# Purpose: Track foundation documents and their structured YAML extractions
+#
+# BREAKING CHANGE from v1.0:
+# - Removed token_budget approach (caused 50%+ data loss)
+# - Replaced prose summaries with structured YAML extractions
+# - Output directory: .context/structured/ (was .context/summaries/)
+# - Extractions preserve 100% of actionable information
+
+---
+$schema: "http://json-schema.org/draft-07/schema#"
+type: object
+description: "Manifest for foundation document handoff with structured extractions"
+
+required:
+  - version
+  - generated_at
+  - source_directory
+  - output_directory
+  - documents
+  - validation
+
+properties:
+  version:
+    type: string
+    description: "Manifest schema version"
+    const: "2.0.0"
+
+  generated_at:
+    type: string
+    format: date-time
+    description: "ISO 8601 timestamp of manifest generation"
+
+  source_directory:
+    type: string
+    description: "Directory containing foundation documents"
+    default: "documents/foundations/"
+
+  output_directory:
+    type: string
+    description: "Directory for structured YAML extractions"
+    default: ".context/structured/"
+
+  documents:
+    type: object
+    description: "Foundation documents by category"
+    properties:
+      prd:
+        $ref: "#/definitions/document_entry"
+      vision:
+        $ref: "#/definitions/document_entry"
+      icp:
+        $ref: "#/definitions/document_entry"
+      brand:
+        $ref: "#/definitions/document_entry"
+      marketing:
+        $ref: "#/definitions/document_entry"
+
+  validation:
+    type: object
+    description: "Validation status and requirements"
+    properties:
+      required_present:
+        type: array
+        items:
+          type: string
+        description: "Categories that must be present"
+        default: ["prd", "vision"]
+      advisable_present:
+        type: array
+        items:
+          type: string
+        description: "Categories that should be present"
+        default: ["icp", "brand", "marketing"]
+      missing_required:
+        type: array
+        items:
+          type: string
+        description: "Required categories that are missing"
+      missing_advisable:
+        type: array
+        items:
+          type: string
+        description: "Advisable categories that are missing"
+      extraction_complete:
+        type: boolean
+        description: "True if all present documents have complete extractions"
+
+  extraction:
+    type: object
+    description: "Extraction methodology metadata"
+    properties:
+      approach:
+        type: string
+        const: "structured_yaml"
+        description: "Extraction approach (always structured_yaml in v2.0)"
+      schemas_used:
+        type: array
+        items:
+          type: string
+        description: "Schema files used for extraction"
+
+definitions:
+  document_entry:
+    type: object
+    properties:
+      source:
+        type: string
+        description: "Path to source document"
+      checksum:
+        type: string
+        description: "SHA256 checksum of source document"
+      structured_path:
+        type: string
+        description: "Path to structured YAML extraction"
+      word_count:
+        type: integer
+        description: "Word count of source document"
+      status:
+        type: string
+        enum: ["present", "missing"]
+        description: "Whether source document exists"
+      extraction_status:
+        type: string
+        enum: ["complete", "partial", "failed", "pending"]
+        description: "Status of structured extraction"
+      schema_used:
+        type: string
+        description: "Schema file used for this extraction"
+      extracted_at:
+        type: string
+        format: date-time
+        description: "When extraction was performed"
+
+# --- Document Categories ---
+document_categories:
+  prd:
+    description: "Product Requirements Document"
+    schema: "foundation-prd.schema.yaml"
+    provides:
+      - "product definition"
+      - "features with priorities"
+      - "tech stack"
+      - "success metrics"
+      - "constraints"
+      - "pricing"
+    required: true
+
+  vision:
+    description: "Vision, Mission, and Strategic Direction"
+    schema: "foundation-vision.schema.yaml"
+    provides:
+      - "vision statement"
+      - "mission statement"
+      - "hedgehog concept"
+      - "value proposition"
+      - "goals (year 1/3/5)"
+      - "core values"
+    required: true
+
+  icp:
+    description: "Ideal Customer Profile and Personas"
+    schema: "foundation-icp.schema.yaml"
+    provides:
+      - "primary profile"
+      - "detailed personas"
+      - "pain points by severity"
+      - "jobs to be done"
+      - "buying triggers"
+      - "anti-personas"
+    required: false
+
+  brand:
+    description: "Brand Guidelines and Design System"
+    schema: "foundation-brand.schema.yaml"
+    provides:
+      - "brand identity"
+      - "complete color palette (hex/rgb)"
+      - "typography (fonts, sizes, weights)"
+      - "spacing system"
+      - "component specifications"
+      - "dark mode settings"
+    required: false
+
+  marketing:
+    description: "Marketing Positioning and Strategy"
+    schema: "foundation-marketing.schema.yaml"
+    provides:
+      - "market positioning"
+      - "messaging framework"
+      - "value propositions"
+      - "competitive differentiation"
+      - "content themes"
+      - "launch strategy"
+    required: false
+
+# --- Validation Rules ---
+validation_rules:
+  required_documents:
+    - category: prd
+      fallback_filenames:
+        - "prd.md"
+        - "requirements.md"
+        - "product-requirements.md"
+    - category: vision
+      fallback_filenames:
+        - "vision-mission.md"
+        - "vision.md"
+        - "strategic-plan.md"
+
+  advisable_documents:
+    - category: icp
+      filenames:
+        - "client-success-blueprint.md"
+        - "icp.md"
+        - "personas.md"
+    - category: brand
+      filenames:
+        - "brand-style-guidelines.md"
+        - "brand.md"
+        - "style-guide.md"
+    - category: marketing
+      filenames:
+        - "marketing-bible.md"
+        - "marketing.md"
+        - "positioning.md"
+
+# --- Example Manifest ---
+example:
+  version: "2.0.0"
+  generated_at: "2026-01-01T10:30:00Z"
+  source_directory: "documents/foundations/"
+  output_directory: ".context/structured/"
+
+  documents:
+    prd:
+      source: "documents/foundations/Product Requirements Document.md"
+      checksum: "abc123def456..."
+      structured_path: ".context/structured/prd.yaml"
+      word_count: 4500
+      status: "present"
+      extraction_status: "complete"
+      schema_used: "foundation-prd.schema.yaml"
+      extracted_at: "2026-01-01T10:30:00Z"
+
+    vision:
+      source: "documents/foundations/Vision and Mission.md"
+      checksum: "def456ghi789..."
+      structured_path: ".context/structured/vision.yaml"
+      word_count: 2200
+      status: "present"
+      extraction_status: "complete"
+      schema_used: "foundation-vision.schema.yaml"
+      extracted_at: "2026-01-01T10:30:00Z"
+
+    icp:
+      source: "documents/foundations/Client Success Blueprint.md"
+      checksum: "ghi789jkl012..."
+      structured_path: ".context/structured/icp.yaml"
+      word_count: 3800
+      status: "present"
+      extraction_status: "complete"
+      schema_used: "foundation-icp.schema.yaml"
+      extracted_at: "2026-01-01T10:30:00Z"
+
+    brand:
+      source: "documents/foundations/Brand Style Guide.md"
+      checksum: "jkl012mno345..."
+      structured_path: ".context/structured/brand.yaml"
+      word_count: 1500
+      status: "present"
+      extraction_status: "complete"
+      schema_used: "foundation-brand.schema.yaml"
+      extracted_at: "2026-01-01T10:30:00Z"
+
+    marketing:
+      source: "documents/foundations/Marketing Bible.md"
+      checksum: "mno345pqr678..."
+      structured_path: ".context/structured/marketing.yaml"
+      word_count: 2800
+      status: "present"
+      extraction_status: "complete"
+      schema_used: "foundation-marketing.schema.yaml"
+      extracted_at: "2026-01-01T10:30:00Z"
+
+  validation:
+    required_present: ["prd", "vision"]
+    advisable_present: ["icp", "brand", "marketing"]
+    missing_required: []
+    missing_advisable: []
+    extraction_complete: true
+
+  extraction:
+    approach: "structured_yaml"
+    schemas_used:
+      - "foundation-prd.schema.yaml"
+      - "foundation-vision.schema.yaml"
+      - "foundation-icp.schema.yaml"
+      - "foundation-brand.schema.yaml"
+      - "foundation-marketing.schema.yaml"
+
+# --- Migration from v1.0 ---
+migration_notes:
+  from_v1:
+    - "Delete .context/summaries/ directory (token-budgeted approach)"
+    - "Run /foundations init to create new .context/structured/ extractions"
+    - "Old handoff-manifest.json replaced by handoff-manifest.yaml"
+    - "Agents now load YAML sections directly instead of parsing prose"
+  breaking_changes:
+    - "summary_path → structured_path"
+    - "token_budget field removed"
+    - "Output format: prose → structured YAML"
+    - "Manifest format: JSON → YAML"
