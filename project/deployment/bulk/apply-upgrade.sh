@@ -116,7 +116,9 @@ audit_staging() {
   user_files_staged=$(git diff --cached --name-only | (grep -cE "^(progress\.md|project-plan\.md|CLAUDE\.md)$" || true))
 
   if [ "$staged_count" = "0" ]; then echo "no-changes"; return; fi
-  if [ "$staged_count" -lt 30 ] || [ "$staged_count" -gt 250 ]; then echo "out-of-range:$staged_count"; return; fi
+  # Floor 5: any meaningful framework change touches more than a few files
+  # Ceiling 250: original v5->v6 migration upper bound, retained as safety
+  if [ "$staged_count" -lt 5 ] || [ "$staged_count" -gt 250 ]; then echo "out-of-range:$staged_count"; return; fi
   if [ "$backups_staged" != "0" ]; then echo "backups-staged:$backups_staged"; return; fi
   if [ "$user_files_staged" != "0" ]; then echo "user-files-staged:$user_files_staged"; return; fi
   echo "ok:$staged_count"
