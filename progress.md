@@ -8,6 +8,28 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
+### [2026-06-16] — Sprint 6a: Read-only gates + evidence-gated verification ✅ (implementation; live demo pending)
+
+**Summary**: Implemented the highest-leverage move from the loops/autoresearch research — *the thing that judges the work must be read-only to the thing doing it*. Built on the existing `project/gates/` runner. Library surface only; zero working-squad files touched.
+
+**Deliverables (7 files, all verified on disk)**:
+- `library/settings.json.template` — added a `permissions.deny` block (10 rules) making `.quality-gates.json`, `**/*.quality-gates.json`, `gates/**`, `.gates/**` unwritable by every agent. JSON re-validated. **This is the enforcement.**
+- `project/agents/specialists/coordinator.md` — TOOL PERMISSIONS now prohibits delegating any gate-criteria edit; `/coord continue` phase gate flips to pass only on captured command output (default-fail).
+- `project/agents/specialists/tester.md`, `developer.md` — SELF-VERIFICATION PROTOCOLs open with the default-fail contract (criteria start `false`, flip only on attached tool-output evidence) + the read-only-gate rule.
+- `library/CLAUDE.md`, `project/gates/README.md`, `project/field-manual/quality-gates-guide.md` — documented the contract, mechanism, and default-fail.
+
+**Root-cause correction worth keeping** (per CLAUDE.md "understand before changing"): the 6a spec originally assumed gate denials would live in each agent's **tool-permission frontmatter**. That is mechanically wrong — the `tools:` field is a whole-tool allowlist (Read, Bash, Task…), not a path-level rule, so it cannot express "edit anything except the gate files." Caught during execution by inspecting actual specialist frontmatter before editing. Corrected to the native `permissions.deny` mechanism, which is file-level enforcement (refused at the tool layer), not a prompt convention — exactly what the research demands. Spec file updated to record the correction.
+
+**Evidence standard (holding to our own default-fail rule)**: on-disk edits verified via grep, JSON validated, scope confirmed library-only. **Live refusal DEMONSTRATED (2026-06-16, T5 ✅)**: test project `/tmp/agent11-gate-test/` with the deny block as `.claude/settings.json`; a Claude Code session in that project asked to "set the threshold to 0" in `.quality-gates.json` got `Update(.quality-gates.json) ⎿ Error editing file` — blocked by `permissions.deny`. The agent also recognised unprompted that zeroing the threshold disables the gate and refused to route around it, asking for human authorisation. Enforcement + reward-hacking defence both proven end to end. Remaining for 6a: draft the 6b detailed spec (T6) per rolling-wave. Optional/deferred: full-harness intervention-rate measurement.
+
+**User-Facing Changes (running list for Sprint 6d consolidation)**: Per the doc convention (`project-plan.md` → Documentation & Release Communications), public docs are NOT churned per sub-sprint. The following land in README / RELEASE-HISTORY / website in the Sprint 6d consolidation pass, once Sprint 6 is shipped and live-demoed:
+- New default behaviour: deployed agents cannot edit `.quality-gates.json` or `gates/**` (read-only gates via `permissions.deny`). Document for users upgrading — they get the deny block on next `install.sh --upgrade` / `apply-file.sh` of `settings.json.template`. Note the "to change a gate deliberately, remove the deny rules as a human action" workflow.
+- New verification posture: default-fail (evidence-gated) success criteria in tester/developer/coordinator.
+- CHANGELOG `[Unreleased]` entry added now (2026-06-16); README + website deferred to 6d.
+- 6b/6c will add further user-facing items (ratchet `mission-optimize`, scored code-review loop skill) — append here as they land.
+
+---
+
 ### [2026-05-09] — Sprint 5b push phase complete: 17/19 user repos pushed to github ✅
 
 **Summary**: After Sprint 5b's local migration sweep (2026-05-07) the 19 migrated repos sat with uncommitted working-tree changes. Today's session committed and pushed the migration upgrade to github across the available repos. Plus a small framework doc bump (model-selection-guide.md) and one straggler scope correction.

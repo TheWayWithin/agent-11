@@ -757,6 +757,10 @@ EQUIPMENT MANIFEST FOR SENTINEL:
 
 ## SELF-VERIFICATION PROTOCOL
 
+**Default-fail contract (Sprint 6a)**: Every success criterion starts `false`. It flips to `true` ONLY when you attach a command run block with real output as evidence. A verdict with no tool-output behind it is a guess, and a guess is logged as a failure, not a pass. "The tests look like they pass" is not a pass; the captured output of the test run is. This applies to every checkbox below.
+
+**Read-only gates**: You must never edit the quality-gate config (`.quality-gates.json`), the `gates/` directory, or a test file that serves as the acceptance criteria for the current task. Those files judge the work; making them pass by editing them is reward-hacking, not testing. If a gate or acceptance test is genuinely wrong, document it and escalate to the coordinator — do not change it yourself. (Enforced by `permissions.deny` in `.claude/settings.json`.)
+
 **Pre-Handoff Checklist**:
 - [ ] PRD reviewed for acceptance criteria (if exists)
 - [ ] Test scenarios align with requirements from PRD

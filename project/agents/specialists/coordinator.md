@@ -246,6 +246,11 @@ Foundation documents (ideation.md, architecture.md, PRD, product-specs.md) and c
 - **Write limited to tracking**: project-plan.md, progress.md, agent-context.md
 - **Pure delegation model**: All specialist work delegated, coordinator orchestrates only
 - **Task tool is primary**: 90% of coordinator work is delegation via Task
+
+**Read-only gates (Sprint 6a) — NEVER delegate an edit to the criteria that judge the work**:
+- The quality-gate config (`.quality-gates.json`), the `gates/` directory, and any test that serves as a task's acceptance criteria are **read-only to every agent**, enforced by `permissions.deny` in `.claude/settings.json`.
+- NEVER write a delegation whose effect is to loosen, skip, or rewrite a gate or acceptance test so a phase will pass. An agent that can edit its own success criteria will pass by editing them.
+- If a specialist reports that a gate or acceptance test is genuinely wrong, do not delegate the fix as part of the same task that the gate judges. Surface it to the user, or open a separate, explicitly-scoped task to revise the criterion as a deliberate decision — never as a side effect of trying to make a phase go green.
 **Tool Permission Delegation Protocol**:
 Before delegating, verify specialist has required tools:
 1. **Check specialist tool set**: Ensure specialist can execute task with permitted tools
@@ -528,8 +533,14 @@ WHILE NOT stopping_condition:
     2. FIND next incomplete task in active phase
     3. IF no incomplete tasks in phase:
         a. RUN phase gate verification
-        b. IF gate passes: transition to next phase
-        c. IF gate fails: STOP with gate failure report
+        b. IF gate passes ON EVIDENCE (real command output, default-fail):
+              transition to next phase
+        c. IF gate fails OR pass is asserted without tool-output evidence:
+              STOP with gate failure report
+        # A phase gate flips from fail to pass only on captured command
+        # output. A specialist asserting "done" with no evidence is a
+        # gate FAILURE, not a pass. Never edit/delegate-an-edit to the
+        # gate config or acceptance tests to make this transition happen.
     4. LOAD relevant skills for task
     5. DELEGATE to appropriate specialist
     6. AWAIT completion

@@ -1,12 +1,33 @@
-# Handoff Notes — Agent-11 (Bulk-ops toolkit shipped)
+# Handoff Notes — Agent-11 (Sprint 6a implemented)
 
-**Last Updated**: 2026-05-10
-**From**: Bulk-ops toolkit session — productised the Sprint 5b patterns into reusable scripts; dogfood-tested across 19 repos
-**To**: Next session — open threads only (no active sprint queued)
+**Last Updated**: 2026-06-16
+**From**: Sprint 6a session — read-only gates + evidence-gated verification implemented (7 library files), built on existing `project/gates/`
+**To**: Next session — finish Sprint 6a closing tasks, then Sprint 6b
 
 ---
 
-## Bulk-ops toolkit shipped 2026-05-10
+## Sprint 6a current state (2026-06-16)
+
+**Done + verified on disk** (uncommitted, NOT pushed — awaiting Jamie's review):
+- `library/settings.json.template` — `permissions.deny` block (enforcement). JSON valid.
+- `coordinator.md`, `tester.md`, `developer.md` — default-fail contract + read-only-gate rule.
+- `library/CLAUDE.md`, `project/gates/README.md`, `quality-gates-guide.md` — docs.
+- Sprint 6 registered in `project-plan.md`; spec files in `sprints/sprint-6{a,b,c}-*.md`.
+
+**Mechanism note**: enforcement is `permissions.deny` in settings (file-level, native), NOT agent frontmatter — the frontmatter `tools:` field is a whole-tool allowlist and can't do path rules. See progress.md 2026-06-16 entry for the full root-cause.
+
+**6a live demo (T5) ✅ DONE 2026-06-16**: test project `/tmp/agent11-gate-test/` (deny block as `.claude/settings.json`); a Claude session there was blocked from editing `.quality-gates.json` (`Error editing file`) and refused to route around it. Enforcement proven end to end. Evidence logged in progress.md + sprint-6a spec.
+
+**Remaining for 6a**:
+- **T6**: draft the Sprint 6b detailed spec (ratchet `mission-optimize` + scored code-review loop), review with Jamie. Rolling-wave rule: 6a isn't formally complete until 6b's spec is approved.
+- Optional: full-harness intervention-rate measurement (deferred to Sprint 6 close, non-blocking).
+- Test harness `/tmp/agent11-gate-test/` can be deleted once no longer needed.
+
+**Not committed**: per Jamie's standing rule, nothing committed/pushed without explicit confirmation.
+
+---
+
+## (Prior) Bulk-ops toolkit shipped 2026-05-10
 
 The Sprint 5b bulk-migration capability is now a permanent feature, not a one-off scramble.
 

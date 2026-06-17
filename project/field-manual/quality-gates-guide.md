@@ -7,6 +7,13 @@
 
 Quality Gates are automated checks that run at phase transitions to ensure code quality, security, and correctness before proceeding to the next phase. They prevent shipping broken code and enforce consistent standards across your project.
 
+## Read-only and default-fail (Sprint 6a)
+
+Two rules make gates trustworthy:
+
+1. **Gates are read-only to agents.** `.quality-gates.json`, the `gates/` directory, and any test that serves as a task's acceptance criteria are unwritable by every agent, enforced by `permissions.deny` in `.claude/settings.json`. The reason is reward-hacking: an agent that can edit the threshold it is judged against will eventually lower it instead of doing the work. To change a gate on purpose, edit it as a deliberate human action with the deny rules temporarily removed.
+2. **Default-fail.** Every check starts failing and flips to pass only on captured command output. A pass asserted without tool-output evidence ("the build looks fine") is treated as a failure, not a pass.
+
 ## Quick Start
 
 ### 1. Choose a Template

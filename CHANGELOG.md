@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Read-only quality gates (Sprint 6a)** — the criteria that judge an agent's work are now unwritable by that agent. `library/settings.json.template` ships a `permissions.deny` block making `.quality-gates.json` and any `gates/` directory read-only to every deployed agent, enforced at the tool layer (not a prompt convention). Stops the reward-hacking failure where an agent loosens a threshold or rewrites a failing test instead of doing the work. Paired with a **default-fail verification contract** in tester, developer, and coordinator: every success criterion starts failing and flips to pass only on captured command output — an asserted "done" with no evidence is treated as a failure. _(Implementation landed; full public README/website write-up deferred to the Sprint 6 consolidation pass.)_
 - **Bulk-ops toolkit** at `project/deployment/bulk/` for users running AGENT-11 across multiple repos. Three operations, tier-aware, registry-driven:
   - `audit.sh` — read-only fleet status (v5 markers, library drift, branch, uncommitted count) per repo
   - `apply-file.sh` — deploy one library file across the fleet, with stash → pull-rebase → push fallback for divergent remotes. Idempotent — re-running with the same source has no effect

@@ -91,6 +91,17 @@ The v6.0 evolution is delivered as **8 sub-sprints under the "Sprint 4" umbrella
 | **5a.1** | Subprocess advisory cleanup (v6.1.1) | Suppress stale "Manual merge recommended" warning when migrate.sh runs under install.sh; reword standalone path | ✅ Complete (2026-05-07, tag `v6.1.1`) |
 | **5b** | Bulk migration of priority repos | Dry-run sweep + real run + per-repo verification across 19 user repos (17 priority + ASMGE + SoloCMD); commit + push migration to github | ✅ Complete (2026-05-09) — 17/19 pushed to github, 2/19 local-only (no remote configured: Socrates, SoloCMD), 3 deferred (mcp-7, mcp-11, test-project) |
 
+### Sprint 6 — Loop Discipline & Read-Only Verification (umbrella → v6.2.0)
+
+Adopts the converged principle from the loops/autoresearch research (`knowledge/Claude agentic loops.md`, `knowledge/Karpathy autoresearch.md`): **the thing that judges the work must be read-only to the thing doing it.** Library surface only. Sequenced behind V&M priorities — bounded, deliberate, watched.
+
+| Sprint | Major Feature | Primary Outcome | Status |
+|--------|---------------|-----------------|--------|
+| **6a** | Read-only gates + evidence-gated verification | Gate files (`.quality-gates.json`, `gates/**`) made unwritable by every agent via `permissions.deny` in `library/settings.json.template`; default-fail verification contract in tester/developer/coordinator (criteria start `false`, flip only on attached tool-output evidence); coordinator refuses gate-edit delegation | ✅ Implemented + live-demoed (2026-06-16). 7 files verified on disk; refusal proven in test project (agent blocked from editing `.quality-gates.json` by `permissions.deny`). Remaining: 6b detailed spec (T6) to formally close per rolling-wave |
+| **6b** | Ratchet loops | `mission-optimize` rewritten as the Karpathy ratchet (worktree → noise-floor baseline → keep-or-revert → log → caps); scored code-review loop skill (read-only critic + read-write fixer, capped, evidence-gated, diff <1000 lines). First run watched, one repo, 10 experiments, nothing auto-merged | Outline only (`sprints/sprint-6b-ratchet-loops.md`) |
+| **6c** | Coordinator phase-gated meta-loop | Convergence conditions over fixed counts; error budget per phase with escalation; condensed subagent returns; externalised state as recovery point | Outline only (`sprints/sprint-6c-meta-loop.md`) |
+| **6d** | Consolidation & public comms | Single consolidated update of README, CHANGELOG (finalise `[Unreleased]` → v6.2.0), RELEASE-HISTORY, upgrade docs, and the `agent-11-website` repo — reading the User-Facing Changes running list from progress.md. Gated until 6a is live-demoed and 6b/6c shipped | Outline only (`sprints/sprint-6d-consolidation-comms.md`) |
+
 ---
 
 ## Rolling Wave Protocol

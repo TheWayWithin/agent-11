@@ -1,8 +1,23 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "_comment": "AGENT-11 default Claude Code settings. Hooks below are advisory by default — they run linters/typecheckers and output results, but do not block edits. To promote a hook to blocking, change `|| true` at the end of its command to `|| exit 2`. To disable a hook entirely, remove its entry from the array.",
+  "_comment_permissions": "Read-only gates (Sprint 6a): an agent must not edit the criteria that judge its own work. The deny rules below make the quality-gate config and any gates/ directory unwritable by every agent, so a passing gate means the work was done, not that the threshold was loosened. To intentionally change a gate, edit the file as a deliberate human action with these rules temporarily removed; never let an agent do it mid-mission.",
   "env": {
     "ENABLE_TOOL_SEARCH": "auto"
+  },
+  "permissions": {
+    "deny": [
+      "Edit(.quality-gates.json)",
+      "Write(.quality-gates.json)",
+      "MultiEdit(.quality-gates.json)",
+      "Edit(**/*.quality-gates.json)",
+      "Write(**/*.quality-gates.json)",
+      "Edit(gates/**)",
+      "Write(gates/**)",
+      "MultiEdit(gates/**)",
+      "Edit(.gates/**)",
+      "Write(.gates/**)"
+    ]
   },
   "hooks": {
     "PostToolUse": [

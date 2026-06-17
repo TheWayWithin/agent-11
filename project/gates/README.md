@@ -18,6 +18,15 @@ Phase 2: Core Implementation
 Phase 3: Integration
 ```
 
+## Read-only contract (Sprint 6a)
+
+Gates judge the work, so they must be read-only to the agents doing the work. An agent that can edit its own success criteria will eventually pass by editing them, not by doing the work (reward-hacking).
+
+- **What is read-only**: `.quality-gates.json`, this `gates/` directory, and any test that serves as a task's acceptance criteria.
+- **How it is enforced**: `permissions.deny` rules in `.claude/settings.json` (shipped via `library/settings.json.template`). The Edit/Write is refused at the tool layer — not a prompt convention.
+- **Default-fail**: every gate check starts failing and flips to pass only on captured command output. An asserted pass with no evidence is treated as a failure.
+- **Changing a gate deliberately**: edit the config as a human action with the deny rules temporarily removed. Never let an agent revise a gate as a side effect of making a phase pass.
+
 ## Gate Types
 
 | Gate Type | Purpose | Blocking | Example Command |

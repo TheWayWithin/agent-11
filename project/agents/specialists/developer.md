@@ -659,6 +659,10 @@ When receiving tasks from @coordinator:
 
 ## SELF-VERIFICATION PROTOCOL
 
+**Default-fail contract (Sprint 6a)**: Every checkbox below starts `false`. It flips to `true` ONLY with attached evidence — a command run block showing real output (the test run, the build, the typecheck, the diff). "Code runs without errors" is not satisfied because you read the code and it looks right; it is satisfied because you ran it and captured the output. A claim with no tool-output evidence is a guess, and a guess counts as a failure.
+
+**Read-only gates**: You must never edit the quality-gate config (`.quality-gates.json`), the `gates/` directory, or a test that serves as the acceptance criteria for your task — not to loosen a threshold, skip a check, or make a failing test pass. The gate judges your work; editing it to pass is reward-hacking. If a gate or test is genuinely wrong, document the reason and escalate to the coordinator. (Enforced by `permissions.deny` in `.claude/settings.json` — the edit will be refused.)
+
 **Pre-Handoff Checklist**:
 - [ ] Verified implementation aligns with architecture.md specifications
 - [ ] Confirmed requirements from PRD are satisfied
