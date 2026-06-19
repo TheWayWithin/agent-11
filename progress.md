@@ -8,6 +8,30 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
+### [2026-06-19] — Sprint 6b: Ratchet loops ✅ (T1–T4, T6 implemented; T5 watched run staged)
+
+**Summary**: Built the loop capability the research describes, on the 6a read-only-gate foundation. Two deliverables landed: `mission-optimize` rewritten as the Karpathy ratchet, and a new `code-review-loop` skill (the canonical scored critic→fixer→re-audit loop). Both depend on 6a — the metric/gate/critic that judges the work is read-only to the agent doing it. Library surface only; zero working-squad files touched.
+
+**Deliverables (verified on disk)**:
+- `project/missions/mission-optimize.md` — rewritten (augment-not-gut). Kept a tight analysis front-end (Phases 1–2: pick ONE surface + ONE cheap metric command), replaced the vague old phases 3–6 with the ratchet execution core (Phase 3: worktree → median-of-3 noise-floor baseline → one change on named surface → re-measure → keep-if-better-else-hard-revert → JSONL log → caps → escalation) and a human-merge phase (Phase 4). Read-only set, caps table, watched-first-run rule, honest caveats embedded. 33 ratchet markers confirmed.
+- `project/skills/code-review-loop/SKILL.md` (new, 7.5KB) — read-only critic (deterministic-first; gate/test score preferred, LLM-critic fallback) → read-write fixer (named surface only) → re-audit, converge on two clean rounds or cap. Two-roles table, `.loops/` log schema, caps, exit-criteria table, four anti-patterns. Schema-conformant frontmatter.
+- `project/field-manual/loop-discipline-guide.md` (new) — the five-gate "loop or not" test, ratchet + scored-loop mechanics, watched-first-run rule, cost guardrails, honest limits (Goodhart, greedy search, correlated judges).
+- `templates/mission-optimize-input-template.md` (new) — names surface / metric / baseline / caps / read-only set / watched-run before a run.
+- `project/deployment/scripts/install.sh` — registered `code-review-loop` in `skill_dirs`, plus the new guide and template in the enumerated `field_manual_files` / `template_files` arrays so they deploy in remote mode. `install.sh.sha256` regenerated (`af254f94…`); `bash -n` syntax OK; checksum MATCH verified.
+- `sprints/sprint-6c-meta-loop.md` — promoted outline → detailed spec (T6 closing task).
+
+**Decision held from spec**: augment `mission-optimize`, don't gut it (Jamie-confirmed 2026-06-16). Deterministic-critic-first. Converge on two clean rounds. `.loops/<name>.log` JSONL. Caps: 10 attempts / 1h / 1000-line diff / token ceiling. No auto-merge — every kept change is a human-merged hypothesis.
+
+**T5 (watched validation run) deliberately NOT auto-run**: it requires Jamie present on a real repo (AISearchArena candidate), one worktree, up to 10 experiments, nothing merged automatically. It produces the first token-cost-per-converged-loop number, which seeds the 6c error budget. Staged, pending a watched block.
+
+**User-Facing Changes (running list for Sprint 6d consolidation)** — append to the 6a list:
+- `mission-optimize` is now a metric-driven ratchet (worktree-isolated, keep-or-revert, logged, capped) instead of a 6-phase profiling sweep. Document the new `/coord optimize <surface> "<metric-command>"` shape.
+- New deployable skill `code-review-loop` (scored, converge-or-cap, read-only critic / read-write fixer).
+- New field-manual page `loop-discipline-guide.md` + `mission-optimize-input-template.md`.
+- Both new files deploy on next `install.sh --upgrade`.
+
+---
+
 ### [2026-06-16] — Sprint 6a: Read-only gates + evidence-gated verification ✅ (implementation; live demo pending)
 
 **Summary**: Implemented the highest-leverage move from the loops/autoresearch research — *the thing that judges the work must be read-only to the thing doing it*. Built on the existing `project/gates/` runner. Library surface only; zero working-squad files touched.

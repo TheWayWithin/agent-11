@@ -3,7 +3,7 @@
 **Part of**: Sprint 6 — Loop Discipline & Read-Only Verification (umbrella → v6.2.0)
 **Predecessor**: Sprint 6a — Read-only gates ✅ (implemented + live-demoed 2026-06-16)
 **Successor**: Sprint 6c — Coordinator phase-gated meta-loop
-**Status**: Detailed spec drafted 2026-06-16. Ready for execution on Jamie's approval.
+**Status**: Implemented 2026-06-19 (T1–T4, T6 done + verified). T5 watched run staged, pending Jamie.
 **Target release**: folds into **v6.2.0** with the rest of Sprint 6.
 
 ---
@@ -88,29 +88,38 @@ nothing yet running behind it.
 
 ## Tasks
 
-### T1. Rewrite `mission-optimize.md` execution core as the ratchet
-Augment-not-gut per decision 1. Front-end picks target + metric; core runs the ratchet with
-worktree isolation, median-of-3 noise floor, keep-or-revert, log, caps, escalation triggers.
+### T1. Rewrite `mission-optimize.md` execution core as the ratchet — ✅ DONE (2026-06-19)
+Augment-not-gut per decision 1. Front-end (Phases 1–2) picks target + metric; execution core
+(Phase 3) runs the ratchet with worktree isolation, median-of-3 noise floor, keep-or-revert,
+JSONL log, caps table, escalation triggers; Phase 4 is human-merge of kept hypotheses. Read-only
+set + watched-first-run rule embedded. 33 ratchet markers verified in file.
 
-### T2. Build the `code-review-loop` skill
-Read-only critic (deterministic-first) → read-write fixer addressing only raised issues →
-re-audit → converge on two clean rounds or cap. Evidence-gated findings, diff <1000 lines,
-tokens logged to `.loops/`.
+### T2. Build the `code-review-loop` skill — ✅ DONE (2026-06-19)
+`project/skills/code-review-loop/SKILL.md` created (7.5KB). Read-only critic (deterministic-
+first) → read-write fixer (surface only) → re-audit → converge on two clean rounds or cap.
+Two-roles table, log schema, caps, exit-criteria table, anti-patterns. Frontmatter matches the
+skill schema (name, triggers, specialist, etc.).
 
-### T3. Register the skill in install.sh + update SHA256
-Add to the skill install list; regenerate `install.sh.sha256`. Verify a clean install picks
-up the new skill.
+### T3. Register the skill in install.sh + update SHA256 — ✅ DONE (2026-06-19)
+Added `code-review-loop` to `skill_dirs`; regenerated `install.sh.sha256`
+(`af254f94…`); `bash -n` syntax OK; checksum MATCH verified.
 
-### T4. Loop-discipline field-manual guide + input template
-The five-gate "loop or not" test, cost guardrails, the ratchet mechanics, the watched-first-
-run rule. Plus the `mission-optimize` input template.
+### T4. Loop-discipline field-manual guide + input template — ✅ DONE (2026-06-19)
+`project/field-manual/loop-discipline-guide.md` (five-gate test, ratchet + scored-loop
+mechanics, watched-first-run, cost guardrails, honest limits) and
+`templates/mission-optimize-input-template.md`. Both registered in install.sh enumerated arrays
+(field_manual_files, template_files) so they deploy in remote mode; SHA re-regenerated after.
 
-### T5. Closing task 1 — watched validation run (Jamie's safe first experiment)
-Per the autoresearch note: ONE repo with a frozen benchmark (AISearchArena is the candidate),
-ONE worktree, TEN experiments, watched end-to-end, nothing merged automatically. Read the log
-as a list of hypotheses. This is the demo + the trust-building, not an unattended run.
+### T5. Closing task 1 — watched validation run (Jamie's safe first experiment) — ⏳ STAGED, PENDING JAMIE
+Cannot be done autonomously: needs Jamie present on a real repo, nothing merged automatically.
+ONE repo with a frozen benchmark (AISearchArena candidate), ONE worktree, up to TEN experiments,
+watched end-to-end. Produces the first token-cost-per-converged-loop number, which seeds the 6c
+error budget. This is the demo + trust-building, not an unattended run. Run it when Jamie has a
+watched block free.
 
-### T6. Closing task 2 — produce the detailed Sprint 6c spec and review with Jamie.
+### T6. Closing task 2 — produce the detailed Sprint 6c spec and review with Jamie — ✅ DONE (2026-06-19)
+`sprints/sprint-6c-meta-loop.md` promoted from outline to detailed spec (7 resolved design
+decisions, T1–T6, scope in/out, risks). Notes 6c execution is gated on the T5 watched-run number.
 
 ## Success metric
 

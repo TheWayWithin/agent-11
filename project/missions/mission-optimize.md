@@ -1,233 +1,207 @@
 # Mission: OPTIMIZE ⚡
-## Performance Optimization and System Enhancement
+## Metric-Driven Ratchet Optimization
 
-**Mission Code**: OPTIMIZE  
-**Estimated Duration**: 3-6 hours  
-**Complexity**: Medium to High  
-**Squad Required**: Architect, Developer, Analyst
+**Mission Code**: OPTIMIZE
+**Estimated Duration**: 2-6 hours (watched first run; faster once trusted)
+**Complexity**: Medium to High
+**Squad Required**: Analyst (pick the target), Developer (run the ratchet), Architect (sanity-check the strategy)
 
 ## Mission Briefing
 
-Systematically analyze and improve system performance, identifying bottlenecks and implementing targeted optimizations. Transform slow, resource-intensive operations into efficient, scalable solutions.
+Improve one measurable thing about a system without breaking anything else, by running a
+disciplined **ratchet loop**: isolate the work, establish a noise-floor baseline, make ONE
+change on a NAMED surface, re-measure, and **keep the change only if it beats the baseline —
+otherwise hard-revert.** Every attempt is logged. Every kept change is a hypothesis the human
+merges, never an auto-merge.
+
+This is the Karpathy autoresearch discipline applied to a single repo: diligent hill-climbing
+with a hard floor against regressions and reward-hacking, not open-ended autonomy.
+
+### What changed (Sprint 6b)
+
+Earlier versions of this mission profiled a system and then asked specialists to "optimise
+the code" across five vague phases. That produced unmeasured, unreverted, hard-to-audit
+changes. The mission now keeps the useful front-end — **decide what to optimise** — and
+replaces the execution core with the ratchet — **iterate on it safely**. Read
+`field-manual/loop-discipline-guide.md` before running this for the first time.
 
 ## Required Inputs
 
-1. **Performance Metrics** (required) - Current performance data or issues
-2. **System/Component Scope** (required) - Area of focus for optimization
-3. **Performance Goals** (optional) - Target metrics or SLA requirements
+1. **Named editable surface** (required) — the ONE file or folder the loop may change.
+   Everything else is off-limits. Example: `src/search/ranker.ts` or `app/api/feed/`.
+2. **Metric command** (required) — one cheap, deterministic command that prints a single
+   number, lower-is-better or higher-is-better (state which). Example:
+   `node bench/rank.js --json | jq .p95_ms`. If there is no such command, you are not ready
+   to loop — build the benchmark first.
+3. **Baseline / goal** (optional) — current number and a target. If omitted, the loop measures
+   the baseline itself and reports gains as percentages.
+4. **Caps** (optional, defaults below) — max attempts, wall-clock, diff size, token ceiling.
+
+> If you cannot name the surface and the metric command in one sentence each, STOP. The loop
+> has no fixed signal for "done" and will waste tokens. Go build the signal first.
+
+## The Read-Only Set (inherited from Sprint 6a — non-negotiable)
+
+The loop may NEVER edit the things that judge it:
+
+- `.quality-gates.json`, `gates/**`, `**/*.quality-gates.json`
+- The metric command, the benchmark, or any test that defines "better"
+- Any file outside the named editable surface
+
+These are enforced by `permissions.deny` in `.claude/settings.json`. An attempt that would
+require touching any of them is an **escalation trigger**, not a quiet widening of scope. An
+agent that can edit its own success metric will eventually pass by editing it.
 
 ## Mission Phases
 
-### Phase 1: Performance Analysis and Profiling (45-60 minutes)
-**Lead**: @analyst  
-**Support**: @architect  
-**Objective**: Identify performance bottlenecks and optimization opportunities
+### Phase 1: Pick the target and the signal (20-40 minutes)
+**Lead**: @analyst
+**Support**: @architect
+**Objective**: Reduce the whole system to ONE surface and ONE number.
 
 **Tasks**:
-- Analyze current performance metrics and baselines
-- Profile system resource usage (CPU, memory, I/O, network)
-- Identify slowest operations and bottlenecks
-- Map user experience impact areas
-- Prioritize optimization opportunities by impact/effort
+- Profile only enough to find the single highest-leverage bottleneck. Do not boil the ocean.
+- Name the ONE editable surface (file or folder) the loop will change.
+- Name the ONE metric command that prints the signal, and its direction (lower/higher better).
+- Confirm the metric is cheap (seconds, not minutes) and deterministic enough to median over.
 
-**Success Criteria**:
-- Performance bottlenecks identified
-- Resource usage patterns understood
-- Optimization priorities established
-- Baseline metrics documented
+**Success Criteria** (default-fail — each starts `false`, flips only on evidence):
+- [ ] Editable surface named and confirmed to exist (`ls` output attached).
+- [ ] Metric command runs and prints a single number (command output attached).
+- [ ] Direction stated. Noise observed across 3 runs is smaller than the gain you are chasing.
 
-### Phase 2: Architecture Review and Strategy (45-60 minutes)
-**Lead**: @architect  
-**Support**: @analyst, @developer  
-**Objective**: Design optimization strategy and architectural improvements
+### Phase 2: Set up the ratchet (15-30 minutes)
+**Lead**: @developer
+**Support**: @architect
+**Objective**: Build the isolated harness and the noise-floor baseline.
 
 **Tasks**:
-- Review current architecture for optimization opportunities
-- Design caching strategies and data access patterns
-- Plan database optimization and query improvements
-- Evaluate scaling strategies (horizontal vs vertical)
-- Design monitoring and measurement approach
+- Create an isolated **git worktree** for the loop. The main checkout is never touched.
+- Run the metric command **3 times** on the unchanged code; record the **median** as the
+  baseline. This median-of-3 is the noise floor — it stops a lucky single run ratcheting in.
+- Set the **noise-floor threshold**: a change must beat the baseline by more than observed
+  run-to-run variance to count as real.
+- Create the append-only log `.loops/optimize-<surface>.log` (JSONL, schema below).
+- Confirm caps (defaults: 10 attempts, 1h wall-clock, 1000-line diff/iteration, token ceiling
+  logged).
 
 **Success Criteria**:
-- Optimization strategy defined
-- Architectural improvements planned
-- Caching strategy designed
-- Scaling approach determined
+- [ ] Worktree created (`git worktree list` output attached).
+- [ ] Baseline = median of 3 runs, all 3 numbers logged.
+- [ ] Noise-floor threshold set above observed variance.
+- [ ] `.loops/optimize-<surface>.log` exists and is writable.
 
-### Phase 3: Database and Query Optimization (60-90 minutes)
-**Lead**: @developer  
-**Support**: @architect  
-**Objective**: Optimize database performance and data access
+### Phase 3: Run the ratchet loop (the execution core)
+**Lead**: @developer
+**Support**: @architect (only on escalation)
+**Objective**: Climb the metric one reverted-unless-better step at a time.
+
+This phase IS the mission. Repeat until two consecutive attempts yield no improvement, or a cap
+or escalation trigger fires.
+
+```
+RATCHET LOOP (per attempt):
+  1. Read .loops/optimize-<surface>.log. Do not repeat a change already logged as revert.
+  2. Form ONE hypothesis. Make ONE change, confined to the named surface only.
+  3. If the diff exceeds the cap (default 1000 lines), STOP — revert and escalate.
+  4. Re-measure: run the metric command 3 times, take the median.
+  5. KEEP-OR-REVERT:
+       - KEEP   if median beats baseline by more than the noise-floor threshold
+                AND no gate/test regression (run gates; default-fail on no evidence).
+                → commit in the worktree, set baseline = new median, status: "keep".
+       - REVERT otherwise. → `git checkout -- <surface>` (hard revert), status: "revert".
+  6. Append one JSONL line to the log (schema below). Always log, keep or revert.
+  7. CONVERGENCE / CAP CHECK:
+       - Stop "converged" after 2 consecutive non-improving attempts.
+       - Stop "capped" if attempts ≥ max, wall-clock ≥ max, or tokens ≥ ceiling.
+       - ESCALATE to human if: 3 consecutive crashes/reverts on the same idea, the diff cap
+         would be exceeded, or any change would require touching the read-only set.
+```
+
+**Log schema** (`.loops/optimize-<surface>.log`, one JSON object per line):
+
+```json
+{"commit": "<sha-in-worktree-or-null>", "metric": 142.3, "median_of_3": 142.3, "baseline": 150.1, "status": "keep", "diff_lines": 38, "tokens": 4200, "desc": "memoise ranker score lookup"}
+```
+
+The log is the loop's memory: the agent reads it to avoid re-running dead ends; the human reads
+it as a list of hypotheses to review at merge time.
+
+**Success Criteria**:
+- [ ] Every attempt produced exactly one log line (keep or revert), evidence = the log file.
+- [ ] No change landed outside the named surface (`git diff --stat` confined to surface).
+- [ ] Loop stopped on convergence, cap, or escalation — never ran unbounded.
+
+### Phase 4: Read the log and decide (human merge — 15-30 minutes)
+**Lead**: @analyst presents; **human decides**
+**Objective**: Treat kept changes as hypotheses, not facts.
 
 **Tasks**:
-- Analyze and optimize slow database queries
-- Add appropriate database indexes
-- Implement query optimization techniques
-- Optimize data models and relationships
-- Implement connection pooling and caching
+- Summarise the log: baseline → best median, total attempts, kept vs reverted, tokens spent.
+- For each kept change, present the diff and the measured gain as a hypothesis to merge.
+- The human merges the worktree commits they accept. Nothing merges automatically.
+- Record the token-cost-per-converged-loop number (feeds Sprint 6c error budgets).
 
 **Success Criteria**:
-- Query performance improved
-- Database indexes optimized
-- Data access patterns efficient
-- Connection handling optimized
+- [ ] Log summarised with before/after numbers and token cost.
+- [ ] Each kept change reviewed as a diff by the human before merge.
+- [ ] Worktree cleaned up after merge decision (`git worktree remove`).
 
-### Phase 4: Code and Algorithm Optimization (60-120 minutes)
-**Lead**: @developer  
-**Support**: @architect  
-**Objective**: Optimize application code and algorithms
+## Caps and Escalation (library defaults — all overridable per run)
 
-**Tasks**:
-- Optimize critical code paths and algorithms
-- Implement efficient data structures
-- Reduce computational complexity
-- Optimize memory usage and garbage collection
-- Implement asynchronous operations where beneficial
+| Cap | Default | Why |
+|-----|---------|-----|
+| Max attempts | 10 | Bounds cost; most gains land early or not at all. |
+| Max wall-clock | 1 hour | Circuit breaker on a stuck loop. |
+| Max diff / iteration | 1000 lines | Keeps each change reviewable and confined. |
+| Token ceiling | Logged per run | Jamie sees the meter; loops cost multiples of a single pass. |
 
-**Success Criteria**:
-- Code performance improved
-- Algorithms more efficient
-- Memory usage optimized
-- Asynchronous operations implemented
+**Escalate to human (do not push forward) when**:
+- 3 consecutive crashes or reverts on the same hypothesis.
+- A change would exceed the diff cap or reach outside the named surface.
+- Any change would require editing the read-only set (gates/tests/metric).
 
-### Phase 5: Caching and Resource Optimization (45-75 minutes)
-**Lead**: @developer  
-**Support**: @architect  
-**Objective**: Implement caching strategies and optimize resource usage
+## Watched-first-run rule (trust is earned per repo)
 
-**Tasks**:
-- Implement application-level caching (Redis, Memcached)
-- Add HTTP caching headers and CDN optimization
-- Optimize static asset delivery and compression
-- Implement resource pooling and reuse
-- Optimize API response sizes and formats
+The first time this mission runs on any repo, a human watches it end to end: ONE repo, ONE
+worktree, up to TEN experiments, **nothing merged automatically**, the human reads the log as a
+list of hypotheses. Only after a repo has earned trust through watched runs does anyone consider
+running it less closely. Never unattended on a live repo before then.
 
-**Success Criteria**:
-- Caching implemented effectively
-- Static assets optimized
-- Resource usage minimized
-- API responses optimized
+## Honest caveats (carried from the research)
 
-### Phase 6: Testing and Validation (30-45 minutes)
-**Lead**: @analyst  
-**Support**: @developer  
-**Objective**: Validate optimization results and measure improvements
+- **Goodhart / overfitting**: the ratchet optimises the metric, not the intent. Every kept
+  change is reviewed at merge; the median-of-3 stops lucky-seed wins.
+- **Greedy / local search**: keep-if-better is hill-climbing. It tunes; it does not invent
+  structural rewrites that need a step down first. Set expectations accordingly.
+- **Cost**: loops cost multiples of a single pass. Caps and token logging are mandatory.
 
-**Tasks**:
-- Run performance tests and benchmarks
-- Compare before/after metrics
-- Validate optimization impact on user experience
-- Test system stability under load
-- Document performance improvements
-
-**Success Criteria**:
-- Performance improvements validated
-- Metrics show significant gains
-- System stability maintained
-- Results documented
-
-## Optimization Categories
+## Optimization Categories (reference — where to point the loop)
 
 ### Frontend Performance
-- **JavaScript Optimization**: Bundle splitting, lazy loading, tree shaking
-- **CSS Optimization**: Critical CSS, unused CSS removal
-- **Image Optimization**: Compression, lazy loading, modern formats
-- **Network Optimization**: HTTP/2, resource hints, CDN usage
+- Bundle splitting, lazy loading, tree shaking; critical CSS; image compression; HTTP/2, CDN.
 
 ### Backend Performance
-- **API Optimization**: Response time, payload size, caching
-- **Database Optimization**: Query optimization, indexing, connection pooling
-- **Server Optimization**: Resource usage, concurrent handling
-- **Algorithm Optimization**: Time/space complexity improvements
+- API response time and payload; query optimisation and indexing; algorithm complexity.
 
 ### Infrastructure Performance
-- **Scaling**: Horizontal scaling, load balancing
-- **Caching**: Multi-level caching strategies
-- **CDN**: Content delivery optimization
-- **Monitoring**: Performance tracking and alerting
+- Caching layers, connection pooling, resource reuse, response-size trimming.
 
-## Common Variations
-
-### Database-Heavy Optimization
-- **Duration**: 4-6 hours
-- **Focus**: Query optimization, indexing, data modeling
-- **Tools**: Query analyzers, database profilers
-
-### Frontend Performance Focus
-- **Duration**: 3-5 hours
-- **Focus**: Bundle optimization, loading performance, UX metrics
-- **Tools**: Lighthouse, WebPageTest, Bundle analyzers
-
-### API Performance Optimization
-- **Duration**: 2-4 hours
-- **Focus**: Response times, throughput, caching
-- **Tools**: Load testing, APM tools, profilers
-
-### Infrastructure Scaling
-- **Duration**: 4-8 hours
-- **Focus**: Horizontal scaling, load balancing, caching
-- **Tools**: Load balancers, CDNs, monitoring tools
-
-## Success Metrics
-
-### Performance Metrics
-- **Response Time**: 50%+ improvement in critical operations
-- **Throughput**: Increased requests per second
-- **Resource Usage**: Reduced CPU/memory consumption
-- **Load Time**: Faster page/application loading
-
-### Business Metrics
-- **User Experience**: Improved user satisfaction scores
-- **Conversion Rate**: Better performance leads to higher conversions
-- **Cost Efficiency**: Reduced infrastructure costs
-- **Reliability**: Fewer performance-related issues
+Pick ONE of these as the named surface per run. The ratchet does single-surface, single-loop
+work; breadth comes from running the mission again, not from widening one loop.
 
 ## Tools and Technologies
 
-### Profiling Tools
-- **Application Profilers**: New Relic, DataDog, AppDynamics
-- **Database Profilers**: Query analyzers, explain plans
-- **Frontend Profilers**: Chrome DevTools, Lighthouse
-- **Custom Profiling**: Performance.now(), benchmarking
-
-### Testing Tools
-- **Load Testing**: Artillery, JMeter, k6
-- **Frontend Testing**: WebPageTest, Lighthouse CI
-- **Database Testing**: Database-specific load testing
-- **Synthetic Monitoring**: Pingdom, StatusPage
-
-### Optimization Tools
-- **Bundlers**: Webpack, Rollup, Vite
-- **Compressors**: Gzip, Brotli, image optimizers
-- **CDNs**: CloudFlare, AWS CloudFront, Fastly
-- **Caching**: Redis, Memcached, Varnish
-
-## Monitoring and Maintenance
-
-### Continuous Monitoring
-- **Performance Dashboards**: Real-time metrics tracking
-- **Alerting**: Performance degradation notifications
-- **Trend Analysis**: Performance trends over time
-- **User Experience**: Real user monitoring (RUM)
-
-### Regular Reviews
-- **Monthly**: Performance metric reviews
-- **Quarterly**: Deep performance analysis
-- **Release-based**: Performance impact assessment
-- **Incident-driven**: Post-incident optimization
-
-## Integration Points
-
-- **Follows**: BUILD, MIGRATE, INTEGRATE missions
-- **Enables**: Better user experience, cost savings
-- **Coordinates with**: Infrastructure, monitoring systems
-- **Requires**: Performance baselines, monitoring tools
+- **Profiling (Phase 1)**: Chrome DevTools, Lighthouse, `node --prof`, query EXPLAIN plans, APM.
+- **Metric command (the signal)**: any script that prints one number — `k6`, `lighthouse-ci`,
+  a custom `bench/*.js`, `pytest-benchmark`, a `time`-wrapped command piped through `jq`.
+- **Isolation**: `git worktree` (mandatory), never the main checkout.
 
 ---
 
-**Mission Command**: `/coord optimize [performance-metrics] [system-scope] [performance-goals]`
+**Mission Command**: `/coord optimize <editable-surface> <metric-command> [baseline-goal]`
 
-*"Optimization is not about making things faster; it's about making the right things fast."*
+*"A loop only earns its keep when 'better' is a number you can trust and 'worse' reverts itself."*
 
 ---
 
@@ -239,11 +213,11 @@ After completing this mission, decide on cleanup approach based on project statu
 **When**: This mission completes a major project milestone, but more work remains.
 
 **Actions** (30-60 min):
-1. Extract lessons to `lessons/[category]/` from progress.md
-2. Archive milestone-relevant Phase Handoff blocks from agent-context.md if needed
-3. Clean agent-context.md (retain essentials, archive historical details)
-4. Continue using agent-context.md (Phase Handoff blocks accumulate across milestones)
-5. Update project-plan.md with next milestone tasks
+1. Extract lessons to `lessons/[category]/` from progress.md and the `.loops/` log.
+2. Archive milestone-relevant Phase Handoff blocks from agent-context.md if needed.
+3. Clean agent-context.md (retain essentials, archive historical details).
+4. Continue using agent-context.md (Phase Handoff blocks accumulate across milestones).
+5. Update project-plan.md with next milestone tasks.
 
 **See**: `templates/cleanup-checklist.md` Section A for detailed steps
 
@@ -251,11 +225,11 @@ After completing this mission, decide on cleanup approach based on project statu
 **When**: All project objectives achieved, ready for new mission.
 
 **Actions** (1-2 hours):
-1. Extract ALL lessons from entire progress.md to `lessons/`
-2. Create mission archive in `archives/missions/mission-[name]-YYYY-MM-DD/`
-3. Update CLAUDE.md with system-level learnings
-4. Archive all tracking files (project-plan.md, progress.md, etc.)
-5. Prepare fresh start for next mission
+1. Extract ALL lessons from entire progress.md to `lessons/`.
+2. Create mission archive in `archives/missions/mission-[name]-YYYY-MM-DD/`.
+3. Update CLAUDE.md with system-level learnings.
+4. Archive all tracking files (project-plan.md, progress.md, `.loops/` logs).
+5. Prepare fresh start for next mission.
 
 **See**: `templates/cleanup-checklist.md` Section B for detailed steps
 
@@ -266,4 +240,4 @@ After completing this mission, decide on cleanup approach based on project statu
 
 ---
 
-**Reference**: See `project/field-manual/project-lifecycle-guide.md` for complete lifecycle management procedures.
+**Reference**: See `project/field-manual/project-lifecycle-guide.md` for complete lifecycle management procedures, and `project/field-manual/loop-discipline-guide.md` for the ratchet mechanics.

@@ -1,12 +1,31 @@
-# Handoff Notes — Agent-11 (Sprint 6a implemented)
+# Handoff Notes — Agent-11 (Sprint 6b implemented)
 
-**Last Updated**: 2026-06-16
-**From**: Sprint 6a session — read-only gates + evidence-gated verification implemented (7 library files), built on existing `project/gates/`
-**To**: Next session — finish Sprint 6a closing tasks, then Sprint 6b
+**Last Updated**: 2026-06-19
+**From**: Sprint 6b session — ratchet `mission-optimize` + `code-review-loop` skill + loop-discipline guide/template + install.sh registration. 6c promoted to detailed spec.
+**To**: Next session — run the 6b T5 watched validation run with Jamie (real repo, nothing auto-merged), then Sprint 6c on Jamie's approval.
 
 ---
 
-## Sprint 6a current state (2026-06-16)
+## Sprint 6b current state (2026-06-19)
+
+**Done + verified on disk** (uncommitted, NOT pushed — awaiting Jamie's review):
+- `project/missions/mission-optimize.md` — rewritten as the ratchet (augment-not-gut): analysis front-end (Phases 1–2) + ratchet core (Phase 3: worktree → median-of-3 baseline → keep-or-revert → `.loops/` JSONL log → caps → escalation) + human-merge (Phase 4). 33 ratchet markers.
+- `project/skills/code-review-loop/SKILL.md` — new scored critic→fixer→re-audit loop, read-only critic / read-write fixer, converge on two clean rounds or cap.
+- `project/field-manual/loop-discipline-guide.md` — five-gate test + mechanics + cost guardrails.
+- `templates/mission-optimize-input-template.md` — surface/metric/caps/read-only-set/watched-run.
+- `project/deployment/scripts/install.sh` — `code-review-loop` in `skill_dirs`; guide + template in the enumerated arrays; `install.sh.sha256` regenerated (`af254f94…`), syntax + checksum verified.
+- `sprints/sprint-6c-meta-loop.md` — promoted outline → detailed spec.
+- Tracking updated: project-plan.md (6b ✅, 6c spec-ready), progress.md (2026-06-19 entry), CHANGELOG `[Unreleased]`, sprint-6b spec task markers.
+
+**T5 watched validation run — STAGED, PENDING JAMIE (do NOT auto-run)**: needs Jamie present on a real repo (AISearchArena candidate), one worktree, up to 10 experiments, nothing merged automatically. It produces the first token-cost-per-converged-loop number, which seeds the 6c error budget. 6c execution is gated on this number.
+
+**Not committed**: per Jamie's standing rule, nothing committed/pushed without explicit confirmation.
+
+**Next step options for Jamie**: (1) commit 6b; (2) schedule the T5 watched run; (3) approve 6c to start (after T5 ideally). Rolling-wave: 6b's spec-closing task (6c detailed spec) is done, so 6b is formally complete bar the watched run.
+
+---
+
+## (Prior) Sprint 6a state (2026-06-16) — COMPLETE
 
 **Done + verified on disk** (uncommitted, NOT pushed — awaiting Jamie's review):
 - `library/settings.json.template` — `permissions.deny` block (enforcement). JSON valid.

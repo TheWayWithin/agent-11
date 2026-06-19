@@ -1023,6 +1023,8 @@ install_mission_system() {
         "templates/plan-saas-mvp.yaml"
         "templates/plan-saas-full.yaml"
         "templates/plan-api.yaml"
+        # Sprint 6b: ratchet loop input template
+        "templates/mission-optimize-input-template.md"
     )
     
     # Define field manual files to install
@@ -1037,6 +1039,8 @@ install_mission_system() {
         "project/field-manual/quality-gates-guide.md"
         "project/field-manual/skills-guide.md"
         "project/field-manual/architectural-principles.md"
+        # Sprint 6b: loop discipline (ratchet + scored review loop)
+        "project/field-manual/loop-discipline-guide.md"
     )
     
     local total_files=$((${#mission_files[@]} + ${#command_files[@]} + ${#template_files[@]} + ${#field_manual_files[@]}))
@@ -1197,7 +1201,7 @@ install_mission_system() {
     local SKILLS_DIR="$CLAUDE_DIR/skills"
     mkdir -p "$SKILLS_DIR"
 
-    local skill_dirs=("saas-auth" "saas-payments" "saas-multitenancy" "saas-billing" "saas-email" "saas-onboarding" "saas-analytics")
+    local skill_dirs=("saas-auth" "saas-payments" "saas-multitenancy" "saas-billing" "saas-email" "saas-onboarding" "saas-analytics" "code-review-loop")
     for skill in "${skill_dirs[@]}"; do
         if [[ "$execution_mode" == "local" ]]; then
             if [[ -d "$PROJECT_ROOT/project/skills/$skill" ]]; then
