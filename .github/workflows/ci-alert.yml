@@ -5,6 +5,7 @@ name: CI Failure Alert
 
 on:
   workflow_run:
+    workflows: ["Validate AGENT-11", "Validate Agent Schemas", "Verify install.sh checksum"]
     types: [completed]
     branches: [main, develop, master]
 
