@@ -52,6 +52,19 @@ The safe shape for "iterate to clean":
 Deterministic-first: when a gate or test exists, that is the score. Reach for an LLM critic with
 a numeric score only when no deterministic signal exists.
 
+## The coordinator meta-loop (Sprint 6c)
+
+The ratchet and the scored review loop are *inner* loops over one surface. The coordinator is the *outer* loop that runs a multi-phase mission, and it composes the inner loops under four disciplines:
+
+- **Convergence over fixed counts.** A phase advances when a verify round finds no new failing criteria twice running, not after a set number of attempts. New work resets the counter; two clean rounds is the signal it is genuinely done.
+- **Per-phase error budget.** A cap (default 3) on delegate→verify cycles per phase. When spent, the coordinator escalates to the human instead of burning forward. A too-small budget escalates noise; too-large burns tokens. Seed the number from a real harness-run loop's measured token cost, then tune.
+- **Condensed returns.** Specialists hand back a 1000–2000 token structured summary (changed / evidence + where it lives / open issues / handoff delta), never a full transcript. Detail stays on disk so the orchestrator's context stays clean across a long build.
+- **Externalised state is the recovery point.** `project-plan.md` is durable truth. A restart resumes from the last phase whose gate passed *on evidence*, never from scratch and never re-running a verified-complete phase. A `[x]` without attached evidence is re-verified before anything builds on it.
+
+Plus the **unanimous-agreement flag**: when several judges or criteria all pass first-try with zero findings, treat it as a possible correlated-bias signal to surface to the human, not a quality bonus. Sometimes the work is just clean; the human decides.
+
+The mechanics live in `coordinator.md` (the `/coord continue` execution loop and its "Phase-gated meta-loop" subsection).
+
 ## The watched-first-run rule
 
 The first time any loop runs on a repo, a human watches it end to end: one repo, one worktree,

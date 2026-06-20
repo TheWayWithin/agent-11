@@ -8,6 +8,26 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
+### [2026-06-20] — Sprint 6c: Coordinator phase-gated meta-loop ✅ (T1–T6 complete)
+
+**Summary**: Formalised the coordinator's outer loop on the 6a/6b foundation. The `/coord continue` loop is now phase-gated with convergence, a per-phase error budget, condensed returns, and evidence-based restart. Also closed a real gap in the 6a enforcement. Library surface only.
+
+**Deliverables (verified)**:
+- `project/agents/specialists/coordinator.md` — `/coord continue` execution loop rewritten: per-phase **error budget** (default 3 cycles → escalate, never burn forward), **convergence** on two clean verify rounds (not a fixed count), **unanimous-agreement flag** (correlated-bias signal, surfaced not auto-failed). New "Phase-gated meta-loop (6c)" subsection. **Condensed returns** (1000–2000 token structured summaries, detail to disk) added to the context-preservation protocol. **Restart-from-last-passed-gate** added to session resumption (resume from the last evidence-passed gate; never re-run a verified-complete phase; re-verify a `[x]` lacking evidence).
+- `library/settings.json.template` — **T4 gate-route finding + fix**: the 6a `permissions.deny` rules cover Edit/Write/MultiEdit but NOT Bash, so `echo >`, `tee`, `sed -i`, `cp`, `mv` to a gate path bypassed them. Added a blocking **PreToolUse "read-only gate guard" hook** that refuses Bash writes to gate paths (exit 2). No separate script file → no install.sh / SHA churn. JSON validated.
+- `library/CLAUDE.md`, `project/commands/coord.md`, `project/field-manual/loop-discipline-guide.md` — documented the Bash guard + the meta-loop (convergence, error budget, condensed returns, restart, unanimous flag).
+- `sprints/sprint-6d-consolidation-comms.md` — promoted outline → detailed spec (6c closing task). Gate met: 6a live-demoed, 6b shipped+watched, 6c shipped.
+
+**T4 method note**: the adversarial gate-route test was resolved by static analysis rather than a live agent session (a live deny-enforcement test needs a separate Claude Code instance, as in 6a). Static analysis is conclusive here: the deny block's tool list provably excludes Bash, so the route exists. Default-fail → built the hook rather than assuming safety. A behavioural confirmation can fold into 6d's smoke-test if wanted.
+
+**Error budget caveat for tuning**: `PHASE_ERROR_BUDGET` default 3 is a placeholder. The real number should come from a harness-run loop's measured token cost (the 6b T5 run was manual, no clean number). Flagged in 6d's "what's next" task.
+
+**User-Facing Changes (running list for Sprint 6d)** — append:
+- `/coord continue` is now a phase-gated meta-loop (convergence, per-phase error budget with escalation, restart-from-last-passed-gate).
+- Bash writes to gate paths are now blocked by a PreToolUse hook (closes the route the deny rules missed).
+
+---
+
 ### [2026-06-20] — Sprint 6b T5: watched validation run executed ✅ (Sprint 6b fully closed)
 
 **Summary**: Ran the ratchet end-to-end on a real repo (aimpactmonitor), watched by Jamie. The loop worked exactly as designed and surfaced two field findings now folded back into the mission. Sprint 6b is complete.

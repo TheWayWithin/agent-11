@@ -31,7 +31,7 @@ Dispatch a mission via THE COORDINATOR. Parse the arguments, validate the missio
 
 ### Control Commands
 
-- `continue` — Coordinator resumes from project-plan.md until blocked.
+- `continue` — Coordinator resumes from project-plan.md until blocked. Runs as a **phase-gated meta-loop** (Sprint 6c): each phase loops delegate→verify until it converges (two clean verify rounds) or spends its per-phase error budget (default 3 cycles), at which point it escalates to you rather than burning forward. Advances only on tool-output evidence; resumes from the last evidence-passed gate, never from scratch.
 - `complete phase N` — Mark phase N complete; generate phase-(N+1) context.
 - `vision-check` — Verify current work against vision in project-plan.md.
 

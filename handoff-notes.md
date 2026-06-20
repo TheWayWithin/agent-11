@@ -1,8 +1,16 @@
-# Handoff Notes — Agent-11 (Sprint 6b implemented)
+# Handoff Notes — Agent-11 (Sprint 6c complete)
 
-**Last Updated**: 2026-06-19
-**From**: Sprint 6b session — ratchet `mission-optimize` + `code-review-loop` skill + loop-discipline guide/template + install.sh registration. 6c promoted to detailed spec.
-**To**: Next session — run the 6b T5 watched validation run with Jamie (real repo, nothing auto-merged), then Sprint 6c on Jamie's approval.
+**Last Updated**: 2026-06-20
+**From**: Sprint 6c session — phase-gated meta-loop (convergence, per-phase error budget, condensed returns, restart-from-last-passed-gate) wired into `coordinator.md`; T4 found the Bash gate-route and shipped a blocking PreToolUse hook; Sprint 6d promoted to a detailed spec.
+**To**: Next session — Sprint 6d (consolidation + v6.2.0 release) on Jamie's approval. Gate met (6a/6b/6c all shipped).
+
+## Sprint 6c current state (2026-06-20) — COMPLETE
+- `coordinator.md`: `/coord continue` is now a phase-gated meta-loop. Condensed returns + restart-from-last-passed-gate added.
+- `settings.json.template`: blocking "read-only gate guard" PreToolUse hook closes the Bash write route the 6a deny rules missed. JSON valid.
+- Docs: `library/CLAUDE.md`, `coord.md`, `loop-discipline-guide.md` updated.
+- `sprints/sprint-6d-consolidation-comms.md`: detailed spec, ready for approval.
+- **Open for 6d**: `PHASE_ERROR_BUDGET` default 3 needs tuning from a harness-run loop's real token cost (6b T5 was manual). 6d cuts v6.2.0.
+- Committed + pushed to main this session.
 
 ---
 

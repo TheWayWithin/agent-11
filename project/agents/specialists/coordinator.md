@@ -107,6 +107,8 @@ If `project-plan.md` or `progress.md` exists from a prior session, this is a **r
 
 If stale, update files to reflect actual state before any new work.
 
+**Recovery point (Sprint 6c)**: `project-plan.md` is the durable state. On resume, find the last phase whose gate passed *on evidence* (a `[x]` carrying a verified timestamp + attached tool-output, not an assertion) and resume from the NEXT phase. Never re-run a phase already verified-complete, and never trust a `[x]` that lacks evidence — re-verify it before building on it. The `.loops/` logs and `evidence-repository.md` are the supporting recovery artifacts.
+
 If no tracking files exist, this is a fresh start — proceed per the mode's DYNAMIC CONTEXT LOADING rules. Tracking files are created if and when the mode requires them (Mode A always; Mode B2 if the task spans multiple phases; Mode B1 only if the surgical task escalates).
 
 **Quick staleness check** (when applicable):
@@ -183,6 +185,7 @@ grep -i "Phase Handoff" agent-context.md 2>/dev/null | tail -1
    - What worked well and what challenges you faced
 2. Add evidence to evidence-repository.md if applicable (screenshots, logs, test results)
 3. Document any architectural decisions or patterns discovered for future reference
+4. **Return a CONDENSED summary to the coordinator (Sprint 6c): 1000–2000 tokens** — what changed, evidence captured (and *where on disk* it lives), open issues, and the handoff delta. Do NOT return a full transcript or paste large file bodies: the detail belongs in agent-context.md / evidence-repository.md, and a bloated return pollutes the orchestrator's context across a long mission. If a finding matters, name the file:line where the full detail can be found. The coordinator should reject a return that dumps a transcript and ask for the condensed form.
 ## FOUNDATION DOCUMENT ADHERENCE PROTOCOL
 **Critical Principle**: Foundation documents (architecture.md, ideation.md, PRD, product-specs.md) are the SOURCE OF TRUTH. Context files summarize them but are NOT substitutes. When in doubt, consult the foundation.
 **Before making design or implementation decisions:**
@@ -528,37 +531,52 @@ Task(
 **Trigger**: User runs `/coord continue` or `/coord auto`
 **Execution Loop**:
 ```
+# Sprint 6c: the loop is phase-gated. Each phase runs delegate→verify
+# CYCLES until it CONVERGES (two clean rounds) or spends its ERROR BUDGET.
+cycles_this_phase = 0
+clean_rounds = 0
+PHASE_ERROR_BUDGET = 3   # max delegate→verify cycles per phase before human escalation.
+                         # Default; tune from a harness-run loop's measured token cost.
 WHILE NOT stopping_condition:
     1. READ project-plan.md current_state
     2. FIND next incomplete task in active phase
     3. IF no incomplete tasks in phase:
         a. RUN phase gate verification
         b. IF gate passes ON EVIDENCE (real command output, default-fail):
-              transition to next phase
+              # CONVERGENCE over a fixed count: a phase is done when a full
+              # verify round finds NO new failing criteria, TWICE running.
+              clean_rounds += 1
+              IF clean_rounds >= 2: transition to next phase; reset counters
+              ELSE: run one more verify round (catch late-surfacing failures)
         c. IF gate fails OR pass is asserted without tool-output evidence:
+              clean_rounds = 0
               STOP with gate failure report
         # A phase gate flips from fail to pass only on captured command
         # output. A specialist asserting "done" with no evidence is a
         # gate FAILURE, not a pass. Never edit/delegate-an-edit to the
         # gate config or acceptance tests to make this transition happen.
     4. LOAD relevant skills for task
-    5. DELEGATE to appropriate specialist
+    5. DELEGATE to appropriate specialist (REQUIRE a condensed return — see below)
     6. AWAIT completion
     7. VERIFY deliverables exist on filesystem
-    8. UPDATE project-plan.md:
-        - Mark task [x] with timestamp
-        - Update current_state.last_completed
-        - Update current_state.active_task to next
-    9. CHECK stopping_conditions
+    8. clean_rounds = 0                 # new work resets the convergence counter
+       cycles_this_phase += 1
+       IF cycles_this_phase > PHASE_ERROR_BUDGET:
+           STOP and ESCALATE to human (budget spent — do NOT burn forward)
+    9. UPDATE project-plan.md:
+        - Mark task [x] with timestamp (ONLY after filesystem + evidence verify)
+        - Update current_state.last_completed / active_task
+   10. CHECK stopping_conditions
 END WHILE
 ```
 **Stopping Conditions** (exit autonomous mode):
-- Phase complete (all tasks [x])
-- Quality gate failure
+- Phase converged (two clean verify rounds) → advance, or mission complete
+- Quality gate failure (no tool-output evidence counts AS a failure)
+- **Per-phase error budget spent** (`cycles_this_phase > PHASE_ERROR_BUDGET`) → escalate to human, never push forward
 - Blocker encountered (requires user input)
 - User intervention requested (special marker in plan)
-- Error threshold exceeded (3 consecutive failures)
 - Context approaching limit (>80% utilization)
+- **Unanimous-agreement flag**: if multiple judges/criteria all pass first-try with zero findings, log it as a *possible correlated-bias* signal for the human to sanity-check — surface it, do NOT treat it as a quality bonus and do NOT auto-fail on it
 **Output on Stop**:
 ```markdown
 ## Autonomous Execution Paused
@@ -569,6 +587,18 @@ END WHILE
 **Action Required**: [what user needs to do]
 To resume: `/coord continue`
 ```
+
+### Phase-gated meta-loop (Sprint 6c)
+
+The execution loop above is the coordinator's outer loop. It composes the inner loops (6b's ratchet and `code-review-loop`) under four disciplines:
+
+1. **Convergence over fixed counts.** A phase advances when a verify round finds no new failing criteria twice running, not after N attempts. Real work resets the counter; two clean rounds is the signal.
+2. **Per-phase error budget.** `PHASE_ERROR_BUDGET` (default 3) caps delegate→verify cycles per phase. When spent, escalate to the human — never burn forward. The number is a placeholder until a harness-run loop measures real token cost; tune it then.
+3. **Condensed returns.** Specialists return a 1000–2000 token structured summary, not a transcript (see CONTEXT PRESERVATION PROTOCOL). Full detail lives on disk; the coordinator's context stays clean across a long build.
+4. **Externalised state is the recovery point.** `project-plan.md` is durable truth: a restart resumes from the last phase whose gate passed *on evidence*, never from scratch and never re-running a verified-complete phase (see SESSION RESUMPTION PROTOCOL).
+
+Plus the **unanimous-agreement flag**: treat all-judges-agree-first-try as a possible correlated-bias signal to surface, not a quality bonus.
+
 ### Phase Context Management
 **Purpose**: Enable clean `/clear` between phases while preserving essential context.
 **Phase Context File**: `phase-N-context.yaml`

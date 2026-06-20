@@ -3,7 +3,7 @@
 **Part of**: Sprint 6 — Loop Discipline & Read-Only Verification (umbrella → v6.2.0)
 **Predecessor**: Sprint 6b — Ratchet loops ✅ (implemented 2026-06-19)
 **Successor**: Sprint 6d — Consolidation & public comms (outline until 6c closes)
-**Status**: Detailed spec drafted 2026-06-19. Ready for execution on Jamie's approval.
+**Status**: ✅ COMPLETE 2026-06-20. T1–T6 implemented + verified. Gate-route test resolved by static analysis (Bash route found, hook built).
 **Target release**: folds into **v6.2.0** with the rest of Sprint 6.
 
 ---
@@ -91,6 +91,8 @@ should be specced now but **executed after at least one 6b watched run has produ
 - **agent-11's own `.claude/` working squad** — library only.
 
 ## Tasks
+
+**All tasks ✅ DONE (2026-06-20):** T1 convergence + per-phase error budget wired into the `/coord continue` loop in `coordinator.md`; T2 condensed-returns requirement added to the context-preservation protocol; T3 restart-from-last-passed-gate added to session resumption; T4 gate-route test resolved by static analysis (the 6a deny rules cover Edit/Write/MultiEdit but NOT Bash → real route → built a blocking PreToolUse "read-only gate guard" hook in `settings.json.template`, no separate script so no install.sh/SHA churn); T5 unanimous-agreement flag + meta-loop section in `loop-discipline-guide.md` + `coord.md`; T6 this file's successor (Sprint 6d) promoted to a detailed spec.
 
 ### T1. Extend the coordinator execution loop with convergence + error budget
 Augment `/coord continue` in `coordinator.md`: a phase loops delegate→verify until two clean
