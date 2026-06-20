@@ -3,8 +3,8 @@
 **Part of**: Sprint 6 — Loop Discipline & Read-Only Verification (umbrella → v6.2.0)
 **Predecessor**: Sprint 6c — Coordinator phase-gated meta-loop ✅ (implemented 2026-06-20)
 **Successor**: none — this is the umbrella's closing sprint. Sprint 6 ends here; 6d's closing task proposes the next umbrella, it does not pre-spec one.
-**Status**: In progress 2026-06-20. T1–T4 done + pushed (README, CHANGELOG → [6.2.0], RELEASE-HISTORY, UPGRADE doc; website scoped). T5 (website edit + deploy) and T6 (v6.2.0 git tag / GitHub release) await Jamie's explicit publish confirmation.
-**Target release**: **v6.2.0** — this sprint cuts the release.
+**Status**: ✅ COMPLETE 2026-06-20. T1–T6 done. Docs consolidated + pushed; website deployed (agent-11.com); v6.2.0 released. **Sprint 6 umbrella fully closed.**
+**Target release**: **v6.2.0** — released as tag `v6.2.0-loop-discipline` (GitHub release live).
 
 ---
 
@@ -60,7 +60,7 @@ Gate met. 6d is genuinely ready to run.
 
 ## Tasks
 
-**Status (2026-06-20):** T1 ✅ (website scoped: Next.js site; v6.2.0 changes live in `src/app/changelog/page.tsx`, `src/components/sections/Hero.tsx`, features page). T2 ✅ README (v6.2.0 version block + Advanced Capabilities). T3 ✅ CHANGELOG finalised to `[6.2.0]` + RELEASE-HISTORY entry. T4 ✅ UPGRADE doc (deny block + Bash guard + deliberately-change-a-gate workflow). **T5 ⏳ website edit + deploy — awaits Jamie's publish confirmation.** **T6 ⏳ v6.2.0 git tag / GitHub release — awaits Jamie's confirmation.** No install.sh version constant to bump (none exists) → no SHA churn.
+**Status (2026-06-20): ALL ✅ DONE.** T1 website scoped. T2 README v6.2.0 block + Advanced Capabilities. T3 CHANGELOG `[6.2.0]` + RELEASE-HISTORY entry. T4 UPGRADE doc (deny block + Bash guard + deliberately-change-a-gate workflow). T5 website edited (`changelog/page.tsx` v6.2.0 entry + `Hero.tsx` badge/subheadline), built clean, pushed → deployed to agent-11.com via Netlify. T6 released: tag `v6.2.0-loop-discipline` pushed + GitHub release created (https://github.com/TheWayWithin/agent-11/releases/tag/v6.2.0-loop-discipline). No install.sh version constant exists → no SHA churn.
 
 ### T1. Scope the website repo
 Read `agent-11-website`'s current feature/messaging surface. Produce a short diff-plan of what changes, so README and website tell one story. Assume nothing about current content.

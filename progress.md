@@ -8,7 +8,7 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
-### [2026-06-20] — Sprint 6d: Consolidation & v6.2.0 release prep 🔄 (T1–T4 done; T5/T6 await publish confirmation)
+### [2026-06-20] — Sprint 6d: Consolidation & v6.2.0 release ✅ (T1–T6 complete; Sprint 6 umbrella closed)
 
 **Summary**: Consolidated the public docs for the whole Sprint 6 umbrella and prepared the v6.2.0 release, reading the User-Facing Changes running list. Two outward-facing steps (website deploy, release tag) held for Jamie's explicit confirmation per the standing publish rule.
 
@@ -20,9 +20,11 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 **Scoped, not yet changed (T1)**: `agent-11-website` is a Next.js site (deploys to agent-11.com). v6.2.0 messaging lives in `src/app/changelog/page.tsx` (structured version array — clean prepend), `src/components/sections/Hero.tsx`, and the features page.
 
-**Awaiting Jamie's confirmation (outward-facing)**:
-- **T5** — edit + deploy the website (agent-11.com).
-- **T6** — cut the **v6.2.0** release: `git tag v6.2.0` + GitHub release. No install.sh version constant exists, so no SHA churn.
+**Done (outward-facing, Jamie-confirmed)**:
+- **T5** ✅ — website edited (`changelog/page.tsx` v6.2.0 entry + `Hero.tsx` badge/subheadline), built clean, pushed → deployed to agent-11.com via Netlify. Commit contained only the two intended files (pre-existing uncommitted CLAUDE.md/template changes in that repo left untouched, not ours).
+- **T6** ✅ — **v6.2.0 released**: tag `v6.2.0-loop-discipline` pushed + GitHub release created (https://github.com/TheWayWithin/agent-11/releases/tag/v6.2.0-loop-discipline). No install.sh version constant exists → no SHA churn.
+
+**Sprint 6 umbrella CLOSED** (6a read-only gates, 6b ratchet loops, 6c meta-loop, 6d consolidation + v6.2.0 release).
 
 **Next-direction note (for after Sprint 6)**: run a harness-driven loop to get a real token-cost-per-loop number and tune the 6c `PHASE_ERROR_BUDGET` default (3); optionally roll 6a–6c to the fleet via `apply-file.sh`.
 

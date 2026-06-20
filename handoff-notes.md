@@ -1,13 +1,16 @@
-# Handoff Notes — Agent-11 (Sprint 6d in progress — v6.2.0 release prep)
+# Handoff Notes — Agent-11 (Sprint 6 CLOSED — v6.2.0 released)
 
 **Last Updated**: 2026-06-20
-**From**: Sprint 6d session — public-doc consolidation done + pushed (README v6.2.0, CHANGELOG `[6.2.0]`, RELEASE-HISTORY, UPGRADE doc); website scoped.
-**To**: Next session — two outward-facing steps await Jamie's confirmation: (T5) edit + deploy `agent-11-website` (v6.2.0 messaging in `src/app/changelog/page.tsx`, `Hero.tsx`, features page); (T6) cut v6.2.0 — `git tag v6.2.0` + GitHub release. Then Sprint 6 umbrella is fully closed.
+**From**: Sprint 6d complete. Public docs consolidated + pushed; website deployed to agent-11.com; v6.2.0 released (tag `v6.2.0-loop-discipline` + GitHub release). Sprint 6 umbrella fully closed.
+**To**: Next session — Sprint 6 is done. Candidate next work (NOT yet specced): harness-driven loop to get a real token-cost-per-loop number → tune the 6c `PHASE_ERROR_BUDGET` default (3); optionally roll 6a–6c to the fleet via `apply-file.sh`.
 
-## Sprint 6 status (2026-06-20)
-- **6a, 6b, 6c**: ✅ shipped to main.
-- **6d**: T1–T4 done + pushed. T5 (website deploy) + T6 (release tag) held for Jamie's publish OK.
-- **After Sprint 6**: harness-run loop to get a real token-cost number → tune 6c `PHASE_ERROR_BUDGET` (default 3); optionally roll 6a–6c to the fleet.
+## Sprint 6 — CLOSED (2026-06-20)
+- **6a** read-only gates + default-fail verification ✅ (live-demoed)
+- **6b** ratchet `mission-optimize` + `code-review-loop` skill ✅ (watched run executed)
+- **6c** phase-gated meta-loop + Bash gate guard ✅
+- **6d** doc consolidation + v6.2.0 release + website ✅
+- All on production main; v6.2.0 released; agent-11.com updated.
+- **Loose end (not ours)**: `agent-11-website` has pre-existing uncommitted changes (CLAUDE.md, a deleted template) unrelated to this work — left untouched.
 
 ## Sprint 6c current state (2026-06-20) — COMPLETE
 - `coordinator.md`: `/coord continue` is now a phase-gated meta-loop. Condensed returns + restart-from-last-passed-gate added.
