@@ -1,8 +1,13 @@
-# Handoff Notes — Agent-11 (Sprint 6c complete)
+# Handoff Notes — Agent-11 (Sprint 6d in progress — v6.2.0 release prep)
 
 **Last Updated**: 2026-06-20
-**From**: Sprint 6c session — phase-gated meta-loop (convergence, per-phase error budget, condensed returns, restart-from-last-passed-gate) wired into `coordinator.md`; T4 found the Bash gate-route and shipped a blocking PreToolUse hook; Sprint 6d promoted to a detailed spec.
-**To**: Next session — Sprint 6d (consolidation + v6.2.0 release) on Jamie's approval. Gate met (6a/6b/6c all shipped).
+**From**: Sprint 6d session — public-doc consolidation done + pushed (README v6.2.0, CHANGELOG `[6.2.0]`, RELEASE-HISTORY, UPGRADE doc); website scoped.
+**To**: Next session — two outward-facing steps await Jamie's confirmation: (T5) edit + deploy `agent-11-website` (v6.2.0 messaging in `src/app/changelog/page.tsx`, `Hero.tsx`, features page); (T6) cut v6.2.0 — `git tag v6.2.0` + GitHub release. Then Sprint 6 umbrella is fully closed.
+
+## Sprint 6 status (2026-06-20)
+- **6a, 6b, 6c**: ✅ shipped to main.
+- **6d**: T1–T4 done + pushed. T5 (website deploy) + T6 (release tag) held for Jamie's publish OK.
+- **After Sprint 6**: harness-run loop to get a real token-cost number → tune 6c `PHASE_ERROR_BUDGET` (default 3); optionally roll 6a–6c to the fleet.
 
 ## Sprint 6c current state (2026-06-20) — COMPLETE
 - `coordinator.md`: `/coord continue` is now a phase-gated meta-loop. Condensed returns + restart-from-last-passed-gate added.

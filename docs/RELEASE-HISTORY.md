@@ -4,6 +4,28 @@ Complete history of AGENT-11 development sprints and releases.
 
 ---
 
+## v6.2.0: Loop Discipline & Read-Only Verification
+**Released**: 2026-06-20
+
+The converged principle from the agentic-loops and Karpathy-autoresearch research: the thing that judges the work must be read-only to the thing doing it. With a trustworthy judge in place, agents can iterate in safe, measured, reverted-unless-better loops. Shipped as a four-sub-sprint umbrella (6a–6d).
+
+### Headline Changes
+
+- **Read-only quality gates (6a)**: `.quality-gates.json` and `gates/` are unwritable by every agent via `permissions.deny` (Edit/Write/MultiEdit) at the tool layer, not a prompt convention. Live-demoed: an agent was blocked from setting a threshold to zero and refused to route around it. Paired with a **default-fail verification contract** (every criterion starts failing, flips to pass only on captured command output).
+- **Ratchet `mission-optimize` (6b)**: optimisation as a measured loop in an isolated git worktree, median-of-3 baseline, keep-or-revert, JSONL `.loops/` log, hard caps (10 attempts / 1h / 1000-line diff), never auto-merged. Plus a new deployable **`code-review-loop` skill** (read-only critic → read-write fixer → re-audit, converge-or-cap) and a **loop-discipline field-manual guide** + input template.
+- **Phase-gated meta-loop (6c)**: `/coord continue` converges on two clean rounds, spends a per-phase error budget then escalates, takes condensed subagent returns, restarts from the last evidence-passed gate, and flags unanimous agreement as correlated-bias. A **Bash gate-guard hook** closes the one route the deny rules missed (Bash writes to gate paths).
+- **Bulk-ops toolkit** (`project/deployment/bulk/`): tier-aware, registry-driven fleet operations (`audit.sh`, `apply-file.sh`, `apply-upgrade.sh`).
+
+### Honest framing
+
+Loops are watched-first and human-merged: diligent, safe iteration with a trustworthy judge, not unattended autonomy. The watched validation run (6b) was hand-driven, so the per-phase error-budget default (3) awaits tuning from a harness-measured token cost. Field findings folded back into the mission: pick a metric that measures the intent (not a proxy), and JS/Turbopack projects need a dependency strategy for worktree isolation.
+
+### Why v6.2.0 (minor) not v6.1.2 (patch)
+
+New behavioural constraints (gate denials, Bash guard, evidence-gated advance) and new capabilities (ratchet, review loop, meta-loop) on deployed agents. New behaviour, not a bug fix.
+
+---
+
 ## v6.1.1: Subprocess advisory cleanup
 **Released**: 2026-05-07
 

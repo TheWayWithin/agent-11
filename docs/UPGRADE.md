@@ -29,8 +29,13 @@ If you run `bash install.sh` without the flag on a v5 install, it detects the v5
 5. **Merges v6 settings** into your existing `.claude/settings.json`:
    - Adds `env.ENABLE_TOOL_SEARCH = "auto"`
    - Adds the `hooks` block (advisory `tsc`/`ruff`/`rubocop` + destructive-command prompt)
+   - **v6.2.0**: adds the **read-only quality gates** `permissions.deny` block (makes `.quality-gates.json` and `gates/` unwritable by agents via Edit/Write/MultiEdit) and a blocking **PreToolUse "read-only gate guard"** hook (refuses Bash writes to gate paths)
    - **Preserves all your existing keys** — user values win on conflict; the template only fills gaps
 6. **Re-deploys the v6 library**: 11 specialists, missions, templates, field-manual, MCP setup, skills, schemas, gates
+
+### v6.2.0: changing a quality gate deliberately
+
+After upgrading, agents can no longer edit `.quality-gates.json` or anything under `gates/` — that is the point (an agent must not be able to loosen the criteria that judge its own work). To change a gate **as a deliberate human action**, temporarily remove the relevant `permissions.deny` rules from `.claude/settings.json`, make the edit yourself, then restore the rules. Never let an agent revise a gate mid-mission to make a phase pass.
 
 ## What gets backed up
 

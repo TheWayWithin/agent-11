@@ -8,6 +8,26 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
+### [2026-06-20] — Sprint 6d: Consolidation & v6.2.0 release prep 🔄 (T1–T4 done; T5/T6 await publish confirmation)
+
+**Summary**: Consolidated the public docs for the whole Sprint 6 umbrella and prepared the v6.2.0 release, reading the User-Facing Changes running list. Two outward-facing steps (website deploy, release tag) held for Jamie's explicit confirmation per the standing publish rule.
+
+**Done + pushed (agent-11 repo)**:
+- `README.md` — Current Version block rewritten to **v6.2.0 — Loop Discipline & Read-Only Verification** (trust-led: "your agents can't game their own success criteria"), honest watched-first framing, v6.0 foundation retained; loop-discipline line added to Advanced Capabilities. No em-dashes (publishing rule).
+- `CHANGELOG.md` — added the 6c entry, then finalised `[Unreleased]` → `[6.2.0] - 2026-06-20`; fresh empty `[Unreleased]` left on top. (v6.2.0 bundles 6a–6c + the prior unreleased bulk-ops toolkit.)
+- `docs/RELEASE-HISTORY.md` — v6.2.0 entry (headline changes, honest framing, why-minor-not-patch).
+- `docs/UPGRADE.md` — the v6.2.0 `permissions.deny` + Bash gate-guard delivered on `--upgrade`, and the deliberately-change-a-gate human workflow.
+
+**Scoped, not yet changed (T1)**: `agent-11-website` is a Next.js site (deploys to agent-11.com). v6.2.0 messaging lives in `src/app/changelog/page.tsx` (structured version array — clean prepend), `src/components/sections/Hero.tsx`, and the features page.
+
+**Awaiting Jamie's confirmation (outward-facing)**:
+- **T5** — edit + deploy the website (agent-11.com).
+- **T6** — cut the **v6.2.0** release: `git tag v6.2.0` + GitHub release. No install.sh version constant exists, so no SHA churn.
+
+**Next-direction note (for after Sprint 6)**: run a harness-driven loop to get a real token-cost-per-loop number and tune the 6c `PHASE_ERROR_BUDGET` default (3); optionally roll 6a–6c to the fleet via `apply-file.sh`.
+
+---
+
 ### [2026-06-20] — Sprint 6c: Coordinator phase-gated meta-loop ✅ (T1–T6 complete)
 
 **Summary**: Formalised the coordinator's outer loop on the 6a/6b foundation. The `/coord continue` loop is now phase-gated with convergence, a per-phase error budget, condensed returns, and evidence-based restart. Also closed a real gap in the 6a enforcement. Library surface only.

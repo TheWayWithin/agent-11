@@ -269,19 +269,21 @@ cp ~/Documents/BOS-AI/*.md ./documents/foundations/
 
 ---
 
-## 🆕 Current Version: v6.0 — The Lean Orchestrator
+## 🆕 Current Version: v6.2.0 — Loop Discipline & Read-Only Verification
 
-**Latest** (2026-05-03): structural evolution leveraging Claude Code's native primitives.
+**Latest** (2026-06-20): your agents can't game their own success criteria, and they can now improve work in safe, measured loops.
 
-- `library/CLAUDE.md` shrunk **575 → 78 lines** (-86%)
-- Active context tracking: 5 files → 3 (`handoff-notes.md` folded into `agent-context.md` as Phase Handoff blocks; `progress.md` write-only)
-- MCP loading: profile-switching retired, replaced by Claude Code's native `ENABLE_TOOL_SEARCH=auto`
-- Quality-gate hooks (`tsc`/`ruff`/`rubocop`) ship with the install
-- Three paste-ready Routine templates for scheduled/operational work (`pr-review`, `nightly-qa`, `backlog-triage`)
-- Karpathy operating constitution applied by every specialist
-- One-command migration for v5.x projects: `bash install.sh --upgrade` (v6.1.0+)
+- **Read-only quality gates**: the files that judge an agent's work (`.quality-gates.json`, `gates/`) are unwritable by every agent, enforced at the tool layer plus a Bash-write guard hook. A passing gate means the work was done, not that the threshold was loosened.
+- **Default-fail verification**: every success criterion starts failing and flips to pass only on captured command output. "Looks done" with no evidence counts as a failure.
+- **Ratchet `mission-optimize`**: optimisation runs as a measured loop in an isolated worktree. It keeps a change only if it beats a baseline, hard-reverts everything else, logs every attempt, caps itself, and never auto-merges. You stay the judge at merge time.
+- **`code-review-loop` skill**: a read-only critic raises evidence-backed findings, a read-write fixer addresses only those, re-audit until clean or capped.
+- **Phase-gated meta-loop** in `/coord continue`: advances on evidence, converges on two clean rounds, spends a per-phase error budget then escalates instead of grinding, and restarts from the last passed gate.
 
-[→ Release v6.0.0](https://github.com/TheWayWithin/agent-11/releases/tag/v6.0.0-lean-orchestrator) · [→ Release History](docs/RELEASE-HISTORY.md) · [→ CHANGELOG](CHANGELOG.md) · [→ MCP Guide](docs/MCP-GUIDE.md)
+Honest framing: loops are watched-first and human-merged. This is diligent, safe iteration with a trustworthy judge, not unattended autonomy.
+
+**v6.0 foundation** (the Lean Orchestrator): lean `library/CLAUDE.md` (575 → 78 lines), 3-file context tracking, native MCP tool-search (`ENABLE_TOOL_SEARCH=auto`), quality-gate hooks, Karpathy operating constitution, one-command v5→v6 upgrade (`install.sh --upgrade`).
+
+[→ Release History](docs/RELEASE-HISTORY.md) · [→ CHANGELOG](CHANGELOG.md) · [→ Loop Discipline Guide](project/field-manual/loop-discipline-guide.md) · [→ MCP Guide](docs/MCP-GUIDE.md)
 
 ### v5.x users: upgrading to v6.0
 
@@ -925,6 +927,8 @@ SENTINEL Mode with separation of duties (zero bugs reach production), self-verif
 ### Advanced Capabilities
 
 Extended thinking modes (Ultrathink/Think harder/Think hard/Think - 39% effectiveness improvement), 15+ MCP integrations (GitHub, Playwright, Context7, Firecrawl, Supabase), RECON Protocol design reviews with 7-phase audit, OpsDev workflow with staging validation.
+
+**Loop discipline (v6.2.0)**: read-only quality gates agents can't edit, default-fail verification (evidence or it didn't happen), the ratchet `mission-optimize` (keep-or-revert measured loops), the `code-review-loop` skill, and a phase-gated meta-loop in `/coord continue`. See the [Loop Discipline Guide](project/field-manual/loop-discipline-guide.md).
 
 [→ Extended Thinking](project/field-manual/extended-thinking-guide.md) | [→ Tool Permissions](project/field-manual/tool-permissions-guide.md) | [→ UI Doctrine](project/field-manual/ui-doctrine.md)
 
