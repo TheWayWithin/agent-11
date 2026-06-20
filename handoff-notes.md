@@ -1,8 +1,24 @@
-# Handoff Notes — Agent-11 (Sprint 6 CLOSED — v6.2.0 released)
+# Handoff Notes — Agent-11 (Sprint 6 CLOSED + website overhaul deployed + blog drafted)
 
-**Last Updated**: 2026-06-20
-**From**: Sprint 6d complete. Public docs consolidated + pushed; website deployed to agent-11.com; v6.2.0 released (tag `v6.2.0-loop-discipline` + GitHub release). Sprint 6 umbrella fully closed.
-**To**: Next session — Sprint 6 is done. Candidate next work (NOT yet specced): harness-driven loop to get a real token-cost-per-loop number → tune the 6c `PHASE_ERROR_BUDGET` default (3); optionally roll 6a–6c to the fleet via `apply-file.sh`.
+**Last Updated**: 2026-06-20 (pre-reboot save)
+**From**: Sprint 6 fully shipped (v6.2.0). Then a full agent-11.com website overhaul (deployed) + README repositioned to V&M 4.2 + a blog post drafted (not yet published).
+**To**: Next session — pick up from "OPEN ITEMS" below. Nothing is mid-flight or broken; all repos in sync with origin.
+
+## Repo state at reboot (both clean, in sync with origin)
+- **agent-11**: `main` = origin. Only untracked = the 4 blog drafts in `blog/` (saved on disk; drafts stay uncommitted until published via `jpub`) + junk (.DS_Store, data/).
+- **agent-11-website**: `main` = origin. All website work committed + deployed (Netlify). Pre-existing junk there (CLAUDE.md edits, a deleted template) is NOT ours; left untouched.
+- **aimpactmonitor**: `develop` has the 6b watched-run lazy-load change, pushed (`ee2b689`).
+
+## OPEN ITEMS (next session)
+1. **Blog post** drafted but NOT published: `blog/2026-06-20-loops-hype-vs-real-engineering*.md` (post + twitter + linkedin + wip). Real story = loops/autoresearch hype vs the old discipline (specs + a verifier the AI can't game). First-person singular per voice guide. To publish: `jpub /Users/jamiewatters/DevProjects/agent-11/blog/2026-06-20-loops-hype-vs-real-engineering --all --dry-run` then drop `--dry-run`. (Jamie's prompt said "we"; I kept "I" per voice guide — confirm if he wants team voice.)
+2. **Website remaining (optional, tracked in `agent-11-website/WEBSITE-UPDATE-SPEC-v6.2.0.md`)**: `agentExamples.ts` still has illustrative figures + a Discord mention inside *fictional sample-deliverable code blocks* (not live claims) — scrub only if Jamie wants. Historical changelog version entries keep their original numbers as a dated record. sitemap lastModified dates minor.
+3. **Sprint 6 follow-on (NOT specced)**: a harness-driven loop to get a real token-cost-per-loop number → tune the 6c `PHASE_ERROR_BUDGET` default (3); optionally roll 6a–6c to the fleet via `apply-file.sh`.
+
+## Website overhaul — DONE + DEPLOYED (2026-06-20)
+Repositioned agent-11.com + README to V&M 4.2 (honest practitioner; "the squad I build with, open to verify"; build-to-learn-not-to-sell) and made it factually true to v6.2.0.
+- **README** (agent-11 `6304e30`): tagline A, V&M intro + jamiewatters.work trust line, ROI/SaaS-killer pitch + autonomy overclaims cut, missions 20→13.
+- **Website batches** (all pushed/deployed): P0 integrity `c25d9cf` (removed fake pricing/billing, fake "Sarah K." testimonial, fabricated stats, the hosted-SaaS fiction in TechnicalConfidence, security overclaim, autonomy overclaims). P1 accuracy `016ba31` (13 missions, 11 agents, canonical secure-install command, retired minimal/core/full squad model, killed fake commands/config, v6.2 metadata, 2026 copyright). P2 freshness `8af1772` (Loop Discipline section on /features, v6.2 bullets). Fabrication removal `9577f96` (per Jamie: DELETED /discord + /blog routes entirely — he doesn't use Discord, blog had fake authors; stripped all unsourced comparison metrics — he has no hard numbers but "builds orders of magnitude faster", used as the honest qualitative line; deleted dormant HeroVariations.tsx; fixed a build-breaking `<a` tag + stale squad-size FAQ).
+- Every website batch built clean (`npm run build`) before deploy.
 
 ## Sprint 6 — CLOSED (2026-06-20)
 - **6a** read-only gates + default-fail verification ✅ (live-demoed)
