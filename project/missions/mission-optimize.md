@@ -33,6 +33,14 @@ replaces the execution core with the ratchet — **iterate on it safely**. Read
    number, lower-is-better or higher-is-better (state which). Example:
    `node bench/rank.js --json | jq .p95_ms`. If there is no such command, you are not ready
    to loop — build the benchmark first.
+   - **The metric must measure the intent, not a proxy for it.** Field-tested 2026-06: a run
+     targeting "faster page load" used *total JS bytes on disk* as the metric. Lazy-loading a
+     heavy chart library barely moved that number (the library is still shipped, just in a
+     deferred chunk) even though the actual initial-load win was real. The metric should have
+     been the route's **First Load JS**, not total disk size. Before you loop, ask: "if this
+     number drops, did the thing I actually care about improve?" If not, pick a different
+     number. This is Goodhart's law (see caveats); the wrong metric makes the loop optimise
+     the wrong thing diligently.
 3. **Baseline / goal** (optional) — current number and a target. If omitted, the loop measures
    the baseline itself and reports gains as percentages.
 4. **Caps** (optional, defaults below) — max attempts, wall-clock, diff size, token ceiling.
@@ -77,6 +85,15 @@ agent that can edit its own success metric will eventually pass by editing it.
 
 **Tasks**:
 - Create an isolated **git worktree** for the loop. The main checkout is never touched.
+  - **JS/TS projects need a dependency strategy.** Field-tested 2026-06: a separate-directory
+    worktree fails on Next.js/Turbopack (and similar) because the build rejects a symlinked
+    `node_modules` ("points out of the filesystem root"), and a full copy is gigabytes. Pick
+    one: (a) `npm install` inside the worktree (clean but slow), (b) hardlink deps into the
+    worktree (`rsync -a --link-dest`), or (c) for a single serial loop, skip the separate
+    directory and isolate with a **disposable branch in the main checkout** — equally safe
+    when all real work is already committed and pushed (hard-revert with `git checkout -- .`,
+    keep with a branch commit, never touch the base branch). Worktree isolation is the goal;
+    a disposable branch achieves it for serial loops.
 - Run the metric command **3 times** on the unchanged code; record the **median** as the
   baseline. This median-of-3 is the noise floor — it stops a lucky single run ratcheting in.
 - Set the **noise-floor threshold**: a change must beat the baseline by more than observed

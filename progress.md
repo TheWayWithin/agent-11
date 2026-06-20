@@ -8,6 +8,24 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
+### [2026-06-20] — Sprint 6b T5: watched validation run executed ✅ (Sprint 6b fully closed)
+
+**Summary**: Ran the ratchet end-to-end on a real repo (aimpactmonitor), watched by Jamie. The loop worked exactly as designed and surfaced two field findings now folded back into the mission. Sprint 6b is complete.
+
+**The run**: target = aimpactmonitor JS bundle. Metric = `npm run build && du -sk .next/static/chunks | awk '{print $1}'` (kB, lower better), deterministic baseline 2176 kB. One attempt: lazy-load the recharts trend chart on the dashboard via `dynamic()`. Build gate passed; bundle 2176 → 2168 kB → KEEP, committed to a disposable branch, logged to `.loops/optimize-bundle.log`. Nothing auto-merged; Jamie's `develop` untouched throughout. Mechanics proven: isolate → baseline → one change → build-gated measure → keep-or-revert → log.
+
+**Finding 1 — metric must match intent (Goodhart, live)**: the metric was *total JS bytes on disk*; lazy-loading only moved it 8 kB because recharts is still shipped (just deferred to its own chunk). The real initial-load win wasn't captured. Correct metric for "faster load" is the route's First Load JS, not total disk size. Folded into `mission-optimize.md` Required Inputs as a metric-selection caution.
+
+**Finding 2 — worktree breaks on JS/Turbopack**: a separate-directory worktree fails because Turbopack rejects a symlinked `node_modules` ("points out of the filesystem root"); a full copy is gigabytes. Fell back to a disposable branch in the main checkout (equally safe when all real work is committed/pushed). Folded into `mission-optimize.md` Phase 2 as a JS-project dependency strategy (npm install / hardlink / branch-in-place).
+
+**Cost note for 6c**: run was driven manually, so no clean token-per-loop number (dominant cost was build wall-time, ~4 builds). The 6c error budget should be seeded from a harness-run loop, not a hand-driven demo. Recorded as a 6c input.
+
+**Outcome on the target repo**: the lazy-load change is a genuine best-practice improvement (charting lib off the dashboard's initial load); kept on aimpactmonitor `develop` for Jamie to ship via his normal flow.
+
+**Deliverables touched**: `project/missions/mission-optimize.md` (both findings, field-tested 2026-06).
+
+---
+
 ### [2026-06-19] — Sprint 6b: Ratchet loops ✅ (T1–T4, T6 implemented; T5 watched run staged)
 
 **Summary**: Built the loop capability the research describes, on the 6a read-only-gate foundation. Two deliverables landed: `mission-optimize` rewritten as the Karpathy ratchet, and a new `code-review-loop` skill (the canonical scored critic→fixer→re-audit loop). Both depend on 6a — the metric/gate/critic that judges the work is read-only to the agent doing it. Library surface only; zero working-squad files touched.

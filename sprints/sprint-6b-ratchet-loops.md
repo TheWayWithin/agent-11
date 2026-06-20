@@ -3,7 +3,7 @@
 **Part of**: Sprint 6 — Loop Discipline & Read-Only Verification (umbrella → v6.2.0)
 **Predecessor**: Sprint 6a — Read-only gates ✅ (implemented + live-demoed 2026-06-16)
 **Successor**: Sprint 6c — Coordinator phase-gated meta-loop
-**Status**: Implemented 2026-06-19 (T1–T4, T6 done + verified). T5 watched run staged, pending Jamie.
+**Status**: ✅ COMPLETE 2026-06-20. T1–T4, T6 implemented + verified; T5 watched run executed on aimpactmonitor (loop proven, two findings folded back into mission-optimize).
 **Target release**: folds into **v6.2.0** with the rest of Sprint 6.
 
 ---
@@ -110,12 +110,16 @@ mechanics, watched-first-run, cost guardrails, honest limits) and
 `templates/mission-optimize-input-template.md`. Both registered in install.sh enumerated arrays
 (field_manual_files, template_files) so they deploy in remote mode; SHA re-regenerated after.
 
-### T5. Closing task 1 — watched validation run (Jamie's safe first experiment) — ⏳ STAGED, PENDING JAMIE
-Cannot be done autonomously: needs Jamie present on a real repo, nothing merged automatically.
-ONE repo with a frozen benchmark (AISearchArena candidate), ONE worktree, up to TEN experiments,
-watched end-to-end. Produces the first token-cost-per-converged-loop number, which seeds the 6c
-error budget. This is the demo + trust-building, not an unattended run. Run it when Jamie has a
-watched block free.
+### T5. Closing task 1 — watched validation run — ✅ DONE (2026-06-20)
+Executed on **aimpactmonitor** (not AISearchArena — its benchmark was broken; see the journey in
+progress.md). Metric: JS bundle size from `next build` + `du`. Baseline 2176 kB; one attempt
+(lazy-load recharts on the dashboard via `dynamic()`) passed the build gate and kept at 2168 kB.
+Loop mechanics proven end-to-end, watched, nothing auto-merged. **Two field findings folded back
+into `mission-optimize.md`**: (1) the metric must measure the intent, not a proxy — total-disk-JS
+undersold a lazy-load that genuinely improves First Load JS (Goodhart, live); (2) a separate-dir
+worktree breaks on JS/Turbopack (symlinked `node_modules` rejected) — use npm-install-in-worktree,
+hardlinks, or a disposable branch in place. No clean token-per-loop number (manual run); 6c should
+seed its error budget from a harness-run loop. Kept change lives on aimpactmonitor `develop`.
 
 ### T6. Closing task 2 — produce the detailed Sprint 6c spec and review with Jamie — ✅ DONE (2026-06-19)
 `sprints/sprint-6c-meta-loop.md` promoted from outline to detailed spec (7 resolved design

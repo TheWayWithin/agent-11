@@ -17,7 +17,7 @@
 - `sprints/sprint-6c-meta-loop.md` — promoted outline → detailed spec.
 - Tracking updated: project-plan.md (6b ✅, 6c spec-ready), progress.md (2026-06-19 entry), CHANGELOG `[Unreleased]`, sprint-6b spec task markers.
 
-**T5 watched validation run — STAGED, PENDING JAMIE (do NOT auto-run)**: needs Jamie present on a real repo (AISearchArena candidate), one worktree, up to 10 experiments, nothing merged automatically. It produces the first token-cost-per-converged-loop number, which seeds the 6c error budget. 6c execution is gated on this number.
+**T5 watched validation run — ✅ DONE (2026-06-20)**: executed on aimpactmonitor (AISearchArena's benchmark was broken). Loop proven end-to-end; kept a lazy-load bundle change (on aimpactmonitor `develop`). Two findings folded into mission-optimize (metric-must-match-intent; worktree breaks on JS/Turbopack → use branch-in-place). No clean token-per-loop number (manual run) — 6c should seed its error budget from a harness-run loop. **Sprint 6b is fully closed.**
 
 **Not committed**: per Jamie's standing rule, nothing committed/pushed without explicit confirmation.
 
