@@ -2,20 +2,20 @@
 
 # AGENT-11™
 
-### Your Elite AI Development Squad
+### The development squad I actually build with. Open to inspect, fork, and use.
 
 [![Claude Code Compatible](https://img.shields.io/badge/Claude%20Code-Native-blue?style=for-the-badge)](https://claude.ai)
 [![Deploy Time](https://img.shields.io/badge/Deploy%20Time-Under%201%20Second-green?style=for-the-badge)](QUICK-START.md)
 [![Success Rate](https://img.shields.io/badge/Success%20Rate-98%25-brightgreen?style=for-the-badge)](INSTALLATION.md)
 [![Agents](https://img.shields.io/badge/Agents-11%20Specialists-red?style=for-the-badge)](project/agents/)
-[![Missions](https://img.shields.io/badge/Missions-20%20Workflows-purple?style=for-the-badge)](project/missions/)
+[![Missions](https://img.shields.io/badge/Missions-13%20Workflows-purple?style=for-the-badge)](project/missions/)
 [![MCP Integration](https://img.shields.io/badge/MCP-Enabled-orange?style=for-the-badge)](project/field-manual/mcp-integration.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
 [![GitHub stars](https://img.shields.io/github/stars/TheWayWithin/agent-11?style=social)](https://github.com/TheWayWithin/agent-11/stargazers)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Support-yellow?logo=buy-me-a-coffee&style=flat)](https://buymeacoffee.com/jamiewatters)
 
-**One Founder. Eleven Specialists. Unlimited Potential.**
+**Build to learn, not to sell. The code is open. If I recommend it, I'm using it.**
 
 *If AGENT-11 has saved you time or helped you ship faster, consider ⭐ [starring the repo](https://github.com/TheWayWithin/agent-11) or [buying me a coffee](https://buymeacoffee.com/jamiewatters) ☕ to support development!*
 
@@ -27,13 +27,15 @@
 
 ## What is AGENT-11?
 
-AGENT-11 deploys 11 specialized AI agents to your project, orchestrating them through proven workflows to build production-ready software. Think of it as **hiring an elite development team** - except they're AI agents working together seamlessly.
+AGENT-11 deploys 11 specialized AI agents to your project and coordinates them through proven missions to build production-ready software. This is the development squad I build my own products with, open-sourced so you can inspect it, verify it, and run it yourself.
 
 **Instead of prompting Claude Code for every task, AGENT-11 provides:**
 - 🎯 **Specialized Agents** - Each with domain expertise (requirements, architecture, coding, testing, design, etc.)
-- 🎖️ **Coordinated Workflows** - 20 pre-built missions that orchestrate multiple agents automatically
+- 🎖️ **Coordinated Workflows** - 13 pre-built missions that orchestrate multiple agents automatically
 - 🧠 **Persistent Context** - Knowledge that survives across sessions and agent handoffs
-- ✅ **Quality Assurance** - Built-in testing, verification, and security protocols
+- ✅ **Read-only quality gates** - Agents cannot edit the criteria that judge their own work; "done" needs evidence, not assertion
+
+**Why it's open:** I build to learn, not to sell, and I give the code away. The value is the knowledge, the judgement, and the trust, not the tool. If it is here, I am using it; if it broke, you will hear why. This is the squad behind my own builds (Trader-7 and the AI Search Mastery tools); the build story lives at [jamiewatters.work](https://jamiewatters.work).
 
 ### How AGENT-11 Works with BOS-AI
 
@@ -310,16 +312,16 @@ Driven by a tier-aware registry file you maintain yourself (template at `project
 
 ## Is AGENT-11 Right for You?
 
-### ✅ Perfect For:
-- **Solo founders** building products without technical teams
-- **Developers** who want structured AI assistance with quality assurance
-- **Technical projects** requiring multiple specialties (frontend, backend, DevOps, testing)
-- **Long-running projects** needing context preservation across sessions
+### ✅ A good fit if you:
+- **Want to see how someone actually ships at the frontier** and run the same squad yourself
+- **Value open code you can inspect and verify** over a black box that asks for your trust
+- Are a **technical builder or founder** working across multiple specialties (frontend, backend, DevOps, testing)
+- Run **long, multi-phase projects** that need context preserved across sessions
 
-### ❌ Not Ideal For:
-- Simple scripts or one-off tasks (use Claude Code directly)
-- Projects requiring constant human oversight (AGENT-11 is autonomous)
-- Non-technical work (use BOS-AI for business operations)
+### ❌ Not the right tool if you:
+- Just need a one-off script (use Claude Code directly)
+- Want a hands-off system you never check (these are watched-first, human-merged loops; you stay the judge)
+- Need non-technical business operations (use BOS-AI)
 
 ## What You Can Build
 
@@ -342,17 +344,16 @@ The deployment system you just used was built by AGENT-11 itself—from concept 
 
 ## Why AGENT-11 Works
 
-**The SaaS Boilerplate Killer**: Why pay $300-500 for a static starter kit that still needs customization? AGENT-11 builds your entire application from scratch—authentication, payments, dashboards, APIs—all tailored to your exact requirements. No boilerplate limitations. No template constraints. Just your vision, built to spec.
+It is the squad I use on real builds, hardened by running it on its own development. The design principle from the loops research: the thing that judges the work is read-only to the thing doing it, so a passing gate means the work was done, not that the bar was quietly lowered.
 
-**Proven Performance** (v2.0 Results):
-- **100% file persistence** - Architectural solution eliminates silent failures completely
-- **39% effectiveness improvement** - Extended thinking + self-verification for better decisions
-- **84% token reduction** - Context editing + memory optimization enables 30+ hour missions
-- **37.5% faster missions** - Zero rework from file persistence failures
-- **Time to MVP**: Traditional team (3-6 months) → AGENT-11 (2-4 weeks)
-- **Cost per Feature**: Traditional ($10-50k) → AGENT-11 (<$500)
+**Real results from building with it** (dogfooded, not projected):
+- **100% file persistence** - an architectural fix that eliminated a class of silent failures
+- **39% effectiveness improvement** - extended thinking + self-verification
+- **84% token reduction** - context editing + memory optimisation for long, multi-phase missions
+- **37.5% faster missions** - zero rework once file persistence was fixed
+- **Read-only quality gates + default-fail verification** - agents cannot game their own success criteria
 
-[→ Complete Performance Metrics](docs/features/performance.md)
+[→ See what it has built](docs/PROJECTS-BUILT-WITH-AGENT-11.md)
 
 ## Your Squad
 
@@ -940,16 +941,12 @@ Extended thinking modes (Ultrathink/Think harder/Think hard/Think - 39% effectiv
 
 | Capability | Measurement | Impact |
 |------------|-------------|--------|
-| **Mission Success** | +15% (v4.0) | Opus 4.6 coordinator intelligence |
-| **Cost Efficiency** | -24% total cost | Opus iterations offset token cost |
 | **Agent Effectiveness** | 39% improvement | Extended thinking + self-verification |
-| **Token Efficiency** | 84% reduction | Context editing + memory optimization |
-| **MCP Context** | 60-90% reduction | Lean profile system (v4.1) |
-| **Autonomous Operation** | 30+ hours | Multi-day missions without intervention |
+| **Token Efficiency** | 84% reduction | Context editing + memory optimisation |
+| **MCP Context** | 60-90% reduction | Native tool-search (`ENABLE_TOOL_SEARCH=auto`) |
 | **Rework Reduction** | 50% fewer errors | Pre-handoff verification catches issues |
 | **Context Retention** | 100% persistence | Zero knowledge loss across sessions |
-| **Time to MVP** | 2-4 weeks | vs 3-6 months traditional |
-| **Cost per Feature** | <$500 | vs $10-50k traditional |
+| **Verification** | Evidence-gated | Default-fail criteria; agents cannot game their own gates |
 
 </div>
 
