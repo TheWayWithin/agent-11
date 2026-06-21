@@ -221,8 +221,11 @@ Structural requirements:
   where things stand.** Never a motivational flourish. Never a summary that restates
   what the reader just read.
 
-**Title**: a specific hook, not a template. "The afternoon the cron job ate my inbox"
-beats "Thoughts on Automation." Make it something someone would click.
+**Title**: a specific hook that promises the reader something. Two tests, both must pass:
+- **Specific, not a template**: "The afternoon the cron job ate my inbox" beats "Thoughts on Automation."
+- **Worth a stranger's time**: someone who does NOT already know your project must grasp what they'll get and want it. Avoid insider terms that only make sense after reading the post. Real bad example: "I built the autonomous-loop hype into my framework. The win was a gate the agent can't edit." — meaningless cold; "a gate the agent can't edit" means nothing until you've read the piece. Better: "Everyone's selling autonomous AI agents. I built one, and the real lesson was 20 years old." — names the thing the reader has heard of, signals a payoff, no jargon.
+
+If you can't say in one line why a stranger would give up their time for this, the title isn't done. Rewrite it.
 
 ### Step 5: Derive the Twitter/X version
 
@@ -248,8 +251,11 @@ beats "Thoughts on Automation." Make it something someone would click.
 ### Step 6: Derive the LinkedIn version
 
 - 800-1000 characters sweet spot. 3000 is the hard ceiling.
-- First 140 characters are the hook (what shows before "see more"). Must carry
-  weight on their own. No "Excited to share...", no throat-clearing.
+- **Lead with a headline-style first line.** LinkedIn feed posts have no title field, so
+  the first line IS the headline. Make it a short, punchy line that stands alone (the blog
+  title, tightened), then a blank line, then the body. Do not open with a full hook
+  sentence that runs into the body. The first 140 characters (what shows before "see more")
+  must carry weight on their own. No "Excited to share...", no throat-clearing.
 - Short paragraphs. One idea per line. White space is a feature.
 - Register: smart colleague sharing a real lesson. Not thought leader dropping wisdom.
 - Dual-link structure:
@@ -350,6 +356,17 @@ just warn — this is a slash command, you have full edit control. Fix it now.
 Also check for: rule-of-three adjective stacks, "it's not just X, it's Y"
 constructions, em dashes more than twice per 500 words, bullet points starting with
 bolded phrases that the following sentence restates. Fix each one by rewriting.
+
+**Plain-language / cold-read check.** Read every sentence as someone who does NOT know
+your project, your jargon, or your references. Flag and rewrite:
+- Named laws, theories, or concepts used as shorthand ("Goodhart's law", "the Pareto
+  frontier"). Explain the idea in plain words or cut the name. If the reader has to look
+  it up, it has failed. Real example caught in the wild: "That is Goodhart's law with the
+  safety off" — replaced with "I'd picked the wrong number."
+- Insider metaphors that only land if you built the thing ("a gate the agent can't edit").
+  Say what it actually is.
+- Any sentence that is clever before it is clear. Clear wins. Apply the pub test: would
+  Jamie say this out loud to a friend and be understood without explaining?
 
 **URL consistency check** — the URL in every social post must use the *slug only*,
 not the file name. The `<slug>` is the value of the `slug:` field in the blog
