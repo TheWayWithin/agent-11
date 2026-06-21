@@ -316,6 +316,24 @@ The post must:
     hook length
   - `blog/YYYY-MM-DD-slug-wip.md` — wip.co post with character count and hashtag
 
+**Required file format for the three social files (this is what `jpub` parses — get it wrong and `jpub` publishes the wrong text).** Each social file MUST begin with a heading line naming the platform, then the post body fenced between two `---` lines:
+
+```
+# Twitter/X
+---
+<the tweet text, nothing else>
+---
+```
+
+Use `# Twitter/X` for the twitter file, `# LinkedIn` for the linkedin file, `# WIP` for the wip file. Rules:
+
+- The heading on line 1 is how `jpub` detects the file type. It is metadata and is NOT published.
+- `jpub` publishes ONLY the text between the first and second `---`. Put the post body there and nothing else.
+- Do NOT put an HTML comment (`<!-- ... -->`) or any other text before the heading. `jpub` will treat anything ahead of the fenced content as a separate post and publish it (e.g. an HTML comment posted as tweet 1).
+- Put the character count (and LinkedIn hook length) on the heading line, e.g. `# Twitter/X (271/280 chars)` or `# LinkedIn (1063/3000, hook 129/140)`. Never as a comment before the heading.
+
+The long-form blog `.md` is different: it uses YAML frontmatter (`---` on line 1, key/value lines, `---`, then the post body). Only the three social files use the `# Heading` + fenced-body format above.
+
 ### Step 9: Voice scrub
 
 After drafting, scan all four outputs for any word on the AI-tell blacklist:
