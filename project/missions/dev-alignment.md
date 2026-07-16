@@ -13,6 +13,8 @@
 - Project documentation
 - User context/vision
 
+> **Have BOS-AI foundation documents?** Put them in `documents/foundations/` and run `/foundations init` → `/bootstrap` after this mission's codebase analysis — see the [BOS-AI Handoff Guide](../field-manual/bos-ai-handoff.md).
+
 ---
 
 ## Mission Briefing

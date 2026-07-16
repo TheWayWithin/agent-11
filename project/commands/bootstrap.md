@@ -839,10 +839,10 @@ Cached summary will be updated after successful generation.
 ## SCHEMA COMPLIANCE
 
 The generated `project-plan.md` MUST comply with:
-- `project/schemas/project-plan.schema.yaml`
+- `schemas/project-plan.schema.yaml`
 
 The generated `.context/phase-1-context.yaml` MUST comply with:
-- `project/schemas/phase-context.schema.yaml`
+- `schemas/phase-context.schema.yaml`
 
 **Validation is automatic** - if generation fails validation, the command will retry with stricter constraints before failing.
 

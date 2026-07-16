@@ -1,5 +1,7 @@
 # BOS-AI ↔ AGENT-11 Integration Architecture
 
+> **Archive — superseded design proposal.** The implemented BOS-AI handoff is documented in [project/field-manual/bos-ai-handoff.md](project/field-manual/bos-ai-handoff.md). Treat this file as historical design material, not instructions.
+
 **Architecture Decision Record**
 - **Decision**: Document-based integration bridge between BOS-AI and AGENT-11 systems
 - **Context**: Separate projects requiring seamless handoff with no direct agent communication

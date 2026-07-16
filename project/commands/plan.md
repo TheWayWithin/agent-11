@@ -18,14 +18,14 @@
 
 Before executing any `/plan` command:
 1. Verify `project-plan.md` exists (created by `/bootstrap`)
-2. Validate plan structure against `project/schemas/project-plan.schema.yaml`
+2. Validate plan structure against `schemas/project-plan.schema.yaml`
 3. Check for `.context/phase-N-context.yaml` files for active phases
 
 ### Error Handling
 
 **Common Errors**:
 - **No project-plan.md**: "No project plan found. Run `/bootstrap` to generate one."
-- **Invalid schema**: "Project plan validation failed. Check against schema at project/schemas/project-plan.schema.yaml"
+- **Invalid schema**: "Project plan validation failed. Check against schema at schemas/project-plan.schema.yaml"
 - **Phase not found**: "Phase N not found. Available phases: 1-{total}"
 - **Invalid field**: "Field '{field}' not recognized. Valid fields: task_status, blockers, current_focus"
 
@@ -747,9 +747,9 @@ project/
 ### Schema Validation
 
 All `/plan` operations must validate against schemas:
-- `project/schemas/project-plan.schema.yaml` - Main plan structure
-- `project/schemas/phase-context.schema.yaml` - Phase context files
-- `project/schemas/quality-gate.schema.yaml` - Quality gate definitions
+- `schemas/project-plan.schema.yaml` - Main plan structure
+- `schemas/phase-context.schema.yaml` - Phase context files
+- `schemas/quality-gate.schema.yaml` - Quality gate definitions
 
 **Validation Steps**:
 1. Parse YAML/frontmatter
@@ -763,7 +763,7 @@ All `/plan` operations must validate against schemas:
 ❌ Schema Validation Failed
 
 File: project-plan.md
-Schema: project/schemas/project-plan.schema.yaml
+Schema: schemas/project-plan.schema.yaml
 
 Errors:
 - Missing required field: metadata.project_name
@@ -1047,7 +1047,7 @@ Task(
 ### Schema Validation Errors
 ```bash
 # If schema validation fails:
-1. Check schema at project/schemas/project-plan.schema.yaml
+1. Check schema at schemas/project-plan.schema.yaml
 2. Compare plan structure to schema requirements
 3. Fix manually OR regenerate with /bootstrap
 4. Validate: /plan status (will show validation errors)
@@ -1058,7 +1058,7 @@ Task(
 # If .context/phase-N-context.yaml missing:
 1. /plan will use defaults (no blockers, generic next action)
 2. Create manually from template:
-   cp project/schemas/phase-context.schema.yaml .context/phase-2-context.yaml
+   cp schemas/phase-context.schema.yaml .context/phase-2-context.yaml
 3. OR run phase initialization:
    /coord phase-init 2
 ```
@@ -1172,5 +1172,5 @@ Task(
 ---
 
 **Last Updated**: 2025-12-30 (Phase 9D - /plan Command Specification)
-**Dependencies**: /bootstrap, /foundations, project/schemas/*.yaml
+**Dependencies**: /bootstrap, /foundations, schemas/*.yaml
 **Related**: Phase 9 Foundation Docs Sprint, planarchive.md

@@ -1,5 +1,7 @@
 # BOS-AI ↔ AGENT-11 Integration Standards
 
+> **Archive — superseded design proposal.** The implemented BOS-AI handoff is documented in [project/field-manual/bos-ai-handoff.md](project/field-manual/bos-ai-handoff.md). Treat this file as historical design material, not instructions.
+
 **Version**: 1.0.0  
 **Last Updated**: 2025-01-29  
 **Status**: Production Ready

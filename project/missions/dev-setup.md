@@ -12,6 +12,8 @@
 - GitHub repository name/URL
 - Project vision and goals
 
+> **Starting from BOS-AI foundation documents?** Use the `/foundations init` → `/bootstrap` rail instead of this mission — see the [BOS-AI Handoff Guide](../field-manual/bos-ai-handoff.md). This mission is for projects without foundation documents.
+
 ---
 
 ## Mission Briefing

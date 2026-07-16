@@ -1,244 +1,62 @@
-# BOS-AI Integration Example: TaskFlow
+# BOS-AI Handoff Example: TaskFlow
 
-This directory contains a **realistic example** of BOS-AI output that demonstrates proper integration with AGENT-11. Use this as a reference when preparing your own BOS-AI strategy documents for AGENT-11 execution.
+A realistic example of BOS-AI foundation documents, ready for the AGENT-11 handoff rail. Use it to learn the expected format before your first handoff, or as a test fixture for the workflow.
 
-## What This Example Demonstrates
+**Project**: TaskFlow — a simple task management SaaS for solopreneurs.
 
-**Project**: TaskFlow - A simple task management SaaS for solopreneurs
-**Purpose**: Show what a complete BOS-AI PRD bundle looks like
-**Use Case**: Learn the expected format and structure before your first integration
-
-## Directory Structure
+## Directory structure
 
 ```
 examples/bos-ai-integration/
-├── README.md                  # This file
-└── ideation/
-    ├── PRD.md                 # Main product requirements document
-    ├── context.md             # Business context and market analysis
-    ├── brand-guidelines.md    # Brand identity and voice
-    └── vision.md              # Long-term product vision
+├── README.md                        # This file
+└── documents/foundations/
+    ├── prd.md                       # Product requirements (required)
+    ├── vision.md                    # Long-term product vision
+    ├── brand-style-guide.md         # Brand identity and voice
+    └── market-research.md           # Business context and market analysis
 ```
 
-## How to Use This Example
+The filenames matter: `/foundations` maps files to categories by name (`prd.md` → prd, `vision.md` → vision, `brand-style-guide.md` → brand, `market-research.md` → research). See the `/foundations` command documentation for the full mapping table.
 
-### Option 1: Quick Test Run
-
-Test AGENT-11's workflow with this example project:
+## Try the workflow
 
 ```bash
-# Navigate to a temporary workspace
-cd ~/Desktop && mkdir taskflow-test && cd taskflow-test
+# In a scratch directory with AGENT-11 installed:
+mkdir taskflow-test && cd taskflow-test
+# ... install AGENT-11 ...
 
-# Copy the example ideation files
-cp -r /Users/jamiewatters/DevProjects/agent-11/examples/bos-ai-integration/ideation ./
+# Copy the example documents in
+cp -r <agent-11-repo>/examples/bos-ai-integration/documents ./
 
-# Initialize AGENT-11 with the example
-/coord dev-setup ideation/PRD.md
-
-# Start development
-/coord build ideation/PRD.md
+# Run the rail
+/foundations init      # scan + extract to .context/structured/
+/bootstrap             # generate project-plan.md
+/coord continue        # start building
 ```
 
-This demonstration will:
-- Analyze the PRD and supporting documents
-- Create `project-plan.md` with strategic roadmap
-- Create `progress.md` for tracking deliverables
-- Create `architecture.md` with technical design
-- Begin implementation based on requirements
+## What each document contributes
 
-### Option 2: Use as Template
+| File | Role | Category |
+|------|------|----------|
+| `prd.md` | The WHAT: features, user stories, acceptance criteria, success metrics | prd (required) |
+| `vision.md` | The future: long-term goals, MVP scope prioritization | vision |
+| `brand-style-guide.md` | The style: visual identity, tone, design principles | brand |
+| `market-research.md` | The why: market opportunity, pain points, competition | research |
 
-Adapt this structure for your own project:
+Only the PRD is required. This is the **lite tier** in practice: a single `documents/foundations/prd.md` is enough to run `/foundations init` → `/bootstrap`. The other documents enrich design and prioritization decisions when present.
 
-```bash
-# Create your project directory
-mkdir my-project && cd my-project
-mkdir ideation
+## Format guidelines
 
-# Copy TaskFlow files as templates
-cp /Users/jamiewatters/DevProjects/agent-11/examples/bos-ai-integration/ideation/PRD.md ideation/PRD.md
+- Standard Markdown: H2/H3 headers, bullet lists, bold for emphasis.
+- User stories in INVEST format with testable acceptance criteria.
+- MVP scope clearly separated from future features.
+- Technical constraints stated with rationale.
 
-# Edit the files with your product details
-# Initialize AGENT-11
-/coord dev-setup ideation/PRD.md
-```
+## After the handoff
 
-### Option 3: Learn the Format
+The copy is a one-time release. Once documents are in the dev repo, the dev repo owns them — edit them there and run `/foundations refresh`. Don't maintain parallel copies in the business repo. Full rationale: [BOS-AI Handoff Guide](../../project/field-manual/bos-ai-handoff.md).
 
-Review these files to understand BOS-AI → AGENT-11 document expectations:
+## Helpful resources
 
-1. **PRD.md** - Feature structure, user stories, and acceptance criteria format
-2. **context.md** - Market analysis and user pain point documentation
-3. **brand-guidelines.md** - Brand identity and design guidance
-4. **vision.md** - Long-term goals and MVP scope prioritization
-
-## What Makes This Example Realistic?
-
-### Complete Product Definition
-- **Target Market**: Solopreneurs managing 3-10 projects simultaneously
-- **Core Problem**: Existing tools are too complex or too simple
-- **Solution**: Focused task management with smart prioritization
-
-### Proper Structure for AGENT-11
-- ✅ Clear user stories in INVEST format
-- ✅ Specific acceptance criteria (testable and measurable)
-- ✅ Success metrics defined upfront
-- ✅ Technical constraints identified
-- ✅ MVP scope clearly separated from future features
-
-### Real-World Considerations
-- Market research and competitive analysis
-- User personas based on actual solopreneur pain points
-- Brand guidelines that inform UI/UX decisions
-- Vision document that explains strategic priorities
-
-## Key Learnings from This Example
-
-### 1. Document Relationships
-
-**PRD.md** (The What):
-- Features and requirements
-- User stories and acceptance criteria
-- Success metrics
-
-**context.md** (The Why):
-- Market opportunity
-- User pain points
-- Competitive landscape
-
-**brand-guidelines.md** (The How - Style):
-- Visual identity
-- Tone of voice
-- Design principles
-
-**vision.md** (The Future):
-- Long-term goals
-- Strategic priorities
-- Growth roadmap
-
-### 2. What AGENT-11 Expects
-
-**Minimum Required**:
-- At least one file in `ideation/` with product requirements
-- Clear feature descriptions or user stories
-- Some indication of success criteria
-
-**Recommended for Best Results**:
-- PRD.md with complete requirements
-- Supporting documents for context
-- Clear separation of MVP vs future features
-- Testable acceptance criteria
-
-**Optional but Helpful**:
-- Brand guidelines (informs design decisions)
-- Vision document (guides prioritization)
-- Market analysis (validates assumptions)
-
-### 3. Format Guidelines
-
-**Markdown Structure**:
-```markdown
-## Section Headers (H2)
-### Subsections (H3)
-- Bullet points for lists
-- **Bold** for emphasis
-- Clear numbering for sequential steps
-```
-
-**User Story Format**:
-```markdown
-### Story: [Brief Title]
-
-**As a** [user type]
-**I want to** [action]
-**So that** [benefit]
-
-**Acceptance Criteria**:
-- [ ] Specific, measurable outcome 1
-- [ ] Specific, measurable outcome 2
-- [ ] Edge case handling
-```
-
-**Technical Requirements**:
-```markdown
-### Technical Constraints
-- Constraint 1 with rationale
-- Constraint 2 with alternatives considered
-- Performance requirement with metric
-```
-
-## Common Questions
-
-### Q: Do I need all four files?
-**A**: No. AGENT-11 works with just `PRD.md`. Additional files provide richer context but aren't required.
-
-### Q: Can I use different file names?
-**A**: Yes. AGENT-11 reads all files in `ideation/` directory. Names are for your organization.
-
-### Q: What if my BOS-AI output looks different?
-**A**: That's fine. AGENT-11 is flexible. As long as requirements are clear, format variations are acceptable.
-
-### Q: Can I add more files?
-**A**: Yes. Add market research, user interviews, technical specs - AGENT-11 uses all available context.
-
-### Q: What about images or diagrams?
-**A**: Currently, AGENT-11 works best with Markdown text. Reference images by filename, but include text descriptions.
-
-## Next Steps
-
-### For New Users
-
-1. **Review Example Files**: Examine the structure and format of included documents
-2. **Test Integration**: Run AGENT-11 with this example to observe the workflow
-3. **Create Custom Documents**: Adapt these templates for your own projects
-4. **Consult Documentation**: Reference full guides for troubleshooting and advanced usage
-
-### Helpful Resources
-
-- **[BOS-AI Quickstart](../../project/field-manual/bos-ai-quickstart.md)** - 5-minute setup guide
-- **[BOS-AI Integration Guide](../../project/field-manual/bos-ai-integration-guide.md)** - Complete documentation
-- **[Getting Started](../../project/field-manual/getting-started.md)** - AGENT-11 basics
-
-## Example Project Tech Stack
-
-The TaskFlow example uses this technology stack (defined in PRD.md):
-
-**Frontend**:
-- React + TypeScript
-- Tailwind CSS for styling
-- Vite for build tooling
-
-**Backend**:
-- Supabase (managed Postgres)
-- Row Level Security for auth
-- Realtime subscriptions
-
-**Deployment**:
-- Vercel for frontend
-- Supabase managed backend
-- GitHub Actions for CI/CD
-
-**Why This Stack?**:
-- Fast MVP development
-- Minimal DevOps overhead for solopreneurs
-- Proven patterns in AGENT-11
-- Cost-effective for early stage
-
-## Contributing
-
-If you create a BOS-AI → AGENT-11 integration for your project and want to share as an example, please:
-
-1. Create a directory in `examples/` with your project name
-2. Include complete `ideation/` files
-3. Add README.md explaining your project
-4. Remove any sensitive information (API keys, private data)
-5. Submit PR with clear description
-
----
-
-**Example Status**: ✅ Complete and ready to use
-**Created**: 2025-10-18
-**Maintained By**: AGENT-11 Documentation Team
-
-**Questions?** See the [BOS-AI Integration Guide](../../project/field-manual/bos-ai-integration-guide.md) or open an issue.
+- [BOS-AI Handoff Guide](../../project/field-manual/bos-ai-handoff.md) — the canonical handoff documentation
+- [Getting Started](../../project/field-manual/getting-started.md) — AGENT-11 basics

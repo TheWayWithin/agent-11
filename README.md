@@ -41,7 +41,7 @@ AGENT-11 deploys 11 specialized AI agents to your project and coordinates them t
 
 AGENT-11 is the **technical execution arm** of the BOS-AI ecosystem. BOS-AI handles strategic planning (30 business agents) → AGENT-11 handles software development (11 technical agents).
 
-**You can use AGENT-11 standalone** without BOS-AI. [→ Complete BOS-AI Integration Guide](project/field-manual/bos-ai-integration-guide.md)
+**You can use AGENT-11 standalone** without BOS-AI. [→ BOS-AI Handoff Guide](project/field-manual/bos-ai-handoff.md)
 
 ---
 
@@ -267,7 +267,7 @@ cp ~/Documents/BOS-AI/*.md ./documents/foundations/
 /coord continue
 ```
 
-**Skip BOS-AI?** Start directly with `/coord dev-setup vision.md` or `/coord mvp requirements.md`
+**Skip BOS-AI?** Use the lite tier: save your spec as `documents/foundations/prd.md`, then run the same `/foundations init` → `/bootstrap` rail. See the [BOS-AI Handoff Guide](project/field-manual/bos-ai-handoff.md).
 
 ---
 
@@ -887,15 +887,15 @@ AGENT-11 is built with a security-first approach:
 
 ### BOS-AI Integration
 
-**Workflow**: BOS-AI (strategy) → AGENT-11 (execution)
+**Workflow**: BOS-AI (strategy) → AGENT-11 (execution). The handoff is a one-time release: after it, the dev repo owns the PRD.
 
 ```bash
-# 1. Copy BOS-AI outputs to ideation/
-# 2. Initialize: /coord dev-setup ideation/PRD.md
-# 3. Build: /coord build ideation/PRD.md
+# 1. Copy BOS-AI outputs to documents/foundations/
+# 2. Process: /foundations init
+# 3. Plan + build: /bootstrap, then /coord continue
 ```
 
-[→ Complete BOS-AI Integration Guide](project/field-manual/bos-ai-integration-guide.md)
+[→ BOS-AI Handoff Guide](project/field-manual/bos-ai-handoff.md)
 
 ## 🚀 Features & Capabilities
 
@@ -1042,7 +1042,7 @@ AGENT-11 is powerful but not unlimited. Understanding these constraints helps yo
 - [Mission Cheatsheet](project/field-manual/mission-execution-cheatsheet.md) | [Custom Missions](project/field-manual/creating-missions.md) | [Coordinator Commands](project/field-manual/coordinator-commands.md) | [Mission Library](project/missions/library.md)
 
 ### 🏗️ Architecture & Planning
-- [Architecture SOP](project/field-manual/architecture-sop.md) | [Architecture Template](templates/architecture.md) | [Getting Started](project/field-manual/getting-started.md) | [BOS-AI Integration](project/field-manual/bos-ai-integration-guide.md)
+- [Architecture SOP](project/field-manual/architecture-sop.md) | [Architecture Template](templates/architecture.md) | [Getting Started](project/field-manual/getting-started.md) | [BOS-AI Handoff](project/field-manual/bos-ai-handoff.md)
 
 ### 🆕 Modernization Guides (v2.0-v4.1)
 - [Memory Management](project/field-manual/memory-management.md) | [Bootstrap Guide](project/field-manual/bootstrap-guide.md) | [Context Editing](project/field-manual/context-editing-guide.md) | [Extended Thinking](project/field-manual/extended-thinking-guide.md) | [Tool Permissions](project/field-manual/tool-permissions-guide.md) | [Enhanced Prompting](project/field-manual/enhanced-prompting-guide.md)

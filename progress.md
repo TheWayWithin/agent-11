@@ -1020,3 +1020,20 @@ AGENT-11's existing 7 SaaS skills had `name` ✓ but were missing `description`.
 ### [2026-04-19] — v6.0 Evolution Kickoff
 
 Continuing from the v6.0 planning session committed in `aa6ecdb`. Historic context (pre-v6 plan, Sprint 9/11 work) preserved in `.archive/2026-04-17-pre-v6/`.
+
+---
+
+### [2026-07-16] — PRJ-14: BOS-AI handoff optimisation (tasks 1–5)
+
+**Context**: Mission-control project PRJ-14 (`~/shared/mission-control/projects/PRJ-14-bos-ai-agent-11-handoff.md`). Review of the BOS-AI → AGENT-11 handoff found two competing conventions, installer gaps, and no documented ownership rule. ModelOptix pair audit proved the PRD's source of truth migrates to the dev repo once building starts — so the handoff is a one-time release, not a sync.
+
+**Delivered (uncommitted, pending Jamie's commit approval)**:
+1. **Installer (A11-ISS-1)**: all 9 `foundation-*.schema.yaml` added to install.sh `schema_files`; verified via test install (16 schemas land in `./schemas/`). Dangling `project/schemas/` refs → `schemas/` in foundations.md, plan.md, bootstrap.md, stack-profiles README. `validate_foundations.py` deliberately NOT deployed (unreferenced + stale, knows 5 of 9 categories — stays internal). Checksum regenerated.
+2. **Single convention (A11-ISS-2)**: deleted `field-manual/bos-ai-integration-guide.md` + `bos-ai-quickstart.md`; new canonical `field-manual/bos-ai-handoff.md` (two entry tiers + ownership-transfer rule) written and added to install.sh field-manual deploy list (verified installs). README relinked/reworded (4 spots incl. the stale `ideation/` snippet at the BOS-AI Integration section). Root `INTEGRATION-GUIDE.md` slimmed to a pointer (the bundle/validation-gateway architecture it described was never implemented); archive banners on WORKFLOWS.md, INTEGRATION-STANDARDS.md, BOS-AI-AGENT-11-INTEGRATION-ARCHITECTURE.md. Example `examples/bos-ai-integration/` converted `ideation/` → `documents/foundations/` with mapper-compatible filenames (git mv) + README rewritten on the `/foundations` rail.
+3. **Missions**: dev-setup + dev-alignment got BOS-AI routing notes (use `/foundations` rail when foundation docs exist; missions keep `ideation.md` for the no-foundation-docs case).
+4. **Lite tier**: `/foundations` vision requirement relaxed — prd stays required; vision now "conditionally required" (error for saas builds since `/bootstrap` needs vision.yaml there; warning for tools/libraries/APIs). Enables PRD-only entry for ad-hoc builds.
+5. **BOS-AI repo** (`~/DevProjects/BOS-AI/README.md`, uncommitted): ownership-transfer paragraph added to the AGENT-11 handoff section, linking to the new guide.
+
+**Verification**: `bash -n` clean; two full test installs into scratchpad confirmed schemas + guide deploy; `shasum -c` OK; no dangling links to deleted guides outside historical audit docs.
+
+**Next**: PRJ-14 task 6 — pilot the lite tier on the Digital Estate repo (PRJ-13) once created.

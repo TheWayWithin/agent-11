@@ -99,7 +99,7 @@ Edit each section to match your preferred stack. See the schema for all availabl
 
 ```bash
 # View all available options
-cat project/schemas/stack-profile.schema.yaml
+cat schemas/stack-profile.schema.yaml
 ```
 
 ### 3. Add Project-Specific Values
@@ -200,7 +200,7 @@ deployment:
 
 ## Schema Reference
 
-See `project/schemas/stack-profile.schema.yaml` for:
+See `schemas/stack-profile.schema.yaml` for:
 - All available fields and their types
 - Valid enum values for each option
 - Required vs optional fields

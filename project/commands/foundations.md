@@ -85,7 +85,7 @@ sha256sum documents/foundations/<filename> | cut -d' ' -f1
 
 **Create directory**: `.context/structured/`
 
-**Schema References** (in `project/schemas/`):
+**Schema References** (in `schemas/`):
 - `foundation-prd.schema.yaml`
 - `foundation-vision.schema.yaml`
 - `foundation-roadmap.schema.yaml`
@@ -255,7 +255,7 @@ VALIDATION CHECK: Before completing, verify:
 - ALL entities mentioned in features exist in data_model
 - Acceptance criteria for EVERY feature
 
-Schema reference: project/schemas/foundation-prd.schema.yaml
+Schema reference: schemas/foundation-prd.schema.yaml
 ```
 
 **For Brand Documents** (EXACT MODE):
@@ -349,7 +349,7 @@ NOTE: For neutrals, shadows, animations, and breakpoints - use Tailwind CSS
 defaults if not specified in source document. Add YAML header comment noting
 industry-standard values were used.
 
-Schema reference: project/schemas/foundation-brand.schema.yaml
+Schema reference: schemas/foundation-brand.schema.yaml
 ```
 
 **For Vision Documents** (SYNTHESIS MODE):
@@ -363,7 +363,7 @@ CRITICAL RULES:
 4. Capture core values with their principles
 5. Preserve aspirational language and emotional context
 
-Schema reference: project/schemas/foundation-vision.schema.yaml
+Schema reference: schemas/foundation-vision.schema.yaml
 ```
 
 **For ICP Documents** (MAPPING MODE):
@@ -378,7 +378,7 @@ CRITICAL RULES:
 5. Include ALL quotes verbatim
 6. Extract ALL anti-personas
 
-Schema reference: project/schemas/foundation-icp.schema.yaml
+Schema reference: schemas/foundation-icp.schema.yaml
 ```
 
 **For Positioning Documents** (SYNTHESIS MODE):
@@ -433,7 +433,7 @@ CRITICAL RULES:
 
 9. SUCCESS CRITERIA - Extract ALL indicators
 
-Schema reference: project/schemas/foundation-positioning.schema.yaml
+Schema reference: schemas/foundation-positioning.schema.yaml
 ```
 
 **For Marketing Documents** (SYNTHESIS MODE):
@@ -448,7 +448,7 @@ CRITICAL RULES:
 5. Include ALL competitive differentiators
 6. Extract launch plans and timelines
 
-Schema reference: project/schemas/foundation-marketing.schema.yaml
+Schema reference: schemas/foundation-marketing.schema.yaml
 ```
 
 **For Roadmap Documents** (SYNTHESIS MODE):
@@ -628,7 +628,7 @@ VALIDATION CHECK:
 - success_metrics include trust_specific AND pricing_page (if in source)
 - risk_monitoring includes early_warning_indicators
 
-Schema reference: project/schemas/foundation-roadmap.schema.yaml
+Schema reference: schemas/foundation-roadmap.schema.yaml
 ```
 
 **For Pricing Documents** (MAPPING MODE):
@@ -676,7 +676,7 @@ VALIDATION CHECK:
 - All objections have responses
 - Competitive comparison has total cost calculation
 
-Schema reference: project/schemas/foundation-pricing.schema.yaml
+Schema reference: schemas/foundation-pricing.schema.yaml
 ```
 
 **Output files**: `.context/structured/{category}.yaml`
@@ -816,7 +816,7 @@ Recommendation: Use "{canonical_term}" consistently (from {authoritative_section
 
 ### Phase 4: Generate handoff-manifest.yaml
 
-**Schema Reference**: `project/schemas/handoff-manifest.schema.yaml`
+**Schema Reference**: `schemas/handoff-manifest.schema.yaml`
 
 **Manifest Structure**:
 ```yaml
@@ -858,7 +858,9 @@ extraction:
 
 **Required Documents** (must have):
 - prd (PRD, requirements, or product-requirements)
-- vision (vision-mission, vision, or strategic-plan)
+
+**Conditionally Required**:
+- vision (vision-mission, vision, or strategic-plan) — required for SaaS/product builds (`/bootstrap` needs vision.yaml for saas project types); advisable for tools, libraries, and APIs. Infer the project type from the PRD; when in doubt, treat a missing vision as a warning, not an error.
 
 **Advisable Documents** (should have):
 - roadmap (strategic-roadmap, roadmap, or development-plan)
@@ -1155,7 +1157,9 @@ cp ~/BOS-AI-output/*.md documents/foundations/
 
 **Required Documents** (error if missing):
 - prd: Must have at least one of [prd.md, requirements.md, product-requirements.md]
-- vision: Must have at least one of [vision-mission.md, vision.md, strategic-plan.md]
+
+**Conditionally Required**:
+- vision: At least one of [vision-mission.md, vision.md, strategic-plan.md]. Error if missing for SaaS/product builds (`/bootstrap` requires vision.yaml for saas project types); warning if missing for tools, libraries, and APIs (lite tier).
 
 **Advisable Documents** (warning if missing):
 - roadmap: Should have at least one of [strategic-roadmap.md, roadmap.md, development-plan.md]

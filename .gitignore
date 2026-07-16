@@ -32,7 +32,7 @@ mcp-setup.sh
 .archive/
 
 # Analysis and research documents (archived)
-BOS-AI*.md
+/BOS-AI*.md
 LIVE-DEPLOYMENT-TEST-REPORT.md
 Documents/
 

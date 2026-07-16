@@ -1041,6 +1041,8 @@ install_mission_system() {
         "project/field-manual/architectural-principles.md"
         # Sprint 6b: loop discipline (ratchet + scored review loop)
         "project/field-manual/loop-discipline-guide.md"
+        # PRJ-14: BOS-AI handoff (two tiers + ownership-transfer rule)
+        "project/field-manual/bos-ai-handoff.md"
     )
     
     local total_files=$((${#mission_files[@]} + ${#command_files[@]} + ${#template_files[@]} + ${#field_manual_files[@]}))
@@ -1238,7 +1240,7 @@ install_mission_system() {
     local SCHEMAS_DIR="$(pwd)/schemas"
     mkdir -p "$SCHEMAS_DIR"
 
-    local schema_files=("skill.schema.yaml" "stack-profile.schema.yaml" "skill-loading.schema.yaml" "quality-gate.schema.yaml" "project-plan.schema.yaml" "phase-context.schema.yaml" "handoff-manifest.schema.yaml")
+    local schema_files=("skill.schema.yaml" "stack-profile.schema.yaml" "skill-loading.schema.yaml" "quality-gate.schema.yaml" "project-plan.schema.yaml" "phase-context.schema.yaml" "handoff-manifest.schema.yaml" "foundation-prd.schema.yaml" "foundation-vision.schema.yaml" "foundation-roadmap.schema.yaml" "foundation-icp.schema.yaml" "foundation-research.schema.yaml" "foundation-brand.schema.yaml" "foundation-positioning.schema.yaml" "foundation-marketing.schema.yaml" "foundation-pricing.schema.yaml")
     for schema in "${schema_files[@]}"; do
         if [[ "$execution_mode" == "local" ]]; then
             if [[ -f "$PROJECT_ROOT/project/schemas/$schema" ]]; then
