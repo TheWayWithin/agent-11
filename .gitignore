@@ -53,3 +53,7 @@ templates/verification-framework.md
 test-projects/*
 # Sprint 5a T6: install-fixtures are canonical end-to-end tests, tracked.
 !test-projects/install-fixtures/
+
+# Validation run outputs (mission-control ISS-6): generated per run, never committed.
+# Historical baseline runs remain recoverable in git history (parent of the ISS-6 removal commit).
+project/validation/baseline-runs/
