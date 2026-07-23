@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "_comment": "AGENT-11 default Claude Code settings. Hooks below are advisory by default — they run linters/typecheckers and output results, but do not block edits. To promote a hook to blocking, change `|| true` at the end of its command to `|| exit 2`. To disable a hook entirely, remove its entry from the array.",
-  "_comment_permissions": "Read-only gates (Sprint 6a): an agent must not edit the criteria that judge its own work. The deny rules below make the quality-gate config and any gates/ directory unwritable by every agent, so a passing gate means the work was done, not that the threshold was loosened. To intentionally change a gate, edit the file as a deliberate human action with these rules temporarily removed; never let an agent do it mid-mission. Sprint 6c note: the Edit/Write/MultiEdit deny rules below do NOT cover Bash, so a PreToolUse 'read-only gate guard' hook blocks Bash writes (redirection, tee, sed -i, cp, mv) to gate paths and closes that route.",
+  "_comment_permissions": "Read-only gates (Sprint 6a): an agent must not edit the criteria that judge its own work. The deny rules below make the quality-gate config and any gates/ directory unwritable by every agent, so a passing gate means the work was done, not that the threshold was loosened. To intentionally change a gate, edit the file as a deliberate human action with these rules temporarily removed; never let an agent do it mid-mission. Sprint 6c note: the Edit/Write/MultiEdit deny rules below do NOT cover Bash, so a PreToolUse 'read-only gate guard' hook blocks Bash writes (redirection, tee, sed -i, cp, mv) to gate paths and closes that route. A11-ISS-4: the guard decision lives in .claude/hooks/gate-guard.sh (deployed by install.sh), which inspects the actual Bash command from stdin — the previous hook 'if' glob filter fails open on complex commands (multi-line loops, redirections) and blocked unrelated Bash. If the script is absent the hook allows everything (fail-open by design; the Edit/Write deny rules above still hold).",
   "env": {
     "ENABLE_TOOL_SEARCH": "auto"
   },
@@ -60,8 +60,7 @@
           },
           {
             "type": "command",
-            "if": "Bash(* > *quality-gates.json*)|Bash(*>> *quality-gates.json*)|Bash(*tee *quality-gates*)|Bash(*sed -i*quality-gates*)|Bash(*cp * *quality-gates.json*)|Bash(*mv * *quality-gates.json*)|Bash(* > gates/*)|Bash(*>> gates/*)|Bash(*tee *gates/*)|Bash(*sed -i*gates/*)|Bash(*cp * gates/*)|Bash(*mv * gates/*)|Bash(* > .gates/*)|Bash(*tee *.gates/*)",
-            "command": "echo 'BLOCKED (Sprint 6a/6c read-only gates): refusing a Bash write to a quality-gate path. The criteria that judge the work are not agent-editable. The Edit/Write deny rules do not cover Bash redirection, so this hook closes that route. To change a gate, do it as a deliberate human action.' >&2; exit 2",
+            "command": "if [ -f .claude/hooks/gate-guard.sh ]; then sh .claude/hooks/gate-guard.sh; fi",
             "statusMessage": "read-only gate guard",
             "timeout": 10
           }

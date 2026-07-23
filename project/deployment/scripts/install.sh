@@ -806,6 +806,27 @@ install_settings_template() {
 
     mkdir -p "$CLAUDE_DIR"
 
+    # A11-ISS-4: deploy the read-only gate guard script the PreToolUse hook
+    # calls (.claude/hooks/gate-guard.sh). Deployed in both fresh and merge
+    # paths; if it fails the hook fails open (allows), so non-fatal.
+    mkdir -p "$CLAUDE_DIR/hooks"
+    local guard_dest="$CLAUDE_DIR/hooks/gate-guard.sh"
+    if [[ "$execution_mode" == "local" ]] && [[ -f "$PROJECT_ROOT/library/hooks/gate-guard.sh" ]]; then
+        if cp "$PROJECT_ROOT/library/hooks/gate-guard.sh" "$guard_dest"; then
+            chmod +x "$guard_dest"
+            log "Installed gate guard hook: .claude/hooks/gate-guard.sh"
+        else
+            warn "Could not install gate-guard.sh - Bash gate guard inactive (Edit/Write deny rules still apply)"
+        fi
+    else
+        if download_file_from_github "library/hooks/gate-guard.sh" "$guard_dest"; then
+            chmod +x "$guard_dest"
+            log "Installed gate guard hook: .claude/hooks/gate-guard.sh"
+        else
+            warn "Could not download gate-guard.sh - Bash gate guard inactive (Edit/Write deny rules still apply)"
+        fi
+    fi
+
     local dest_file="$CLAUDE_DIR/settings.json"
     local backup_file="$CLAUDE_DIR/settings.json.backup-$(date +%Y%m%d_%H%M%S)"
     local source_path="library/settings.json.template"

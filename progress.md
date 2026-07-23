@@ -8,6 +8,18 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
+### [2026-07-23] — A11-ISS-4: read-only gate guard false positives fixed ✅
+
+**Root cause**: the 6c gate guard matched via a hook `if` glob filter, which Claude Code evaluates **fail-open** on complex Bash (multi-line loops, redirections) — so ordinary non-gate commands triggered the block (field report: a python-detection for-loop during `/foundations` in digital-estate).
+
+**Fix**: guard decision moved into a real script, `library/hooks/gate-guard.sh` (deployed to `.claude/hooks/gate-guard.sh` by `install_settings_template`). It reads the hook JSON on stdin, extracts the actual command (jq → python3 → raw fallback), and blocks (exit 2) only genuine gate writes: redirection/tee/sed -i/cp/mv onto `*quality-gates*`, `gates/`, `.gates/` — same vector scope as before. The unreliable `if` filter is removed; if the script is absent the hook allows (Edit deny rules still hold). `install.sh.sha256` regenerated.
+
+**Proof**: 18/18 script-level cases (incl. `delegates/` non-match, gate reads allowed, heredoc + multi-line gate writes blocked). End-to-end with headless Claude Code: OLD settings blocked the harmless for-loop (bug reproduced); NEW settings pass it and still block `echo hacked > .quality-gates.json` (file verified absent).
+
+**Side finding** (separate issue raised): Claude Code reports the template's `Write(...)`/`MultiEdit(...)` deny rules as no-ops — only `Edit(path)` rules match file tools. Edit rules are present for every gate path, so no coverage gap.
+
+---
+
 ### [2026-06-20] — Sprint 6d: Consolidation & v6.2.0 release ✅ (T1–T6 complete; Sprint 6 umbrella closed)
 
 **Summary**: Consolidated the public docs for the whole Sprint 6 umbrella and prepared the v6.2.0 release, reading the User-Facing Changes running list. Two outward-facing steps (website deploy, release tag) held for Jamie's explicit confirmation per the standing publish rule.
