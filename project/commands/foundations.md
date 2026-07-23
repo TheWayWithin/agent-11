@@ -164,6 +164,18 @@ MANDATORY RULES:
 ```
 Extract structured data from this PRD document into the schema format.
 
+SCOPE RULE - READ FIRST (A11-ISS-5): extraction is SOURCE-DRIVEN. Every
+numbered category below applies only where the source document actually
+contains that kind of content. A lite-tier or non-SaaS PRD (CLI tool,
+library, toolkit, experiment) legitimately has no pricing tiers,
+subscription states, BR-XXX rule IDs, payment flows, or per-tier metrics.
+For any category absent from the source: record it as not applicable
+(empty array or omitted optional field per the schema), do NOT invent
+content to fill it, and do NOT flag its absence as an extraction failure.
+Categories marked "[SaaS-shaped]" are the usual not-applicable set for
+tools and libraries. Completeness means everything IN the source is
+extracted — never that every category has content.
+
 CRITICAL COMPLETENESS RULES - YOU MUST FOLLOW THESE:
 
 1. NUMERIC VALUES - Extract EVERY number with full context:
@@ -197,7 +209,8 @@ CRITICAL COMPLETENESS RULES - YOU MUST FOLLOW THESE:
    - Include term, definition, aliases, and examples
    - Terms like "Opportunity", "Function", "Watcher" need clear definitions
 
-7. STATE MACHINES - Extract ALL entity lifecycle states:
+7. STATE MACHINES - Extract ALL entity lifecycle states (if the source
+   defines any):
    - Subscription states: trial → active → cancelled/expired/paused
    - Opportunity states: new → evaluated → accepted/rejected
    - Include ALL transitions with triggers and side effects
@@ -218,8 +231,11 @@ CRITICAL COMPLETENESS RULES - YOU MUST FOLLOW THESE:
     - Payment failures: "Card declined during trial conversion"
     - Data edge cases: "Product with 0 functions tracked"
     - Categorize by: tier_limits, authentication, payment, data, concurrency
+    - Use only the categories the source actually has (a CLI tool may have
+      only data/concurrency cases)
 
-11. BUSINESS RULES - Extract ALL BR-XXX rules:
+11. BUSINESS RULES - Extract ALL BR-XXX rules (if the source uses BR-XXX
+    IDs; otherwise extract any explicitly stated rules without inventing IDs):
     - Include rule ID, category, statement, enforcement locations
     - Capture exceptions and related features
     - CRITICAL: Extract rules for tier limits, downgrade behavior, alerts
@@ -234,7 +250,9 @@ CRITICAL COMPLETENESS RULES - YOU MUST FOLLOW THESE:
     - "Usage tracking + Alerts + Notifications"
     - Include data flow between components
 
-14. SUCCESS CRITERIA BY TIER - Extract tier-specific metrics:
+14. SUCCESS CRITERIA BY TIER [SaaS-shaped] - Extract tier-specific metrics
+    (only if the source defines pricing/usage tiers; skip entirely for
+    untiered products):
     - Free trial: activation criteria, conversion targets
     - Each paid tier: retention targets, upgrade signals
     - Include key actions that indicate success
@@ -245,13 +263,15 @@ CRITICAL COMPLETENESS RULES - YOU MUST FOLLOW THESE:
     - Audit logging requirements
     - Data retention policies
 
-VALIDATION CHECK: Before completing, verify:
+VALIDATION CHECK: Before completing, verify (each line applies only when
+the source contains that content — see SCOPE RULE):
 - Count of list items matches source document
 - All numeric targets have values (not just descriptions)
 - All timeline information is present
 - All technology versions are preserved
-- ALL business rules extracted (count BR-XXX in source vs output)
-- ALL state machines with complete transitions
+- ALL business rules extracted (count BR-XXX in source vs output — skip
+  the count when the source has no BR-XXX IDs)
+- ALL state machines with complete transitions (skip if none defined)
 - ALL entities mentioned in features exist in data_model
 - Acceptance criteria for EVERY feature
 
@@ -711,11 +731,13 @@ After extraction, perform these verification checks:
 - Verify all named technologies are listed
 - Verify feature variants are captured
 
-**Business Rules Check (PRD only)**:
+**Business Rules Check (PRD only, when the source uses BR-XXX IDs)**:
 - Count BR-XXX patterns in source document
 - Verify same count in extracted business_rules array
 - Flag any missing rule IDs
 - Verify enforcement locations are populated
+- If the source has no BR-XXX patterns (common for lite-tier / non-SaaS
+  PRDs), report "Business Rules: none in source - N/A" and pass
 
 **State Machine Check (PRD only)**:
 - Verify all entity states mentioned are captured
@@ -781,6 +803,11 @@ Blocking Issues: [issues that MUST be fixed]
 3. Any entity referenced but not defined
 4. Any feature missing acceptance criteria
 5. State machines missing transitions
+
+Conditions 2 and 5 apply only when the source contains business rules /
+state machines. Their absence from a lite-tier or non-SaaS PRD is not a
+failure — report the check as N/A and pass (see SCOPE RULE in the PRD
+extraction prompt).
 
 **Internal Consistency Check (PRD only)**:
 After extraction, verify terminology is consistent across sections:

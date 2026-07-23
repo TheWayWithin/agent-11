@@ -8,6 +8,16 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
+### [2026-07-23] — A11-ISS-5: /foundations PRD extraction de-SaaS-biased for lite tier ✅
+
+**Root cause**: the PRD extraction prompt in `project/commands/foundations.md` treated every category as mandatory — BR-XXX counts, subscription state machines, per-tier success metrics, payment edge cases — so a lite-tier PRD (CLI tool, library) validated against SaaS expectations that are structurally N/A (PRJ-14 digital-estate pilot feedback).
+
+**Fix** (source-driven, so full SaaS PRDs are unchanged): a SCOPE RULE prepended to the PRD prompt — categories apply only where the source contains that content; absence is not-applicable, never invented, never a failure. Items 7/10/11/14 annotated conditional ("[SaaS-shaped]", "if the source uses BR-XXX IDs"), VALIDATION CHECK lines made conditional, Business Rules post-check gains an explicit "none in source - N/A - pass" path, FAIL conditions 2/5 scoped to sources that contain rules/state machines.
+
+**Proof**: dry-run of a minimal lite-tier CLI-toolkit PRD fixture through old vs new instructions (headless Claude). Old: verdict **FAIL**, demanding BR-XXX rules, state machines, compliance sections. New: verdict **PASS**, SaaS-shaped checks reported as acceptable/N-A per scope rule, while genuine gaps (missing edge cases, unversioned PyInstaller) are still surfaced.
+
+---
+
 ### [2026-07-23] — A11-ISS-3: install.sh no longer writes a GitHub 404 body into .mcp.json ✅
 
 **Root cause**: `setup_mcp_configuration` used `curl -sSL` (no `-f`) straight onto the destination. On HTTP 404 curl exits 0 and writes the error body — and `.mcp.json` is gitignored in the source repo, so its raw URL **always** 404s on fresh installs. The junk file then also defeated the intended `.mcp.json.template` fallback (`[[ ! -f .mcp.json ]]`).
