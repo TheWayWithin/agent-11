@@ -1600,6 +1600,22 @@ install_mcp_system() {
     return 0  # Always succeed - MCPs are enhancement
 }
 
+# A11-ISS-3: download an MCP file to a temp file with -f so an HTTP error body
+# (e.g. a GitHub 404 page) is never written into the destination. On failure the
+# destination — including any existing user file — is left untouched.
+download_mcp_file() {
+    local url="$1" dest="$2"
+    local tmp
+    tmp="$(mktemp -t agent11-mcp.XXXXXX)" || return 1
+    if curl -fsSL -o "$tmp" "$url" 2>/dev/null; then
+        mv "$tmp" "$dest"
+        chmod 644 "$dest"  # mktemp creates 600; match curl -o's umask default
+        return 0
+    fi
+    rm -f "$tmp"
+    return 1
+}
+
 # Setup MCP configuration
 setup_mcp_configuration() {
     log "Setting up MCP integration..."
@@ -1609,23 +1625,26 @@ setup_mcp_configuration() {
 
     # Always download MCP files to ensure latest version
     log "Downloading MCP configuration files..."
-    
-    # Download .mcp.json
-    if curl -sSL -o "$TARGET_DIR/.mcp.json" "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/.mcp.json" 2>/dev/null; then
+
+    # Download .mcp.json. NOTE: .mcp.json is gitignored in the source repo, so
+    # this URL 404s on a fresh install — that is expected; .mcp.json is created
+    # from .mcp.json.template below instead. Before A11-ISS-3 the 404 body was
+    # written into .mcp.json, which also defeated the template fallback.
+    if download_mcp_file "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/.mcp.json" "$TARGET_DIR/.mcp.json"; then
         success "Downloaded .mcp.json"
     else
-        warn "Could not download .mcp.json"
+        warn "Skipping .mcp.json download (not published in the repo) - will create it from .mcp.json.template"
     fi
-    
+
     # Download .env.mcp.template
-    if curl -sSL -o "$TARGET_DIR/.env.mcp.template" "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/.env.mcp.template" 2>/dev/null; then
+    if download_mcp_file "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/.env.mcp.template" "$TARGET_DIR/.env.mcp.template"; then
         success "Downloaded .env.mcp.template"
     else
-        warn "Could not download .env.mcp.template"
+        warn "Could not download .env.mcp.template - skipped (existing file, if any, untouched)"
     fi
-    
+
     # Download .mcp.json.template with correct package names
-    if curl -sSL -o "$TARGET_DIR/.mcp.json.template" "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/templates/.mcp.json.template" 2>/dev/null; then
+    if download_mcp_file "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/templates/.mcp.json.template" "$TARGET_DIR/.mcp.json.template"; then
         success "Downloaded .mcp.json.template (correct package names)"
         # Create .mcp.json from template if it doesn't exist
         if [[ ! -f "$TARGET_DIR/.mcp.json" ]]; then
@@ -1633,20 +1652,20 @@ setup_mcp_configuration() {
             success "Created .mcp.json with correct MCP package names"
         fi
     else
-        warn "Could not download .mcp.json.template"
+        warn "Could not download .mcp.json.template - skipped (existing file, if any, untouched)"
     fi
-    
+
     # Download mcp-setup-v2.sh (the fixed version)
-    if curl -sSL -o "$TARGET_DIR/mcp-setup.sh" "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/mcp-setup-v2.sh" 2>/dev/null; then
+    if download_mcp_file "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/mcp-setup-v2.sh" "$TARGET_DIR/mcp-setup.sh"; then
         chmod +x "$TARGET_DIR/mcp-setup.sh"
         success "Downloaded mcp-setup.sh (v2 with correct package names)"
     else
         # Fallback to original if v2 doesn't exist
-        if curl -sSL -o "$TARGET_DIR/mcp-setup.sh" "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/mcp-setup.sh" 2>/dev/null; then
+        if download_mcp_file "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/mcp-setup.sh" "$TARGET_DIR/mcp-setup.sh"; then
             chmod +x "$TARGET_DIR/mcp-setup.sh"
             warn "Downloaded original mcp-setup.sh (may have issues)"
         else
-            warn "Could not download mcp-setup.sh"
+            warn "Could not download mcp-setup.sh - skipped"
         fi
     fi
     

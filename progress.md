@@ -8,6 +8,16 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
+### [2026-07-23] — A11-ISS-3: install.sh no longer writes a GitHub 404 body into .mcp.json ✅
+
+**Root cause**: `setup_mcp_configuration` used `curl -sSL` (no `-f`) straight onto the destination. On HTTP 404 curl exits 0 and writes the error body — and `.mcp.json` is gitignored in the source repo, so its raw URL **always** 404s on fresh installs. The junk file then also defeated the intended `.mcp.json.template` fallback (`[[ ! -f .mcp.json ]]`).
+
+**Fix**: new `download_mcp_file()` helper — `curl -fsSL` into a mktemp file, moved into place only on success (chmod 644 for parity); on failure the destination, including any existing user file, is untouched. All four downloads in `setup_mcp_configuration` converted; `.mcp.json` failure now warns "Skipping .mcp.json download (not published in the repo) - will create it from .mcp.json.template". `install.sh.sha256` regenerated.
+
+**Proof**: old behavior reproduced live (curl exit 0, `404: Not Found` body). New helper: bogus URL → rc=1, no file created; existing file byte-identical. Real `setup_mcp_configuration` run in an empty dir: `.mcp.json` 404 skipped with the warning, templates + mcp-setup.sh downloaded, `.mcp.json` created from template and validated as JSON.
+
+---
+
 ### [2026-07-23] — A11-ISS-4: read-only gate guard false positives fixed ✅
 
 **Root cause**: the 6c gate guard matched via a hook `if` glob filter, which Claude Code evaluates **fail-open** on complex Bash (multi-line loops, redirections) — so ordinary non-gate commands triggered the block (field report: a python-detection for-loop during `/foundations` in digital-estate).
