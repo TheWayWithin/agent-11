@@ -8,6 +8,16 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
+### [2026-07-23] — A11-ISS-9: install.sh --upgrade now propagates shipped-hook fixes ✅
+
+**Root cause**: `merge-settings.py` no-opped whenever the user settings had any `hooks` key, so template hook fixes (e.g. the A11-ISS-4 gate-guard rework) never reached deployed repos — blocking the T-245 fleet sweep.
+
+**Fix (fingerprint-based managed hooks)**: the merger now carries `STALE_SHIPPED_HOOKS`, a catalogue of superseded shipped hook entries (git history shows exactly one: the f575973 fail-open if-glob gate guard). On merge, entries byte-matching a stale fingerprint are replaced by the current template version and missing template entries are added; anything unrecognised is user-authored/user-edited and preserved byte-identical. Identity across versions is `statusMessage`, so a user-EDITED shipped hook (e.g. advisory promoted to blocking, which the template invites) is kept and never duplicated. NOOP now means "nothing to change". Status contract (`MERGED`/`NOOP_ALREADY_V6`) unchanged → install.sh untouched, sha256 verified unchanged. Maintenance rule documented in the module docstring: when a shipped hook changes in the template, append the outgoing version to the catalogue. `docs/UPGRADE.md` merge section updated.
+
+**Proof**: new rerunnable `project/deployment/scripts/test-merge-settings.sh` — 19/19: (a) genuine v6.2.0 settings → guard replaced, no `if` field; (b) user custom hooks + custom SessionStart group byte-identical; (c) no hooks → full add; (d) already-current → NOOP, byte-unchanged; (e) invalid JSON → exit 1, untouched, no litter; (f) promoted tsc hook kept, exactly one. End-to-end: fixture 05 reworked (9/9) — real `install.sh --upgrade` lands the gate-guard hook + `.claude/hooks/gate-guard.sh`, preserves user permissions, second run is a stable NOOP. Full install-fixture suite 01–05 all pass.
+
+---
+
 ### [2026-07-23] — A11-ISS-6: /bootstrap lite-tier gaps closed ✅
 
 **Three gaps from the PRJ-14 digital-estate pilot, all in `project/commands/bootstrap.md`**:

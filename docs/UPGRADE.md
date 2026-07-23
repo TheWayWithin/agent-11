@@ -29,8 +29,9 @@ If you run `bash install.sh` without the flag on a v5 install, it detects the v5
 5. **Merges v6 settings** into your existing `.claude/settings.json`:
    - Adds `env.ENABLE_TOOL_SEARCH = "auto"`
    - Adds the `hooks` block (advisory `tsc`/`ruff`/`rubocop` + destructive-command prompt)
-   - **v6.2.0**: adds the **read-only quality gates** `permissions.deny` block (makes `.quality-gates.json` and `gates/` unwritable by agents via Edit/Write/MultiEdit) and a blocking **PreToolUse "read-only gate guard"** hook (refuses Bash writes to gate paths)
-   - **Preserves all your existing keys** — user values win on conflict; the template only fills gaps
+   - **v6.2.0**: adds the **read-only quality gates** `permissions.deny` block (makes `.quality-gates.json` and `gates/` unwritable by agents via Edit/Write/MultiEdit) and a blocking **PreToolUse "read-only gate guard"** hook (refuses Bash writes to gate paths; the guard logic lives in `.claude/hooks/gate-guard.sh`, deployed alongside)
+   - **Refreshes AGENT-11-shipped hooks** (A11-ISS-9): a hook entry that is byte-identical to a version AGENT-11 shipped is upgraded to the current version. Hooks you added yourself — or shipped hooks you edited (e.g. promoted from advisory to blocking) — are preserved exactly as you left them, never duplicated or reverted
+   - **Preserves all your existing keys** — user values win on conflict for `env`, `permissions` and everything else; the template only fills gaps
 6. **Re-deploys the v6 library**: 11 specialists, missions, templates, field-manual, MCP setup, skills, schemas, gates
 
 ### v6.2.0: changing a quality gate deliberately
