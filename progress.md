@@ -8,6 +8,19 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
+### [2026-07-23] — A11-ISS-6: /bootstrap lite-tier gaps closed ✅
+
+**Three gaps from the PRJ-14 digital-estate pilot, all in `project/commands/bootstrap.md`**:
+1. **Type enum had no CLI-toolkit fit** — added `tool` (CLI toolkit / library / local utility): flag enum, inference rules (no hosted service, no business model, developer audience; gates build/test/lint), inference-prompt return values, low-confidence override option, and a `tool` quality-gate template block (with a note that gate commands are stack-appropriate, not npm-specific).
+2. **vision.yaml demanded from lite projects** — the Phase-1 validation check contradicted the PREREQUISITES header ("REQUIRED for saas-* types"): it unconditionally failed on a missing vision.yaml. Now required only for saas-* types; tool/api proceed from prd.yaml with a warning; Phase-2 read and the missing-prereqs error text updated to match.
+3. **phase-1-context.yaml prescribed even when phase 1 was complete at bootstrap time** — Phase 5/6 now generate the context file for the **first incomplete phase** (`phase-N-context.yaml`), marking already-done work `[x]`/complete from repo evidence (Engaged Mode may ask; default remains Phase 1 when uncertain).
+
+**Proof**: dry-run of a lite fixture (CLI-toolkit prd.yaml, no vision.yaml, phase-1 scope already implemented) through old vs new doc. Old: no type matches ("user must specify --type" from an enum with no fit) and phase-1-context.yaml prescribed. New: prerequisites pass with warning, `type: tool` assigned on all four conditions, `phase-2-context.yaml` generated.
+
+**Follow-up raised**: `templates/` has plan-saas-mvp/saas-full/api.yaml but no plan-tool.yaml — designing one (phase templates, agent distribution, timeline) is a separate design task.
+
+---
+
 ### [2026-07-23] — A11-ISS-5: /foundations PRD extraction de-SaaS-biased for lite tier ✅
 
 **Root cause**: the PRD extraction prompt in `project/commands/foundations.md` treated every category as mandatory — BR-XXX counts, subscription state machines, per-tier success metrics, payment edge cases — so a lite-tier PRD (CLI tool, library) validated against SaaS expectations that are structurally N/A (PRJ-14 digital-estate pilot feedback).

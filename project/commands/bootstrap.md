@@ -14,8 +14,8 @@ flags:
   --type:
     type: string
     default: auto
-    values: [auto, saas-mvp, saas-full, api]
-    description: Project type (auto-detected if not specified)
+    values: [auto, saas-mvp, saas-full, api, tool]
+    description: Project type (auto-detected if not specified); tool = CLI toolkit, library, or local utility
   --phases:
     type: integer
     default: 4
@@ -89,7 +89,9 @@ Before running `/bootstrap`, ensure:
 
 2. **Required YAML extracts are present**:
    - `.context/structured/prd.yaml` (REQUIRED)
-   - `.context/structured/vision.yaml` (REQUIRED for saas-* types)
+   - `.context/structured/vision.yaml` (REQUIRED for saas-* types; optional
+     for `tool` and `api` — lite-tier projects enter with a PRD only, and
+     the PRD's product description substitutes for vision)
    - `.context/structured/roadmap.yaml` (optional, enhances phase planning)
    - `.context/structured/icp.yaml` (optional, enhances user story quality)
 
@@ -306,8 +308,13 @@ validation_checks:
   - check: .context/structured/prd.yaml exists
     fail_action: "PRD extraction missing - run /foundations init with PRD"
 
-  - check: .context/structured/vision.yaml exists
-    fail_action: "Vision extraction missing - required for project planning"
+  - check: .context/structured/vision.yaml exists (required only for
+      saas-* types; optional for tool/api)
+    fail_action: "saas-* type: 'Vision extraction missing - required for
+      SaaS project planning'. tool/api type (or type not yet known): warn
+      'No vision.yaml - proceeding from prd.yaml alone (lite tier)' and
+      continue. If type inference later lands on saas-* without a
+      vision.yaml, note the gap in the plan header instead of failing."
 
   - check: .context/structured/roadmap.yaml exists (optional)
     fail_action: "Roadmap extraction missing - recommended for phase planning"
@@ -321,7 +328,7 @@ validation_checks:
 **Load Foundation YAML Extracts**:
 ```
 Read .context/structured/prd.yaml
-Read .context/structured/vision.yaml
+Read .context/structured/vision.yaml (if exists)
 Read .context/structured/roadmap.yaml (if exists)
 Read .context/structured/icp.yaml (if exists)
 Read handoff-manifest.yaml for checksums
@@ -376,6 +383,13 @@ type_inference_rules:
       - no frontend requirements OR frontend_optional
       - integration_focus
     quality_gates: [build, test, lint, api-contract]
+
+  tool:
+    conditions:
+      - CLI, library, script, or local utility (no hosted service)
+      - no business_model / subscription / pricing tiers
+      - single-user or developer-audience focus
+    quality_gates: [build, test, lint]
 ```
 
 **Inference Prompt**:
@@ -393,7 +407,7 @@ Analyze for:
 5. Timeline constraints
 
 Return:
-- inferred_type: saas-mvp | saas-full | api
+- inferred_type: saas-mvp | saas-full | api | tool
 - confidence: high | medium | low
 - reasoning: brief explanation
 ```
@@ -511,23 +525,36 @@ CRITICAL REQUIREMENTS:
 
 ### Phase 5: Phase Context Generation
 
-Generate detailed context file for Phase 1:
+Generate the detailed context file for the **first incomplete phase** —
+usually Phase 1, but not always:
+
+**Already-done work (A11-ISS-6)**: projects often adopt AGENT-11 mid-build,
+so some planned work may already be complete at bootstrap time. Before
+generating, check for evidence of completed phase work (existing code
+matching phase deliverables, an earlier plan/progress log, or the user
+saying so in Engaged Mode — Auto Mode relies on repo evidence only). Mark
+completed tasks `[x]` and completed phases `status: complete` in the
+generated plan, and generate `phase-N-context.yaml` for the first
+incomplete phase N instead of unconditionally prescribing
+`phase-1-context.yaml`. If everything below is uncertain, default to
+Phase 1 as before.
 
 **Context Generation Prompt**:
 ```
-Generate phase-1-context.yaml for the first phase.
+Generate phase-N-context.yaml for the first incomplete phase
+(N = 1 unless earlier phases are already complete at bootstrap time).
 
-PHASE 1 FROM PLAN:
-{phase_1_content}
+FIRST INCOMPLETE PHASE FROM PLAN:
+{phase_N_content}
 
 PROJECT CONTEXT:
 - Type: {project_type}
 - Name: {project_name}
 
-Generate .context/phase-1-context.yaml:
+Generate .context/phase-N-context.yaml:
 
 ```yaml
-phase_id: phase-1
+phase_id: phase-N
 phase_name: "Foundation & Core Setup"
 status: not_started
 
@@ -568,7 +595,9 @@ quality_requirements:
 
 **Write Files**:
 1. `project-plan.md` - Main project plan (project root)
-2. `.context/phase-1-context.yaml` - Phase 1 execution context
+2. `.context/phase-N-context.yaml` - execution context for the first
+   incomplete phase (phase-1 unless earlier phases were already complete
+   at bootstrap time)
 
 **Update Manifest**:
 Add to `handoff-manifest.yaml`:
@@ -595,7 +624,8 @@ Bootstrap requires foundation YAML extracts to generate a project plan.
 
 Missing:
 - .context/structured/prd.yaml
-- .context/structured/vision.yaml
+- .context/structured/vision.yaml (saas-* types only - tool/api projects
+  can proceed without it)
 
 Run first:
   /foundations init
@@ -632,7 +662,8 @@ Options:
 1. Accept saas-mvp inference
 2. Override to saas-full
 3. Override to api
-4. Provide clarification
+4. Override to tool
+5. Provide clarification
 
 Select option or provide context:
 ```
@@ -894,6 +925,20 @@ quality_gates:
   - gate: api-contract
     required: true
     command: "npm run validate:openapi"
+```
+
+### tool (CLI toolkit / library)
+```yaml
+# Commands are stack-appropriate: the npm examples above assume Node -
+# a Python CLI would use e.g. pytest / ruff, a Go tool go build / go vet.
+quality_gates:
+  - gate: build
+    required: true
+  - gate: test
+    required: true
+    threshold: 80
+  - gate: lint
+    required: true
 ```
 
 ## TROUBLESHOOTING
