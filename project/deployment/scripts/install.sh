@@ -1044,6 +1044,8 @@ install_mission_system() {
         "templates/plan-saas-mvp.yaml"
         "templates/plan-saas-full.yaml"
         "templates/plan-api.yaml"
+        # A11-ISS-8: tool project type (A11-ISS-6) plan counterpart
+        "templates/plan-tool.yaml"
         # Sprint 6b: ratchet loop input template
         "templates/mission-optimize-input-template.md"
     )

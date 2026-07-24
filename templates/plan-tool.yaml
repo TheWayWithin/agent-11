@@ -1,0 +1,296 @@
+# Template: Tool Project Plan (CLI toolkit / library)
+# Version: 1.0
+# Compatible with: /bootstrap command
+# Purpose: Generate project plans for CLI toolkits, libraries, and local developer utilities
+
+template:
+  type: tool
+  description: "Lean plan for CLI toolkits, libraries, and local utilities — no hosted service"
+  target_audience: "Developer tools, command-line utilities, reusable libraries, local scripts"
+  typical_timeline: "2-8 weeks"
+  philosophy: "Small surface, sharp edges filed off — a tool earns trust through predictability, clear errors, and docs that match behaviour"
+
+defaults:
+  phase_count: 4
+  schema_version: "1.0"
+  quality_gates:
+    - build
+    - test
+    - lint
+  agent_distribution:
+    architect: 10
+    developer: 55
+    tester: 20
+    documenter: 15
+  context_preservation:
+    - file: project-plan.md
+      update_frequency: phase-start
+    - file: progress.md
+      update_frequency: daily
+    - file: agent-context.md
+      update_frequency: task-completion-and-phase-completion
+      # absorbs the v5.x handoff-notes.md role via Phase Handoff blocks
+    - file: CHANGELOG.md
+      update_frequency: version-release
+
+# NOTE on commands: the npm examples below assume a Node stack. Substitute
+# stack-appropriate equivalents — a Python CLI would use pytest/ruff, a Go
+# tool go build/go vet, a Rust tool cargo build/cargo clippy. This mirrors
+# the tool quality-gate guidance in /bootstrap.
+
+phase_templates:
+  - id: phase-1
+    name: "Interface Design & Scaffolding"
+    description: "Command/API surface design, architecture decisions, project scaffold"
+    typical_duration: "3-7 days"
+    typical_tasks:
+      - name: "Command surface / public API design"
+        agent: architect
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Commands, subcommands, and flags enumerated (or exported API for a library)"
+          - "Naming follows platform conventions (kebab-case flags, verb-noun commands)"
+          - "Input/output contract defined (stdin/stdout/stderr, exit codes, JSON output mode)"
+          - "Breaking-change policy stated (what is public surface, what is internal)"
+      - name: "Architecture documentation"
+        agent: architect
+        priority: p0
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "architecture.md covers module layout and dependency policy"
+          - "Config resolution order defined (flags > env > config file > defaults)"
+          - "Distribution target chosen (npm/pipx/homebrew/binary release)"
+      - name: "Project scaffolding"
+        agent: developer
+        priority: p0
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "Repository initialized with linter, formatter, and test runner"
+          - "CI runs build + test + lint on every push"
+          - "Entry point runs end-to-end (hello-world command or importable stub)"
+      - name: "Test harness setup"
+        agent: tester
+        priority: p1
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "Unit test framework configured"
+          - "CLI invocation test pattern established (spawn binary, assert output/exit code)"
+          - "Coverage reporting wired into CI"
+    deliverables:
+      - "Command surface / API specification"
+      - "architecture.md"
+      - "Project scaffold with CI"
+    quality_gates:
+      - gate: build
+        command: "npm run build"
+        required: true
+      - gate: lint
+        command: "npm run lint"
+        required: true
+
+  - id: phase-2
+    name: "Core Implementation"
+    description: "Implement the primary commands or API, error handling, and configuration"
+    typical_duration: "1-3 weeks"
+    typical_tasks:
+      - name: "Primary command/API implementation"
+        agent: developer
+        priority: p0
+        estimated_effort: large
+        typical_acceptance_criteria:
+          - "All P0 commands (or exported functions) functional"
+          - "Behaviour matches the phase-1 surface specification"
+          - "Exit codes are meaningful and documented (0 success, distinct non-zero failures)"
+      - name: "Error handling and messages"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Every failure path prints an actionable message to stderr"
+          - "No swallowed exceptions or silent failures"
+          - "Invalid input rejected with usage hint, not a stack trace"
+      - name: "Configuration handling"
+        agent: developer
+        priority: p1
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Config resolution order implemented as designed"
+          - "Sensible zero-config defaults"
+          - "Config errors reported with file/key location"
+      - name: "--help and --version output"
+        agent: developer
+        priority: p0
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "--help lists every command and flag with one-line descriptions"
+          - "--version reports the package version"
+          - "Help output stays under one screen for the top level"
+      - name: "Core test suite"
+        agent: tester
+        priority: p0
+        estimated_effort: large
+        typical_acceptance_criteria:
+          - "Unit tests for core logic"
+          - "CLI-level tests for every P0 command (output + exit code)"
+          - "Edge cases covered: empty input, missing files, bad flags"
+    deliverables:
+      - "Functional tool covering P0 scope"
+      - "Test suite"
+    quality_gates:
+      - gate: build
+        command: "npm run build"
+        required: true
+      - gate: test
+        command: "npm run test"
+        required: true
+      - gate: lint
+        command: "npm run lint"
+        required: true
+
+  - id: phase-3
+    name: "Hardening & Documentation"
+    description: "Cross-platform behaviour, edge cases, and user-facing documentation"
+    typical_duration: "3-10 days"
+    typical_tasks:
+      - name: "Cross-platform verification"
+        agent: tester
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "CI matrix covers target platforms (macOS/Linux, Windows if supported)"
+          - "Path, line-ending, and shell differences handled"
+          - "Unsupported platforms fail fast with a clear message"
+      - name: "Robustness pass"
+        agent: developer
+        priority: p1
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Large inputs handled without hanging (streaming where relevant)"
+          - "Interrupts (Ctrl-C) exit cleanly without corrupting state"
+          - "Concurrent/repeat invocations safe (lock files or idempotency where needed)"
+      - name: "README and usage documentation"
+        agent: documenter
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "README covers install, quick start, and every command with an example"
+          - "Examples are copy-pasteable and verified against the real tool"
+          - "Library: API reference generated from source doc comments"
+      - name: "Documentation accuracy testing"
+        agent: tester
+        priority: p1
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "Every documented example executed and output verified"
+          - "Help text matches documented behaviour"
+    deliverables:
+      - "Hardened tool"
+      - "README and usage docs"
+      - "Cross-platform CI matrix"
+    quality_gates:
+      - gate: build
+        command: "npm run build"
+        required: true
+      - gate: test
+        command: "npm run test"
+        required: true
+      - gate: lint
+        command: "npm run lint"
+        required: true
+
+  - id: phase-4
+    name: "Package & Release"
+    description: "Distribution packaging, versioning, and release automation"
+    typical_duration: "2-5 days"
+    typical_tasks:
+      - name: "Packaging for distribution"
+        agent: developer
+        priority: p0
+        estimated_effort: medium
+        typical_acceptance_criteria:
+          - "Package installs cleanly via the chosen channel (npm/pipx/homebrew/binary)"
+          - "Installed binary/import works on a machine without the dev environment"
+          - "Package contains no dev-only files or secrets"
+      - name: "Versioning and changelog"
+        agent: developer
+        priority: p0
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "Semantic versioning adopted and documented"
+          - "CHANGELOG.md records every user-visible change"
+          - "Breaking changes gated to major versions"
+      - name: "Release automation"
+        agent: operator
+        priority: p1
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "Tagged release triggers CI publish"
+          - "Release blocked unless build/test/lint gates pass"
+          - "Release notes generated from changelog"
+      - name: "Install verification"
+        agent: tester
+        priority: p0
+        estimated_effort: small
+        typical_acceptance_criteria:
+          - "Fresh-environment install test passes (clean container or VM)"
+          - "Smoke test of core commands post-install"
+          - "Uninstall leaves no stray state"
+    deliverables:
+      - "Published package / release artifact"
+      - "CHANGELOG.md and versioning policy"
+      - "Automated release pipeline"
+    quality_gates:
+      - gate: build
+        command: "npm run build"
+        required: true
+      - gate: test
+        command: "npm run test"
+        required: true
+      - gate: lint
+        command: "npm run lint"
+        required: true
+
+risk_templates:
+  - risk: "Breaking changes for consumers"
+    probability: medium
+    impact: high
+    mitigation: "Declare the public surface in phase 1, semantic versioning, deprecation warnings before removal"
+  - risk: "Cross-platform breakage"
+    probability: high
+    impact: medium
+    mitigation: "CI matrix across target platforms from phase 1, path/shell abstractions"
+  - risk: "Poor error messages erode trust"
+    probability: medium
+    impact: high
+    mitigation: "Error-handling task is P0, every failure path tested for message quality"
+  - risk: "Dependency bloat"
+    probability: medium
+    impact: medium
+    mitigation: "Dependency policy in architecture.md, prefer stdlib, audit before adding"
+  - risk: "Docs drift from behaviour"
+    probability: high
+    impact: medium
+    mitigation: "Documented examples executed in tests, docs updated in the same PR as behaviour"
+  - risk: "Publish/packaging failures"
+    probability: medium
+    impact: medium
+    mitigation: "Fresh-environment install verification, automated release pipeline"
+
+customization_hints:
+  - "Single-command tools: merge phases 1-2 into one week"
+  - "Libraries: replace CLI tasks with API-design tasks and generated reference docs"
+  - "Add a plugin-architecture phase if the tool is extensible"
+  - "Add distribution channels incrementally (start npm/pipx, add homebrew later)"
+  - "Add a man page / shell-completion task for heavily-used CLIs"
+  - "Add a TUI phase only if interactive use is core to the product"
+  - "Substitute stack-appropriate gate commands (pytest/ruff, go vet, cargo clippy)"
+
+anti_patterns:
+  - "Hosted-SaaS assumptions (auth, billing, multi-tenancy) in a local tool"
+  - "Shipping without --help, --version, or meaningful exit codes"
+  - "Swallowing errors or printing stack traces at users"
+  - "Publishing without semver or a changelog"
+  - "Testing on a single platform when multiple are supported"
+  - "README examples never executed against the real tool"
+  - "Growing the command surface before the core commands are solid"
