@@ -13,6 +13,12 @@
 #   e) invalid JSON -> exit 1, file untouched
 #   f) user-EDITED shipped hook (advisory promoted to blocking)
 #      -> kept as-is, template version NOT added alongside (no duplicates)
+#   A11-ISS-10 permissions contract:
+#   g) pre-6.2 settings with no permissions key -> template deny rules added,
+#      then a second run is a NOOP (idempotent)
+#   h) user custom deny + allow entries alongside stale shipped no-op rules
+#      -> custom preserved in order, stale removed, missing Edit rules added
+#   i) malformed permissions (non-dict / non-list deny) -> left untouched
 #
 # Run: bash project/deployment/scripts/test-merge-settings.sh
 
@@ -127,6 +133,13 @@ check "(a) result is valid JSON, permissions intact" 'python3 -c "
 import json
 d=json.load(open(\"$WORKDIR/a.json\"))
 assert \"Edit(gates/**)\" in d[\"permissions\"][\"deny\"]"'
+check "(a) stale no-op Write/MultiEdit deny rules removed, Edit rules kept" 'python3 -c "
+import json
+d=json.load(open(\"$WORKDIR/a.json\"))
+deny=d[\"permissions\"][\"deny\"]
+assert not any(r.startswith((\"Write(\",\"MultiEdit(\")) for r in deny), deny
+for r in [\"Edit(.quality-gates.json)\",\"Edit(**/*.quality-gates.json)\",\"Edit(gates/**)\",\"Edit(.gates/**)\"]:
+    assert r in deny, r"'
 
 # ---------- (b) user custom hooks survive byte-identical ----------
 python3 - "$WORKDIR" <<'PY'
@@ -200,6 +213,59 @@ import json
 d=json.load(open(\"$WORKDIR/f.json\"))
 es=[e for g in d[\"hooks\"][\"PostToolUse\"] for e in g[\"hooks\"] if e.get(\"statusMessage\")==\"tsc --noEmit\"]
 assert len(es)==1 and es[0][\"command\"].endswith(\"|| exit 2\"), es"'
+
+# ---------- (g) pre-6.2: no permissions key -> deny rules added, idempotent ----------
+printf '{\n  "env": {"ENABLE_TOOL_SEARCH": "auto"}\n}\n' > "$WORKDIR/g.json"
+OUT_G=$(python3 "$MERGER" "$WORKDIR/g.json" "$TEMPLATE"); RC_G=$?
+check "(g) exit 0, status MERGED" '[[ $RC_G -eq 0 && "$OUT_G" == "MERGED" ]]'
+check "(g) template deny rules added, Edit-only forms" 'python3 -c "
+import json
+d=json.load(open(\"$WORKDIR/g.json\"))
+t=json.load(open(\"$TEMPLATE\"))
+assert d[\"permissions\"][\"deny\"]==t[\"permissions\"][\"deny\"]
+assert all(r.startswith(\"Edit(\") for r in d[\"permissions\"][\"deny\"])"'
+OUT_G2=$(python3 "$MERGER" "$WORKDIR/g.json" "$TEMPLATE"); RC_G2=$?
+check "(g) second run is NOOP (idempotent)" '[[ $RC_G2 -eq 0 && "$OUT_G2" == "NOOP_ALREADY_V6" ]]'
+
+# ---------- (h) custom deny/allow preserved, stale removed, gaps filled ----------
+python3 - "$WORKDIR" "$TEMPLATE" <<'PY'
+import json, sys
+w, tpl = sys.argv[1], sys.argv[2]
+d = json.load(open(tpl))
+d["permissions"] = {
+    "allow": ["Bash(npm test:*)"],
+    "deny": ["Edit(secrets/**)",
+             "Write(gates/**)",          # stale shipped no-op
+             "MultiEdit(gates/**)",      # stale shipped no-op
+             "Edit(gates/**)",
+             "Bash(curl:*)"],
+}
+json.dump(d, open(f"{w}/h.json", "w"), indent=2)
+PY
+OUT_H=$(python3 "$MERGER" "$WORKDIR/h.json" "$TEMPLATE"); RC_H=$?
+check "(h) exit 0, status MERGED" '[[ $RC_H -eq 0 && "$OUT_H" == "MERGED" ]]'
+check "(h) custom deny order kept, stale gone, missing Edit rules at stale slot" 'python3 -c "
+import json
+d=json.load(open(\"$WORKDIR/h.json\"))
+assert d[\"permissions\"][\"deny\"]==[\"Edit(secrets/**)\",
+    \"Edit(.quality-gates.json)\",\"Edit(**/*.quality-gates.json)\",\"Edit(.gates/**)\",
+    \"Edit(gates/**)\",\"Bash(curl:*)\"], d[\"permissions\"][\"deny\"]"'
+check "(h) allow list untouched" 'python3 -c "
+import json
+d=json.load(open(\"$WORKDIR/h.json\"))
+assert d[\"permissions\"][\"allow\"]==[\"Bash(npm test:*)\"]"'
+
+# ---------- (i) malformed permissions shapes -> left untouched ----------
+printf '{\n  "env": {"ENABLE_TOOL_SEARCH": "auto"},\n  "permissions": "broken"\n}\n' > "$WORKDIR/i1.json"
+python3 "$MERGER" "$WORKDIR/i1.json" "$TEMPLATE" >/dev/null; RC_I1=$?
+printf '{\n  "env": {"ENABLE_TOOL_SEARCH": "auto"},\n  "permissions": {"deny": "broken"}\n}\n' > "$WORKDIR/i2.json"
+python3 "$MERGER" "$WORKDIR/i2.json" "$TEMPLATE" >/dev/null; RC_I2=$?
+check "(i) non-dict permissions left untouched" '[[ $RC_I1 -eq 0 ]] && python3 -c "
+import json
+assert json.load(open(\"$WORKDIR/i1.json\"))[\"permissions\"]==\"broken\""'
+check "(i) non-list deny left untouched" '[[ $RC_I2 -eq 0 ]] && python3 -c "
+import json
+assert json.load(open(\"$WORKDIR/i2.json\"))[\"permissions\"][\"deny\"]==\"broken\""'
 
 echo "  PASS=$PASS FAIL=$FAIL"
 [[ $FAIL -eq 0 ]] && exit 0 || exit 1

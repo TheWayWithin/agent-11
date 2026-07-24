@@ -7,8 +7,8 @@ Sprint 5a, T3. Reworked for A11-ISS-9. Called from install.sh whenever the
 user already has a settings.json.
 
 Merge contract:
-  - User value wins for env and every non-hooks key. Template only fills
-    gaps ($schema, _comment, permissions, custom keys are never touched).
+  - User value wins for env and every key not named below. Template only
+    fills gaps ($schema, _comment, custom keys are never touched).
   - Add env.ENABLE_TOOL_SEARCH = "auto" if missing.
   - Add full hooks block from template if user has no hooks key.
   - A11-ISS-9 — shipped hooks are MANAGED: within hooks, entries that
@@ -20,13 +20,23 @@ Merge contract:
     hook is its statusMessage (fallback: whole-entry equality), so a
     user-EDITED shipped hook (e.g. promoted from advisory to blocking, as
     the template comment invites) is kept as-is and never duplicated.
-  - No-op only if ENABLE_TOOL_SEARCH is present AND hooks need no change.
+  - A11-ISS-10 — shipped read-only-gate deny rules are MANAGED the same
+    way: every rule in the template's permissions.deny is added to the
+    user's permissions.deny if missing, and rules that exactly match a
+    historically shipped no-op form (STALE_SHIPPED_DENY_RULES below) are
+    removed. User-authored deny entries and the allow/ask lists are never
+    touched. Removal never loosens the gate: the stale forms are
+    Write()/MultiEdit() file-tool rules Claude Code never matches
+    (A11-ISS-7 — only Edit(path) rules apply to file tools).
+  - No-op only if ENABLE_TOOL_SEARCH is present AND hooks AND permissions
+    need no change.
 
 MAINTENANCE RULE: whenever a shipped hook entry in
 library/settings.json.template is modified, append the OUTGOING version of
 that entry to STALE_SHIPPED_HOOKS below — that is what lets upgrades
-replace it in the field. project/deployment/scripts/test-merge-settings.sh
-exercises this contract.
+replace it in the field. Same for a shipped permissions.deny rule: append
+the outgoing rule string to STALE_SHIPPED_DENY_RULES.
+project/deployment/scripts/test-merge-settings.sh exercises this contract.
 
 Edge cases handled:
   - UTF-8 BOM stripped before parse.
@@ -73,6 +83,22 @@ STALE_SHIPPED_HOOKS = [
         "timeout": 10,
     },
 ]
+
+
+# Every superseded shipped permissions.deny rule, exactly as it appeared in
+# library/settings.json.template at release time. v6.2.0 shipped these
+# Write()/MultiEdit() forms, which Claude Code ignores with a session-start
+# warning — only Edit(path) rules are matched for file tools (A11-ISS-7).
+# Removing them is provably a no-op for enforcement; it only silences the
+# warnings. A user-authored rule that doesn't byte-match stays untouched.
+STALE_SHIPPED_DENY_RULES = {
+    "Write(.quality-gates.json)",
+    "MultiEdit(.quality-gates.json)",
+    "Write(**/*.quality-gates.json)",
+    "Write(gates/**)",
+    "MultiEdit(gates/**)",
+    "Write(.gates/**)",
+}
 
 
 def canon(entry):
@@ -152,6 +178,56 @@ def merge_hooks(user_hooks, template_hooks):
                     insert_at += 1
                     changed = True
             ugroup["hooks"] = kept
+    return changed
+
+
+def merge_permissions(user, template):
+    """Merge the template's shipped deny rules into user permissions.
+
+    Returns True if user was modified. Adds template permissions.deny
+    rules missing from the user's deny list and drops rules that exactly
+    match STALE_SHIPPED_DENY_RULES (shipped no-op forms). allow/ask lists,
+    user-authored deny entries, and malformed shapes are left untouched.
+    """
+    tperm = template.get("permissions")
+    tdeny = tperm.get("deny") if isinstance(tperm, dict) else None
+    if not isinstance(tdeny, list):
+        return False
+    tdeny = [r for r in tdeny if isinstance(r, str)]
+    if not tdeny:
+        return False
+    if "permissions" not in user:
+        user["permissions"] = {"deny": list(tdeny)}
+        return True
+    uperm = user["permissions"]
+    if not isinstance(uperm, dict):
+        return False  # malformed user shape: leave untouched
+    if "deny" not in uperm:
+        uperm["deny"] = list(tdeny)
+        return True
+    udeny = uperm["deny"]
+    if not isinstance(udeny, list):
+        return False  # malformed user shape: leave untouched
+    changed = False
+    kept = []
+    insert_at = None  # where the first stale rule sat — new rules go there
+    for rule in udeny:
+        if isinstance(rule, str) and rule in STALE_SHIPPED_DENY_RULES:
+            if insert_at is None:
+                insert_at = len(kept)
+            changed = True
+        else:
+            kept.append(rule)
+    if insert_at is None:
+        insert_at = len(kept)
+    present = {r for r in kept if isinstance(r, str)}
+    for rule in tdeny:
+        if rule not in present:
+            kept.insert(insert_at, rule)
+            insert_at += 1
+            changed = True
+    if changed:
+        uperm["deny"] = kept
     return changed
 
 
@@ -249,6 +325,10 @@ def main():
             if merge_hooks(user["hooks"], template_hooks):
                 changed = True
         # user has a "hooks" key of unexpected type: leave it untouched.
+
+    # A11-ISS-10: propagate shipped read-only-gate deny rules.
+    if merge_permissions(user, template):
+        changed = True
 
     if not changed:
         print(STATUS_NOOP_ALREADY_V6)

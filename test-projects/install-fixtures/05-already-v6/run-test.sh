@@ -48,6 +48,13 @@ check "run 1: gate-guard script deployed" '[[ -f .claude/hooks/gate-guard.sh ]]'
 check "11 specialists deployed" '[[ $(ls .claude/agents/*.md 2>/dev/null | wc -l) -ge 11 ]]'
 check "summary says Tool deferring enabled" 'echo "$OUT" | grep -q "Tool deferring enabled"'
 check "user permission preserved" 'python3 -c "import json; d=json.load(open(\".claude/settings.json\")); assert \"Bash(test:*)\" in d[\"permissions\"][\"allow\"]" 2>/dev/null'
+check "run 1: read-only gate deny rules propagated (A11-ISS-10)" 'python3 -c "
+import json
+d=json.load(open(\".claude/settings.json\"))
+deny=d[\"permissions\"][\"deny\"]
+for r in [\"Edit(.quality-gates.json)\",\"Edit(**/*.quality-gates.json)\",\"Edit(gates/**)\",\"Edit(.gates/**)\"]:
+    assert r in deny, r
+assert not any(r.startswith((\"Write(\",\"MultiEdit(\")) for r in deny), deny" 2>/dev/null'
 
 RUN1_HASH=$(python3 -c "import json,hashlib; print(hashlib.sha256(json.dumps(json.load(open('.claude/settings.json')), sort_keys=True).encode()).hexdigest())")
 OUT2=$(bash "$INSTALL" --upgrade 2>&1)
