@@ -1000,6 +1000,8 @@ install_mission_system() {
         "project/missions/operation-genesis.md"
         "project/missions/dev-setup.md"
         "project/missions/dev-alignment.md"
+        "project/missions/connect-mcp.md"
+        "project/missions/operation-recon.md"
         "project/missions/README.md"
     )
     
