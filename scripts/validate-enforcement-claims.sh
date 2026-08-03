@@ -71,10 +71,25 @@ if shipped != EXPECTED_RULES:
     print(f"  shipped:  {sorted(shipped)}")
     bad = True
 
-# Subjects the four rules do not cover, in the wording the library actually uses.
+# Subjects the four rules do not cover. This list was a closed catalogue of the exact
+# phrases the library happened to use, which a reviewer defeated by rewording one claim
+# from "acceptance criteria" to "success criteria": same false claim, silent pass. It is
+# now the class of thing an agent gets judged against, not a list of past wordings. Some
+# of these will fire on passages that are perfectly true; the fix for a false positive is
+# to state the scope explicitly, which is better writing anyway.
 UNENFORCED = re.compile(
-    r"acceptance criteria|acceptance test|test that serves|test that defines|test file that serves"
-    r"|metric command|the benchmark|outside the named surface|outside the named editable surface",
+    r"acceptance criteri|acceptance test"
+    r"|success criteri|success metric|exit criteri|definition of done"
+    r"|test that serves|test that defines|test file that serves|test which serves"
+    r"|metric command|the metric\b|the benchmark|benchmark file"
+    r"|the threshold|thresholds\b|the rubric|quality bar"
+    r"|outside the named surface|outside the named editable surface|outside the surface",
+    re.I,
+)
+# Naming a gate path is what makes an enforcement claim legitimate. A passage that claims
+# enforcement and names one of these is talking about something the rules actually cover.
+GATE_PATH = re.compile(
+    r"\.quality-gates\.json|gates/\*\*|\.gates/\*\*|`gates/`|gates/ director|gate path|gate config",
     re.I,
 )
 # An explicit statement that the thing is NOT enforced. These have to be specific: an early
@@ -129,6 +144,9 @@ for surface in surfaces:
             else:
                 lo, hi = max(0, i - WINDOW), min(len(lines), i + WINDOW + 1)
                 window = "\n".join(lines[lo:hi])
+            # Markdown wraps, so "no file-level\n      rule is possible" must still match
+            # "no file-level rule". Collapse whitespace before matching either pattern.
+            window = re.sub(r"\s+", " ", window)
             if not UNENFORCED.search(window):
                 continue
             flagged += 1

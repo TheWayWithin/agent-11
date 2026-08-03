@@ -39,8 +39,15 @@ fi
 # What the installer says it deploys: the quoted project/missions/*.md entries inside the
 # mission_files array. Anchored to the array so an unrelated mention elsewhere in the
 # script cannot pad the list.
+#
+# Commented-out entries are DROPPED before counting. Scraping text rather than asking bash
+# means `# "project/missions/connect-mcp.md"` reads as present while the mission is in fact
+# no longer deployed — the exact ISS-13 regression this check exists to prevent, reachable
+# by adding one character. A line whose first non-whitespace character is `#` is not an
+# array element, so it is not counted as one.
 installer_list="$(
   awk '/mission_files=\(/{f=1; next} f&&/^[[:space:]]*\)/{exit} f{print}' "$INSTALLER" \
+    | sed 's/[[:space:]]*#.*$//' \
     | grep -oE '"project/missions/[^"]+\.md"' \
     | tr -d '"' \
     | sed 's|project/missions/||' \

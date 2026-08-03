@@ -79,13 +79,18 @@ almost nothing in it to parallelise.
 | mission-release | No | T1, T3 | Build → docs → execute is chained, and shipping is a human call. (Its QA phase alone is fan-out-ish.) |
 | **mission-security** | **Yes**, audit half only | none | Code, infrastructure and data-privacy audits are independent surfaces, each ending in severity-categorised findings. Unit = one audit surface, or one OWASP category. Read-only, no C1. **The remediation phase is not fan-out** and must stay outside any workflow. |
 | operation-genesis | No | T1 | Nine chained phases, same shape as build. |
-| **operation-recon** | **Yes** | none | The eight RECON sweeps and the browser/viewport matrix are mutually blind; each returns severity-tagged findings with screenshot evidence. Unit = one (viewport × browser) pair or one sweep dimension. Read-only, but needs separate browser contexts. |
+| **operation-recon** | **Yes**, Phases 1-2 only | none | Of the 8 RECON items, item 1 (PREPARATION) is setup that the rest depend on and produces no findings, so the fan-out is the **7** sweeps (interaction, responsive, visual, accessibility, robustness, code inspection, console) plus Phase 2's viewport/browser matrix. Those are mutually blind and each returns severity-tagged findings with screenshot evidence. Unit = one sweep dimension or one (viewport × browser) pair. Read-only, but needs separate browser contexts. **Phases 0, 3, 4 and 5 are not fan-out**: intelligence gathering precedes everything, and threat assessment, evidence collection and report compilation each synthesise what the earlier phases produced. |
 | dev-setup | No | T1 | Each phase consumes the previous artefact: MCP → GitHub → ideation → architecture → plan. |
 | dev-alignment | No | T3 | Its discovery path is a live interview with the operator. |
 | connect-mcp | No | T3 | Writing `.mcp.json` needs real credentials from the human mid-run. (Its connection-testing step alone would pass.) |
 
-**Reading**: 2 of 18 pass, and one of those only in half. That ratio is the point. A scope document
-that found fan-out everywhere would be telling you the test does not discriminate.
+**Reading**: 2 of 18 pass, and **neither passes whole**. Both are missions with a fan-out-shaped
+audit or sweep phase bolted to sequential phases either side of it, which is worth stating as a
+general finding rather than a footnote on two rows: the unit of conversion is a *phase*, never a
+mission. Anyone reading this table as "these two missions could become workflows" has misread it.
+
+That ratio is the point. A scope document that found fan-out everywhere would be telling you the
+test does not discriminate.
 
 ### Jobs the coordinator could delegate that are not missions
 
