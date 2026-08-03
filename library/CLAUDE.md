@@ -15,6 +15,17 @@ AGENT-11 library instructions. Loaded every session — kept lean. Canonical doc
 
 Coordinator and specialists apply these. Full text and how they shape delegation: `.claude/agents/coordinator.md`.
 
+## Orientation (map first, read narrowly)
+
+Applies to every agent, every mission, every session. Orientation is the expensive step, not the edit.
+
+- **Glob/Grep to locate before you Read.** Never open a file to discover what is in it.
+- **Read only the lines you need** (`offset`/`limit`), not the whole file.
+- **Never read a whole file to find one symbol.** Grep the symbol, read its neighbourhood.
+- **Do not re-read what you have already read.**
+
+Full protocol is restated in each specialist and mission file under `## ORIENTATION PROTOCOL`.
+
 ## Missions
 
 Run via `/coord [mission]`. Routing table lives in `.claude/commands/coord.md`.
