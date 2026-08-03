@@ -12,6 +12,17 @@
 #   - a mission file that install.sh never copies (the ISS-13 defect)
 #   - an entry in install.sh with no corresponding file (a broken install)
 #
+# It also compares the SECOND hand-kept list, in verify_installation(), which had drifted
+# to 14 of 20 so a failed copy of the missing six still reported a clean install.
+#
+# WHAT THIS CANNOT DO. It compares lists; it does not execute the installer. It proves the
+# arrays are right, NOT that the copy happens. A `continue` guard injected into the copy
+# loop skips a mission while both arrays stay correct. The structural check at the end
+# catches the obvious form of that; nothing short of running install.sh into a scratch
+# directory and inspecting the result would catch every form. Stated here rather than left
+# for someone to discover, because a check that overstates its own reach is the exact
+# defect this sprint was about.
+#
 # Prints NOTHING and exits 0 when they match exactly.
 #
 # Usage:  scripts/validate-deployment-coverage.sh          (silent = matched)
@@ -97,6 +108,17 @@ else
       breach "COVERAGE: $INSTALLER installs $m but verify_installation() never checks it landed"
     fi
   done <<< "$library_list"
+fi
+
+# The copy loop must not skip anything. This catches the obvious subversion (a guard that
+# short-circuits the loop for a named mission) without pretending to prove the loop runs.
+loop_body="$(
+  awk '/for mission_file in/{f=1} f{print} f&&/^[[:space:]]*done/{exit}' "$INSTALLER"
+)"
+if [ -z "$loop_body" ]; then
+  breach "COVERAGE: could not locate the mission copy loop in $INSTALLER — the check cannot see whether entries are actually copied"
+elif printf '%s' "$loop_body" | grep -qE '(^|[[:space:]])(continue|break)([[:space:]]|$|;)'; then
+  breach "COVERAGE: the mission copy loop in $INSTALLER contains a continue/break — a mission may be silently skipped while both arrays still look complete"
 fi
 
 if [ "$VERBOSE" -eq 1 ]; then

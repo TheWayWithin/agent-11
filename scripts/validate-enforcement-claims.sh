@@ -106,6 +106,8 @@ NEGATED = re.compile(
     r"|two of those three are enforced"
     r"|until you add|unless you add"
     r"|prohibited by instruction|not refused by the tool layer|rather than refused"
+    r"|never by the tool layer|by policy alone|by instruction alone"
+    r"|zero protection|no protection|protects? nothing|is not protected"
     r"|only gate paths are covered"
     r"|\*\*not enforced\*\*|\| \*\*No\*\*",
     re.I,
@@ -124,20 +126,35 @@ LONG_LINE = 300
 
 SCANNED_SUFFIXES = {".md", ".json", ".template", ".sh", ".yaml", ".yml"}
 
+# Historical fingerprints, deliberately exempt. merge-settings.py and its test fixtures
+# hold byte-exact copies of what PAST releases shipped, used to decide whether a hook or
+# rule in a user's settings is one AGENT-11 shipped and may therefore be upgraded.
+# "Correcting" the wording in them would break upgrade detection for every repo still on
+# the old version. They record what was true then, not what is claimed now.
+EXEMPT = {
+    "project/deployment/scripts/merge-settings.py",
+    "project/deployment/scripts/test-merge-settings.sh",
+}
+
 def targets(surface):
     # Not just *.md. The single widest-reach instance of this defect lived in a JSON
     # comment inside library/settings.json.template, which an *.md-only sweep could
     # never see, and the guard script's own header made the same claim about itself.
     p = pathlib.Path(surface)
     if p.is_dir():
-        return sorted(q for q in p.rglob("*") if q.is_file() and q.suffix in SCANNED_SUFFIXES)
-    return [p] if p.is_file() else []
+        return sorted(q for q in p.rglob("*")
+                      if q.is_file() and q.suffix in SCANNED_SUFFIXES and str(q) not in EXEMPT)
+    return [p] if p.is_file() and str(p) not in EXEMPT else []
 
 checked = flagged = 0
 for surface in surfaces:
     for path in targets(surface):
         text = path.read_text(errors="replace")
-        if "permissions.deny" not in text:
+        # Filter with the SAME trigger the line scan uses. An earlier version gated on the
+        # literal string "permissions.deny", so a file claiming "the gate guard enforces the
+        # acceptance criteria test" was never opened at all: the widened trigger below was
+        # dead code for any file that did not also happen to say permissions.deny.
+        if not MENTIONS_DENY.search(text):
             continue
         checked += 1
         lines = text.splitlines()
