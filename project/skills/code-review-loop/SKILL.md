@@ -50,14 +50,27 @@ cannot pass the review by loosening it (the Sprint 6a read-only principle, appli
 
 ## The two roles (never the same agent on the same turn)
 
-| Role | Tools | Job |
-|------|-------|-----|
-| **Critic** | Read-only (Read, Grep, Bash for *running* checks — NO Edit/Write) | Score the diff, raise findings with file:line + evidence. Never edits code. |
-| **Fixer** | Read-write (Edit/Write on the named surface only) | Address ONLY the raised findings. Never edits the gate, the test, or the critic's rubric. |
+| Role | Tools | Model | Job |
+|------|-------|-------|-----|
+| **Critic** | Read-only (Read, Grep, Bash for *running* checks — NO Edit/Write) | **A different model to the fixer** | Score the diff, raise findings with file:line + evidence. Never edits code. |
+| **Fixer** | Read-write (Edit/Write on the named surface only) | The session default | Address ONLY the raised findings. Never edits the gate, the test, or the critic's rubric. |
+
+**Run the critic on a different model to the fixer.** Read-only separates the *incentives*; a
+different model separates the *blind spots*. A critic sharing the generator's weights inherits the
+same assumptions and tends to return agreement rather than verification, so a same-model critic
+scoring its own family's work is closer to a consistency check than a review. Switch with `/model`
+between roles, set `CLAUDE_CODE_SUBAGENT_MODEL`, or pass `opts.model` if you are driving the loop
+from a script. If only one model is available the loop still works and is still worth running: note
+in the log that critic and fixer shared weights, and treat a clean round as weaker evidence.
+
+Watch for unanimity. When every round comes back clean immediately, that is as likely to be
+correlated bias as quality. A critic that has never disagreed with its fixer is not yet earning
+its turn.
 
 Deterministic-first: when a test suite or quality gate exists, **that is the critic's score**
 (cheap, objective). Use an LLM critic with a numeric score (0-100 or findings-count) only when
-no deterministic signal is available.
+no deterministic signal is available. A deterministic score has no blind spots to share, which is
+why it outranks any cross-model arrangement when one is available.
 
 ## The loop
 
