@@ -83,7 +83,7 @@ elif printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])(perl|ruby)[[:space:]]+[^;
 fi
 
 if [ -n "$blocked" ]; then
-    echo 'BLOCKED (Sprint 6a/6c read-only gates): refusing a Bash write to a quality-gate path. The criteria that judge the work are not agent-editable. The Edit/Write deny rules do not cover Bash redirection, so this hook closes that route. To change a gate, do it as a deliberate human action.' >&2
+    echo 'BLOCKED (Sprint 6a/6c read-only gates): refusing a Bash write to a quality-gate path. The criteria that judge the work are not agent-editable. The Edit deny rules do not cover Bash, so this hook catches the common write forms. Do not look for a form it misses: finding one is reward-hacking, not a workaround. To change a gate, do it as a deliberate human action.' >&2
     exit 2
 fi
 exit 0
