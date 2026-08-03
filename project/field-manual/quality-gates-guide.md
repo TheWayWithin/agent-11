@@ -11,7 +11,7 @@ Quality Gates are automated checks that run at phase transitions to ensure code 
 
 Two rules make gates trustworthy:
 
-1. **Gates are read-only to agents.** The reason is reward-hacking: an agent that can edit the threshold it is judged against will eventually lower it instead of doing the work. To change a gate on purpose, edit it as a deliberate human action with the deny rules temporarily removed.
+1. **Gates are read-only to agents.** The reason is reward-hacking: an agent that can edit the threshold in a gate config it is judged against will eventually lower it instead of doing the work. To change a gate on purpose, edit it as a deliberate human action with the deny rules temporarily removed.
 
    Know exactly how much of this the tool layer gives you, because the gap is where reward-hacking actually happens:
 

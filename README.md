@@ -33,7 +33,7 @@ AGENT-11 deploys 11 specialized AI agents to your project and coordinates them t
 - 🎯 **Specialized Agents** - Each with domain expertise (requirements, architecture, coding, testing, design, etc.)
 - 🎖️ **Coordinated Workflows** - 13 pre-built missions that orchestrate multiple agents automatically
 - 🧠 **Persistent Context** - Knowledge that survives across sessions and agent handoffs
-- ✅ **Read-only quality gates** - Agents cannot edit the criteria that judge their own work; "done" needs evidence, not assertion
+- ✅ **Read-only quality gates** - Agents cannot edit the gate config or the `gates/` directory: refused at the tool layer, not asked politely. Acceptance tests living elsewhere are prohibited by instruction rather than by a rule. "Done" needs evidence, not assertion
 
 **Why it's open:** I build to learn, not to sell, and I give the code away. The value is the knowledge, the judgement, and the trust, not the tool. If it is here, I am using it; if it broke, you will hear why. This is the squad behind my own builds (Trader-7 and the AI Search Mastery tools); the build story lives at [jamiewatters.work](https://jamiewatters.work).
 
@@ -273,9 +273,9 @@ cp ~/Documents/BOS-AI/*.md ./documents/foundations/
 
 ## 🆕 Current Version: v6.2.0 — Loop Discipline & Read-Only Verification
 
-**Latest** (2026-06-20): your agents can't game their own success criteria, and they can now improve work in safe, measured loops.
+**Latest** (2026-06-20): your agents can't edit the gate config that judges them, every criterion needs evidence to pass, and work improves in safe, measured loops.
 
-- **Read-only quality gates**: the files that judge an agent's work (`.quality-gates.json`, `gates/`) are unwritable by every agent, enforced at the tool layer plus a Bash-write guard hook. A passing gate means the work was done, not that the threshold was loosened.
+- **Read-only quality gates**: the files that judge an agent's work (`.quality-gates.json`, `gates/`) are unwritable by every agent, enforced at the tool layer plus a Bash-write guard hook. A passing gate means the work was done, not that the threshold inside `.quality-gates.json` was loosened.
 - **Default-fail verification**: every success criterion starts failing and flips to pass only on captured command output. "Looks done" with no evidence counts as a failure.
 - **Ratchet `mission-optimize`**: optimisation runs as a measured loop in an isolated worktree. It keeps a change only if it beats a baseline, hard-reverts everything else, logs every attempt, caps itself, and never auto-merges. You stay the judge at merge time.
 - **`code-review-loop` skill**: a read-only critic raises evidence-backed findings, a read-write fixer addresses only those, re-audit until clean or capped.
@@ -351,7 +351,7 @@ It is the squad I use on real builds, hardened by running it on its own developm
 - **39% effectiveness improvement** - extended thinking + self-verification
 - **84% token reduction** - context editing + memory optimisation for long, multi-phase missions
 - **37.5% faster missions** - zero rework once file persistence was fixed
-- **Read-only quality gates + default-fail verification** - agents cannot game their own success criteria
+- **Read-only quality gates + default-fail verification** - agents cannot edit the gate config or `gates/` directory, and no criterion passes without captured command output
 
 [→ See what it has built](docs/PROJECTS-BUILT-WITH-AGENT-11.md)
 

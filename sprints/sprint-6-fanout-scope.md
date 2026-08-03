@@ -196,6 +196,58 @@ calls against 35 Reads, largely searching by shell, precisely because nobody tol
 6. **Do not let it touch the vault.** `registry.yaml` is read. Nothing else under `~/shared` is
    opened.
 
+### The file you actually write
+
+A saved workflow is a plain JavaScript file under `.claude/workflows/`. It is not YAML and it is
+not a mission markdown file, which is the one thing this document previously left a builder to
+guess. The runtime executes it in the background and gives the script these primitives:
+
+- `agent(prompt, opts)` spawns one subagent. `opts.schema` forces validated structured output (pass
+  the JSON schema above), `opts.model` routes the stage to a specific model, `opts.label` names it in
+  the progress view, `opts.phase` groups it, `opts.isolation: 'worktree'` gives it an isolated git
+  worktree. This audit needs no worktrees: it writes nothing.
+- `pipeline(items, stage1, stage2, …)` runs each item through every stage independently with no
+  barrier between stages, so repo 2 can be in verification while repo 7 is still being audited. This
+  is the default and it is what the fleet audit wants.
+- `parallel([thunks])` runs concurrently but barriers: use it only where a stage genuinely needs all
+  prior results at once, which here is the final synthesis and nothing else.
+- `phase(title)` and `log(msg)` for the progress view; `args` receives the invocation input.
+
+The skeleton, so the shape is unambiguous:
+
+```javascript
+export const meta = {
+  name: 'fleet-audit',
+  description: 'Audit every active fleet repo for AGENT-11 deployment drift',
+  phases: [{ title: 'Audit' }, { title: 'Verify' }, { title: 'Report' }],
+}
+
+const REPOS = args?.repos ?? [/* the 20 tier: active paths from registry.yaml */]
+
+phase('Audit')
+const results = await pipeline(
+  REPOS,
+  (repo) => agent(`${ORIENTATION}\n${READ_ONLY}\nAudit ${repo} for ...`,
+                  { label: `audit:${repo}`, phase: 'Audit', model: 'haiku', schema: UNIT_SCHEMA }),
+  (unit) => parallel(
+    unit.findings.filter(f => f.severity === 'high').map(f => () =>
+      agent(`Refute this finding about ${unit.repo}: ${f.claim}`,
+            { phase: 'Verify', model: 'opus', schema: VERDICT_SCHEMA })
+        .then(v => ({ ...f, verdict: v })))),
+)
+
+phase('Report')
+return await agent(`Rank these surviving findings ...`, { model: 'opus' })
+```
+
+Two runtime facts that constrain it: up to 16 agents run concurrently (the rest queue, which is why
+20 units are two waves rather than a failure), and resume works only within the same session, so a
+run abandoned by closing Claude Code starts fresh.
+
+To save it: run the workflow once from a prompt, then press `s` in `/workflows` and choose the
+project location. That writes the script to `.claude/workflows/` where the repo can share it. There
+is no need to hand-author the file first.
+
 ### What "done" looks like
 
 A saved project-scoped workflow at `.claude/workflows/` invoked as `/fleet-audit`, taking an optional

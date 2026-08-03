@@ -86,6 +86,16 @@ UNENFORCED = re.compile(
     r"|outside the named surface|outside the named editable surface|outside the surface",
     re.I,
 )
+# Co-occurrence is not a claim. "Success Criteria" as a mission heading a few lines from the
+# words "quality gate" is not an assertion that anything is enforced, and flagging it is how
+# a check earns a reputation for noise and gets switched off. An enforcement VERB must sit
+# near the subject before the pairing counts.
+ENFORCE_VERB = re.compile(
+    r"enforc|unwritable|read-only|refus|blocks?\b|prevent|protect|cannot (?:be )?(?:edit|chang|modif|writ)"
+    r"|may (?:never|not) (?:edit|touch|chang)|is not agent-editable|not agent-editable",
+    re.I,
+)
+
 # Naming a gate path is what makes an enforcement claim legitimate. A passage that claims
 # enforcement and names one of these is talking about something the rules actually cover.
 GATE_PATH = re.compile(
@@ -113,7 +123,26 @@ NEGATED = re.compile(
     re.I,
 )
 MENTIONS_DENY = re.compile(
-    r"permissions\.deny|deny rule|Edit\(\) deny|deny list|gate guard|gate-guard",
+    r"permissions\.deny|deny rule|Edit\(\) deny|deny list|gate guard|gate-guard"
+    r"|read-only (?:quality )?gate|quality gate|gate path",
+    re.I,
+)
+
+# A second claim class, and the one that survived three audits: saying the Bash guard
+# CLOSES the route rather than narrowing it. This overstates a mechanism's completeness
+# rather than its scope, so the enforced/unenforced logic below cannot see it. The guard
+# catches 11 command forms; an interpreter-mediated write or a variable-held path goes
+# straight through, and no shell guard can catch those (A11-ISS-16).
+ROUTE_CLOSED = re.compile(
+    r"clos(?:es|ing|ed) (?:the |that |off )?(?:one )?route"
+    r"|closes the bash route|closes that gap|closes the gap"
+    r"|(?<!not )refuses (?:all )?bash writes(?! forms)"
+    r"|blocks (?:all )?bash writes(?!\s*\()",
+    re.I,
+)
+ROUTE_QUALIFIED = re.compile(
+    r"common (?:bash )?write forms|speed bump|narrows that route|rather than clos"
+    r"|does not close|not close the|passes? (?:straight )?through|A11-ISS-16",
     re.I,
 )
 
@@ -172,6 +201,13 @@ for surface in surfaces:
             # Markdown wraps, so "no file-level\n      rule is possible" must still match
             # "no file-level rule". Collapse whitespace before matching either pattern.
             window = re.sub(r"\s+", " ", window)
+            if ROUTE_CLOSED.search(window) and not ROUTE_QUALIFIED.search(window):
+                flagged += 1
+                print(f"CLAIMS: {path}:{i + 1} says the Bash guard closes the route. It catches "
+                      f"11 command forms; interpreter writes and variable-held paths pass through "
+                      f"(A11-ISS-16). Say what it catches, not that it closes.")
+                bad = True
+
             hits = list(UNENFORCED.finditer(window))
             if not hits:
                 continue
@@ -179,7 +215,8 @@ for surface in surfaces:
             # threshold inside a gate config cannot be lowered" is true and must not be
             # flagged, or the check gets switched off by the first person it annoys.
             unscoped = [h for h in hits
-                        if not GATE_PATH.search(window[max(0, h.start() - 90): h.end() + 90])]
+                        if not GATE_PATH.search(window[max(0, h.start() - 90): h.end() + 90])
+                        and ENFORCE_VERB.search(window[max(0, h.start() - 130): h.end() + 130])]
             if not unscoped:
                 continue
             flagged += 1
