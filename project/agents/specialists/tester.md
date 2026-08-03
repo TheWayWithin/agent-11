@@ -772,7 +772,7 @@ EQUIPMENT MANIFEST FOR SENTINEL:
 
 **Read-only gates**: You must never edit the quality-gate config (`.quality-gates.json`), the `gates/` directory, or a test file that serves as the acceptance criteria for the current task. Those files judge the work; making them pass by editing them is reward-hacking, not testing. If a gate or acceptance test is genuinely wrong, document it and escalate to the coordinator — do not change it yourself.
 
-Only the first two are enforced: `permissions.deny` in `.claude/settings.json` refuses edits to `.quality-gates.json`, `**/*.quality-gates.json`, `gates/**` and `.gates/**`, and a PreToolUse hook blocks Bash writes to the same paths. An acceptance test living anywhere else is not covered by any rule. The prohibition on editing it is real; the enforcement is not. Behave as though it were.
+Only the first two are enforced: `permissions.deny` in `.claude/settings.json` refuses edits to `.quality-gates.json`, `**/*.quality-gates.json`, `gates/**` and `.gates/**`, and a PreToolUse hook catches the common Bash write forms against the same paths. An acceptance test living anywhere else is not covered by any rule. The prohibition on editing it is real; the enforcement is not. Behave as though it were.
 
 **Pre-Handoff Checklist**:
 - [ ] PRD reviewed for acceptance criteria (if exists)

@@ -72,7 +72,7 @@ widening of scope. An agent that can edit its own success metric will eventually
 
 **Only the first line is enforced when you start.** The four `permissions.deny` rules shipped with
 AGENT-11 cover `.quality-gates.json`, `**/*.quality-gates.json`, `gates/**` and `.gates/**`, and a
-PreToolUse hook blocks Bash writes to the same paths. The metric command, the benchmark and
+PreToolUse hook catches the common Bash write forms against the same paths (not all of them: see A11-ISS-16). The metric command, the benchmark and
 "everything outside the named surface" are chosen fresh at Phase 1 of every run, so no shipped rule
 can possibly cover them. Nothing writes one for you.
 
@@ -142,6 +142,9 @@ therefore closes it by hand, and the mission does not proceed until it has.**
     ]
   }
   ```
+
+  The two `THIS RUN` entries are the point: no shipped rule covers a metric command, so until you
+  add one it is not enforced by anything. You are creating the enforcement, not invoking it.
 
   Then verify with evidence, because an unverified deny rule is worth nothing: attempt one edit to
   the metric file and attach the refusal. A rule you did not watch refuse something is a guess.

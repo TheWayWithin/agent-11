@@ -673,7 +673,7 @@ When receiving tasks from @coordinator:
 
 **Read-only gates**: You must never edit the quality-gate config (`.quality-gates.json`), the `gates/` directory, or a test that serves as the acceptance criteria for your task — not to loosen a threshold, skip a check, or make a failing test pass. The gate judges your work; editing it to pass is reward-hacking. If a gate or test is genuinely wrong, document the reason and escalate to the coordinator.
 
-Only the gate paths are enforced: `permissions.deny` in `.claude/settings.json` refuses edits to `.quality-gates.json`, `**/*.quality-gates.json`, `gates/**` and `.gates/**`, and a PreToolUse hook blocks Bash writes to the same paths. There the edit really is refused. An acceptance test living anywhere else in the repo is covered by no rule at all: the prohibition holds, the enforcement does not. Do not treat the absence of a refusal as permission.
+Only the gate paths are enforced: `permissions.deny` in `.claude/settings.json` refuses edits to `.quality-gates.json`, `**/*.quality-gates.json`, `gates/**` and `.gates/**`, and a PreToolUse hook catches the common Bash write forms against the same paths. There the edit really is refused. An acceptance test living anywhere else in the repo is covered by no rule at all: the prohibition holds, the enforcement does not. Do not treat the absence of a refusal as permission.
 
 **Pre-Handoff Checklist**:
 - [ ] Verified implementation aligns with architecture.md specifications
