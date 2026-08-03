@@ -1,6 +1,24 @@
 # Handoff Notes — Agent-11 (PRJ-5 closed out 2026-08-03; Sprint 6 CLOSED; website deployed; blog drafted)
 
-## PRJ-5 close-out — 2026-08-03 (UNCOMMITTED, needs Jamie's review)
+## Sprint 6 SHIPPED — 2026-08-03 (committed and pushed to main)
+
+Everything below in the PRJ-5 close-out section is now on `main`, plus the five issues fixed.
+
+- **Three checks now guard this repo.** Run all three before any Sprint 6 related change:
+  `scripts/validate-sprint6-closeout.sh` (orientation + gate surface + memo verdicts),
+  `scripts/validate-enforcement-claims.sh` (no claim that permissions.deny protects what it
+  does not), `scripts/validate-deployment-coverage.sh` (install.sh's mission list matches the
+  library). All silent + exit 0 when compliant.
+- **A11-ISS-11..15 all closed at source.** The overclaim reached 11 places, not the 4 the
+  issues named; all fixed.
+- **`sprints/sprint-6-fanout-scope.md`** is the scope for the first workflow. First build is
+  the fleet-wide audit (20 tier:active repos). It is specified but NOT built: that is the next
+  piece of work if you want it.
+- **Still stale, needs a VAULT session**: `02-PROJECTS.md → PRJ-5` says "6b/6c/6d outline only".
+
+---
+
+## PRJ-5 close-out — 2026-08-03 (now committed, see above)
 
 The "Sharper Ways of Working" initiative is finished bar one decision. Full reasoning:
 `sprints/sprint-6-workflows-decision.md`.

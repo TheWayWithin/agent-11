@@ -8,6 +8,26 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
+### [2026-08-03] — Sprint 6 shipped: true safety claims, complete deployment, fan-out scoped ✅
+
+**Summary**: Committed the close-out work in logical commits, fixed every place the library claimed protection it does not have, closed A11-ISS-11..15, and scoped the coordinator's first fan-out. Pushed to `main` once at the end.
+
+**The overclaim, and how far it reached.** Three of the five issues were one defect: documentation telling operators that `permissions.deny` makes something read-only when no rule covers it. The shipped deny set is exactly four rules and every one matches a gate path, so an acceptance-criteria test elsewhere, a benchmark, a metric command, or "anything outside the named surface" is enforced by nothing. The sweep found **eleven** instances, not the four the issues named: `mission-optimize.md`, its input template, `quality-gates-guide.md`, `coordinator.md`, `library/CLAUDE.md`, `tester.md`, `developer.md`, `project/gates/README.md`, plus `CHANGELOG.md`, `docs/UPGRADE.md` and `docs/RELEASE-HISTORY.md`. Every one now names the four rules and separates what the tool layer refuses from what an agent is merely instructed not to do. `README.md` needed no change: it named only gate paths and was already true.
+
+**Where the claim was made true instead of softened** (A11-ISS-12): `mission-optimize` Phase 2 now writes `Edit(path)` deny rules for the run's own metric command, benchmark and fixtures, with a worked example, and proves they bite by attempting an edit and attaching the refusal. Two default-fail criteria gate the phase on it. Where the metric is a shell one-liner with no file to protect, that must be logged and the run watched throughout rather than pretending a rule exists.
+
+**Deployment gap** (A11-ISS-13): `connect-mcp.md` and `operation-recon.md` were in the library but never in `install.sh`'s mission list, so two missions the docs describe could not be run. Fixed, plus `scripts/validate-deployment-coverage.sh` so a hand-maintained list cannot silently drift again.
+
+**Cross-model critic** (A11-ISS-14): the `code-review-loop` skill now specifies critic and fixer on different models, with an honest single-model fallback and a unanimity warning.
+
+**Two new checks, both broken by review before they shipped**: `validate-enforcement-claims.sh` (a claim tying `permissions.deny` to an unenforced subject must say it is unenforced) and `validate-deployment-coverage.sh`. A cold audit on a different model defeated both: the claims check only matched a closed list of phrases, so rewording "acceptance criteria" to "success criteria" passed the same false claim; and the coverage check counted a commented-out array entry as present, so one `#` character reproduced the exact ISS-13 defect. Both closed and re-tested, including six rewordings of the bypass.
+
+**Fan-out scope** (`sprints/sprint-6-fanout-scope.md`): a three-part test applied to every coordinator phase, all 18 missions and three other candidates. **2 of 18 pass and neither passes whole** — the unit of conversion is a phase, never a mission. The coordinator has exactly one fan-out-shaped stage, disqualified on cadence rather than shape, which is the concrete evidence behind not converting it. First build is the fleet-wide audit over the registry's 20 `tier: active` repos, specified to the per-unit schema and the model per stage.
+
+**Not done, deliberately**: no workflow was built, the coordinator's logic is unchanged, gate files untouched, nothing force-pushed.
+
+---
+
 ### [2026-08-03] — PRJ-5 close-out: map-first orientation, one measured workflow pilot, decision memo ✅
 
 **Summary**: Closed the "Sharper Ways of Working" initiative that Sprint 6 delivers. Three things shipped and one question was answered with evidence rather than a guess.
