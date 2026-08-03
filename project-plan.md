@@ -6,7 +6,7 @@
 Companion: `Ideation/Dynamic MCP Tooling for Agent-11_ Context Optimization and Agent Routing.md`
 
 **Created**: 2026-04-17
-**Status**: v6.0 SHIPPED. v6.1.1 SHIPPED 2026-05-07 (Sprint 5a — Hardened Upgrade Path). Sprint 5b CLOSED 2026-05-09 — 17/19 user repos bulk-migrated to v6.1.1 and pushed to github (2 local-only by user choice; 3 deferred).
+**Status**: v6.0 SHIPPED. v6.1.1 SHIPPED 2026-05-07 (Sprint 5a — Hardened Upgrade Path). Sprint 5b CLOSED 2026-05-09 — 17/19 user repos bulk-migrated to v6.1.1 and pushed to github (2 local-only by user choice; 3 deferred). **v6.2.0 SHIPPED 2026-06-20** (Sprint 6 — Loop Discipline & Read-Only Verification; tag `v6.2.0-loop-discipline`). Sprint 6 umbrella closed 2026-08-03 — see `sprints/sprint-6-workflows-decision.md`.
 
 ---
 
@@ -97,10 +97,27 @@ Adopts the converged principle from the loops/autoresearch research (`knowledge/
 
 | Sprint | Major Feature | Primary Outcome | Status |
 |--------|---------------|-----------------|--------|
-| **6a** | Read-only gates + evidence-gated verification | Gate files (`.quality-gates.json`, `gates/**`) made unwritable by every agent via `permissions.deny` in `library/settings.json.template`; default-fail verification contract in tester/developer/coordinator (criteria start `false`, flip only on attached tool-output evidence); coordinator refuses gate-edit delegation | ✅ Implemented + live-demoed (2026-06-16). 7 files verified on disk; refusal proven in test project (agent blocked from editing `.quality-gates.json` by `permissions.deny`). Remaining: 6b detailed spec (T6) to formally close per rolling-wave |
+| **6a** | Read-only gates + evidence-gated verification | Gate files (`.quality-gates.json`, `gates/**`) made unwritable by every agent via `permissions.deny` in `library/settings.json.template`; default-fail verification contract in tester/developer/coordinator (criteria start `false`, flip only on attached tool-output evidence); coordinator refuses gate-edit delegation | ✅ COMPLETE (2026-06-16, formally closed 2026-08-03). 7 files verified on disk; refusal proven in test project (agent blocked from editing `.quality-gates.json` by `permissions.deny`). T6 (the 6b detailed spec) was in fact produced and executed — `sprints/sprint-6b-ratchet-loops.md` exists and 6b shipped on 2026-06-20 — so the rolling-wave condition was met and the "pending 6b spec" caveat was stale, not open |
 | **6b** | Ratchet loops | `mission-optimize` rewritten as the Karpathy ratchet (worktree → noise-floor baseline → keep-or-revert → log → caps); scored `code-review-loop` skill (read-only critic + read-write fixer, capped, evidence-gated, diff <1000 lines); loop-discipline guide + input template; install.sh registration + SHA update | ✅ COMPLETE (2026-06-20). T1–T6 done. T5 watched run executed on aimpactmonitor: loop proven end-to-end, two findings folded back into mission-optimize (metric-must-match-intent; worktree breaks on JS/Turbopack). No clean token-per-loop number from the manual run — 6c seeds its error budget from a harness-run loop |
 | **6c** | Coordinator phase-gated meta-loop | Convergence over fixed counts; per-phase error budget with escalation; condensed subagent returns; externalised state as recovery point; gate-route test + Bash gate-guard hook | ✅ COMPLETE (2026-06-20). T1–T6 done. Meta-loop wired into `/coord continue`; condensed returns + restart-from-last-passed-gate added; gate-route test found the Bash route (deny covers Edit/Write only) → blocking PreToolUse hook shipped in settings template (no install.sh/SHA churn). Error budget default 3, tune from a harness-run loop |
 | **6d** | Consolidation & public comms | Single consolidated update of README, CHANGELOG (finalise `[Unreleased]` → v6.2.0), RELEASE-HISTORY, upgrade docs, and the `agent-11-website` repo — reading the User-Facing Changes running list from progress.md. Cuts the v6.2.0 release | ✅ COMPLETE (2026-06-20). T1–T6 done. Docs consolidated + pushed; website deployed to agent-11.com; **v6.2.0 released** (tag `v6.2.0-loop-discipline` + GitHub release). **Sprint 6 umbrella fully closed.** |
+
+#### Sprint 6 close-out, 2026-08-03
+
+All four sub-sprints are shipped and verified on disk. Two things were added on 2026-08-03 to finish
+the "Sharper Ways of Working" initiative that Sprint 6 delivers:
+
+- **Map-first orientation is now baked in.** Every deployable specialist (11) and every executable
+  mission (18) carries an `## ORIENTATION PROTOCOL` block — Glob/Grep to locate before Read, read
+  only the lines needed, never read a whole file to find one symbol — and `library/CLAUDE.md`
+  states the rule globally. `scripts/validate-sprint6-closeout.sh` proves it by exit code.
+- **Dynamic workflows were measured, not assumed.** One pilot ran in this repo reviewing the
+  Sprint 6 surface across four dimensions with a cross-model adversarial verify stage. The numbers
+  and the resulting recommendations for the scored code-review loop, the ratchet, the read-only-judge
+  principle and the coordinator are in `sprints/sprint-6-workflows-decision.md`.
+
+The one item still open is Jamie's architecture call on the coordinator (task 6). Nothing in the
+coordinator was changed by the close-out.
 
 ---
 

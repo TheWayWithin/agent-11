@@ -8,6 +8,29 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
+### [2026-08-03] — PRJ-5 close-out: map-first orientation, one measured workflow pilot, decision memo ✅
+
+**Summary**: Closed the "Sharper Ways of Working" initiative that Sprint 6 delivers. Three things shipped and one question was answered with evidence rather than a guess.
+
+**Shipped**:
+- **Map-first orientation baked in.** All 11 deployable specialists and all 18 executable missions (excluding the two catalogue files) now carry an `## ORIENTATION PROTOCOL` section: Glob/Grep to locate before Read, read only the lines needed, never read a whole file to find one symbol, do not re-read. `library/CLAUDE.md` states the rule globally.
+- **`scripts/validate-sprint6-closeout.sh`**: algorithmic oracle. Proves by exit code that the orientation instruction is present in every file that needs it, that the gate surface carries no uncommitted change and the four deny rules still sit in `permissions.deny` rather than `permissions.allow`, and that the decision memo's four task headings each carry a subject and a verdict. Silent and exit 0 when compliant.
+- **`sprints/sprint-6-workflows-decision.md`**: the decision memo.
+
+**The pilot (first dynamic workflow ever run in this repo)**: 13 agents (4 finders on sonnet, 8 adversarial verifiers on opus, 1 synthesiser), 596,827 subagent tokens, 5 min 00 s wall-clock, 152 tool calls, 0 errors, zero write-tool calls. Reviewed the Sprint 6 loop-discipline surface across four independent dimensions. 14 findings raised, 8 verified under a declared top-2-per-dimension cap, **1 survived**, 7 refuted.
+
+**The surviving finding** (logged, not applied): `project/missions/mission-optimize.md:70` claims `permissions.deny` enforces the metric command and the editable surface. Only the four static gate rules in `library/settings.json.template` exist. Raised as **A11-ISS-11** (correct the overclaim) and **A11-ISS-12** (add a Phase 2 step that emits and verifies the rules). Reviewing the memo turned up a fourth instance of the same false claim at `coordinator.md:265`, raised as **A11-ISS-15**. Also raised: **A11-ISS-13** (`install.sh`'s mission list omits `connect-mcp.md` and `operation-recon.md`, so two library missions never reach a deployed project) and **A11-ISS-14** (default the code-review loop's critic and fixer to different models). Five issues raised, none fixed: every pilot finding is a hypothesis.
+
+**Decisions**: drop as solved for tasks 3 (scored code-review loop), 4 (ratchet) and 5 (read-only judge as a principle). All three shipped in Sprint 6b/6c and none is fan-out-shaped. Task 6 (coordinator) is a recommendation only: do not rewrite it as a workflow; give it the ability to launch one for fan-out phases and externalise its counters. Jamie's call.
+
+**Verification, two layers, both run repeatedly**: the scripted oracle was negative-tested on nine attack vectors, every one of which passed an earlier version of the script and was found by the agentic layer: a missing orientation phrase; the four deny rules moved from `permissions.deny` into `permissions.allow`; a hook check satisfied by a comment merely naming `gate-guard.sh`; a stub guard tailored to the single probe it was tested with; a gate change hidden from `git status` via `git update-index --assume-unchanged`; a `bypassPermissions` default mode with blanket allow rules alongside an intact deny list; a countermanding sentence placed above the orientation heading; a real mission deleted and a placeholder added to restore the file count; and a memo whose headings read "undecided between rewrite as a workflow and drop as solved". All nine now fail it. Agentically, five fresh sub-agents across three rounds read the memo cold against the raw run data. Round one found that the memo presented structural and documentation-derived reasoning as pilot-derived, and that the shipped orientation block carried an unsourced "roughly 70% of tokens are waste" statistic, which is the exact overclaim pattern the memo's own surviving finding is about. Both fixed: the statistic came out of all 29 files and the memo now separates measured from analytic claim by claim. Round two found the validator gaps above, several stale figures, and the strongest objection in the memo: the pilot priced a fan-out audit, not the workflow substrate, so the cost figure does not estimate what converting the coordinator would cost. The task 6 argument was reordered to demote it.
+
+**Corrections to the record**: Sprint 6a's "pending 6b spec" caveat was stale (the spec exists and 6b shipped). `project-plan.md` and the vault's `products/agent-11.md` had no v6.2.0 entry despite it releasing on 2026-06-20; both now do. The vault's `02-PROJECTS.md → PRJ-5` table still says "6b/6c/6d outline only" and needs correcting from a vault session.
+
+**Not touched**: gate files (`git status` on them is clean) and the coordinator's logic. `coordinator.md` shows as modified only because it took the same orientation block as the other ten specialists. Nothing merged, committed or pushed.
+
+---
+
 ### [2026-07-23] — A11-ISS-9: install.sh --upgrade now propagates shipped-hook fixes ✅
 
 **Root cause**: `merge-settings.py` no-opped whenever the user settings had any `hooks` key, so template hook fixes (e.g. the A11-ISS-4 gate-guard rework) never reached deployed repos — blocking the T-245 fleet sweep.

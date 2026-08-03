@@ -1,4 +1,36 @@
-# Handoff Notes — Agent-11 (Sprint 6 CLOSED + website overhaul deployed + blog drafted)
+# Handoff Notes — Agent-11 (PRJ-5 closed out 2026-08-03; Sprint 6 CLOSED; website deployed; blog drafted)
+
+## PRJ-5 close-out — 2026-08-03 (UNCOMMITTED, needs Jamie's review)
+
+The "Sharper Ways of Working" initiative is finished bar one decision. Full reasoning:
+`sprints/sprint-6-workflows-decision.md`.
+
+- **Map-first orientation baked in**: `## ORIENTATION PROTOCOL` in all 11 specialists, all 18
+  executable missions, and the rule stated globally in `library/CLAUDE.md`.
+- **`scripts/validate-sprint6-closeout.sh`**: checks orientation coverage (canonical block verbatim,
+  uncountermanded, in all 29 named files), the gate surface (hash-compared to HEAD, deny rules still
+  denying, no allow rule or default mode undoing them, gate-guard blocking six shell write forms) and
+  that the memo's four task headings record decisions. Silent + exit 0 when compliant. Run it before
+  committing. Nine bypasses were found by review and closed; it is a drift detector, not a security
+  boundary.
+- **First dynamic workflow ever run in this repo**: 13 agents, 596,827 subagent tokens, 5 min 00 s,
+  14 findings raised, 8 verified, **1 survived** cross-model adversarial verification.
+- **Five issues raised, none applied**: A11-ISS-11 (mission-optimize.md:70 claims
+  `permissions.deny` enforcement that does not exist), A11-ISS-12 (add the Phase 2 step that would
+  make it true), A11-ISS-15 (the same false claim in its broadest form at coordinator.md:265),
+  A11-ISS-14 (default the code-review loop's critic and fixer to different models) and A11-ISS-13
+  (install.sh omits two library missions from deployment).
+- **Verdicts**: drop-as-solved for tasks 3, 4 and 5. Task 6 (coordinator) is recommend-only and is
+  the ONE thing still open. Recommendation: do not rewrite it as a workflow; give it the ability to
+  launch one for fan-out phases, and externalise its counters.
+- **Not touched**: gate files (clean), and the coordinator's *logic* (it shows as modified only
+  because it took the same orientation block as the other ten specialists). Nothing merged or pushed.
+- Also corrected: `project-plan.md` and the vault's `products/agent-11.md` had no v6.2.0 entry.
+  Still stale and needs a VAULT session: `02-PROJECTS.md → PRJ-5` says "6b/6c/6d outline only".
+- Open item 3 below (harness-driven token-cost-per-loop number) is still open. The pilot measured a
+  *workflow*, not a 6c coordinator loop, so `PHASE_ERROR_BUDGET` is still untuned.
+
+---
 
 **Last Updated**: 2026-06-20 (pre-reboot save)
 **From**: Sprint 6 fully shipped (v6.2.0). Then a full agent-11.com website overhaul (deployed) + README repositioned to V&M 4.2 + a blog post drafted (not yet published).
@@ -10,7 +42,8 @@
 - **aimpactmonitor**: `develop` has the 6b watched-run lazy-load change, pushed (`ee2b689`).
 
 ## OPEN ITEMS (next session)
-1. **Blog post** drafted but NOT published: `blog/2026-06-20-loops-hype-vs-real-engineering*.md` (post + twitter + linkedin + wip). Real story = loops/autoresearch hype vs the old discipline (specs + a verifier the AI can't game). First-person singular per voice guide. To publish: `jpub /Users/jamiewatters/DevProjects/agent-11/blog/2026-06-20-loops-hype-vs-real-engineering --all --dry-run` then drop `--dry-run`. (Jamie's prompt said "we"; I kept "I" per voice guide — confirm if he wants team voice.)
+1. **Blog post** drafted, image wired (72KB webp in `~/shared/content/blog/images/` + frontmatter `image:`), dry-run clean, NOT yet published: `blog/2026-06-20-loops-hype-vs-real-engineering*.md` (post + twitter + linkedin + wip). Real story = loops/autoresearch hype vs the old discipline (specs + a verifier the AI can't game). Goodhart's-law line replaced with plain English ("I'd picked the wrong number"). First-person singular per voice guide. To publish: `jpub /Users/jamiewatters/DevProjects/agent-11/blog/2026-06-20-loops-hype-vs-real-engineering --blog` (add `--all` for socials).
+1b. **FOLLOW-UP ARTICLE (Jamie's idea, not yet drafted)**: a second, more concrete post about *what v6.2.0 actually added to AGENT-11 and why it makes the suite/harness better* — read-only gates, default-fail verification, ratchet `mission-optimize`, `code-review-loop` skill, phase-gated meta-loop, Bash gate-guard. The "product/release" companion to the "thinking" piece above. Source material: CHANGELOG `[6.2.0]`, RELEASE-HISTORY v6.2.0 entry, `loop-discipline-guide.md`. Draft with `/blog` when ready.
 2. **Website remaining (optional, tracked in `agent-11-website/WEBSITE-UPDATE-SPEC-v6.2.0.md`)**: `agentExamples.ts` still has illustrative figures + a Discord mention inside *fictional sample-deliverable code blocks* (not live claims) — scrub only if Jamie wants. Historical changelog version entries keep their original numbers as a dated record. sitemap lastModified dates minor.
 3. **Sprint 6 follow-on (NOT specced)**: a harness-driven loop to get a real token-cost-per-loop number → tune the 6c `PHASE_ERROR_BUDGET` default (3); optionally roll 6a–6c to the fleet via `apply-file.sh`.
 
