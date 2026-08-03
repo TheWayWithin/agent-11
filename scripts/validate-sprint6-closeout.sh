@@ -214,6 +214,8 @@ note "gates: deny rules deny, no allow rule or default mode undoes them, hook is
 if [ ! -s library/hooks/gate-guard.sh ]; then
   breach "GATES: library/hooks/gate-guard.sh is missing or empty"
 else
+  # Every form the guard's own header claims to catch. If a doc says the guard blocks
+  # something, there is a probe for it here: the point is to test the claim, not ratify it.
   probes=(
     'echo x > .quality-gates.json'
     'echo x >> gates/gate-types.yaml'
@@ -221,6 +223,11 @@ else
     'cp /tmp/x .quality-gates.json'
     'mv /tmp/x gates/templates/minimal.json'
     'tee gates/README.md < /tmp/x'
+    'rm -f .quality-gates.json'
+    'truncate -s 0 .quality-gates.json'
+    'dd if=/dev/null of=gates/gate-types.yaml'
+    'ln -sf /tmp/evil .quality-gates.json'
+    'perl -pi -e s/90/10/ .quality-gates.json'
   )
   for probe in "${probes[@]}"; do
     printf '{"tool_name":"Bash","tool_input":{"command":%s}}' "$(python3 -c 'import json,sys;print(json.dumps(sys.argv[1]))' "$probe")" \
@@ -230,11 +237,21 @@ else
       breach "GATES: gate-guard.sh did not block \"$probe\" (exit $rc, expected 2)"
     fi
   done
-  # And it must not block everything, which would be a different kind of broken.
-  printf '{"tool_name":"Bash","tool_input":{"command":"echo hello > /tmp/harmless.txt"}}' \
-    | sh library/hooks/gate-guard.sh >/dev/null 2>&1
-  if [ $? -eq 2 ]; then
-    breach "GATES: gate-guard.sh blocks an unrelated write — it is failing closed on everything"
+  # And it must not block ordinary work. A11-ISS-4 was exactly this failure: a guard so
+  # broad it refused unrelated Bash, which gets it removed rather than fixed.
+  for allowed in 'echo hello > /tmp/harmless.txt' 'npm test' 'rm -rf node_modules' 'cat .quality-gates.json'; do
+    printf '{"tool_name":"Bash","tool_input":{"command":%s}}' \
+      "$(python3 -c 'import json,sys;print(json.dumps(sys.argv[1]))' "$allowed")" \
+      | sh library/hooks/gate-guard.sh >/dev/null 2>&1
+    if [ $? -eq 2 ]; then
+      breach "GATES: gate-guard.sh blocks \"$allowed\" — it is failing closed on ordinary work"
+    fi
+  done
+
+  # A guard that is never deployed protects nothing, and the hook fails open when the
+  # script is absent. install.sh must still ship it.
+  if ! grep -q 'gate-guard.sh' project/deployment/scripts/install.sh; then
+    breach "GATES: project/deployment/scripts/install.sh no longer deploys gate-guard.sh — the hook fails open without it"
   fi
   note "gates: gate-guard.sh blocks ${#probes[@]} distinct write forms and permits unrelated writes"
 fi

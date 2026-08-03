@@ -76,6 +76,29 @@ while IFS= read -r m; do
   fi
 done <<< "$installer_list"
 
+# There is a SECOND hand-kept mission list, in verify_installation(). It had drifted to
+# 14 of 20 entries, so a failed copy of the missing six still reported a clean install:
+# a check that lies about success is worse than no check. Both lists are compared.
+verify_list="$(
+  grep -n 'local mission_files=(' "$INSTALLER" \
+    | tail -1 \
+    | sed 's/^[0-9]*://' \
+    | grep -oE '"[^"]+\.md"' \
+    | tr -d '"' \
+    | sort -u
+)"
+
+if [ -z "$verify_list" ]; then
+  breach "COVERAGE: could not parse the verify_installation mission list out of $INSTALLER"
+else
+  while IFS= read -r m; do
+    [ -z "$m" ] && continue
+    if ! printf '%s\n' "$verify_list" | grep -qxF -- "$m"; then
+      breach "COVERAGE: $INSTALLER installs $m but verify_installation() never checks it landed"
+    fi
+  done <<< "$library_list"
+fi
+
 if [ "$VERBOSE" -eq 1 ]; then
   printf 'coverage: %s missions in %s, %s entries in %s — matched\n' \
     "$(printf '%s\n' "$library_list" | grep -c .)" "$MISSION_DIR" \

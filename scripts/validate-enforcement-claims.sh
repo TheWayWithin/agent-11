@@ -110,7 +110,10 @@ NEGATED = re.compile(
     r"|\*\*not enforced\*\*|\| \*\*No\*\*",
     re.I,
 )
-MENTIONS_DENY = re.compile(r"permissions\.deny", re.I)
+MENTIONS_DENY = re.compile(
+    r"permissions\.deny|deny rule|Edit\(\) deny|deny list|gate guard|gate-guard",
+    re.I,
+)
 
 # A line window, not a blank-line block. The original defect read "The loop may NEVER edit:
 # <bullet list including the metric command> ... These are enforced by permissions.deny", where
@@ -119,10 +122,15 @@ MENTIONS_DENY = re.compile(r"permissions\.deny", re.I)
 WINDOW = 8
 LONG_LINE = 300
 
+SCANNED_SUFFIXES = {".md", ".json", ".template", ".sh", ".yaml", ".yml"}
+
 def targets(surface):
+    # Not just *.md. The single widest-reach instance of this defect lived in a JSON
+    # comment inside library/settings.json.template, which an *.md-only sweep could
+    # never see, and the guard script's own header made the same claim about itself.
     p = pathlib.Path(surface)
     if p.is_dir():
-        return sorted(p.rglob("*.md"))
+        return sorted(q for q in p.rglob("*") if q.is_file() and q.suffix in SCANNED_SUFFIXES)
     return [p] if p.is_file() else []
 
 checked = flagged = 0
@@ -147,11 +155,19 @@ for surface in surfaces:
             # Markdown wraps, so "no file-level\n      rule is possible" must still match
             # "no file-level rule". Collapse whitespace before matching either pattern.
             window = re.sub(r"\s+", " ", window)
-            if not UNENFORCED.search(window):
+            hits = list(UNENFORCED.finditer(window))
+            if not hits:
+                continue
+            # A subject sitting next to a gate path is legitimately scoped: "the
+            # threshold inside a gate config cannot be lowered" is true and must not be
+            # flagged, or the check gets switched off by the first person it annoys.
+            unscoped = [h for h in hits
+                        if not GATE_PATH.search(window[max(0, h.start() - 90): h.end() + 90])]
+            if not unscoped:
                 continue
             flagged += 1
             if not NEGATED.search(window):
-                subject = UNENFORCED.search(window).group(0)
+                subject = unscoped[0].group(0)
                 print(f"CLAIMS: {path}:{i + 1} ties permissions.deny to \"{subject}\", which no "
                       f"shipped rule covers, without saying it is unenforced")
                 bad = True

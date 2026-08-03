@@ -1395,7 +1395,11 @@ verify_installation() {
     done
     
     # Verify mission system files
-    local mission_files=("library.md" "mission-build.md" "mission-fix.md" "mission-mvp.md" "mission-refactor.md" "mission-deploy.md" "mission-document.md" "mission-optimize.md" "mission-integrate.md" "mission-migrate.md" "mission-security.md" "mission-release.md" "dev-setup.md" "dev-alignment.md")
+    # Every file the installer deploys to missions/. Kept in step with the
+    # mission_files array above by scripts/validate-deployment-coverage.sh —
+    # this list had silently drifted to 14 of 20, so a failed copy of the
+    # missing six still reported a clean install.
+    local mission_files=("README.md" "connect-mcp.md" "dev-alignment.md" "dev-setup.md" "library.md" "mission-architecture.md" "mission-build.md" "mission-deploy.md" "mission-document.md" "mission-fix.md" "mission-integrate.md" "mission-migrate.md" "mission-mvp.md" "mission-optimize.md" "mission-product-description.md" "mission-refactor.md" "mission-release.md" "mission-security.md" "operation-genesis.md" "operation-recon.md")
     for mission_file in "${mission_files[@]}"; do
         if [[ ! -f "$MISSIONS_DIR/$mission_file" ]]; then
             missing_items+=("mission:$mission_file")
