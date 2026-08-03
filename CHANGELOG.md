@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Map-first orientation, baked into every agent and mission.** All 11 specialists and all 18 executable missions now carry an `## ORIENTATION PROTOCOL` section, and `library/CLAUDE.md` states the rule globally: Glob/Grep to locate before you Read, read only the lines you need (`offset`/`limit`), never read a whole file to find one symbol, do not re-read what you have already read. Orientation is the largest avoidable token cost in a session and it was previously an implied habit rather than a stated instruction anywhere in the library. Upgrading picks this up automatically; no configuration.
+- **`connect-mcp.md` and `operation-recon.md` now actually deploy.** Both existed in the library but were missing from `install.sh`'s mission list, so no deployed project ever received them. If you have installed AGENT-11 before today, `install.sh --upgrade` will add them.
+- **Three repo checks**, each silent and exit 0 when compliant: `scripts/validate-sprint6-closeout.sh` (orientation coverage, gate surface intact, decision memo records a verdict per task), `scripts/validate-enforcement-claims.sh` (no document claims protection the rules do not provide), `scripts/validate-deployment-coverage.sh` (both of install.sh's mission lists match the library).
+
+### Changed
+
+- **Every claim about what protects your quality gates is now scoped to what is actually enforced.** The shipped `permissions.deny` set is four rules covering `.quality-gates.json`, `**/*.quality-gates.json`, `gates/**` and `.gates/**`. Eleven places in the library previously said or implied that it also made an acceptance-criteria test, a benchmark, a metric command, or "anything outside the named surface" read-only. None of those is covered by any shipped rule, and believing otherwise is how reward-hacking slips through: an operator who thinks the tool layer is stopping an agent stops watching. Each site now separates what is refused at the tool layer from what an agent is instructed not to do. Behaviour is unchanged; the deny rules are byte-identical. What changed is that the documentation is now true.
+- **The Bash gate guard blocks 12 command forms, up from 5**, adding `rm`, `truncate`, `shred`, `unlink`, `dd of=`, `ln -s` and in-place `perl`/`ruby` edits against gate paths. Deleting a gate passes it as effectively as lowering it, and that was not covered at all. Ordinary Bash is unaffected (regression-tested against `npm test`, `git status`, `rm -rf node_modules`, and reads over `gates/`).
+- **The guard is no longer described as "closing the Bash route".** It narrows it. A write through an interpreter (`python3 -c "open(path,'w')"`) or via a path held in a variable passes straight through, and no shell hook can catch those. Treat it as a speed bump; the enforceable guarantee is the `Edit()` deny rules. Tracked as A11-ISS-16.
+- **`mission-optimize` now creates the protection it used to assume.** Phase 2 writes `Edit(path)` deny rules for the run's own metric command, benchmark and fixtures, and proves they work by attempting an edit and attaching the refusal. No shipped rule covers a metric command, so until you add one it is not enforced by anything: the mission has you create the enforcement, not invoke it. Where the metric is a shell one-liner with no file to protect, that must be logged and the run watched throughout rather than assumed safe.
+- **`code-review-loop` defaults the critic and fixer to different models.** Read-only separates the incentives; a different model separates the blind spots. A critic sharing the generator's weights tends to return agreement rather than verification. Single-model runs still work, and the log records that a clean round is weaker evidence.
+- **`verify_installation()` checks all 20 deployed mission files**, up from 14. A failed copy of the missing six previously still reported a clean install.
+
+
 ## [6.2.0] - 2026-06-20 - Loop Discipline & Read-Only Verification
 
 ### Added

@@ -110,6 +110,7 @@ NEGATED = re.compile(
     r"not enforced"
     r"|is not covered|are not covered|not covered by"
     r"|covered by no|no shipped rule|no rule covers|no file-level rule"
+    r"|none of (?:those|these|them) (?:is|are) covered"
     r"|nothing (?:stops|refuses|adds|writes|covers|adds one)"
     r"|only the first line is enforced|only the gate paths are enforced"
     r"|only the first two are enforced|the first two, not the third"
