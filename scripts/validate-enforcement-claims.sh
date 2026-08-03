@@ -34,9 +34,11 @@ VERBOSE=0
 
 fail=0
 
-# The deployed surface. Everything here reaches a user's project; sprints/, progress.md and
-# handoff notes are this repo's own history and are deliberately out of scope.
-SURFACES=(library project templates)
+# The surface a user actually reads. library/, project/ and templates/ are installed into
+# their repo; docs/, CHANGELOG.md and README.md are what they read before and after
+# installing, and a false claim there misleads just as effectively. sprints/, progress.md
+# and handoff notes are this repo's own working history and are deliberately out of scope.
+SURFACES=(library project templates docs CHANGELOG.md README.md)
 
 python3 - "$VERBOSE" "${SURFACES[@]}" <<'PY' >&2 || fail=1
 import json, re, sys, pathlib
@@ -88,6 +90,8 @@ NEGATED = re.compile(
     r"|only the first two are enforced|the first two, not the third"
     r"|two of those three are enforced"
     r"|until you add|unless you add"
+    r"|prohibited by instruction|not refused by the tool layer|rather than refused"
+    r"|only gate paths are covered"
     r"|\*\*not enforced\*\*|\| \*\*No\*\*",
     re.I,
 )
@@ -98,10 +102,17 @@ MENTIONS_DENY = re.compile(r"permissions\.deny", re.I)
 # the claim and its referent sit in different paragraphs. Splitting on blank lines pulls them
 # apart and misses exactly the defect this check exists to catch.
 WINDOW = 8
+LONG_LINE = 300
+
+def targets(surface):
+    p = pathlib.Path(surface)
+    if p.is_dir():
+        return sorted(p.rglob("*.md"))
+    return [p] if p.is_file() else []
 
 checked = flagged = 0
 for surface in surfaces:
-    for path in sorted(pathlib.Path(surface).rglob("*.md")):
+    for path in targets(surface):
         text = path.read_text(errors="replace")
         if "permissions.deny" not in text:
             continue
@@ -110,8 +121,14 @@ for surface in surfaces:
         for i, line in enumerate(lines):
             if not MENTIONS_DENY.search(line):
                 continue
-            lo, hi = max(0, i - WINDOW), min(len(lines), i + WINDOW + 1)
-            window = "\n".join(lines[lo:hi])
+            # A long line is its own paragraph. CHANGELOG and release-history bullets run to
+            # ~1000 characters, so a line window straddles several unrelated entries and
+            # borrows a subject from a neighbour. Judge those on the line alone.
+            if len(line) > LONG_LINE:
+                window = line
+            else:
+                lo, hi = max(0, i - WINDOW), min(len(lines), i + WINDOW + 1)
+                window = "\n".join(lines[lo:hi])
             if not UNENFORCED.search(window):
                 continue
             flagged += 1
