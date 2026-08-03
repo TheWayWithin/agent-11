@@ -77,9 +77,9 @@ almost nothing in it to parallelise.
 | mission-product-description | No | T1 | Risk and financial analysis consumes the market analysis. |
 | mission-refactor | No | T1 | Strategy from analysis, tests before refactor, validation after. |
 | mission-release | No | T1, T3 | Build → docs → execute is chained, and shipping is a human call. (Its QA phase alone is fan-out-ish.) |
-| **mission-security** | **Yes**, audit half only | none | Code, infrastructure and data-privacy audits are independent surfaces, each ending in severity-categorised findings. Unit = one audit surface, or one OWASP category. Read-only, no C1. **The remediation phase is not fan-out** and must stay outside any workflow. |
+| **mission-security** | **Yes**, Phases 2-4 only | none | Phase 2 (code), Phase 3 (infrastructure) and Phase 4 (data and privacy) are independent surfaces, each ending in severity-categorised findings. Unit = one audit surface, or one OWASP category within Phase 2. Read-only, no C1. **Phases 1, 5 and 6 are not fan-out**: Phase 1's threat model is what Phases 2-4 audit against (a T1 dependency), Phase 5's testing validates what they found, and Phase 6 remediation writes code and must stay outside any workflow. |
 | operation-genesis | No | T1 | Nine chained phases, same shape as build. |
-| **operation-recon** | **Yes**, Phases 1-2 only | none | Of the 8 RECON items, item 1 (PREPARATION) is setup that the rest depend on and produces no findings, so the fan-out is the **7** sweeps (interaction, responsive, visual, accessibility, robustness, code inspection, console) plus Phase 2's viewport/browser matrix. Those are mutually blind and each returns severity-tagged findings with screenshot evidence. Unit = one sweep dimension or one (viewport × browser) pair. Read-only, but needs separate browser contexts. **Phases 0, 3, 4 and 5 are not fan-out**: intelligence gathering precedes everything, and threat assessment, evidence collection and report compilation each synthesise what the earlier phases produced. |
+| **operation-recon** | **Yes**, Phases 1-2 only | none | Of the 8 RECON items, item 1 (PREPARATION) is setup that the rest depend on and produces no findings, so the fan-out is the **7** sweeps (interaction, responsive, visual, accessibility, robustness, code inspection, console) plus **6** of Phase 2's 7 SENTINEL items (item 1, PERIMETER ESTABLISHMENT, maps test coverage for the rest and is the same dependent setup step as RECON item 1). Those 13 are mutually blind and each returns severity-tagged findings with screenshot evidence. Unit = one sweep dimension or one (viewport × browser) pair. Read-only, but needs separate browser contexts. **Phases 0, 3, 4 and 5 are not fan-out**: intelligence gathering precedes everything, and threat assessment, evidence collection and report compilation each synthesise what the earlier phases produced. |
 | dev-setup | No | T1 | Each phase consumes the previous artefact: MCP → GitHub → ideation → architecture → plan. |
 | dev-alignment | No | T3 | Its discovery path is a live interview with the operator. |
 | connect-mcp | No | T3 | Writing `.mcp.json` needs real credentials from the human mid-run. (Its connection-testing step alone would pass.) |
@@ -113,9 +113,9 @@ by hand: `fleet-sync.sh` plus manual per-repo inspection.
 
 ### Shape
 
-**Units.** One agent per `tier: active` repo, read from `registry.yaml`. 20 units against a
-16-concurrent runtime cap, so it runs in two waves. Well inside the medium size guideline if the
-verify stage is bounded (below).
+**Units.** One agent per `tier: active` repo, read from `registry.yaml`. 20 units against the
+runtime's 16-concurrent cap, so the audit stage runs in two waves. The cap governs peak concurrency,
+not the total: 20 audit agents never run at once.
 
 **What each unit checks.** Deployment drift, which is the question `fleet-sync.sh` answers slowly:
 which AGENT-11 version the repo has, whether the four gate deny rules are present, whether
@@ -129,12 +129,17 @@ orientation protocol reached its agents. All answerable from files, all evidence
   "repo": "string",                    // registry name
   "path": "string",                    // absolute path audited
   "reachable": true,                   // false if the path is missing; everything below then null
-  "agent11_version": "string|null",    // from the deployed CLAUDE.md or install marker
+  "agent11_version": "string|null",    // best-effort, expect null: install.sh writes no version
+                                       // marker today and library/CLAUDE.md carries no version
+                                       // string. Populating this needs a marker added first.
   "gate_rules_present": ["string"],    // the Edit() rules actually found in .claude/settings.json
   "gate_rules_missing": ["string"],    // of the four expected
   "gate_guard_installed": true,        // .claude/hooks/gate-guard.sh exists AND is wired PreToolUse
   "missions_deployed": 0,              // count found under missions/
-  "missions_expected": 18,
+  "missions_expected": 20,             // install.sh deploys 20 files to missions/: the 18
+                                       // executable missions plus README.md and library.md.
+                                       // Comparing against 18 makes every repo report a
+                                       // false mismatch.
   "orientation_present": true,         // specialists carry ## ORIENTATION PROTOCOL
   "findings": [                        // at most 3, highest severity first
     {
@@ -157,13 +162,17 @@ orientation protocol reached its agents. All answerable from files, all evidence
 | Verify | ≤1 per high-severity finding, capped at 10 | **`opus`** | Adversarially refute each high finding by re-reading the repo itself. Different model to the audit stage, non-negotiable. |
 | Synthesise | 1 | `opus` | One ranked fleet report from surviving findings, plus the refuted list. |
 
-Roughly 20 + 10 + 1 = 31 agents at the ceiling. That exceeds the medium guideline deliberately and
-should be run with the guideline raised, or split into two runs of ten repos. Say which, out loud, in
-the run: a silent cap reads as full coverage when it is not.
+Roughly 20 + 10 + 1 = 31 agents at the ceiling. That is a **total across three sequential stages**,
+not a concurrency figure: peak concurrency is 20, which the runtime's 16-agent cap already handles by
+queueing. The total is what exceeds the medium size guideline, so raise the guideline for the run or
+split it into two passes of ten repos. Say which, out loud, in the run: a silent cap reads as full
+coverage when it is not.
 
-**Why the audit stage is the cheap model.** The measured pilot's finder stage produced 14 candidate
-defects of which one survived. Fan-out output is noisy, and paying top-tier rates for noise is the
-expensive mistake. Put the money in the verifier.
+**Why the audit stage is the cheap model.** In the measured pilot, **8 findings went to a verifier
+and 1 survived**. (14 were raised, but 6 were capped out and never verified, and the memo is explicit
+that the 14 is self-reported and not a census, so 8 is the only denominator that can be defended.)
+Even on the defensible number, fan-out output is mostly noise, and paying top-tier rates for noise is
+the expensive mistake. Put the money in the verifier.
 
 **Where the orientation rules go.** Into the agent prompts, pasted. Workflow subagents are not
 agent-11 specialists and do not inherit `## ORIENTATION PROTOCOL`. The pilot's agents made 105 Bash
