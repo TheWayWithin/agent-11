@@ -23,7 +23,8 @@ Phase 3: Integration
 Gates judge the work, so they must be read-only to the agents doing the work. An agent that can edit its own success criteria will eventually pass by editing them, not by doing the work (reward-hacking).
 
 - **What is read-only**: `.quality-gates.json`, this `gates/` directory, and any test that serves as a task's acceptance criteria.
-- **How it is enforced**: `permissions.deny` rules in `.claude/settings.json` (shipped via `library/settings.json.template`). The Edit/Write is refused at the tool layer — not a prompt convention.
+- **How much of that is enforced**: the first two, not the third. `permissions.deny` in `.claude/settings.json` (shipped via `library/settings.json.template`) carries exactly four rules — `Edit(.quality-gates.json)`, `Edit(**/*.quality-gates.json)`, `Edit(gates/**)`, `Edit(.gates/**)` — and the `Edit(path)` form applies to every file-editing tool. A PreToolUse hook blocks Bash writes (redirection, `tee`, `sed -i`, `cp`, `mv`) to the same paths. For those paths the refusal is real, at the tool layer, not a prompt convention.
+- **Where it is only a convention**: an acceptance-criteria test that lives outside these paths is covered by no rule. Agents are instructed not to edit it and will generally comply, but nothing refuses them. To make it enforced, add an `Edit(path)` deny rule for it yourself.
 - **Default-fail**: every gate check starts failing and flips to pass only on captured command output. An asserted pass with no evidence is treated as a failure.
 - **Changing a gate deliberately**: edit the config as a human action with the deny rules temporarily removed. Never let an agent revise a gate as a side effect of making a phase pass.
 

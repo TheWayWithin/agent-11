@@ -67,9 +67,18 @@ The loop may NEVER edit the things that judge it:
 - The metric command, the benchmark, or any test that defines "better"
 - Any file outside the named editable surface
 
-These are enforced by `permissions.deny` in `.claude/settings.json`. An attempt that would
-require touching any of them is an **escalation trigger**, not a quiet widening of scope. An
-agent that can edit its own success metric will eventually pass by editing it.
+An attempt that would require touching any of them is an **escalation trigger**, not a quiet
+widening of scope. An agent that can edit its own success metric will eventually pass by editing it.
+
+**Only the first line is enforced when you start.** The four `permissions.deny` rules shipped with
+AGENT-11 cover `.quality-gates.json`, `**/*.quality-gates.json`, `gates/**` and `.gates/**`, and a
+PreToolUse hook blocks Bash writes to the same paths. The metric command, the benchmark and
+"everything outside the named surface" are chosen fresh at Phase 1 of every run, so no shipped rule
+can possibly cover them. Nothing writes one for you.
+
+That gap is the whole reward-hacking surface of this mission: the one file the loop is most rewarded
+for editing is the one that decides whether it succeeded, and by default nothing stops it. **Phase 2
+therefore closes it by hand, and the mission does not proceed until it has.**
 
 ## Mission Phases
 
@@ -112,12 +121,45 @@ agent that can edit its own success metric will eventually pass by editing it.
 - Create the append-only log `.loops/optimize-<surface>.log` (JSONL, schema below).
 - Confirm caps (defaults: 10 attempts, 1h wall-clock, 1000-line diff/iteration, token ceiling
   logged).
+- **Write the deny rules for THIS run's read-only set, then prove they bite.** The shipped rules
+  cover the gate paths only; the metric and the benchmark named in Phase 1 are covered by nothing
+  until you add them. Append an `Edit(path)` rule to `permissions.deny` in the project's
+  `.claude/settings.json` for the metric command's script or binary, for the benchmark or test
+  file that defines "better", and for any fixture the metric reads. Use the `Edit(path)` form:
+  `Write()` and `MultiEdit()` rule forms are silently ignored (A11-ISS-7), while `Edit(path)`
+  applies to every file-editing tool.
+
+  ```jsonc
+  // .claude/settings.json — added for this run, removed when the mission ends
+  "permissions": {
+    "deny": [
+      "Edit(.quality-gates.json)",        // shipped
+      "Edit(**/*.quality-gates.json)",    // shipped
+      "Edit(gates/**)",                   // shipped
+      "Edit(.gates/**)",                  // shipped
+      "Edit(bench/rank.js)",              // THIS RUN: the metric command
+      "Edit(bench/fixtures/**)"           // THIS RUN: what the metric reads
+    ]
+  }
+  ```
+
+  Then verify with evidence, because an unverified deny rule is worth nothing: attempt one edit to
+  the metric file and attach the refusal. A rule you did not watch refuse something is a guess.
+
+  If the metric is a shell one-liner rather than a file, there is nothing to deny. Say so
+  explicitly in the log, and treat the run as **watched** for its whole duration: the enforcement
+  you do not have is replaced by a human who is looking.
 
 **Success Criteria**:
 - [ ] Worktree created (`git worktree list` output attached).
 - [ ] Baseline = median of 3 runs, all 3 numbers logged.
 - [ ] Noise-floor threshold set above observed variance.
 - [ ] `.loops/optimize-<surface>.log` exists and is writable.
+- [ ] Deny rules for this run's metric and benchmark are present in `.claude/settings.json`
+      (the file's `permissions.deny` array attached), **or** the log records why no file-level
+      rule is possible and that the run is watched throughout.
+- [ ] The added rules were tested: an attempted edit to the metric file was refused, and the
+      refusal is attached.
 
 ### Phase 3: Run the ratchet loop (the execution core)
 **Lead**: @developer

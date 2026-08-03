@@ -45,12 +45,18 @@ token_ceiling:  <set a number, or "log only">
 
 ## 5. Read-only set (do not edit — confirm you understand)
 
-The loop may never touch these, enforced by `permissions.deny`:
-- `.quality-gates.json`, `gates/**`, `**/*.quality-gates.json`
-- The metric command, the benchmark, any test that defines "better"
-- Anything outside the named surface
+The loop may never touch these:
+- `.quality-gates.json`, `gates/**`, `**/*.quality-gates.json` — **already enforced** by the four
+  shipped `permissions.deny` rules and the Bash gate guard.
+- The metric command, the benchmark, any test that defines "better" — **not enforced until you add
+  a rule for it**. Phase 2 adds `Edit(path)` deny rules for these and proves they refuse an edit.
+- Anything outside the named surface — **not enforced**; caught after the fact by the Phase 3
+  check that `git diff --stat` stays confined to the surface.
 
 - [ ] I understand an attempt that needs to touch these is an escalation, not a scope change.
+- [ ] I have named the metric/benchmark files that Phase 2 must add deny rules for, or recorded
+      that the metric is a shell one-liner with no file to protect (in which case the run is
+      watched throughout).
 
 ## 6. Watched-first-run (required for a repo's first loop)
 

@@ -81,7 +81,12 @@ Setup and full list: `field-manual/mcp-integration.md`. The previous `.mcp-profi
 
 ## Quality gates (read-only)
 
-The thing that judges the work is read-only to the thing doing it. `.quality-gates.json`, the `gates/` directory, and any test serving as a task's acceptance criteria are unwritable by every agent (`permissions.deny` in `.claude/settings.json`). No agent loosens, skips, or rewrites a gate to make a phase pass; a passing gate must mean the work was done. Every success criterion is default-fail — it flips to pass only on captured command output, never on assertion. To change a gate deliberately, edit it as a human action with the deny rules temporarily removed. The deny rules use the `Edit(path)` form, which Claude Code applies to every file-editing tool (Edit, Write, MultiEdit); a PreToolUse "read-only gate guard" hook (Sprint 6c) additionally blocks Bash writes (redirection, `tee`, `sed -i`, `cp`, `mv`) to gate paths, closing that route. The guard decision lives in `.claude/hooks/gate-guard.sh`, which inspects the actual Bash command — non-gate Bash always passes.
+The thing that judges the work is read-only to the thing doing it. No agent loosens, skips, or rewrites a gate to make a phase pass; a passing gate must mean the work was done.
+
+Be precise about which half of that is enforced and which half is a rule you follow:
+
+- **Enforced at the tool layer.** `.quality-gates.json`, `**/*.quality-gates.json`, `gates/**` and `.gates/**` are unwritable by every agent. Four `permissions.deny` rules in `.claude/settings.json`, plus the Bash guard below. The edit is refused; it does not depend on the agent's cooperation.
+- **Not enforced, and binding anyway.** A test elsewhere in the repo that serves as a task's acceptance criteria is NOT covered by those rules unless it happens to live under a gate path. Editing one to make your own work pass is reward-hacking and is prohibited, but nothing stops you mechanically. If such a test is genuinely wrong, say so and escalate; do not change it yourself. Every success criterion is default-fail — it flips to pass only on captured command output, never on assertion. To change a gate deliberately, edit it as a human action with the deny rules temporarily removed. The deny rules use the `Edit(path)` form, which Claude Code applies to every file-editing tool (Edit, Write, MultiEdit); a PreToolUse "read-only gate guard" hook (Sprint 6c) additionally blocks Bash writes (redirection, `tee`, `sed -i`, `cp`, `mv`) to gate paths, closing that route. The guard decision lives in `.claude/hooks/gate-guard.sh`, which inspects the actual Bash command — non-gate Bash always passes.
 
 ## Security
 
