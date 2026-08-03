@@ -7,7 +7,10 @@
 # is allowed.
 #
 # WHAT IT CATCHES: redirection (> >>), tee, sed -i, cp, mv, rm, truncate,
-# dd of=, ln -s, and in-place interpreter edits (perl -i, ruby -i).
+# shred, unlink, dd of=, ln -s, and in-place interpreter edits (perl -i,
+# ruby -i). Keep this list in step with the branches below: an audit found it
+# undercounting its own logic by two, which is the same class of defect as
+# overclaiming, pointed the other way.
 #
 # WHAT IT DOES NOT CATCH, and no shell guard can:
 #   - writes through an interpreter:  python3 -c "open('.quality-gates.json','w')..."
