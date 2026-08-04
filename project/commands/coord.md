@@ -11,23 +11,43 @@ Dispatch a mission via THE COORDINATOR. Parse the arguments, validate the missio
 
 ## Routing Table
 
-| Mission         | Mode | Context at start                                  | Notes |
-|-----------------|------|---------------------------------------------------|-------|
-| `build`         | A    | project-plan.md, agent-context.md, mission file   | Greenfield feature build |
-| `mvp`           | A    | project-plan.md, agent-context.md, mission file   | Rapid MVP from concept |
-| `dev-setup`     | A    | ideation input only                               | Greenfield bootstrap; creates tracking files |
-| `dev-alignment` | A    | existing codebase, agent-context.md if present    | Brownfield onboarding |
-| `integrate`     | A    | project-plan.md, agent-context.md, mission file   | Third-party integration |
-| `migrate`       | A    | project-plan.md, agent-context.md, mission file   | Data/schema migration |
-| `fix`           | B1   | bug report input only                             | Surgical fix; no tracking unless escalates |
-| `refactor`      | B2   | project-plan.md if exists, mission file           | Multi-step refactor |
-| `optimize`      | B2   | project-plan.md if exists, mission file           | Performance work |
-| `document`      | B2   | project-plan.md if exists, mission file           | Documentation pass |
-| `release`       | B2   | project-plan.md, agent-context.md, mission file   | Higher stakes |
-| `deploy`        | B2   | project-plan.md, agent-context.md, mission file   | Higher stakes |
-| `security`      | B2   | project-plan.md, agent-context.md, mission file   | Audit + fixes |
+Every executable mission file has a row. The **File** column is the mapping — there is no
+name-to-filename heuristic to guess at. A mission that ships without a row here is unreachable:
+that was A11-ISS-17, where five installed missions hard-errored on `/coord`, and
+`scripts/validate-deployment-coverage.sh` now fails if this table and `project/missions/` disagree.
+
+| Mission               | Mode | File                                  | Context at start                                  | Notes |
+|-----------------------|------|---------------------------------------|---------------------------------------------------|-------|
+| `build`               | A    | `mission-build.md`                    | project-plan.md, agent-context.md, mission file   | Greenfield feature build |
+| `mvp`                 | A    | `mission-mvp.md`                      | project-plan.md, agent-context.md, mission file   | Rapid MVP from concept |
+| `dev-setup`           | A    | `dev-setup.md`                        | ideation input only                               | Greenfield bootstrap; creates tracking files |
+| `dev-alignment`       | A    | `dev-alignment.md`                    | existing codebase, agent-context.md if present    | Brownfield onboarding |
+| `integrate`           | A    | `mission-integrate.md`                | project-plan.md, agent-context.md, mission file   | Third-party integration |
+| `migrate`             | A    | `mission-migrate.md`                  | project-plan.md, agent-context.md, mission file   | Data/schema migration |
+| `architecture`        | A    | `mission-architecture.md`             | project-plan.md, agent-context.md, mission file   | Designs and documents system architecture |
+| `product-description` | A    | `mission-product-description.md`      | project-plan.md, agent-context.md, mission file   | Investor-ready product document |
+| `operation-genesis`   | A    | `operation-genesis.md`                | project-plan.md, agent-context.md, mission file   | Full feature, concept to production |
+| `fix`                 | B1   | `mission-fix.md`                      | bug report input only                             | Surgical fix; no tracking unless escalates |
+| `refactor`            | B2   | `mission-refactor.md`                 | project-plan.md if exists, mission file           | Multi-step refactor |
+| `optimize`            | B2   | `mission-optimize.md`                 | project-plan.md if exists, mission file           | Performance work |
+| `document`            | B2   | `mission-document.md`                 | project-plan.md if exists, mission file           | Documentation pass |
+| `release`             | B2   | `mission-release.md`                  | project-plan.md, agent-context.md, mission file   | Higher stakes |
+| `deploy`              | B2   | `mission-deploy.md`                   | project-plan.md, agent-context.md, mission file   | Higher stakes |
+| `security`            | B2   | `mission-security.md`                 | project-plan.md, agent-context.md, mission file   | Audit + fixes |
+| `connect-mcp`         | B2   | `connect-mcp.md`                      | project-plan.md if exists, mission file           | MCP server setup; needs your API keys |
+| `operation-recon`     | B2   | `operation-recon.md`                  | project-plan.md if exists, mission file           | UI/UX audit; reports, does not fix |
 
 **Modes**: A = greenfield (long-horizon, full tracking). B1 = surgical (minimal context). B2 = maintenance (moderate context). `evidence-repository.md` loads on demand only — never at start.
+
+**Missions that need something from you before they can finish.** Two rows above stop for a human
+rather than running clean end to end, and both stop for input the coordinator cannot invent:
+
+- `connect-mcp` writes placeholder `.env.mcp` entries and needs you to paste real API keys into them.
+- `operation-recon` needs a target scope (PR number, branch or component list) **and** a reachable
+  URL or running dev server. Without both it has nothing to audit.
+
+**Not in this table**: `project/missions/README.md` and `project/missions/library.md`. They are the
+mission catalogue, not runnable missions, which is why `/coord library` is correctly an error.
 
 ### Control Commands
 
@@ -55,7 +75,7 @@ Valid prefixes: `mode:greenfield` (A), `mode:surgical` (B1), `mode:maintenance` 
 2. Parse first argument. If it starts with `mode:`, consume it; the next arg is the mission name.
 3. Validate mission name against the routing table or control-command list.
 4. If unknown, print the unknown-mission error (below) and stop. No NLP inference.
-5. Load mission file if applicable: `project/missions/mission-[name].md` (or `[name].md` for `dev-setup`/`dev-alignment`).
+5. Load the mission file named in the routing table's **File** column, from `project/missions/`. Do not derive the filename from the mission name: the `mission-` prefix is present on some and absent on others, and guessing is what left five missions unreachable (A11-ISS-17).
 6. Hand off to THE COORDINATOR with mission name, mode, and input paths. The coordinator's DYNAMIC CONTEXT LOADING protocol applies the per-mode rules.
 
 ## Routine Detection (Mode C — operational work)
@@ -108,9 +128,11 @@ If the mission name does not match, print exactly:
 Unknown mission: <name>
 
 Valid missions:
-  Greenfield (Mode A):    build, mvp, dev-setup, dev-alignment, integrate, migrate
+  Greenfield (Mode A):    build, mvp, dev-setup, dev-alignment, integrate, migrate,
+                          architecture, product-description, operation-genesis
   Surgical (Mode B1):     fix
-  Maintenance (Mode B2):  refactor, optimize, document, release, deploy, security
+  Maintenance (Mode B2):  refactor, optimize, document, release, deploy, security,
+                          connect-mcp, operation-recon
 
 Control:                  continue, complete phase N, vision-check
 Override:                 /coord mode:maintenance <anything>
