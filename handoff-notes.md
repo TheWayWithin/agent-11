@@ -1,4 +1,40 @@
-# Handoff Notes — Agent-11 (PRJ-5 closed out 2026-08-03; Sprint 6 CLOSED; website deployed; blog drafted)
+# Handoff Notes — Agent-11 (list cleared 2026-08-04; A11-ISS-16/17, T-362, T-363 all closed)
+
+## 2026-08-04 — the four open items are closed
+
+`main` now carries the routing fix, the guard hardening, the coordinator's fan-out delegation and
+its on-disk phase counters. Four checks guard the repo; run all four before any related change:
+
+| Check | Proves |
+|-------|--------|
+| `scripts/validate-sprint6-closeout.sh` | orientation block on 11 agents + 18 missions, gate surface intact, memo records a verdict per task |
+| `scripts/validate-enforcement-claims.sh` | no document claims protection the deny rules do not provide |
+| `scripts/validate-deployment-coverage.sh` | the library, install.sh's two mission lists **and** `/coord`'s routing table all agree |
+| `scripts/validate-bash-route-claims.sh` | nothing says the gate guard closes the Bash route, **and** the three files describing it still state the limit |
+
+All silent + exit 0 when compliant.
+
+- **A11-ISS-17 (routing)**: `/coord` routes all 18 executable missions. The table now carries an
+  explicit **File** column, so nothing derives a filename from a mission name. The coverage check
+  fails on any mismatch, and was negative-tested against six distinct subversions.
+- **A11-ISS-16 (guard)**: 12 detection branches, up from 8, adding literal-path interpreter writes,
+  variable indirection, `patch`/`git apply` and `git checkout`/`restore`/`rm`/`mv`. Three surviving
+  "closes the Bash route" claims removed. The guard's own header lists what it cannot catch.
+- **T-362 (fan-out)**: the library coordinator gained a FAN-OUT DELEGATION PROTOCOL — the T1/T2/T3
+  test, what a deny rule does and does not do inside a workflow, and the four constraints that
+  travel with any workflow it invokes. It was **not** rewritten as a workflow; that decision stands.
+- **T-363 (counters)**: `library/scripts/mission-state.py` → `.claude/scripts/mission-state.py`.
+  `cycle` exits 3 when the error budget is spent; `clean-round` refuses a round with no
+  `--evidence`. The counters are read, not narrated.
+- **First fan-out built**: `.claude/workflows/fleet-audit.js` (internal, read-only). Run narrowed to
+  this repo to prove it executes; the full 20-repo sweep has not been run.
+
+**Still open / still needs a VAULT session**: `02-PROJECTS.md → PRJ-5` says "6b/6c/6d outline only".
+**Still not started**: the website brief at `Ideation/agent-11-website-update-brief-2026-08-03.md`
+needs a session in `~/DevProjects/agent-11-website`. T-245 (the v6.2.0 fleet sweep) is deliberately
+untouched — it runs `install.sh --upgrade` across ~20 repos and deserves its own run.
+
+---
 
 ## Sprint 6 SHIPPED — 2026-08-03 (committed and pushed to main)
 

@@ -1162,8 +1162,9 @@ interpreter one-liners naming a gate path literally alongside a write verb, gate
 variable and written through it, `patch`/`git apply`, and `git checkout`/`restore`/`rm`/`mv`. The
 interpreter branch requires a write verb so that reading a gate through Python stays allowed —
 over-blocking is how A11-ISS-4 happened. Verified 22 block forms and 12 ordinary commands. The docs
-half mattered more: three surviving "closes the Bash route" claims removed
-(`sprint-6-workflows-decision.md`, `progress.md`, `project-plan.md`), and the count was being stated
+half mattered more: no document now says the guard closes the Bash route, three surviving instances
+having been removed (`sprint-6-workflows-decision.md`, `progress.md`, `project-plan.md`), and the
+count was being stated
 on two different bases across seven files, so everything now says "12 detection branches" counted in
 the guard's own source.
 
