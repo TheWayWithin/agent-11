@@ -827,6 +827,29 @@ install_settings_template() {
         fi
     fi
 
+    # T-363: deploy the coordinator's on-disk phase counters
+    # (.claude/scripts/mission-state.py). Without it the meta-loop falls back to
+    # narrating cycles_this_phase and clean_rounds, which is what T-363 exists to
+    # stop, so a failure here is a warning rather than fatal — the coordinator is
+    # instructed to say out loud that it is narrating rather than reading.
+    mkdir -p "$CLAUDE_DIR/scripts"
+    local state_dest="$CLAUDE_DIR/scripts/mission-state.py"
+    if [[ "$execution_mode" == "local" ]] && [[ -f "$PROJECT_ROOT/library/scripts/mission-state.py" ]]; then
+        if cp "$PROJECT_ROOT/library/scripts/mission-state.py" "$state_dest"; then
+            chmod +x "$state_dest"
+            log "Installed mission state helper: .claude/scripts/mission-state.py"
+        else
+            warn "Could not install mission-state.py - coordinator phase counters will be narrated, not read"
+        fi
+    else
+        if download_file_from_github "library/scripts/mission-state.py" "$state_dest"; then
+            chmod +x "$state_dest"
+            log "Installed mission state helper: .claude/scripts/mission-state.py"
+        else
+            warn "Could not download mission-state.py - coordinator phase counters will be narrated, not read"
+        fi
+    fi
+
     local dest_file="$CLAUDE_DIR/settings.json"
     local backup_file="$CLAUDE_DIR/settings.json.backup-$(date +%Y%m%d_%H%M%S)"
     local source_path="library/settings.json.template"
