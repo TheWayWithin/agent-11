@@ -1161,7 +1161,7 @@ tracking, bounded duration).
 interpreter one-liners naming a gate path literally alongside a write verb, gate paths held in a shell
 variable and written through it, `patch`/`git apply`, and `git checkout`/`restore`/`rm`/`mv`. The
 interpreter branch requires a write verb so that reading a gate through Python stays allowed —
-over-blocking is how A11-ISS-4 happened. Verified against 22 block forms and 12 ordinary commands by hand (the closeout validator's own probe arrays are smaller: 26 block probes and 14 allow probes after this change). The docs
+over-blocking is how A11-ISS-4 happened. **Two cold reviews on a different model then found nine and fifteen more live bypasses** — directory-prefixed gate paths, absolute and quoted command names, backslash-newline continuation (which defeated all twelve branches at once, because grep is line-oriented), brace expansion splitting the literal word, `xargs` across a pipe, case-sensitivity on a case-insensitive filesystem, and the bare `gates` directory with no trailing slash — plus one false positive, `cp gates/x /tmp/y`, refused despite `cp` only reading its source. All closed; the count landed at 13 branches. The deeper fault was the probe array: it tested one spelling per branch, so it certified a guard with a hole in every branch while printing "blocks 18 distinct write forms". It now carries 38 block probes and 18 allow probes. The docs
 half mattered more: no document now says the guard closes the Bash route, three surviving instances
 having been removed (`sprint-6-workflows-decision.md`, `progress.md`, `project-plan.md`), and the
 count was being stated

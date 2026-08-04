@@ -17,9 +17,14 @@ All silent + exit 0 when compliant.
 - **A11-ISS-17 (routing)**: `/coord` routes all 18 executable missions. The table now carries an
   explicit **File** column, so nothing derives a filename from a mission name. The coverage check
   fails on any mismatch, and was negative-tested against six distinct subversions.
-- **A11-ISS-16 (guard)**: 12 detection branches, up from 8, adding literal-path interpreter writes,
-  variable indirection, `patch`/`git apply` and `git checkout`/`restore`/`rm`/`mv`. Three surviving
-  "closes the Bash route" claims removed. The guard's own header lists what it cannot catch.
+- **A11-ISS-16 (guard)**: 13 detection branches, up from 8. Three surviving "closes the Bash route"
+  claims removed, and the header now lists what it cannot catch. **Two cold reviews on a different
+  model found nine and then fifteen live bypasses** of a header that claimed more than the code did:
+  directory-prefixed paths, absolute and quoted command names, backslash-newline continuation (which
+  defeated every branch at once), brace expansion, `xargs` across a pipe, case, and the bare `gates`
+  directory. All closed, plus a false positive where `cp gates/x /tmp/y` was refused. The probe array
+  went from 11 forms to 38 block and 18 allow, because it had been testing one spelling per branch
+  and certifying holes. **Assume there are more** — it is a text matcher, and the header says so.
 - **T-362 (fan-out)**: the library coordinator gained a FAN-OUT DELEGATION PROTOCOL — the T1/T2/T3
   test, what a deny rule does and does not do inside a workflow, and the four constraints that
   travel with any workflow it invokes. It was **not** rewritten as a workflow; that decision stands.
