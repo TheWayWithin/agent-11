@@ -141,6 +141,8 @@ const GATE_RULES = [
 ]
 
 const VERIFY_CAP = 10
+let verifySpent = 0     // enforced, not merely reported (see the Audit stage)
+let verifySkipped = 0   // high-severity findings the cap refused to verify
 
 phase('Discover')
 const discovery = await agent(
@@ -158,12 +160,41 @@ if (!discovery || !discovery.registry_readable || !discovery.repos?.length) {
   return { repos_audited: 0, reason: discovery?.note ?? 'discovery failed' }
 }
 
-// An explicit narrowing is honoured; a silent one is not. Whatever the run covers, it says so.
-const requested = Array.isArray(args) ? args : args?.repos
+// Narrowing FAILS CLOSED. The first run of this workflow was invoked with a one-repo
+// filter and audited all 20 anyway: `args` arrived as the JSON *string* '["agent-11"]',
+// Array.isArray was false, the filter silently evaluated to "no narrowing requested", and
+// a run intended to touch one repo spent 61 agents and 2.4M subagent tokens across the
+// fleet. Nothing was written — the run is read-only by shape — but a filter that fails
+// OPEN is the same defect class as a silently truncated cap, pointed the other way: the
+// operator asked for less and got everything, with no error.
+//
+// So: if anything was passed at all and it cannot be read as a repo list, STOP. Auditing
+// the whole fleet is never the safe interpretation of an unparseable narrowing request.
+let requested = args
+if (typeof requested === 'string') {
+  const trimmed = requested.trim()
+  try {
+    requested = JSON.parse(trimmed)
+  } catch {
+    requested = trimmed ? trimmed.split(/[,\s]+/).filter(Boolean) : []
+  }
+}
+if (requested && !Array.isArray(requested)) requested = requested.repos
+
+const narrowingAsked = args !== undefined && args !== null && args !== ''
+if (narrowingAsked && !Array.isArray(requested)) {
+  log(`fleet-audit: STOPPING. A narrowing argument was supplied but could not be read as a list of registry names (got ${typeof args}). Refusing to fall back to auditing all ${discovery.repos.length} repos, which is not what was asked for.`)
+  return { repos_audited: 0, reason: 'unparseable narrowing argument; refused to widen' }
+}
+
 let repos = discovery.repos
 if (requested?.length) {
+  const unknown = requested.filter((n) => !repos.some((r) => r.name === n))
   repos = repos.filter((r) => requested.includes(r.name))
-  log(`fleet-audit: narrowed by args to ${repos.length} of ${discovery.repos.length} active repos: ${repos.map((r) => r.name).join(', ')}`)
+  if (unknown.length) {
+    log(`fleet-audit: these names are not tier:active entries in the registry and were skipped: ${unknown.join(', ')}`)
+  }
+  log(`fleet-audit: narrowed to ${repos.length} of ${discovery.repos.length} active repos: ${repos.map((r) => r.name).join(', ')}`)
 } else {
   log(`fleet-audit: auditing all ${repos.length} tier:active repos. Caps in force: top 3 findings per repo, at most ${VERIFY_CAP} high-severity findings verified.`)
 }
@@ -208,8 +239,22 @@ evidence — no quote, no finding. remediation says what a HUMAN would run; you 
   // no finding needs to see another finding to be refuted.
   (unit) => {
     if (!unit || !unit.reachable) return unit
-    const high = (unit.findings ?? []).filter((f) => f.severity === 'high')
+    let high = (unit.findings ?? []).filter((f) => f.severity === 'high')
     if (!high.length) return { ...unit, verdicts: [] }
+    // The verification cap is APPLIED here, not merely announced. The first run declared
+    // "at most 10 high-severity findings verified" and then verified all 39, because the
+    // cap was computed after the fact and only logged. A cap that is stated but not
+    // enforced is exactly the silent-truncation defect this workflow's own rules forbid,
+    // inverted: the report understated the work rather than overstating the coverage.
+    // Decrementing a module-level budget is safe here — the workflow runtime is
+    // single-threaded, so no two stages interleave mid-decrement.
+    const room = Math.max(0, VERIFY_CAP - verifySpent)
+    if (high.length > room) {
+      verifySkipped += high.length - room
+      high = high.slice(0, room)
+    }
+    verifySpent += high.length
+    if (!high.length) return { ...unit, verdicts: [], verify_skipped: true }
     return parallel(
       high.map((f) => () =>
         agent(
@@ -240,8 +285,15 @@ const refuted = allVerdicts.filter((v) => v.verdict && v.verdict.refuted)
 const totalRaised = units.reduce((n, u) => n + (u.total_found ?? 0), 0)
 const highRaised = units.reduce((n, u) => n + (u.findings ?? []).filter((f) => f.severity === 'high').length, 0)
 
-if (highRaised > VERIFY_CAP) {
-  log(`fleet-audit: ${highRaised} high-severity findings raised but only ${VERIFY_CAP} were budgeted for verification. Unverified findings are NOT confirmed.`)
+if (verifySkipped) {
+  log(`fleet-audit: ${highRaised} high-severity findings raised; the cap verified ${verifySpent} and left ${verifySkipped} UNVERIFIED. An unverified finding is not a confirmed one.`)
+}
+// A 0% refutation rate is not a quality bonus. Surface it as a possible correlated-bias
+// signal for the human to sanity-check, exactly as the coordinator's unanimous-agreement
+// rule requires — the honest reading is usually "these findings were trivially checkable",
+// but it can also mean the verifier agreed rather than verified.
+if (allVerdicts.length >= 5 && refuted.length === 0) {
+  log(`fleet-audit: every one of ${allVerdicts.length} verifications confirmed its finding and none was refuted. Flagging as a possible correlated-bias signal, not as a quality result.`)
 }
 
 phase('Report')
@@ -284,10 +336,13 @@ return {
     high_severity_verified: allVerdicts.length,
     findings_surviving: survived.length,
     findings_refuted: refuted.length,
+    high_severity_left_unverified: verifySkipped,
   },
   caps_applied: {
     findings_per_repo: 3,
-    verifications: VERIFY_CAP,
+    verifications_budgeted: VERIFY_CAP,
+    verifications_used: verifySpent,
+    verifications_skipped: verifySkipped,
     note: 'total_found is self-reported by the same capped agent, so it is not a census.',
   },
 }
