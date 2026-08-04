@@ -68,7 +68,7 @@ solomarket, evolve-7, agent-11-website.
 Worth noting that agent-11's own `validate-sprint6-closeout.sh` treats `bypassPermissions` as a gate
 breach when it appears in the shipped template. Ten deployed repos set it locally.
 
-## 3. Three repos allow-list the edits the gate is meant to deny
+## 3. Eleven repos allow-list broad JSON writes (corrected from three)
 
 | Repo | Evidence |
 |---|---|
@@ -76,11 +76,23 @@ breach when it appears in the shipped template. Ten deployed repos set it locall
 | aisearchmastery | `settings.json:23` `Edit(**/*.json)` |
 | solomarket | `settings.json:22-23` `Edit(*.json)`, `Edit(**/*.json)` |
 
-**Read this one carefully rather than at face value.** The auditing agent called it "worse than a
-missing deny rule". That is true only while the deny rules are absent, which they currently are. In
-Claude Code deny takes precedence over allow, so once item 1's rules land these globs should be
-overridden rather than winning. Verify that precedence on one repo before assuming the sweep fixes
-it — the claim that it does is reasoning, not something this audit tested.
+**Two corrections, 2026-08-04 evening.**
+
+**The count is wrong: it is 11, not 3.** That exact allow block (`Edit(*.json)`, `Edit(**/*.json)`,
+`Edit(**/package.json)`, `Write(*.md)`, `Write(**/*.md)`, `Write(*.json)`, `Write(**/*.json)`,
+`Write(**/package.json)`) is byte-identical in **every one of the 11 repos that has a
+`settings.json` at all** — only agent-11 lacks one, because it gitignores it. The "3" was an artefact
+of the top-3-findings-per-repo cap: eight repos had it dropped in favour of something rated higher.
+Counted directly, not sampled.
+
+**The severity is wrong too, in the other direction: this is not a bypass.** The auditing agent
+called it "worse than a missing deny rule". It is not. Deny is evaluated before allow and specificity
+never reorders it, so once item 1's rules land, `Edit(gates/**)` beats `Edit(**/*.json)` for a file
+under `gates/`. Verified against the documentation, not reasoned: "Rules are evaluated in order:
+deny, then ask, then allow." These grants are broad and worth narrowing on their own merits, but they
+will not defeat a gate rule, and they are deliberately *not* flagged by
+`scripts/validate-fleet-permissions.sh` — which fails only on grants that restrict nothing at all
+(bare `Edit`, `Edit(**)`, `Edit(//**)`, `Edit(~/**)`).
 
 ## 4. Two registry entries have no AGENT-11 deployment at all
 
