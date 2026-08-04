@@ -825,7 +825,7 @@ invoked by `meta.name`; `agent()` and `pipeline()`; up to 16 concurrent agents a
 mid-run user input, only permission prompts can pause; subagents always run in `acceptEdits` with
 file edits auto-approved while still inheriting the tool allowlist; resume works only within the same
 session. **Not enumerated on that public page**: `parallel()`, `phase()`, `log()`, and the `opts`
-fields `model`, `effort`, `isolation` and `agentType`. They are in the runtime's own tool contract and
+fields `model`, `effort`, `isolation`, `agentType` and `phase`. They are in the runtime's own tool contract and
 this repo's measured pilot used `opts.model` to route its verify stage to a different model, which is
 the evidence they work — but if a future runtime drops one, the failure will be a script error rather
 than a silent wrong answer. Check before relying on them.

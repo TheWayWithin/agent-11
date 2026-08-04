@@ -26,8 +26,12 @@ All silent + exit 0 when compliant.
 - **T-363 (counters)**: `library/scripts/mission-state.py` → `.claude/scripts/mission-state.py`.
   `cycle` exits 3 when the error budget is spent; `clean-round` refuses a round with no
   `--evidence`. The counters are read, not narrated.
-- **First fan-out built**: `.claude/workflows/fleet-audit.js` (internal, read-only). Run narrowed to
-  this repo to prove it executes; the full 20-repo sweep has not been run.
+- **First fan-out built**: `.claude/workflows/fleet-audit.js` (internal, read-only). Its first run
+  **audited all 20 tier:active repos** — the one-repo filter failed open, which is now fixed to fail
+  closed. 61 agents, 2.4M subagent tokens, nothing written. Findings and caveats:
+  `Ideation/fleet-audit-2026-08-04.md`. Two of them are not covered by T-245's sweep and are raised
+  as A11-ISS-18 (ten repos set `bypassPermissions` locally) and A11-ISS-19 (two registry entries
+  marked `tier: active` with no deployment).
 
 **Still open / still needs a VAULT session**: `02-PROJECTS.md → PRJ-5` says "6b/6c/6d outline only".
 **Still not started**: the website brief at `Ideation/agent-11-website-update-brief-2026-08-03.md`

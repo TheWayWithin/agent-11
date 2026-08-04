@@ -210,7 +210,7 @@ for surface in surfaces:
             if ROUTE_CLOSED.search(window) and not ROUTE_QUALIFIED.search(window):
                 flagged += 1
                 print(f"CLAIMS: {path}:{i + 1} says the Bash guard closes the route. It catches "
-                      f"11 command forms; interpreter writes and variable-held paths pass through "
+                      f"12 detection branches; a runtime-assembled path or an interpreter reaching the path indirectly passes through "
                       f"(A11-ISS-16). Say what it catches, not that it closes.")
                 bad = True
 
