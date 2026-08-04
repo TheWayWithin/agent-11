@@ -26,6 +26,16 @@
 #  12. git checkout / restore / rm / mv   on a gate path (reverting or deleting
 #                             a gate changes the criteria as surely as editing it)
 #
+# HOW EACH BRANCH MATCHES ITS TARGET. Every branch accepts the gate path with or
+# without leading directory components (gates/x and project/gates/x both match),
+# and every command-anchored branch accepts the command quoted or given by path
+# (rm, "rm" and /bin/rm all match). Until 2026-08-04 none of that was true: the
+# patterns required a bare relative path and a bare command name, so
+# `echo x > project/gates/foo.json` and `/bin/rm -f .quality-gates.json` walked
+# past a header claiming to catch redirection and rm. The probe list in
+# scripts/validate-sprint6-closeout.sh tested one spelling per branch and passed
+# it clean, which is why it now tests several.
+#
 # WHAT IT DOES NOT CATCH, and no shell guard can:
 #   - a gate path assembled at runtime:  P=ga; P="${P}tes/x"; echo y > "$P"
 #   - anything encoded, eval'd, or piped through base64/xxd before execution
@@ -35,6 +45,8 @@
 #     os.environ, a glob, or a path built by string concatenation
 #   - a heredoc fed to an interpreter on stdin (`python3 <<'EOF'`) rather than
 #     passed with -c
+#   - a shell alias or function that renames a write command
+#   - a path reached through a symlink whose name contains no "gates" segment
 #
 # Branches 9 and 10 raise the cost of the two forms A11-ISS-16 named. They do
 # not close the category, and nothing in this file should be read as claiming
@@ -78,44 +90,52 @@ fi
 #   qg — a token containing quality-gates (.quality-gates.json etc.)
 #   gd — a path starting at gates/ or .gates/ (delegates/ must NOT match)
 qg='[^[:space:]"'\'']*quality-gates'
-gd='(\./)?\.?gates/'
+# gd — a gates/ or .gates/ path SEGMENT, wherever it sits in the path. The optional
+# leading group must end in "/", which is what keeps delegates/ and aggregates/ from
+# matching: neither has a slash immediately before "gates/". Before 2026-08-04 gd had no
+# leading group at all, so `echo x > project/gates/foo.json` walked past every branch
+# while the bare form was blocked -- the header claimed a coverage the code did not have.
+gd='([^[:space:]"'\'';&|]*/)?\.?gates/'
+# c — the start of a command word: optional quoting and an optional path to the binary.
+# Without this, /bin/rm and "rm" evaded every command-anchored branch.
+c='(^|[;&|[:space:]])["'\'']?([^[:space:];&|"'\'']*/)?'
 
 blocked=""
 # 1. Redirection into a gate path:  > .quality-gates.json / >> gates/x
 if printf '%s' "$cmd" | grep -qE "[0-9]?>>?[[:space:]]*[\"']?(${gd}|${qg}\.json)"; then
     blocked=yes
 # 2. tee into a gate path:  tee .quality-gates.json / tee -a gates/x
-elif printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])tee[[:space:]]([^;&|]*[[:space:]\"'=])?(${gd}|${qg})"; then
+elif printf '%s' "$cmd" | grep -qE "${c}tee[\"']?[[:space:]]([^;&|]*[[:space:]\"'=])?(${gd}|${qg})"; then
     blocked=yes
 # 3. sed -i on a gate path
-elif printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])sed[[:space:]]+[^;&|]*-i[^;&|]*[[:space:]\"'=](${gd}|${qg})"; then
+elif printf '%s' "$cmd" | grep -qE "${c}sed[\"']?[[:space:]]+[^;&|]*-i[^;&|]*[[:space:]\"'=](${gd}|${qg})"; then
     blocked=yes
 # 4. cp/mv onto a gate path
-elif printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])(cp|mv)[[:space:]]([^;&|]*[[:space:]\"'=])?(${gd}|${qg}\.json)"; then
+elif printf '%s' "$cmd" | grep -qE "${c}(cp|mv)[\"']?[[:space:]]([^;&|]*[[:space:]\"'=])?(${gd}|${qg}\.json)"; then
     blocked=yes
 # 5. rm / truncate / shred / unlink of a gate path — deleting a gate passes it
 #    just as effectively as lowering it.
-elif printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])(rm|truncate|shred|unlink)[[:space:]]([^;&|]*[[:space:]\"'=])?(${gd}|${qg})"; then
+elif printf '%s' "$cmd" | grep -qE "${c}(rm|truncate|shred|unlink)[\"']?[[:space:]]([^;&|]*[[:space:]\"'=])?(${gd}|${qg})"; then
     blocked=yes
 # 6. dd of= a gate path
-elif printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])dd[[:space:]][^;&|]*of=[\"']?(${gd}|${qg})"; then
+elif printf '%s' "$cmd" | grep -qE "${c}dd[\"']?[[:space:]][^;&|]*of=[\"']?(${gd}|${qg})"; then
     blocked=yes
 # 7. ln -s over a gate path — replacing it with a symlink is a write.
-elif printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])ln[[:space:]]+[^;&|]*-[a-z]*s[^;&|]*[[:space:]\"'](${gd}|${qg})"; then
+elif printf '%s' "$cmd" | grep -qE "${c}ln[\"']?[[:space:]]+[^;&|]*-[a-z]*s[^;&|]*[[:space:]\"'](${gd}|${qg})"; then
     blocked=yes
 # 8. in-place interpreter edits: perl -i / ruby -i on a gate path.
-elif printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])(perl|ruby)[[:space:]]+[^;&|]*-[a-z]*i[^;&|]*[[:space:]\"'=](${gd}|${qg})"; then
+elif printf '%s' "$cmd" | grep -qE "${c}(perl|ruby)[\"']?[[:space:]]+[^;&|]*-[a-z]*i[^;&|]*[[:space:]\"'=](${gd}|${qg})"; then
     blocked=yes
 # 11. patch / git apply feeding a diff into a gate path.
-elif printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])patch[[:space:]]([^;&|]*[[:space:]\"'=])?(${gd}|${qg})"; then
+elif printf '%s' "$cmd" | grep -qE "${c}patch[\"']?[[:space:]]([^;&|]*[[:space:]\"'=])?(${gd}|${qg})"; then
     blocked=yes
-elif printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])git[[:space:]]+apply[[:space:]]" \
+elif printf '%s' "$cmd" | grep -qE "${c}git[\"']?[[:space:]]+apply[[:space:]]" \
      && printf '%s' "$cmd" | grep -qE "(${gd}|${qg})"; then
     blocked=yes
 # 12. git checkout / restore / rm / mv on a gate path. Reverting a gate to an
 #     earlier revision, or deleting it, changes the criteria that judge the work
 #     just as surely as editing the file in place.
-elif printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])git[[:space:]]+(checkout|restore|rm|mv)[[:space:]][^;&|]*[[:space:]\"'](${gd}|${qg})"; then
+elif printf '%s' "$cmd" | grep -qE "${c}git[\"']?[[:space:]]+(checkout|restore|rm|mv)[[:space:]][^;&|]*[[:space:]\"'](${gd}|${qg})"; then
     blocked=yes
 fi
 
@@ -125,7 +145,7 @@ fi
 #    is a read and must stay allowed: a guard that refuses ordinary inspection
 #    gets removed rather than fixed, which is how A11-ISS-4 happened.
 if [ -z "$blocked" ]; then
-    if printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])(python3?|node|ruby|perl|php|deno|bun)[[:space:]]+[^;&|]*-[ce][[:space:]]" \
+    if printf '%s' "$cmd" | grep -qE "${c}(python3?|node|ruby|perl|php|deno|bun)[\"']?[[:space:]]+[^;&|]*-[ce][[:space:]]" \
        && printf '%s' "$cmd" | grep -qE "(${gd}|${qg})" \
        && printf '%s' "$cmd" | grep -qE "(open[^)]*,[[:space:]]*[\"'][wax]|writeFileSync|writeFile|appendFile|\.write_text|\.write_bytes|\.write\(|json\.dump|yaml\.dump|os\.remove|os\.unlink|os\.rename|os\.truncate|shutil\.(move|copy|rmtree)|fs\.rm|fs\.unlink|File\.write|IO\.write|FileUtils\.(mv|cp|rm)|file_put_contents|unlink\(|rename\(|truncate\()"; then
         blocked=yes
@@ -148,9 +168,9 @@ if [ -z "$blocked" ]; then
         # Any of the branch 1-7 write forms, aimed at $v or ${v}.
         ref="\\\$(\\{)?${v}(\\})?"
         if printf '%s' "$cmd" | grep -qE "[0-9]?>>?[[:space:]]*[\"']?${ref}" \
-           || printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])(tee|rm|truncate|shred|unlink|patch)[[:space:]][^;&|]*${ref}" \
-           || printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])(cp|mv|ln)[[:space:]][^;&|]*${ref}" \
-           || printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])sed[[:space:]]+[^;&|]*-i[^;&|]*${ref}" \
+           || printf '%s' "$cmd" | grep -qE "${c}(tee|rm|truncate|shred|unlink|patch)[\"']?[[:space:]][^;&|]*${ref}" \
+           || printf '%s' "$cmd" | grep -qE "${c}(cp|mv|ln)[\"']?[[:space:]][^;&|]*${ref}" \
+           || printf '%s' "$cmd" | grep -qE "${c}sed[\"']?[[:space:]]+[^;&|]*-i[^;&|]*${ref}" \
            || printf '%s' "$cmd" | grep -qE "of=[\"']?${ref}"; then
             blocked=yes
             break

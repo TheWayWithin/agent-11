@@ -237,6 +237,19 @@ else
     'patch gates/gate-types.yaml < /tmp/p.diff'
     'git checkout HEAD~5 -- .quality-gates.json'
     'git rm gates/gate-types.yaml'
+    # Spelling variants of the SAME branches. A cold review found that every branch
+    # matched only a bare relative path and a bare command name, so `project/gates/x`,
+    # `/bin/rm` and `"rm"` walked past a guard whose header claimed to catch all three
+    # forms — and this probe list, testing only the bare spelling, passed it clean.
+    # A probe set that exercises one spelling per branch is not testing the branch.
+    'echo bad > project/gates/foo.json'
+    'cp fake.json some/sub/gates/foo.json'
+    'rm -f some/sub/gates/foo.json'
+    'echo bad | tee some/dir/gates/foo.json'
+    'sed -i s/pass/fail/ some/dir/gates/foo.json'
+    '/bin/rm -f .quality-gates.json'
+    '/usr/bin/tee .quality-gates.json'
+    '"rm" .quality-gates.json'
   )
   for probe in "${probes[@]}"; do
     printf '{"tool_name":"Bash","tool_input":{"command":%s}}' "$(python3 -c 'import json,sys;print(json.dumps(sys.argv[1]))' "$probe")" \
@@ -255,7 +268,9 @@ else
   for allowed in 'echo hello > /tmp/harmless.txt' 'npm test' 'rm -rf node_modules' 'cat .quality-gates.json' \
                  'python3 -c "print(open('"'"'.quality-gates.json'"'"').read())"' \
                  'python3 gates/run-gates.py' 'git status gates/' 'git diff .quality-gates.json' \
-                 'G=gates/x.json; echo "{}" > /tmp/other.json' 'echo x > delegates/out.txt'; do
+                 'G=gates/x.json; echo "{}" > /tmp/other.json' 'echo x > delegates/out.txt' \
+                 'echo x > src/aggregates/foo.json' 'rm -rf build/delegates' 'mv src/a.js src/b.js' \
+                 'npm run confirm'; do
     printf '{"tool_name":"Bash","tool_input":{"command":%s}}' \
       "$(python3 -c 'import json,sys;print(json.dumps(sys.argv[1]))' "$allowed")" \
       | sh library/hooks/gate-guard.sh >/dev/null 2>&1
