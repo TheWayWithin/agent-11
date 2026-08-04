@@ -46,7 +46,11 @@
 #
 # WHAT FAILS THE CHECK (exit 1):
 #   PERMS     any registered, present repo whose settings.json or settings.local.json sets
-#             a bypass mode, or grants a blanket allow on a write-capable tool.
+#             a bypass mode, or grants a blanket allow on a write-capable tool. The USER
+#             scope (`~/.claude/settings.json` and `settings.local.json`) is checked too:
+#             permission rules merge across scopes rather than replacing one another, so a
+#             single blanket allow there would undo every per-repo fix at once, and a check
+#             that read only repos would report a clean fleet while all of it was open.
 #   REGISTRY  any entry claiming a tier that means "agent-11 is deployed here" when the
 #             repo is present on disk and demonstrably has no agent-11 install. That tier
 #             is what T-245's fleet sweep reads to decide scope, so a wrong tier means a
@@ -123,6 +127,47 @@ GATE_RULES = ["Edit(.quality-gates.json)", "Edit(**/*.quality-gates.json)",
 
 checked_repos = checked_files = 0
 
+
+def scan(label, path, cfg):
+    """Flag the two neutralising settings in one parsed settings file."""
+    out = []
+    perms = cfg.get("permissions") or {}
+    # defaultMode is documented nested under permissions and referred to as a top-level
+    # key elsewhere in the docs, so both spellings are checked rather than assumed.
+    for where, mode in (("permissions.defaultMode", perms.get("defaultMode")),
+                        ("defaultMode", cfg.get("defaultMode"))):
+        if mode and str(mode).strip().lower() in BYPASS:
+            out.append(
+                f"PERMS: {label} sets {where}={mode} — writes to protected paths, which "
+                f"include .claude/, are allowed without a prompt in this mode. An agent can "
+                f"rewrite .claude/settings.json and delete the gate deny rules, then edit "
+                f"the gate. (Deny rules themselves still apply in every mode; the defeat is "
+                f"two-step, not one.) Use acceptEdits")
+    for rule in (perms.get("allow") or []):
+        if BLANKET.match(str(rule).strip()):
+            out.append(
+                f"PERMS: {label} allows {rule!r} with no path restriction — an unrestricted "
+                f"grant on a write-capable tool. Deny is evaluated before allow, so this "
+                f"does not by itself override a gate deny rule; it is flagged as defence in "
+                f"depth and because it grants everything the deny list does not happen to name")
+    return out
+
+
+# USER SCOPE FIRST. Permission rules merge across scopes rather than replacing one
+# another, and user settings apply to every repo at once. A blanket allow or a bypass mode
+# in ~/.claude/ would silently undo the per-repo fixes everywhere, and checking only
+# repos would report a clean fleet while every repo was wide open.
+for user_file in ("~/.claude/settings.json", "~/.claude/settings.local.json"):
+    uf = os.path.expanduser(user_file)
+    if not os.path.exists(uf):
+        continue
+    checked_files += 1
+    try:
+        breaches.extend(scan(user_file, uf, json.load(open(uf, encoding="utf-8"))))
+    except Exception as ex:
+        breaches.append(f"PERMS: {user_file} is not parseable JSON ({ex}) — "
+                        "Claude Code cannot apply rules it cannot read")
+
 for e in entries:
     name, tier = e["name"], e.get("tier", "?")
     path = os.path.expanduser(e.get("path", ""))
@@ -154,25 +199,7 @@ for e in entries:
             continue
 
         perms = cfg.get("permissions") or {}
-        # defaultMode is accepted both top-level and nested; check both spellings.
-        for where, mode in (("permissions.defaultMode", perms.get("defaultMode")),
-                            ("defaultMode", cfg.get("defaultMode"))):
-            if mode and str(mode).strip().lower() in BYPASS:
-                breaches.append(
-                    f"PERMS: {name}/.claude/{fn} sets {where}={mode} — writes to protected "
-                    f"paths, which include .claude/, are allowed without a prompt in this "
-                    f"mode. An agent can rewrite .claude/settings.json and delete the gate "
-                    f"deny rules, then edit the gate. (Deny rules themselves still apply in "
-                    f"every mode; the defeat is two-step, not one.) Use acceptEdits")
-
-        for rule in (perms.get("allow") or []):
-            if BLANKET.match(str(rule).strip()):
-                breaches.append(
-                    f"PERMS: {name}/.claude/{fn} allows {rule!r} with no path restriction — "
-                    f"an unrestricted grant on a write-capable tool. Deny is evaluated before "
-                    f"allow, so this does not by itself override a gate deny rule; it is "
-                    f"flagged as defence in depth and because it grants everything the deny "
-                    f"list does not happen to name")
+        breaches.extend(scan(f"{name}/.claude/{fn}", f, cfg))
 
         found = sum(1 for g in GATE_RULES if g in (perms.get("deny") or []))
         if found:
