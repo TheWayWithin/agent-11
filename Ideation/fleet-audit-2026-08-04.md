@@ -142,3 +142,38 @@ Per-repo audits reported only their top 3 findings. Gathered:
 3. **Then the fleet redeployment** (item 1), which sweeps up items 3, 5 and 6 with it. That is T-245,
    and it deserves its own run and its own care: it runs `install.sh --upgrade` across ~20 repos.
 4. **Reach ASMGE and re-audit.**
+
+---
+
+## Addendum, 2026-08-04 evening: items 2 and 4 closed, and item 2's mechanism corrected
+
+**A11-ISS-18 (item 2 above) is fixed in all twelve repos** — the audit said ten; an independent
+count found twelve, because it missed `test-project` and `agent-11` itself. All twelve had
+`permissions.defaultMode: bypassPermissions` plus blanket allows for bare `Bash`, `Edit` and `Write`
+in `.claude/settings.local.json`. Now `acceptEdits`, with the blanket write grants removed and every
+specific grant, `env` block and MCP allow preserved.
+
+**The mechanism this document asserted was wrong, and the correction matters.** Item 2 said
+`bypassPermissions` "defeats the deny rules". Checked against the official documentation:
+
+- Deny rules apply in **every** mode. "These controls apply in every mode, including
+  `bypassPermissions`: deny rules and explicit ask rules, which apply to every tool."
+- A blanket `Edit` allow does **not** override `Edit(gates/**)`. Deny is evaluated before allow and
+  specificity does not reorder it. Under `bypassPermissions`, allow rules have no effect at all.
+
+So the deny rules were never being ignored. **What is actually true is worse.** `.claude` is a
+*protected path*. Protected-path writes are **allowed without a prompt** under `bypassPermissions`
+and **prompted** under `acceptEdits`. Under the old setting an agent could not edit a gate file
+directly — the deny rule held — but it could rewrite `.claude/settings.json`, delete the deny rules,
+and then edit the gate. Two steps, no prompt at either. That is the defeat, and `acceptEdits` closes
+it by restoring the prompt on the first step.
+
+**A11-ISS-19 (item 4) is fixed**: `executor-file` and `executor-file-site` moved from `tier: active`
+to `tier: skip`, with notes recording that agent-11 is not installed and that deploying it is an open
+product decision. Neither repo was touched.
+
+**What this does NOT mean.** Passing `validate-fleet-permissions.sh` does not mean the gates are
+enforced anywhere. It means nothing is neutralising them. **The four deny rules are still absent from
+every reachable repo except `digital-estate` (archived)** — item 1 above is untouched and remains
+T-245's work. The fix removes the thing that would have made that sweep pointless; it is not the
+sweep.
