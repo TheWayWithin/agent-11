@@ -519,7 +519,9 @@ print_dry_run_plan() {
         grep -q '"hooks"' "$dest" 2>/dev/null && has_hooks=true
         grep -q "ENABLE_TOOL_SEARCH" "$dest" 2>/dev/null && has_tool_search=true
         if $has_hooks && $has_tool_search; then
-            echo "  settings.json: already on v6 — would no-op (no backup, no diff)"
+            echo "  settings.json: already on v6 — merge would be a no-op"
+            echo "    (a backup is still written: install_settings_template copies the file"
+            echo "     before it decides whether the merge changes anything)"
         elif command -v python3 >/dev/null 2>&1; then
             echo "  settings.json: existing file detected — would merge v6 template"
             echo "    (user values win on conflict; backup written outside the repo, under \$AGENT11_INSTALL_BACKUPS)"
@@ -540,7 +542,7 @@ print_dry_run_plan() {
     echo "    - .claude/CLAUDE.md          library instructions"
     echo "    - .claude/constitution/      Karpathy constitution"
     echo "    - .claude/skills/            SaaS skills"
-    echo "    - .claude/hooks/             gate-guard.sh"
+    echo "    - .claude/hooks/             gate-guard.sh, destructive-guard.sh"
     echo "    - .claude/scripts/           mission-state.py"
     echo "    - .claude/data/              command support data"
     echo "    - .claude/settings.json      merged, user values win"
@@ -556,6 +558,28 @@ print_dry_run_plan() {
     echo "    - docs/                      MCP + upgrade guides"
     echo "    - .mcp.json.template, .env.mcp.template, mcp-setup.sh"
     echo "    (an existing .env.mcp is never overwritten — it holds your API keys)"
+    echo
+
+    # A11-ISS-23. The real pipeline ends in setup_mcp_configuration(), which the dry run
+    # never reaches — it short-circuits long before. That function does far more than
+    # copy files when .env.mcp is present, and none of it is otherwise visible here.
+    # A dry run that silently omits the most invasive step is worse than no dry run.
+    echo "  MCP configuration:"
+    if [[ -f "$(pwd)/.env.mcp" ]]; then
+        echo "    !! .env.mcp IS PRESENT — a real run would AUTO-EXECUTE mcp-setup.sh."
+        echo "       That script, without prompting:"
+        echo "         - runs 'npm install -g' for up to 7 packages (GLOBAL, outside this project)"
+        echo "         - runs 'claude mcp remove <name> -s project' for 10 servers,"
+        echo "           removing existing project MCP registrations before re-adding"
+        echo "         - re-registers whichever servers it finds credentials for"
+        echo "         - writes .mcp-status.md at the project root"
+        echo "       install.sh also OVERWRITES ./mcp-setup.sh with a freshly downloaded copy"
+        echo "       before running it. Your existing .env.mcp is not modified."
+        echo "       Tracked as A11-ISS-23. Review before upgrading this repo."
+    else
+        echo "    No .env.mcp — mcp-setup.sh would be deployed but NOT executed."
+        echo "    Templates (.mcp.json.template, .env.mcp.template) would be written."
+    fi
     echo
     echo "DRY RUN COMPLETE — no changes were made. Re-run without --dry-run to install."
     return 0
@@ -941,6 +965,28 @@ install_settings_template() {
             log "Installed gate guard hook: .claude/hooks/gate-guard.sh"
         else
             warn "Could not download gate-guard.sh - Bash gate guard inactive (Edit/Write deny rules still apply)"
+        fi
+    fi
+
+    # A11-ISS-22: deploy the destructive-command guard the PreToolUse hook
+    # calls (.claude/hooks/destructive-guard.sh). This replaces a `prompt`-type
+    # hook whose `if` glob failed open on multi-line and redirecting commands,
+    # handing benign Bash to a model that then refused it without the operator
+    # ever seeing why. Same fail-open-on-error contract as the gate guard.
+    local destructive_dest="$CLAUDE_DIR/hooks/destructive-guard.sh"
+    if [[ "$execution_mode" == "local" ]] && [[ -f "$PROJECT_ROOT/library/hooks/destructive-guard.sh" ]]; then
+        if cp "$PROJECT_ROOT/library/hooks/destructive-guard.sh" "$destructive_dest"; then
+            chmod +x "$destructive_dest"
+            log "Installed destructive-command guard: .claude/hooks/destructive-guard.sh"
+        else
+            warn "Could not install destructive-guard.sh - destructive commands are not gated"
+        fi
+    else
+        if download_file_from_github "library/hooks/destructive-guard.sh" "$destructive_dest"; then
+            chmod +x "$destructive_dest"
+            log "Installed destructive-command guard: .claude/hooks/destructive-guard.sh"
+        else
+            warn "Could not download destructive-guard.sh - destructive commands are not gated"
         fi
     fi
 
@@ -1550,6 +1596,22 @@ resolve_agent11_version() {
         | grep -oE '^#{1,3} *\[[0-9]+\.[0-9]+\.[0-9]+\]' \
         | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' \
         | head -1 || true)"
+
+    # If the CHANGELOG has real content under [Unreleased], the newest released
+    # heading UNDER-describes what is being installed. Stamping a plain "6.2.0"
+    # would make a repo upgraded today indistinguishable from one installed when
+    # 6.2.0 actually shipped, though the content differs materially — today's
+    # library carries the gate guard, mission-state.py, the routing fix and four
+    # validators on top of it. The suffix says so in the field people actually read,
+    # rather than leaving source_commit as the only honest identifier.
+    local unreleased=""
+    unreleased="$(printf '%s\n' "$changelog_raw" \
+        | awk '/^#{1,3} *\[[Uu]nreleased\]/{f=1; next} /^#{1,3} *\[[0-9]/{f=0} f' \
+        | grep -cE '^[-*] ' || true)"
+    if [[ -n "$version" && "${unreleased:-0}" -gt 0 ]]; then
+        printf '%s' "$version+unreleased"
+        return 0
+    fi
 
     # "unknown" is deliberate: a stamp that lies about its version is worse
     # than one that admits it could not tell.

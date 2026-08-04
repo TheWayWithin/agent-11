@@ -29,9 +29,17 @@ case "$root_line" in
     breach "BACKUPPATH: the default backup root is inside the project: $root_line" ;;
 esac
 
-# The two single-file backups must live under BACKUP_PATH, not in the repo.
-grep -qE 'backup_file="\$CLAUDE_DIR/(CLAUDE\.md|settings\.json)\.backup' "$INSTALLER" \
-  && breach "BACKUPPATH: a CLAUDE.md/settings.json backup is still written under \$CLAUDE_DIR"
+# No backup-shaped path may be built from $CLAUDE_DIR at all, however it is spelled.
+# A cold review defeated the first version of this by dropping the `backup_file=`
+# variable and inlining `cp "$dest" "$CLAUDE_DIR/CLAUDE.md.backup-$(date ...)"`, which
+# reintroduced the exact defect while the check still exited 0. Matching a variable name
+# was testing one spelling of the idea; matching the path shape tests the idea.
+if grep -nE '\$(\{)?CLAUDE_DIR(\})?/[^"'"'"' ]*\.backup' "$INSTALLER" \
+     | grep -vE '^[0-9]+: *#' >/dev/null; then
+  breach "BACKUPPATH: a .backup path is still built from \$CLAUDE_DIR:"
+  grep -nE '\$(\{)?CLAUDE_DIR(\})?/[^"'"'"' ]*\.backup' "$INSTALLER" \
+    | grep -vE '^[0-9]+: *#' | sed 's/^/  /' >&2
+fi
 
 # End to end: resolve the path a real project would get and assert it is outside it.
 # Probed under $HOME, not mktemp's /var/folders: install.sh has a security guard that
@@ -40,14 +48,31 @@ grep -qE 'backup_file="\$CLAUDE_DIR/(CLAUDE\.md|settings\.json)\.backup' "$INSTA
 probe="$HOME/.agent-11-backup-path-selftest.$$"
 rm -rf "$probe"
 mkdir -p "$probe/proj" && (cd "$probe/proj" && git init -q . && touch README.md)
-resolved="$(cd "$probe/proj" && AGENT11_INSTALL_BACKUPS="$probe/backups" \
-  bash "$INSTALLER" --dry-run 2>/dev/null | grep -oE 'Backups would go to: [^ ]+' | awk '{print $NF}')"
-if [ -z "$resolved" ]; then
-  breach "BACKUPPATH: the dry run did not report a backup destination"
-elif case "$resolved" in "$probe/proj"/*) true ;; *) false ;; esac; then
-  breach "BACKUPPATH: resolved backup path is INSIDE the project: $resolved"
-fi
-# A dry run must not create it either.
+# Probed BOTH ways. With the override set, and — critically — with it unset, so the
+# real default expression is actually evaluated. The first version only ever ran with
+# AGENT11_INSTALL_BACKUPS set, which meant `${AGENT11_INSTALL_BACKUPS:-<default>}` never
+# reached its default and a default pointing inside the project would have sailed through.
+probe_dest() {
+  ( cd "$probe/proj" && env "$@" bash "$INSTALLER" --dry-run 2>/dev/null \
+      | grep -oE 'Backups would go to: [^ ]+' | awk '{print $NF}' )
+}
+
+for mode in override default; do
+  if [ "$mode" = override ]; then
+    resolved="$(probe_dest AGENT11_INSTALL_BACKUPS="$probe/backups")"
+  else
+    resolved="$(probe_dest -u AGENT11_INSTALL_BACKUPS)"
+  fi
+  if [ -z "$resolved" ]; then
+    breach "BACKUPPATH: the dry run reported no backup destination ($mode)"
+    continue
+  fi
+  case "$resolved" in
+    "$probe/proj"/*) breach "BACKUPPATH: resolved backup path is INSIDE the project ($mode): $resolved" ;;
+  esac
+done
+
+# A dry run must not create either root.
 [ -e "$probe/backups" ] && breach "BACKUPPATH: a --dry-run created the backup root at $probe/backups"
 rm -rf "$probe"
 exit "$fail"
