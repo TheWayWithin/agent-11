@@ -83,7 +83,11 @@ lib_unpushed="$(git -C "$REPO" log --oneline @{u}..HEAD 2>/dev/null | wc -l | tr
 echo " Source state   : $lib_dirty tracked-modified file(s), $lib_unpushed unpushed commit(s)"
 [ "$lib_dirty" != "0" ] && echo "   WARNING: the library has uncommitted changes; the sweep would deploy them."
 [ "$lib_unpushed" != "0" ] && echo "   WARNING: the library has unpushed commits; the fleet would get code not on the remote."
-echo " Would write    : version $(grep -oE '^#{1,3} *\[[0-9]+\.[0-9]+\.[0-9]+\]' "$REPO/CHANGELOG.md" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
+# Asked of the installer, never re-derived here. A second implementation of "what
+# version is this" is a second thing to drift, and it did: this line printed 6.2.0
+# while install.sh printed 6.2.0+unreleased, in the same report.
+echo " Would write    : version $(cd "$REPO" && bash "$INSTALLER" --dry-run 2>/dev/null \
+    | grep -oE 'Would write version: .*' | head -1 | sed 's/Would write version: //')"
 echo
 
 eligible=(); blocked=(); notes=()
@@ -161,3 +165,9 @@ for n in ${notes[@]+"${notes[@]}"}; do echo " Note: $n"; done
 echo
 echo " A blocked repo needs its own .claude/ change committed or discarded by a human."
 echo " Nothing here should be upgraded until that report has been read and approved."
+echo
+echo " READ THIS BEFORE UPGRADING ANY REPO WITH .env.mcp PRESENT:"
+echo "   install.sh auto-executes mcp-setup.sh when .env.mcp exists — global npm"
+echo "   installs, 'claude mcp remove -s project' for 10 servers, and a new"
+echo "   .mcp-status.md at the project root. Per-repo detail is in each section"
+echo "   above under 'MCP configuration'. Tracked as A11-ISS-23."
