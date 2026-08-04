@@ -135,7 +135,7 @@ MENTIONS_DENY = re.compile(
 # A second claim class, and the one that survived three audits: saying the Bash guard
 # CLOSES the route rather than narrowing it. This overstates a mechanism's completeness
 # rather than its scope, so the enforced/unenforced logic below cannot see it. The guard
-# carries 12 detection branches as of 2026-08-04; a runtime-assembled path, an interpreter
+# carries 13 detection branches as of 2026-08-04; a runtime-assembled path, an interpreter
 # reaching the path indirectly, or anything eval'd goes straight through, and no shell
 # guard can catch those (A11-ISS-16).
 ROUTE_CLOSED = re.compile(
@@ -210,7 +210,7 @@ for surface in surfaces:
             if ROUTE_CLOSED.search(window) and not ROUTE_QUALIFIED.search(window):
                 flagged += 1
                 print(f"CLAIMS: {path}:{i + 1} says the Bash guard closes the route. It catches "
-                      f"12 detection branches; a runtime-assembled path or an interpreter reaching the path indirectly passes through "
+                      f"13 detection branches; a runtime-assembled path or an interpreter reaching the path indirectly passes through "
                       f"(A11-ISS-16). Say what it catches, not that it closes.")
                 bad = True
 

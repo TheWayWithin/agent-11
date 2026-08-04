@@ -2,7 +2,7 @@
 #
 # validate-bash-route-claims.sh — the gate guard is never described as closing the Bash route.
 #
-# A11-ISS-16. `library/hooks/gate-guard.sh` blocks Bash writes to gate paths through 12 detection branches.
+# A11-ISS-16. `library/hooks/gate-guard.sh` blocks Bash writes to gate paths through 13 detection branches.
 # It cannot block a path assembled at runtime, an interpreter reaching the path indirectly,
 # anything eval'd or base64-decoded, or a write done by a program it launches. No shell
 # guard can. A guard described as a boundary is worse than one described as a speed bump,

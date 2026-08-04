@@ -250,6 +250,21 @@ else
     '/bin/rm -f .quality-gates.json'
     '/usr/bin/tee .quality-gates.json'
     '"rm" .quality-gates.json'
+    # Sub-verbs the header names by hand but which had no probe at all, so a
+    # regression in any of them would have passed this check silently.
+    'shred -u gates/x.json'
+    'unlink .quality-gates.json'
+    'ruby -i -pe "" .quality-gates.json'
+    'git apply /tmp/lower.patch gates/'
+    'git restore --source=HEAD~1 gates/gate-types.yaml'
+    'git mv gates/x.json /tmp/y.json'
+    # Second cold review: forms that defeated every branch at once.
+    'rm -f \\\ngates/quality-gates.json'
+    'rm -f ga{tes/x.json,}'
+    'echo gates/x.json | xargs rm -f'
+    'echo x > GATES/foo.json'
+    'rm -rf gates'
+    'mv gates /tmp/backup'
   )
   for probe in "${probes[@]}"; do
     printf '{"tool_name":"Bash","tool_input":{"command":%s}}' "$(python3 -c 'import json,sys;print(json.dumps(sys.argv[1]))' "$probe")" \
@@ -270,7 +285,8 @@ else
                  'python3 gates/run-gates.py' 'git status gates/' 'git diff .quality-gates.json' \
                  'G=gates/x.json; echo "{}" > /tmp/other.json' 'echo x > delegates/out.txt' \
                  'echo x > src/aggregates/foo.json' 'rm -rf build/delegates' 'mv src/a.js src/b.js' \
-                 'npm run confirm'; do
+                 'npm run confirm' 'cat gates.md' 'jq . gates/gate-types.yaml' \
+                 'cp gates/report.json /tmp/inspect.json' 'git log --oneline gates/'; do
     printf '{"tool_name":"Bash","tool_input":{"command":%s}}' \
       "$(python3 -c 'import json,sys;print(json.dumps(sys.argv[1]))' "$allowed")" \
       | sh library/hooks/gate-guard.sh >/dev/null 2>&1

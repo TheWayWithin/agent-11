@@ -378,7 +378,7 @@ are implemented, which is why both can stay as they are.
 
 **Correction, 2026-08-04 (A11-ISS-16).** This paragraph originally said the hook *closed* the Bash
 route. It does not, and cannot: an interpreter one-liner or a path assembled at runtime walks past
-any shell guard. The hook now carries 12 detection branches including literal-path interpreter writes and
+any shell guard. The hook now carries 13 detection branches including literal-path interpreter writes and
 variable indirection, which raises the cost of the obvious routes without closing the category. Of
 the three enforcement points listed above, only the `Edit()` deny rules are applied by the tool
 layer; the hook is a speed bump and the evidence contract is a convention. The principle stands —

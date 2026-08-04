@@ -69,7 +69,7 @@ Two places credit the guard with a completeness it does not have: `app/features/
 `components/sections/TechnicalConfidence.tsx:124`.
 
 The guard's own header now says the opposite: it is a speed bump, not a security boundary, and it
-does not close the Bash route. It carries 12 detection branches (redirection, `tee`, `sed -i`, `cp`, `mv`,
+does not close the Bash route. It carries 13 detection branches (redirection, `tee`, `sed -i`, `cp`, `mv`,
 `rm`, `truncate`, `shred`, `unlink`, `dd of=`, `ln -s`, in-place `perl`/`ruby`), but an
 interpreter-mediated write (`python3 -c "open(path,'w')"`) or a path held in a variable passes
 straight through, and no shell hook can catch those.
