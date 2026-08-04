@@ -734,6 +734,19 @@ Delegation includes:
 - Context preservation requirements
 ```
 
+### Fan-out delegation (T-362, internal)
+
+A fleet-wide AGENT-11 deployment audit is delegated to the saved workflow `/fleet-audit`
+(`.claude/workflows/fleet-audit.js`), not walked repo by repo. It is the one job in this repo that
+passes all three fan-out conditions cleanly, because its unit boundary already exists as the
+`tier: active` entries in `~/Shared/tools/agent-11-fleet/registry.yaml`. It is read-only and writes
+nothing; findings are hypotheses for a human to act on. `/fleet-audit ["name", ...]` narrows the run.
+
+Before delegating anything else to a workflow, apply the T1/T2/T3 test in the library coordinator's
+FAN-OUT DELEGATION PROTOCOL and the per-candidate verdicts in `sprints/sprint-6-fanout-scope.md`.
+Follow those verdicts rather than re-deciding them: 2 of 18 missions have a qualifying phase and
+neither qualifies whole, so the default answer is no.
+
 ---
 
 ## VISION INTEGRITY VERIFICATION
