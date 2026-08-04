@@ -144,7 +144,7 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 **User-Facing Changes (running list for Sprint 6d)** — append:
 - `/coord continue` is now a phase-gated meta-loop (convergence, per-phase error budget with escalation, restart-from-last-passed-gate).
-- Bash writes to gate paths are now blocked by a PreToolUse hook (closes the route the deny rules missed).
+- Bash writes to gate paths are now blocked by a PreToolUse hook, which **narrows** the route the deny rules missed without closing it (corrected 2026-08-04, A11-ISS-16: this line originally said "closes the route", which was never true — an interpreter one-liner or a runtime-assembled path walks past any shell guard).
 
 ---
 
@@ -1135,3 +1135,57 @@ Continuing from the v6.0 planning session committed in `aa6ecdb`. Historic conte
 **Verification**: `bash -n` clean; two full test installs into scratchpad confirmed schemas + guide deploy; `shasum -c` OK; no dangling links to deleted guides outside historical audit docs.
 
 **Next**: PRJ-14 task 6 — pilot the lite tier on the Digital Estate repo (PRJ-13) once created.
+
+---
+
+### [2026-08-04] — Clearing the list: A11-ISS-16, A11-ISS-17, T-362, T-363
+
+**Context**: the Sprint 6 ship on 2026-08-03 raised two issues by verifying its own work, and Jamie's
+3 Aug decision on the coordinator left two vault tasks to land. Spec:
+`~/shared/mission-control/projects/agent-11-clear-the-list-spec.md`.
+
+**A11-ISS-17 — five deployed missions were unreachable.** `/coord`'s routing table covered 13 of 18,
+so `architecture`, `product-description`, `operation-genesis`, `connect-mcp` and `operation-recon`
+installed correctly and hard-errored on invocation. Root cause was that the command derived a mission
+filename from the mission name, which is unguessable (`build` → `mission-build.md`, `dev-setup` →
+`dev-setup.md`, `operation-recon` → `operation-recon.md`), and nothing compared the routing table to
+the library. Fixed by adding an explicit **File** column and all five rows, and by extending
+`validate-deployment-coverage.sh` to compare four lists: the library, install.sh's `mission_files`,
+`verify_installation()`'s list, and the routing table — plus the unknown-mission help text, which is a
+fifth copy shown to the user at the exact moment they got a name wrong. Modes assigned on evidence
+from each mission file: A for architecture/product-description/operation-genesis (all run the full
+per-phase `UPDATE project-plan.md` protocol), B2 for connect-mcp and operation-recon (no per-phase
+tracking, bounded duration).
+
+**A11-ISS-16 — the guard is a speed bump, not a boundary.** Hardened from 8 to 12 detection branches:
+interpreter one-liners naming a gate path literally alongside a write verb, gate paths held in a shell
+variable and written through it, `patch`/`git apply`, and `git checkout`/`restore`/`rm`/`mv`. The
+interpreter branch requires a write verb so that reading a gate through Python stays allowed —
+over-blocking is how A11-ISS-4 happened. Verified 22 block forms and 12 ordinary commands. The docs
+half mattered more: three surviving "closes the Bash route" claims removed
+(`sprint-6-workflows-decision.md`, `progress.md`, `project-plan.md`), and the count was being stated
+on two different bases across seven files, so everything now says "12 detection branches" counted in
+the guard's own source.
+
+**T-363 — counters on disk.** `library/scripts/mission-state.py` → `.claude/scripts/mission-state.py`.
+The point is not the file, it is that `cycle` increments the counter itself and **exits 3** when the
+per-phase error budget is spent, so escalation no longer depends on the coordinator having counted
+correctly; and `clean-round` **refuses** a round with no `--evidence`, so the default-fail contract is
+the argument parser's job rather than a paragraph's. Every mutation appends to a JSONL log, and
+`resume` prints the last phase whose gate passed on evidence. Stated in the script header and in the
+coordinator: `.claude/state/` is not a gate path, and the script cannot tell a real evidence string
+from an invented one. It moves the counter out of the model's head, not the judgement.
+
+**T-362 — the coordinator can call a workflow.** Not rewritten as one; that decision stands. New
+FAN-OUT DELEGATION PROTOCOL carrying the T1/T2/T3 test, the honest account of what a deny rule does
+and does not do inside a workflow (rules still apply; the interactive approval step is lost, so
+read-only comes from not asking agents to write), and the four travelling constraints. First concrete
+fan-out built at `.claude/workflows/fleet-audit.js` — read-only, one agent per `tier: active` repo,
+verify stage on a different model, every cap declared. Two corrections to the scope doc found while
+building: workflow scripts have no filesystem access, so the registry must be read by a discovery
+agent rather than inline; and the runtime facts were re-verified against the public docs, which do not
+enumerate `parallel()`, `phase()`, `log()` or the `opts.model`/`isolation` fields — sourced as such in
+the coordinator rather than asserted flat.
+
+**Verification**: four algorithmic checks green; the routing check negative-tested against six
+subversions and the claims check against five. Cold review by a different model on the changed files.

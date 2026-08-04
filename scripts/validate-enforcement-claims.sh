@@ -129,11 +129,15 @@ MENTIONS_DENY = re.compile(
     re.I,
 )
 
+# --- claim patterns (marker region: scripts/validate-bash-route-claims.sh exempts the
+# --- wording below, which necessarily spells out the phrases it hunts for)
+#
 # A second claim class, and the one that survived three audits: saying the Bash guard
 # CLOSES the route rather than narrowing it. This overstates a mechanism's completeness
 # rather than its scope, so the enforced/unenforced logic below cannot see it. The guard
-# catches 11 command forms; an interpreter-mediated write or a variable-held path goes
-# straight through, and no shell guard can catch those (A11-ISS-16).
+# carries 12 detection branches as of 2026-08-04; a runtime-assembled path, an interpreter
+# reaching the path indirectly, or anything eval'd goes straight through, and no shell
+# guard can catch those (A11-ISS-16).
 ROUTE_CLOSED = re.compile(
     r"clos(?:es|ing|ed) (?:the |that |off )?(?:one )?route"
     r"|closes the bash route|closes that gap|closes the gap"
@@ -146,6 +150,7 @@ ROUTE_QUALIFIED = re.compile(
     r"|does not close|not close the|passes? (?:straight )?through|A11-ISS-16",
     re.I,
 )
+# --- end claim patterns
 
 # A line window, not a blank-line block. The original defect read "The loop may NEVER edit:
 # <bullet list including the metric command> ... These are enforced by permissions.deny", where

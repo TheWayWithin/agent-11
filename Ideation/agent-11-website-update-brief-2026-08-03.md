@@ -62,18 +62,19 @@ work" is broader than the gate files and reads as a total guarantee.
 Suggested: "The gate files, `.quality-gates.json` and `gates/`, are off limits at the tool layer. A
 test elsewhere that acts as acceptance criteria is not covered by any shipped rule."
 
-### A4. The Bash guard is framed as a backstop that completes the protection (HIGH)
+### A4. The site frames the Bash guard as a backstop that it is not (HIGH)
 
-`app/features/page.tsx:373` ("A Bash-write guard hook backs up the permission block") and
+Two places credit the guard with a completeness it does not have: `app/features/page.tsx:373`
+("A Bash-write guard hook backs up the permission block") and
 `components/sections/TechnicalConfidence.tsx:124`.
 
 The guard's own header now says the opposite: it is a speed bump, not a security boundary, and it
-does not close the Bash route. It blocks 12 write forms (redirection, `tee`, `sed -i`, `cp`, `mv`,
+does not close the Bash route. It carries 12 detection branches (redirection, `tee`, `sed -i`, `cp`, `mv`,
 `rm`, `truncate`, `shred`, `unlink`, `dd of=`, `ln -s`, in-place `perl`/`ruby`), but an
 interpreter-mediated write (`python3 -c "open(path,'w')"`) or a path held in a variable passes
 straight through, and no shell hook can catch those.
 
-Suggested: "A Bash guard hook blocks 12 common write forms against gate paths. It narrows the Bash
+Suggested: "A Bash guard hook blocks the common Bash write forms against gate paths. It narrows the Bash
 route rather than closing it: the enforceable guarantee is the `Edit()` deny rules."
 
 ### A5. "13 missions" is wrong site-wide (HIGH)

@@ -1,21 +1,44 @@
 #!/bin/sh
-# AGENT-11 read-only gate guard (Sprint 6a/6c; reworked for A11-ISS-4).
+# AGENT-11 read-only gate guard (Sprint 6a/6c; reworked for A11-ISS-4, hardened for A11-ISS-16).
 #
 # PreToolUse hook for Bash. Blocks the common Bash write forms against
 # quality-gate paths (.quality-gates.json, *quality-gates.json, gates/,
 # .gates/) — the route the Edit deny rules cannot cover. Everything else
 # is allowed.
 #
-# WHAT IT CATCHES: redirection (> >>), tee, sed -i, cp, mv, rm, truncate,
-# shred, unlink, dd of=, ln -s, and in-place interpreter edits (perl -i,
-# ruby -i). Keep this list in step with the branches below: an audit found it
-# undercounting its own logic by two, which is the same class of defect as
-# overclaiming, pointed the other way.
+# WHAT IT CATCHES — 12 branches, and the list below is the branch list. Keep
+# them in step: an audit once found this header undercounting its own logic by
+# two, which is the same class of defect as overclaiming, pointed the other way.
+#
+#   1. redirection            > >> into a gate path
+#   2. tee                    tee / tee -a a gate path
+#   3. sed -i                 in-place sed on a gate path
+#   4. cp / mv                onto a gate path
+#   5. rm / truncate / shred / unlink   of a gate path
+#   6. dd of=                 a gate path
+#   7. ln -s                  over a gate path
+#   8. perl -i / ruby -i      in-place interpreter edit of a gate path
+#   9. interpreter one-liner  python/python3/node/ruby/perl/php with -c/-e, a
+#                             literal gate path, AND a write verb (A11-ISS-16)
+#  10. variable indirection   G=<gate path> … then a write through $G, for the
+#                             write forms in branches 1-7 (A11-ISS-16)
+#  11. patch / git apply      applying a diff to a gate path
+#  12. git checkout / restore / rm / mv   on a gate path (reverting or deleting
+#                             a gate changes the criteria as surely as editing it)
 #
 # WHAT IT DOES NOT CATCH, and no shell guard can:
-#   - writes through an interpreter:  python3 -c "open('.quality-gates.json','w')..."
-#   - variable indirection:           G=.quality-gates.json; echo x > $G
-#   - anything encoded, eval'd, or written by a program it launches
+#   - a gate path assembled at runtime:  P=ga; P="${P}tes/x"; echo y > "$P"
+#   - anything encoded, eval'd, or piped through base64/xxd before execution
+#   - a write performed by a program it launches (a script, a make target, an
+#     installed tool) rather than by the command string itself
+#   - an interpreter one-liner that reaches the path indirectly, e.g. through
+#     os.environ, a glob, or a path built by string concatenation
+#   - a heredoc fed to an interpreter on stdin (`python3 <<'EOF'`) rather than
+#     passed with -c
+#
+# Branches 9 and 10 raise the cost of the two forms A11-ISS-16 named. They do
+# not close the category, and nothing in this file should be read as claiming
+# they do.
 #
 # This is a speed bump against the accidental and the lazy, NOT a security
 # boundary. It raises the cost of the obvious routes; it does not close the
@@ -83,6 +106,56 @@ elif printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])ln[[:space:]]+[^;&|]*-[a-z
 # 8. in-place interpreter edits: perl -i / ruby -i on a gate path.
 elif printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])(perl|ruby)[[:space:]]+[^;&|]*-[a-z]*i[^;&|]*[[:space:]\"'=](${gd}|${qg})"; then
     blocked=yes
+# 11. patch / git apply feeding a diff into a gate path.
+elif printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])patch[[:space:]]([^;&|]*[[:space:]\"'=])?(${gd}|${qg})"; then
+    blocked=yes
+elif printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])git[[:space:]]+apply[[:space:]]" \
+     && printf '%s' "$cmd" | grep -qE "(${gd}|${qg})"; then
+    blocked=yes
+# 12. git checkout / restore / rm / mv on a gate path. Reverting a gate to an
+#     earlier revision, or deleting it, changes the criteria that judge the work
+#     just as surely as editing the file in place.
+elif printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])git[[:space:]]+(checkout|restore|rm|mv)[[:space:]][^;&|]*[[:space:]\"'](${gd}|${qg})"; then
+    blocked=yes
+fi
+
+# 9. Interpreter one-liner naming a gate path AND a write verb (A11-ISS-16).
+#
+#    Requiring the write verb is deliberate. `python3 -c "print(open('.quality-gates.json').read())"`
+#    is a read and must stay allowed: a guard that refuses ordinary inspection
+#    gets removed rather than fixed, which is how A11-ISS-4 happened.
+if [ -z "$blocked" ]; then
+    if printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])(python3?|node|ruby|perl|php|deno|bun)[[:space:]]+[^;&|]*-[ce][[:space:]]" \
+       && printf '%s' "$cmd" | grep -qE "(${gd}|${qg})" \
+       && printf '%s' "$cmd" | grep -qE "(open[^)]*,[[:space:]]*[\"'][wax]|writeFileSync|writeFile|appendFile|\.write_text|\.write_bytes|\.write\(|json\.dump|yaml\.dump|os\.remove|os\.unlink|os\.rename|os\.truncate|shutil\.(move|copy|rmtree)|fs\.rm|fs\.unlink|File\.write|IO\.write|FileUtils\.(mv|cp|rm)|file_put_contents|unlink\(|rename\(|truncate\()"; then
+        blocked=yes
+    fi
+fi
+
+# 10. Variable indirection (A11-ISS-16): a gate path assigned to a shell
+#     variable, then written through that variable.
+#
+#     Each candidate variable is checked individually rather than assuming any
+#     write in the command belongs to it, so `G=gates/x; echo y > /tmp/other`
+#     stays allowed while `G=gates/x; echo y > $G` does not.
+if [ -z "$blocked" ]; then
+    gate_vars=$(printf '%s' "$cmd" \
+        | grep -oE "(^|[;&|[:space:](])[A-Za-z_][A-Za-z0-9_]*=[\"']?(${gd}|${qg})" \
+        | sed -e 's/^[^A-Za-z_]*//' -e 's/=.*$//' \
+        | sort -u)
+    for v in $gate_vars; do
+        [ -n "$v" ] || continue
+        # Any of the branch 1-7 write forms, aimed at $v or ${v}.
+        ref="\\\$(\\{)?${v}(\\})?"
+        if printf '%s' "$cmd" | grep -qE "[0-9]?>>?[[:space:]]*[\"']?${ref}" \
+           || printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])(tee|rm|truncate|shred|unlink|patch)[[:space:]][^;&|]*${ref}" \
+           || printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])(cp|mv|ln)[[:space:]][^;&|]*${ref}" \
+           || printf '%s' "$cmd" | grep -qE "(^|[;&|[:space:]])sed[[:space:]]+[^;&|]*-i[^;&|]*${ref}" \
+           || printf '%s' "$cmd" | grep -qE "of=[\"']?${ref}"; then
+            blocked=yes
+            break
+        fi
+    done
 fi
 
 if [ -n "$blocked" ]; then

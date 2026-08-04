@@ -372,9 +372,18 @@ way tasks 3 and 4 go. The pilot answers that directly and the answer is sharper 
 
 The principle survives unchanged, because **its enforcement point was never the loop.** It is the
 harness: `permissions.deny` in `library/settings.json.template`, the `gate-guard.sh` PreToolUse hook
-closing the Bash route, and the default-fail evidence contract in the tester, developer and coordinator
+narrowing the Bash route, and the default-fail evidence contract in the tester, developer and coordinator
 (criteria start `false`, flip only on attached tool output). None of that depends on how tasks 3 and 4
 are implemented, which is why both can stay as they are.
+
+**Correction, 2026-08-04 (A11-ISS-16).** This paragraph originally said the hook *closed* the Bash
+route. It does not, and cannot: an interpreter one-liner or a path assembled at runtime walks past
+any shell guard. The hook now carries 12 detection branches including literal-path interpreter writes and
+variable indirection, which raises the cost of the obvious routes without closing the category. Of
+the three enforcement points listed above, only the `Edit()` deny rules are applied by the tool
+layer; the hook is a speed bump and the evidence contract is a convention. The principle stands —
+its enforcement point was never the loop — but one of its three legs is weaker than this memo
+first claimed, which is the same overclaim pattern the memo itself was written to condemn.
 
 What the pilot adds is a strengthening and a warning:
 

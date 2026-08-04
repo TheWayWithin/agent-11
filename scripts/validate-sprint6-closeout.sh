@@ -228,6 +228,15 @@ else
     'dd if=/dev/null of=gates/gate-types.yaml'
     'ln -sf /tmp/evil .quality-gates.json'
     'perl -pi -e s/90/10/ .quality-gates.json'
+    # A11-ISS-16 hardening: interpreter one-liners and variable indirection.
+    'python3 -c "open('"'"'.quality-gates.json'"'"','"'"'w'"'"').write('"'"'{}'"'"')"'
+    'node -e "require('"'"'fs'"'"').writeFileSync('"'"'.quality-gates.json'"'"','"'"'{}'"'"')"'
+    'G=.quality-gates.json; echo "{}" > $G'
+    'GATE="gates/run-gates.py"; rm -f "$GATE"'
+    # A gate reverted or deleted through git is a gate changed.
+    'patch gates/gate-types.yaml < /tmp/p.diff'
+    'git checkout HEAD~5 -- .quality-gates.json'
+    'git rm gates/gate-types.yaml'
   )
   for probe in "${probes[@]}"; do
     printf '{"tool_name":"Bash","tool_input":{"command":%s}}' "$(python3 -c 'import json,sys;print(json.dumps(sys.argv[1]))' "$probe")" \
@@ -239,7 +248,14 @@ else
   done
   # And it must not block ordinary work. A11-ISS-4 was exactly this failure: a guard so
   # broad it refused unrelated Bash, which gets it removed rather than fixed.
-  for allowed in 'echo hello > /tmp/harmless.txt' 'npm test' 'rm -rf node_modules' 'cat .quality-gates.json'; do
+  # The A11-ISS-16 branches carry the highest false-positive risk of anything in
+  # the guard, so the allow set exercises them directly: reading a gate through
+  # an interpreter, running a gate script, inspecting one through git, and
+  # assigning a gate path to a variable that is never written through.
+  for allowed in 'echo hello > /tmp/harmless.txt' 'npm test' 'rm -rf node_modules' 'cat .quality-gates.json' \
+                 'python3 -c "print(open('"'"'.quality-gates.json'"'"').read())"' \
+                 'python3 gates/run-gates.py' 'git status gates/' 'git diff .quality-gates.json' \
+                 'G=gates/x.json; echo "{}" > /tmp/other.json' 'echo x > delegates/out.txt'; do
     printf '{"tool_name":"Bash","tool_input":{"command":%s}}' \
       "$(python3 -c 'import json,sys;print(json.dumps(sys.argv[1]))' "$allowed")" \
       | sh library/hooks/gate-guard.sh >/dev/null 2>&1
