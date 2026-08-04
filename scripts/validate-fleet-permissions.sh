@@ -46,7 +46,14 @@
 #
 # WHAT FAILS THE CHECK (exit 1):
 #   PERMS     any registered, present repo whose settings.json or settings.local.json sets
-#             a bypass mode, or grants a blanket allow on a write-capable tool. The USER
+#             a bypass mode, or grants a write-capable tool an allow that restricts
+#             NOTHING — a bare `Edit`, or an argument made only of path-wildcard
+#             punctuation (`Edit(*)`, `Edit(**)`, `Edit(//**)`, `Edit(~/**)`,
+#             `Edit(**/**)`). A grant that names a file type, such as `Edit(**/*.json)`,
+#             is broad but is NOT flagged: deny is evaluated before allow, so it cannot
+#             reach past a gate deny rule. Saying "a blanket allow" without that
+#             qualification is what the first version of this header did, while the code
+#             knew only one spelling of it. The USER
 #             scope (`~/.claude/settings.json` and `settings.local.json`) is checked too:
 #             permission rules merge across scopes rather than replacing one another, so a
 #             single blanket allow there would undo every per-repo fix at once, and a check
@@ -119,11 +126,90 @@ DEPLOYED_TIERS = {"active", "local-only", "dormant"}
 # cannot defeat an Edit() deny rule, and removing it would put a prompt in front of every
 # file read, which is exactly the friction that gets a permission model switched off.
 WRITE_TOOLS = ("Bash", "Edit", "Write", "MultiEdit", "NotebookEdit")
-# Bare name, or a grant whose only argument is a wildcard: Edit(*), Bash(**), Bash(:*).
-BLANKET = re.compile(r'^(%s)\s*(\(\s*[:*]?\s*\*{0,2}\s*\))?$' % "|".join(WRITE_TOOLS))
+_TOOL = re.compile(r'^(%s)\s*(?:\((.*)\))?$' % "|".join(WRITE_TOOLS), re.S)
+
+
+def is_blanket(rule):
+    """A write-tool grant that restricts nothing.
+
+    Bare `Edit`, and any argument made only of path-wildcard punctuation. The first
+    version of this tested a hand-written wildcard shape and missed the filesystem-anchor
+    forms — `Edit(//**)` reaches every file on the machine (the docs' own example,
+    `Read(//**/.env)`, is "any .env anywhere on the filesystem"), and `Edit(~/**)` and
+    `Edit(**/**)` are just as broad. A cold review found the header promising to fail on
+    "a blanket allow" while the code only knew one spelling of it. Testing the character
+    set rather than the shape is what makes the two agree.
+
+    `Edit(**/*.json)` is deliberately NOT blanket: it names a file type, and deny is
+    evaluated before allow, so it cannot reach past a gate deny rule.
+    """
+    m = _TOOL.match(str(rule).strip())
+    if not m:
+        return False
+    arg = m.group(2)
+    if arg is None:
+        return True                      # bare tool name
+    arg = arg.strip()
+    return arg == "" or bool(re.fullmatch(r'[~/:*]+', arg))
 BYPASS = {"bypasspermissions", "bypass"}
 GATE_RULES = ["Edit(.quality-gates.json)", "Edit(**/*.quality-gates.json)",
               "Edit(gates/**)", "Edit(.gates/**)"]
+
+# The remediation script carries its own copy of is_blanket(). If the two drift, the
+# check reports a grant the fixer will not remove, or the fixer strips one the check never
+# objected to — and either way the pair silently stops meaning what it says. Compare the
+# two bodies rather than trusting a comment that says "keep these in step".
+FIXER = "scripts/fix-fleet-permissions.py"
+
+
+def _predicate_ast(source):
+    """The executable body of is_blanket(), docstrings and comments discarded.
+
+    Compared as parsed code rather than as text: the two copies carry different
+    docstrings by design, and a trailing comment on one of them is not a behaviour
+    change. Only a real difference in what the function DOES should fail this.
+    """
+    import ast
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return None
+    for node in ast.walk(tree):
+        if isinstance(node, ast.FunctionDef) and node.name == "is_blanket":
+            body = node.body
+            if (body and isinstance(body[0], ast.Expr)
+                    and isinstance(getattr(body[0], "value", None), ast.Constant)
+                    and isinstance(body[0].value.value, str)):
+                body = body[1:]          # drop the docstring
+            return "\n".join(ast.dump(n) for n in body)
+    return None
+
+
+def _embedded_python(sh_text):
+    """This check is bash wrapping a python heredoc; pull the python back out."""
+    marker = "<<'PY'\n"
+    i = sh_text.find(marker)
+    if i < 0:
+        return None
+    j = sh_text.find("\nPY\n", i)
+    return sh_text[i + len(marker): j if j > 0 else len(sh_text)]
+
+
+if os.path.exists(FIXER):
+    try:
+        me_sh = open("scripts/validate-fleet-permissions.sh", encoding="utf-8").read()
+        me_py = _embedded_python(me_sh)
+        a = _predicate_ast(me_py) if me_py else None
+        b = _predicate_ast(open(FIXER, encoding="utf-8").read())
+        if a is None or b is None:
+            breaches.append("FLEET: could not parse is_blanket() out of both scripts — the "
+                            "detector/remediation drift check cannot run")
+        elif a != b:
+            breaches.append("FLEET: is_blanket() differs between validate-fleet-permissions.sh "
+                            "and fix-fleet-permissions.py — the check and the fix no longer "
+                            "agree on what counts as a blanket grant")
+    except Exception as ex:
+        breaches.append(f"FLEET: could not compare is_blanket() across the two scripts ({ex})")
 
 checked_repos = checked_files = 0
 
@@ -144,7 +230,7 @@ def scan(label, path, cfg):
                 f"the gate. (Deny rules themselves still apply in every mode; the defeat is "
                 f"two-step, not one.) Use acceptEdits")
     for rule in (perms.get("allow") or []):
-        if BLANKET.match(str(rule).strip()):
+        if is_blanket(rule):
             out.append(
                 f"PERMS: {label} allows {rule!r} with no path restriction — an unrestricted "
                 f"grant on a write-capable tool. Deny is evaluated before allow, so this "

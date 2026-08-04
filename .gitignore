@@ -45,6 +45,11 @@ CLAUDE-AGENT11-TEMPLATE.md
 
 # IDE settings
 .claude/settings.json
+# Backups written by scripts/fix-fleet-permissions.py beside the file they copy.
+# Without this the remediation leaves the repo dirty, which is how a settings
+# backup ends up committed to a public repo.
+.claude/settings.local.json.bak-*
+.claude/settings.json.bak-*
 
 # Verification frameworks (draft)
 templates/verification-framework.md

@@ -45,7 +45,25 @@ REGISTRY = os.environ.get(
     "REGISTRY", os.path.expanduser("~/Shared/tools/agent-11-fleet/registry.yaml"))
 
 WRITE_TOOLS = ("Bash", "Edit", "Write", "MultiEdit", "NotebookEdit")
-BLANKET = re.compile(r'^(%s)\s*(\(\s*[:*]?\s*\*{0,2}\s*\))?$' % "|".join(WRITE_TOOLS))
+_TOOL = re.compile(r'^(%s)\s*(?:\((.*)\))?$' % "|".join(WRITE_TOOLS), re.S)
+
+
+def is_blanket(rule):
+    """Must stay identical to is_blanket() in validate-fleet-permissions.sh.
+
+    If the detector and the remediation disagree, the check reports a problem the fixer
+    will not fix, or the fixer strips a grant the check never objected to. Bare tool name,
+    or an argument made only of path-wildcard punctuation (`*`, `**`, `//**`, `~/**`,
+    `**/**`, `:*`). A named file type such as `Edit(**/*.json)` is not blanket.
+    """
+    m = _TOOL.match(str(rule).strip())
+    if not m:
+        return False
+    arg = m.group(2)
+    if arg is None:
+        return True
+    arg = arg.strip()
+    return arg == "" or bool(re.fullmatch(r'[~/:*]+', arg))
 BYPASS = {"bypasspermissions", "bypass"}
 REPLACEMENT_MODE = "acceptEdits"
 
@@ -80,7 +98,7 @@ def plan_for(cfg):
         changes.append(f"defaultMode: {top_mode!r} -> {REPLACEMENT_MODE!r}")
 
     allow = perms.get("allow")
-    dropped = [r for r in allow if BLANKET.match(str(r).strip())] if isinstance(allow, list) else []
+    dropped = [r for r in allow if is_blanket(r)] if isinstance(allow, list) else []
     if dropped:
         changes.append("permissions.allow: drop blanket " + ", ".join(repr(d) for d in dropped))
 
@@ -94,7 +112,7 @@ def plan_for(cfg):
         if c.get("defaultMode") and str(c["defaultMode"]).strip().lower() in BYPASS:
             c["defaultMode"] = REPLACEMENT_MODE
         if isinstance(p.get("allow"), list):
-            p["allow"] = [r for r in p["allow"] if not BLANKET.match(str(r).strip())]
+            p["allow"] = [r for r in p["allow"] if not is_blanket(r)]
         return c
 
     return changes, mutate
