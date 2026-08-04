@@ -157,6 +157,38 @@ for path in files:
         breaches.append(f"BASHROUTE: {path}:{line_no} claims the guard closes/completes "
                         f"the Bash route: {flat}")
 
+# --- COUNT: the branch number is the same everywhere, and it matches the code -
+#
+# An audit once found the guard's header undercounting its own logic by two, and before
+# this release the count was stated on two different bases in different files. Both are the
+# same defect as overclaiming, pointed the other way, so the number is checked against the
+# code rather than trusted. The guard's numbered header list and its in-code branch markers
+# must agree, and every document quoting a branch count must quote that number.
+GUARD = "library/hooks/gate-guard.sh"
+if os.path.exists(GUARD):
+    guard_src = open(GUARD, encoding="utf-8").read()
+    # The two lists are told apart by indentation, which is the only thing that
+    # distinguishes them: the header's catalogue is indented under "WHAT IT CATCHES",
+    # the in-code markers sit flush at "# N.".
+    header_entries = len(re.findall(r"^#\s{2,}\d+\.\s+\S", guard_src, re.M))
+    code_markers = len(re.findall(r"^# \d+\.\s", guard_src, re.M))
+    if header_entries != code_markers:
+        breaches.append(f"BASHROUTE: {GUARD} header lists {header_entries} branches but the code "
+                        f"carries {code_markers} branch markers — the header is describing "
+                        "something the code does not do")
+    declared = code_markers
+    for path in ("library/CLAUDE.md", "library/settings.json.template",
+                 "scripts/validate-enforcement-claims.sh", "CHANGELOG.md"):
+        if not os.path.exists(path):
+            continue
+        body = open(path, encoding="utf-8", errors="replace").read()
+        for stated in set(re.findall(r"(\d+)\s+detection branches", body)):
+            if int(stated) != declared:
+                breaches.append(f"BASHROUTE: {path} says {stated} detection branches but "
+                                f"{GUARD} carries {declared}")
+else:
+    breaches.append(f"BASHROUTE: {GUARD} is missing — there is no guard to describe")
+
 # --- PRESENCE: the honest sentence must still be there ----------------------
 REQUIRED_HONESTY = {
     "library/hooks/gate-guard.sh":
@@ -184,7 +216,8 @@ for b in breaches:
 
 if VERBOSE and not breaches:
     print(f"bashroute: {scanned} tracked files scanned; no surviving claim that the gate "
-          f"guard closes the Bash route; {len(REQUIRED_HONESTY)} files still state the limit")
+          f"guard closes the Bash route; {len(REQUIRED_HONESTY)} files still state the limit; "
+          f"guard header and code agree on {code_markers} detection branches")
 
 sys.exit(1 if breaches else 0)
 PY
