@@ -99,7 +99,9 @@ detect_project_context() {
         MISSIONS_DIR="$(pwd)/missions"
         TEMPLATES_DIR="$(pwd)/templates"
         FIELD_MANUAL_DIR="$(pwd)/field-manual"
-        BACKUP_DIR="$CLAUDE_DIR/backups/agent-11"
+        # BACKUP_DIR is set once, outside the repo, further down (see "T-245: backups
+        # live OUTSIDE the target repo"). Deliberately not set here: two assignments
+        # would mean two sources of truth for where a user's backup went.
         PROJECT_DETECTED=true
         DETECTED_INDICATORS=("${project_indicators[@]}")
         return 0
@@ -196,6 +198,53 @@ fi
 trap 'rmdir "$LOCKDIR" 2>/dev/null' EXIT
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+
+# ---------- T-245: backups live OUTSIDE the target repo ----------
+#
+# install.sh used to write every backup inside the project it was installing
+# into: .claude/backups/agent-11/<ts>/, .claude/CLAUDE.md.backup-<ts> and
+# .claude/settings.json.backup-<ts>. Five installs into one repo therefore left
+# roughly a dozen untracked artefacts behind, and a fleet survey on 2026-08-04
+# found exactly that — aisearchmastery 17, SEOAgent 15, aimpactscanner-mvp 13,
+# Trader-7 12, aisearcharena 7. That litter is indistinguishable from a user's
+# own uncommitted work at a glance, which is precisely what makes an upgrade
+# sweep look unsafe when it is not.
+#
+# fix-fleet-permissions.py hit the same wall and was corrected the same way, so
+# this mirrors its layout and its override variable naming deliberately. One
+# directory per repo so a backup can be traced back to where it came from.
+#
+# Override with AGENT11_INSTALL_BACKUPS. Falls back to inside the repo ONLY if
+# the external root cannot be created, and says so loudly when it does.
+#
+# The default is $HOME/.agent-11/backups, not a path under Shared/: this installer
+# ships to strangers, and a default pointing at one person's synced fleet directory
+# would be meaningless on any other machine.
+#
+# The key is the project's full path with separators flattened, not its basename.
+# Two checkouts named "api" under different parents would otherwise write their
+# backups into the same directory and interleave by timestamp, which is a data-loss
+# bug waiting for whoever restores the wrong one.
+AGENT11_BACKUP_ROOT="${AGENT11_INSTALL_BACKUPS:-$HOME/.agent-11/backups}"
+BACKUP_REPO_KEY="$(printf '%s' "$(pwd)" | sed -e "s|^$HOME/||" -e 's|[/ ]|_|g')"
+
+# Decide WHERE without creating anything. This block runs at script top level, before
+# --dry-run is even parsed, so a `mkdir -p` here would make a "no changes were made" run
+# create a directory — a small lie, but this whole week has been about not shipping those.
+# Writability is probed by testing the nearest existing ancestor, and the directory itself
+# is created lazily by whoever first needs it.
+_probe="$AGENT11_BACKUP_ROOT"
+while [[ -n "$_probe" && ! -d "$_probe" ]]; do _probe="$(dirname "$_probe")"; done
+if [[ -w "$_probe" ]]; then
+    BACKUP_DIR="$AGENT11_BACKUP_ROOT/$BACKUP_REPO_KEY"
+    BACKUP_LOCATION="external"
+else
+    # Only if the external root is genuinely unreachable. Says so in the stamp and in
+    # the dry-run plan, so an in-repo backup is never a silent outcome.
+    BACKUP_DIR="$CLAUDE_DIR/backups/agent-11"
+    BACKUP_LOCATION="in-repo-fallback"
+fi
+unset _probe
 BACKUP_PATH="$BACKUP_DIR/$TIMESTAMP"
 
 # GitHub repository configuration
@@ -315,17 +364,38 @@ detect_execution_mode() {
 
 # Detect v5.x markers in the user's cwd. Mirrors migrate-v5-to-v6.sh's marker set.
 # Returns 0 + prints markers when found, 1 + no output when clean.
+# A11-ISS-21: a bare handoff-notes.md is NOT a v5 marker.
+#
+# It used to be treated as one, and the consequence was severe. `--upgrade` on an
+# already-v6 repo would see the file, invoke migrate-v5-to-v6.sh, and that script
+# DELETES handoff-notes.md and folds its contents into agent-context.md. Confirmed by
+# dry run on 2026-08-04: it does not refuse an already-v6 project, it reports "v5 markers
+# still present — completing the remaining migration steps" and proceeds.
+#
+# Two of T-245's seven in-scope repos tripped it, on genuine project content: Trader-7's
+# handoff-notes.md is 426 tracked lines in a repo running live on Railway, and
+# JamieWatters' is a session note written in June 2026, months after v6 shipped. The
+# agent-11 repo itself trips it too. v6 uses handoff-notes.md as an ordinary working
+# file, so its presence says nothing about which version is installed.
+#
+# The three STRUCTURAL markers below are different: each is a directory or file that
+# only a v5 install creates and that v6 actively retired. One of those is required
+# before the migration path is even considered. A lone handoff-notes.md is reported as
+# an advisory by the caller, never as a trigger.
 detect_v5_markers_in_cwd() {
-    local found=()
-    [[ -f "$(pwd)/handoff-notes.md" ]] && found+=("handoff-notes.md")
-    [[ -d "$(pwd)/.mcp-profiles" ]] && found+=(".mcp-profiles/")
-    [[ -f "$(pwd)/mcp/dynamic-mcp.json" ]] && found+=("mcp/dynamic-mcp.json")
-    [[ -f "$(pwd)/templates/handoff-notes-template.md" ]] && found+=("templates/handoff-notes-template.md")
+    local structural=()
+    [[ -d "$(pwd)/.mcp-profiles" ]] && structural+=(".mcp-profiles/")
+    [[ -f "$(pwd)/mcp/dynamic-mcp.json" ]] && structural+=("mcp/dynamic-mcp.json")
+    [[ -f "$(pwd)/templates/handoff-notes-template.md" ]] && structural+=("templates/handoff-notes-template.md")
 
-    if [[ ${#found[@]} -eq 0 ]]; then
+    if [[ ${#structural[@]} -eq 0 ]]; then
         return 1
     fi
-    printf '%s\n' "${found[@]}"
+
+    # handoff-notes.md is listed only alongside a structural marker, where it really is
+    # part of the v5 layout and the migration really should fold it.
+    [[ -f "$(pwd)/handoff-notes.md" ]] && structural+=("handoff-notes.md")
+    printf '%s\n' "${structural[@]}"
     return 0
 }
 
@@ -389,6 +459,31 @@ print_dry_run_plan() {
     local execution_mode
     execution_mode=$(detect_execution_mode)
     echo "  Execution mode: $execution_mode"
+
+    # T-245: a dry run that does not say what is installed now cannot tell you what
+    # the upgrade would change. Report the stamp before and the version after.
+    local stamp="$(pwd)/.claude/agent-11-version" current="none (pre-stamp install)"
+    if [[ -f "$stamp" ]]; then
+        current="$(grep -oE '"version"[^,]*' "$stamp" 2>/dev/null | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+|unknown' || echo unparseable)"
+    fi
+    echo "  Installed version: $current"
+    echo "  Would write version: $(resolve_agent11_version)"
+    echo "  Backups would go to: $BACKUP_DIR  ($BACKUP_LOCATION)"
+
+    # A tracked-and-modified file under .claude/ is a local customisation this install
+    # would overwrite. Untracked files there are install litter, not a conflict.
+    if git -C "$(pwd)" rev-parse --git-dir >/dev/null 2>&1; then
+        local branch tracked_mod
+        branch="$(git -C "$(pwd)" rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
+        tracked_mod="$(git -C "$(pwd)" status --porcelain -- .claude 2>/dev/null | grep -vE '^\?\?' || true)"
+        echo "  Branch: $branch"
+        if [[ -n "$tracked_mod" ]]; then
+            echo "  BLOCKED — tracked-and-modified files under .claude/ would be overwritten:"
+            printf '%s\n' "$tracked_mod" | sed 's/^/      /'
+        else
+            echo "  No tracked-and-modified files under .claude/ (untracked litter does not block)"
+        fi
+    fi
     echo
 
     # v5 detection
@@ -408,6 +503,12 @@ print_dry_run_plan() {
         fi
     else
         echo "  No v5.x markers — fresh install or already on v6"
+        # A11-ISS-21: mentioned, never acted on. It is an ordinary v6 working file, and
+        # treating it as a migration trigger would have deleted tracked project content.
+        if [[ -f "$(pwd)/handoff-notes.md" ]]; then
+            echo "    (handoff-notes.md is present. That is NOT a v5 marker on its own and"
+            echo "     triggers nothing — v6 uses the file too. No migration will be invoked.)"
+        fi
     fi
     echo
 
@@ -421,7 +522,7 @@ print_dry_run_plan() {
             echo "  settings.json: already on v6 — would no-op (no backup, no diff)"
         elif command -v python3 >/dev/null 2>&1; then
             echo "  settings.json: existing file detected — would merge v6 template"
-            echo "    (user values win on conflict; backup created at .claude/settings.json.backup-<ts>)"
+            echo "    (user values win on conflict; backup written outside the repo, under \$AGENT11_INSTALL_BACKUPS)"
         else
             echo "  settings.json: existing file detected, python3 NOT available"
             echo "    Would write template as .claude/settings.json.new (manual merge required)"
@@ -431,16 +532,30 @@ print_dry_run_plan() {
     fi
     echo
 
-    echo "  Would deploy:"
-    echo "    - 11 specialist agents to .claude/agents/"
-    echo "    - library/CLAUDE.md to .claude/CLAUDE.md"
-    echo "    - Karpathy constitution to .claude/constitution/"
-    echo "    - mission templates to ./missions/"
-    echo "    - utility templates to ./templates/"
-    echo "    - field manual docs to ./field-manual/"
-    echo "    - MCP system files (.mcp.json.template, .env.mcp.template, mcp-setup.sh)"
-    echo "    - SaaS skills to .claude/skills/"
-    echo "    - schemas + gates + stack-profiles + docs"
+    # Split by location, because "would deploy" without saying WHERE is how a reader
+    # ends up surprised by seven new directories at their project root.
+    echo "  Would write inside .claude/ :"
+    echo "    - .claude/agents/            11 specialist agents"
+    echo "    - .claude/commands/          slash commands"
+    echo "    - .claude/CLAUDE.md          library instructions"
+    echo "    - .claude/constitution/      Karpathy constitution"
+    echo "    - .claude/skills/            SaaS skills"
+    echo "    - .claude/hooks/             gate-guard.sh"
+    echo "    - .claude/scripts/           mission-state.py"
+    echo "    - .claude/data/              command support data"
+    echo "    - .claude/settings.json      merged, user values win"
+    echo "    - .claude/agent-11-version   the version stamp"
+    echo
+    echo "  Would write at the PROJECT ROOT, outside .claude/ :"
+    echo "    - missions/                  mission files"
+    echo "    - templates/                 utility templates"
+    echo "    - field-manual/              documentation"
+    echo "    - schemas/                   foundation schemas"
+    echo "    - gates/                     run-gates.py, gate-types.yaml, templates/"
+    echo "    - stack-profiles/            stack profiles"
+    echo "    - docs/                      MCP + upgrade guides"
+    echo "    - .mcp.json.template, .env.mcp.template, mcp-setup.sh"
+    echo "    (an existing .env.mcp is never overwritten — it holds your API keys)"
     echo
     echo "DRY RUN COMPLETE — no changes were made. Re-run without --dry-run to install."
     return 0
@@ -744,7 +859,9 @@ install_claude_md() {
     mkdir -p "$CLAUDE_DIR"
 
     local dest_file="$CLAUDE_DIR/CLAUDE.md"
-    local backup_file="$CLAUDE_DIR/CLAUDE.md.backup-$(date +%Y%m%d_%H%M%S)"
+    # T-245: outside the repo, alongside every other install backup.
+    mkdir -p "$BACKUP_PATH" 2>/dev/null || true
+    local backup_file="$BACKUP_PATH/CLAUDE.md.backup-$(date +%Y%m%d_%H%M%S)"
 
     # Backup existing .claude/CLAUDE.md if present
     if [[ -f "$dest_file" ]]; then
@@ -851,7 +968,9 @@ install_settings_template() {
     fi
 
     local dest_file="$CLAUDE_DIR/settings.json"
-    local backup_file="$CLAUDE_DIR/settings.json.backup-$(date +%Y%m%d_%H%M%S)"
+    # T-245: outside the repo, alongside every other install backup.
+    mkdir -p "$BACKUP_PATH" 2>/dev/null || true
+    local backup_file="$BACKUP_PATH/settings.json.backup-$(date +%Y%m%d_%H%M%S)"
     local source_path="library/settings.json.template"
 
     # ===== Existing settings.json: T3 surgical merge =====
@@ -1399,6 +1518,76 @@ install_squad() {
     fi
 }
 
+# ---------- T-245: the version stamp ----------
+#
+# Until this existed there was no way to read what version of AGENT-11 a repo
+# carried, before or after an upgrade. A survey of all 25 registered repos on
+# 2026-08-04 found not one version marker anywhere, which made "rolled v6.2.0
+# to the fleet" a claim with no oracle. This is that oracle.
+#
+# The version is read from the CHANGELOG's newest released heading rather than
+# a VERSION file, so there is one source of truth and no second thing to keep
+# in step. `## [Unreleased]` is skipped by construction: the pattern requires
+# digits, so an unreleased section cannot be mistaken for a release.
+resolve_agent11_version() {
+    local changelog_raw="" version=""
+
+    if [[ -f "$PROJECT_ROOT/CHANGELOG.md" ]]; then
+        changelog_raw="$(cat "$PROJECT_ROOT/CHANGELOG.md" 2>/dev/null || true)"
+    else
+        if command -v curl >/dev/null 2>&1; then
+            changelog_raw="$(curl -fsSL "$GITHUB_REPO_BASE/CHANGELOG.md" 2>/dev/null || true)"
+        elif command -v wget >/dev/null 2>&1; then
+            changelog_raw="$(wget -qO- "$GITHUB_REPO_BASE/CHANGELOG.md" 2>/dev/null || true)"
+        fi
+    fi
+
+    # `|| true` is load-bearing: the script runs under `set -euo pipefail`, so
+    # a grep that matches nothing would otherwise abort the whole install at
+    # the assignment. A missing version must degrade to "unknown", never take
+    # the installation down with it.
+    version="$(printf '%s\n' "$changelog_raw" \
+        | grep -oE '^#{1,3} *\[[0-9]+\.[0-9]+\.[0-9]+\]' \
+        | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' \
+        | head -1 || true)"
+
+    # "unknown" is deliberate: a stamp that lies about its version is worse
+    # than one that admits it could not tell.
+    printf '%s' "${version:-unknown}"
+}
+
+write_version_stamp() {
+    local mode="install"
+    $UPGRADE_MODE && mode="upgrade"
+
+    local version commit
+    version="$(resolve_agent11_version)"
+    commit="$(git -C "$PROJECT_ROOT" rev-parse --short HEAD 2>/dev/null || echo unknown)"
+
+    mkdir -p "$CLAUDE_DIR"
+    cat > "$CLAUDE_DIR/agent-11-version" <<STAMP
+{
+  "version": "$version",
+  "installed_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+  "mode": "$mode",
+  "source_repo": "$GITHUB_REPO",
+  "source_branch": "$GITHUB_BRANCH",
+  "source_commit": "$commit",
+  "backups": "$BACKUP_LOCATION:$BACKUP_DIR"
+}
+STAMP
+
+    if [[ "$version" == "unknown" ]]; then
+        warn "Version stamp written, but the version could not be resolved from the CHANGELOG."
+    else
+        success "Version stamp written: v$version → .claude/agent-11-version"
+    fi
+
+    # Explicit: this sits in the install pipeline's && chain, and a stray
+    # non-zero here would trigger a full rollback of a good installation.
+    return 0
+}
+
 # Verify installation
 verify_installation() {
     local squad_agents=("${SQUAD_FULL[@]}")
@@ -1772,7 +1961,7 @@ show_post_install_instructions() {
         echo "  ✓ Tool deferring enabled (ENABLE_TOOL_SEARCH=auto in .claude/settings.json)"
     else
         echo -e "  ${YELLOW}⚠ Tool deferring NOT enabled${NC} — settings.json was preserved without v6 changes."
-        echo "    See backup at .claude/settings.json.backup-* and merge manually."
+        echo "    See the settings.json backup under \$AGENT11_INSTALL_BACKUPS and merge manually."
         echo "    Reference: docs/UPGRADE.md"
         echo "    Roll back: bash <(curl -sSL https://raw.githubusercontent.com/$GITHUB_REPO/$GITHUB_BRANCH/project/deployment/scripts/restore-pre-upgrade.sh) --list"
     fi
@@ -1927,6 +2116,7 @@ HELP
         install_mission_system &&
         install_mcp_system &&
         verify_installation &&
+        write_version_stamp &&
         setup_mcp_configuration
     } || {
         error "Installation failed. Initiating rollback..."
