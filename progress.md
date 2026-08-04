@@ -1190,3 +1190,54 @@ the coordinator rather than asserted flat.
 
 **Verification**: four algorithmic checks green; the routing check negative-tested against six
 subversions and the claims check against five. Cold review by a different model on the changed files.
+
+---
+
+### [2026-08-04b] — A11-ISS-18 and A11-ISS-19: making the gates able to bite
+
+**Spec**: `~/shared/mission-control/projects/A11-ISS-18-19-spec.md`.
+
+**A11-ISS-18 — twelve repos, not ten.** The audit's top-3-findings-per-repo cap hid two: `test-project`
+and `agent-11` itself. All twelve had `permissions.defaultMode: bypassPermissions` plus blanket bare
+`Bash`/`Edit`/`Write` allows in the gitignored `.claude/settings.local.json`. Now `acceptEdits`, blanket
+grants removed, everything else preserved and verified against per-file backups: JSON valid, top-level
+and `permissions` key order unchanged, `env`/`deny`/`ask` byte-identical, exactly three allow entries
+dropped in each.
+
+**The mechanism the issue and the spec both gave was wrong, and the correct one is worse.** Checked
+against the official documentation rather than assumed:
+
+- `bypassPermissions` does **not** stop deny rules being consulted — "These controls apply in every
+  mode, including `bypassPermissions`: deny rules and explicit ask rules".
+- A blanket `Edit` allow does **not** override `Edit(gates/**)` — deny is evaluated first and
+  specificity never reorders it; under `bypassPermissions` allow rules have no effect at all.
+
+So the deny rules were never being ignored. What is true is that **`.claude` is a protected path**,
+and protected-path writes are unprompted under `bypassPermissions` but prompted under `acceptEdits`.
+An agent could not edit a gate directly, but it could rewrite `.claude/settings.json`, delete the deny
+rules, and then edit the gate — two steps, no prompt at either. That is why the mode had to go and why
+`acceptEdits` is the right replacement rather than a compromise. Had the stated mechanism been taken
+at face value, removing `defaultMode` alone would have looked sufficient.
+
+**The check is the deliverable**, not the twelve edits: `settings.local.json` is user-owned and
+gitignored, `merge-settings.py` does not manage it, and nothing stopped it drifting back.
+`scripts/validate-fleet-permissions.sh` was demonstrated **failing before the fix (exit 1, 50
+breaches across exactly the twelve repos plus two registry entries) and passing after (exit 0)**. Each
+failure mode was also negative-tested alone: nested mode, top-level mode, bare tool name,
+wildcard-only form, unparseable JSON, and a user-scope grant. `scripts/fix-fleet-permissions.py` is
+the remediation, dry-run by default.
+
+**What the cold review found.** The check's header promised to fail on "a blanket allow" while the
+regex knew one spelling of it: `Edit(//**)`, `Edit(~/**)` and `Edit(**/**)` all passed at exit 0 while
+granting unrestricted writes. Both scripts now test the argument's character set instead of a
+hand-written shape, unit-tested over 25 cases, and the check compares its own predicate against the
+fixer's as parsed code so the two cannot drift. The review also corrected the audit's item 3 from
+three repos to eleven, and downgraded it: broad is not the same as unrestricted, and deny wins anyway.
+
+**A11-ISS-19** — `executor-file` and `executor-file-site` moved from `tier: active` to `tier: skip`
+with notes; neither repo touched, and whether they should get the framework is left as Jamie's product
+decision. The check now fails on any tier that claims a deployment the filesystem contradicts.
+
+**The honest limit.** Passing this check does not mean a gate is enforced anywhere. It means nothing
+is neutralising it. **The four deny rules are still absent from every reachable repo** except archived
+`digital-estate`. That is T-245's sweep. This run removed what would have made that sweep pointless.
