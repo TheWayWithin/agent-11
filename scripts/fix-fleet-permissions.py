@@ -25,7 +25,10 @@ EVERYTHING ELSE IS PRESERVED. These are user-owned local settings carrying real
 allowlists, env vars and MCP grants. The file is parsed, the two keys above are edited in
 place, and it is written back with key order intact. It is never templated over.
 
-Dry run by default. `--apply` writes, after taking a timestamped backup beside each file.
+Dry run by default. `--apply` writes, after copying each file to a timestamped directory
+under ~/Shared/tools/agent-11-fleet/settings-backups/ (override with
+AGENT11_SETTINGS_BACKUPS). Backups live outside the repos on purpose: a `.bak` written
+beside the original leaves an untracked file in a working tree that may be someone else's.
 
 Usage:
   scripts/fix-fleet-permissions.py                 # show what would change
@@ -40,6 +43,14 @@ import re
 import shutil
 import sys
 from datetime import datetime
+
+# Backups go OUTSIDE the repos. Writing `settings.local.json.bak-*` beside the file it
+# copies leaves an untracked file in a working tree the caller may have been told not to
+# touch — which is exactly what the first run of this script did to eleven of Jamie's
+# repos. One central directory keeps the revert path without dirtying anything.
+BACKUP_ROOT = os.path.expanduser(
+    os.environ.get("AGENT11_SETTINGS_BACKUPS",
+                   "~/Shared/tools/agent-11-fleet/settings-backups"))
 
 REGISTRY = os.environ.get(
     "REGISTRY", os.path.expanduser("~/Shared/tools/agent-11-fleet/registry.yaml"))
@@ -162,7 +173,9 @@ def main():
                 touched += 1
                 continue
 
-            shutil.copy2(f, f"{f}.bak-{stamp}")
+            backup_dir = os.path.join(BACKUP_ROOT, stamp)
+            os.makedirs(backup_dir, exist_ok=True)
+            shutil.copy2(f, os.path.join(backup_dir, f"{e['name']}--{fn}"))
             cfg = mutate(cfg)
             # Reread-and-verify below depends on this being valid JSON with the same
             # top-level keys; a settings file that fails to parse disables every rule
