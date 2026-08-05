@@ -1285,3 +1285,37 @@ against agent-11's mission set. A check that reports a false failure gets ignore
 it was fixed to compare sets before continuing.
 
 **T-245 stays open**: 3 of 7 done.
+
+### [2026-08-05] — T-245 complete: all seven repos on 6.2.0+unreleased with gates live
+
+Jamie cleared the two `.claude/backups/agent-11/latest` blockers by hand, then approved finishing the
+sweep. **7 of 7 upgraded, 12/12 verification passing on each**, one repo at a time.
+
+`bash scripts/fleet-version.sh --in-scope` now prints every in-scope repo with `6.2.0+unreleased` and
+`4/4` gate rules — the oracle T-245 was waiting on since 21 July, and the reason it could not be
+closed before.
+
+**A11-ISS-23 was fixed first, because Trader-7 could not be upgraded safely until it was.**
+`mcp-setup.sh` execution now sits behind `--with-mcp`, defaulting off, so an install no longer runs
+`npm install -g` for seven packages or `claude mcp remove -s project` for ten servers because
+`.env.mcp` happens to exist. An existing `.mcp.json` is also no longer downloaded over.
+`scripts/validate-mcp-optin.sh` asserts the flag defaults to false, that the execution site is
+structurally guarded rather than merely mentioning the flag somewhere, and that the `.mcp.json` check
+exists — negative-tested on all three.
+
+**Trader-7, the case that justified the whole exercise**, verified byte-for-byte afterwards:
+`.env.mcp` unchanged (`241b2ddae220`), `.mcp.json` unchanged (`3be7b8b182cc`), `handoff-notes.md`
+unchanged at 426 lines (`11601c374775` — the file A11-ISS-21's false v5 trigger would have deleted),
+and all 20 registered MCP servers still registered. One tracked-modified file and 90 untracked files
+of Jamie's own work, untouched.
+
+**Across all seven**: no commits made, no branches changed, every pre-existing tracked-modified file
+byte-identical. 9.9 MB of backups under `~/.agent-11/backups/`, and **zero new in-repo backup
+artefacts** against the dozen-plus each previous install left.
+
+**One verifier false alarm worth recording**, the second of this sweep: it flagged Trader-7's
+`.mcp-status.md` as newly created. It dates from 2026-05-10, written by an earlier install when the
+MCP chain still auto-ran. The check tested existence where it should have tested creation.
+
+**What Jamie sees next**: each upgraded repo now has ~18 modified tracked files under `.claude/` —
+the new framework files, awaiting his review and commit. That is the deliverable, not litter.
