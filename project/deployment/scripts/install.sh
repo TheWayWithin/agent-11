@@ -515,13 +515,45 @@ print_dry_run_plan() {
     # settings.json plan
     local dest="$(pwd)/.claude/settings.json"
     if [[ -f "$dest" ]]; then
-        local has_hooks=false has_tool_search=false
-        grep -q '"hooks"' "$dest" 2>/dev/null && has_hooks=true
-        grep -q "ENABLE_TOOL_SEARCH" "$dest" 2>/dev/null && has_tool_search=true
-        if $has_hooks && $has_tool_search; then
-            echo "  settings.json: already on v6 — merge would be a no-op"
+        # A11-ISS-24. This used to guess the outcome by grepping the target for
+        # '"hooks"' and ENABLE_TOOL_SEARCH. merge-settings.py's own contract is
+        # "No-op only if ENABLE_TOOL_SEARCH is present AND hooks AND
+        # permissions need no change" — so the guess tested two of three
+        # conditions and reported "no-op" whenever permissions were the thing
+        # that differed. Every repo in the 2026-08-04 fleet survey carried 0 of
+        # the 4 gate deny rules, meaning permissions needed changing in all of
+        # them and the plan told the approver the opposite: it promised a
+        # no-op while the real run would add deny rules and wire in two
+        # PreToolUse hooks the repo had never had.
+        #
+        # So ask the merger instead of re-deriving its condition. It runs
+        # against a COPY in a temp directory, so the repo is untouched and the
+        # answer comes from the implementation that will actually do the work.
+        local merge_verdict="" trial_dir="" merger_path="" template_path=""
+        if command -v python3 >/dev/null 2>&1 \
+           && merger_path="$(find_or_fetch_settings_merger 2>/dev/null)" \
+           && template_path="$(find_or_fetch_settings_template 2>/dev/null)"; then
+            trial_dir="$(mktemp -d 2>/dev/null || true)"
+            if [[ -n "$trial_dir" ]]; then
+                cp "$dest" "$trial_dir/settings.json" 2>/dev/null || true
+                merge_verdict="$(python3 "$merger_path" "$trial_dir/settings.json" "$template_path" 2>/dev/null | tail -1)"
+                rm -rf "$trial_dir" 2>/dev/null || true
+            fi
+        fi
+
+        if [[ "$merge_verdict" == "NOOP_ALREADY_V6" ]]; then
+            echo "  settings.json: already current — the merger reports no change needed"
+            echo "    (verified by running merge-settings.py against a temp copy, not inferred)"
             echo "    (a backup is still written: install_settings_template copies the file"
             echo "     before it decides whether the merge changes anything)"
+        elif [[ "$merge_verdict" == "MERGED" ]]; then
+            echo "  settings.json: WOULD BE CHANGED — the merger reports a real merge"
+            echo "    (verified by running merge-settings.py against a temp copy, not inferred)"
+            echo "    User values win on every conflict. Expect the shipped read-only gate"
+            echo "    deny rules to be added, and any missing shipped PreToolUse hooks"
+            echo "    (gate-guard.sh, destructive-guard.sh) to be wired in — these"
+            echo "    intercept Bash calls, so review them before upgrading."
+            echo "    Backup written outside the repo, under \$AGENT11_INSTALL_BACKUPS."
         elif command -v python3 >/dev/null 2>&1; then
             echo "  settings.json: existing file detected — would merge v6 template"
             echo "    (user values win on conflict; backup written outside the repo, under \$AGENT11_INSTALL_BACKUPS)"

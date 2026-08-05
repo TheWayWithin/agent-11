@@ -2,43 +2,48 @@
 # AGENT-11 destructive-command guard (A11-ISS-22).
 #
 # PreToolUse hook for Bash. Blocks a short list of genuinely destructive and
-# hard-to-reverse commands so the agent has to come back to the human before
-# running one.
+# hard-to-reverse commands so the agent has to come back to the human first.
 #
-# WHY THIS REPLACES A `prompt` HOOK. The settings template used to express this
-# as a `"type": "prompt"` hook filtered by an `if` glob:
+# WHY THIS REPLACED A `prompt` HOOK. The settings template used to express this
+# as a "type": "prompt" hook filtered by an `if` glob:
 #
 #     "if": "Bash(rm -rf *)|Bash(git push --force*)|Bash(git reset --hard*)|..."
 #
-# That glob fails open on any command whose shape it did not anticipate —
-# multi-line loops, heredocs, redirections, `&&` chains. This is the same
-# defect A11-ISS-4 found and fixed for the gate guard, where the conclusion was
-# recorded plainly: the `if` glob filter "fails open on complex commands
-# (multi-line loops, redirections) and blocked unrelated Bash." The gate guard
-# was moved to a script reading stdin; this hook was left behind.
+# That glob failed open on any command shape it did not anticipate — multi-line
+# loops, heredocs, redirections, && chains. Same defect A11-ISS-4 found and
+# fixed for the gate guard, whose conclusion was recorded plainly: the `if`
+# glob "fails open on complex commands (multi-line loops, redirections) and
+# blocked unrelated Bash." This hook was left behind. Worse, being `prompt`
+# type, a fail-open match handed benign commands to a model to adjudicate,
+# which refused them — invisibly, since the refusal goes to the agent, not the
+# operator. Work stopped happening and nobody was told.
 #
-# The consequence was worse than a false positive. Because the hook was
-# `prompt` type, a fail-open match handed a benign command to a model to
-# adjudicate, and it refused things like `chmod +x`, a `git status` loop and a
-# scratch-directory test — silently from the operator's point of view, since
-# the refusal goes to the agent, not to the human. Work simply stopped
-# happening and nobody was told. Observed repeatedly on 2026-08-04.
+# WHY THE FIRST REWRITE WAS ALSO WRONG. It matched literal substrings against
+# the whole command text. That blocks `grep -rn "rm -rf" .` and
+# `echo "never run rm -rf in prod"`, neither of which deletes anything — the
+# trigger is in an argument to another program. A cold review caught it, and
+# then it blocked the very command being used to test it. Substring matching
+# on a shell command is the same mistake as glob-matching it: both look at the
+# text rather than at what will run.
 #
-# So the decision is made here, deterministically, against the real command
-# text, with no glob and no adjudicating model.
+# SO: the command is tokenised with the shell's own quoting rules, split on
+# shell separators, and each segment judged by its actual argv[0] and flags.
+# A destructive string inside a quoted argument to another program is not a
+# destructive command, and is allowed.
 #
-# WHAT IT BLOCKS:
-#   rm -rf / rm -fr / rm -r -f     recursive force delete
-#   git push --force / -f          history overwrite on a remote
-#   git reset --hard               discards uncommitted work
-#   git clean -f / -fd             deletes untracked files
-#   git branch -D                  force-deletes a branch
-#   git checkout/switch/restore .  discards local modifications wholesale
+# WHAT IT BLOCKS (per segment, by argv[0] and real flags):
+#   rm      recursive AND force together, in any spelling or order:
+#           -rf -fr -Rf -r -f -irf --recursive --force, clustered or separate
+#   git push --force / -f, including clustered short flags (-fu).
+#           --force-with-lease is deliberately ALLOWED: it is the safe form.
+#   git reset --hard
+#   git clean with -f (any clustering: -f -fd -df -xfd)
+#   git branch -D
+#   git checkout/restore with a bare "." pathspec (discards all local edits)
 #
-# WHAT IT DOES NOT BLOCK, and no text matcher can:
+# WHAT IT CANNOT SEE, and no matcher of command text can:
 #   - a destructive command assembled at runtime or held in a variable
-#   - anything eval'd, encoded, or run by a program this launches
-#   - `--force-with-lease`, which is deliberately allowed: it is the safe form
+#   - anything eval'd, encoded, or run by a script/program this launches
 #   - a destructive action taken through a tool other than Bash
 #
 # It is a speed bump against the accidental, not a security boundary. The
@@ -50,65 +55,117 @@
 
 set -u
 
-payload="$(cat 2>/dev/null || true)"
-[ -z "$payload" ] && exit 0
+# Fail OPEN whenever anything is unavailable or unparseable. A guard that
+# blocks when confused is how an agent stops working for reasons nobody can
+# see — the exact bug this file exists to fix.
+command -v python3 >/dev/null 2>&1 || exit 0
 
-# Prefer a real JSON parse. A command containing quotes, newlines or escapes is
-# exactly the case the old glob got wrong, so guessing with sed is the last
-# resort rather than the first.
-command_text=""
-if command -v python3 >/dev/null 2>&1; then
-    command_text="$(printf '%s' "$payload" | python3 -c '
-import json,sys
+# The payload travels by environment, not stdin: the interpreter script below
+# is itself delivered on stdin via the heredoc, so python3 would otherwise read
+# its own source where the JSON should be and every command would sail through
+# allowed. That failure is silent and total, which is exactly the shape of bug
+# this hook exists to stop — caught only because the test suite asserts the
+# blocking cases, not just the allowing ones.
+AGENT11_HOOK_PAYLOAD="$(cat 2>/dev/null || true)"
+[ -z "$AGENT11_HOOK_PAYLOAD" ] && exit 0
+export AGENT11_HOOK_PAYLOAD
+
+python3 - <<'PYGUARD'
+import json
+import os
+import re
+import shlex
+import sys
+
 try:
-    d = json.load(sys.stdin)
+    payload = json.loads(os.environ.get("AGENT11_HOOK_PAYLOAD", ""))
 except Exception:
     sys.exit(0)
-ti = d.get("tool_input") or {}
-sys.stdout.write(str(ti.get("command", "")))
-' 2>/dev/null || true)"
-fi
 
-# Fail OPEN, deliberately: if the payload cannot be read, allow the command.
-# A guard that blocks whenever it is confused is how an agent stops working
-# for reasons nobody can see, which is the bug this file exists to fix.
-[ -z "$command_text" ] && exit 0
+command_text = str((payload.get("tool_input") or {}).get("command", ""))
+if not command_text.strip():
+    sys.exit(0)
 
-block() {
-    printf 'BLOCKED by AGENT-11 destructive-command guard: %s\n' "$1" >&2
-    printf 'Command: %s\n' "$command_text" >&2
-    printf 'This is destructive and hard to reverse. Ask the user to confirm explicitly, then run it only if they agree.\n' >&2
-    exit 2
-}
+# Split on shell separators that start a new command. Doing this on the raw
+# text is safe enough here because a separator inside quotes only ever splits a
+# segment into smaller pieces — it cannot invent an argv[0] that is not there.
+SEGMENT_SPLIT = re.compile(r'(?:\|\||&&|[;&|\n])')
 
-# Normalise whitespace so a multi-line or oddly spaced command matches the same
-# as a single-line one. This is the whole point: the old filter saw the shape of
-# the command, this sees its content.
-flat="$(printf '%s' "$command_text" | tr '\n\t' '  ' | tr -s ' ')"
 
-case "$flat" in
-    *"rm -rf"*|*"rm -fr"*|*"rm -r -f"*|*"rm -f -r"*)
-        block "recursive force delete (rm -rf)" ;;
-esac
+def tokenise(segment):
+    try:
+        return shlex.split(segment)
+    except ValueError:
+        # Unbalanced quotes: a heredoc body or a partial command. Not something
+        # we can judge, so let it through rather than guess.
+        return []
 
-case "$flat" in
-    *"git push"*)
-        case "$flat" in
-            *--force-with-lease*) : ;;                 # the safe form; allowed
-            *--force*|*" -f "*|*" -f")
-                block "force push (git push --force)" ;;
-        esac ;;
-esac
 
-case "$flat" in
-    *"git reset --hard"*)      block "git reset --hard discards uncommitted work" ;;
-    *"git clean -f"*|*"git clean -df"*|*"git clean -fd"*)
-                               block "git clean -f deletes untracked files" ;;
-    *"git branch -D"*)         block "git branch -D force-deletes a branch" ;;
-    *"git checkout -- ."*|*"git checkout ."*)
-                               block "git checkout . discards all local modifications" ;;
-    *"git restore ."*|*"git restore --staged --worktree ."*)
-                               block "git restore . discards all local modifications" ;;
-esac
+def short_flags(tokens):
+    """Letters from clustered short flags, e.g. -irf -> {i, r, f}."""
+    letters = set()
+    for t in tokens:
+        if t.startswith("-") and not t.startswith("--"):
+            letters.update(t[1:])
+    return letters
 
-exit 0
+
+def long_flags(tokens):
+    return {t for t in tokens if t.startswith("--")}
+
+
+def verdict(segment):
+    tokens = tokenise(segment)
+    if not tokens:
+        return None
+    # Step over leading env assignments (FOO=bar cmd ...) and `sudo`.
+    i = 0
+    while i < len(tokens) and ("=" in tokens[i] and not tokens[i].startswith("-")):
+        i += 1
+    if i < len(tokens) and os.path.basename(tokens[i]) == "sudo":
+        i += 1
+    if i >= len(tokens):
+        return None
+
+    cmd = os.path.basename(tokens[i])
+    args = tokens[i + 1:]
+    shorts, longs = short_flags(args), long_flags(args)
+
+    if cmd == "rm":
+        recursive = bool(shorts & {"r", "R"}) or "--recursive" in longs
+        force = "f" in shorts or "--force" in longs
+        if recursive and force:
+            return "recursive force delete (rm -r -f)"
+        return None
+
+    if cmd == "git":
+        sub = next((a for a in args if not a.startswith("-")), None)
+        if sub == "push":
+            if "--force-with-lease" in longs:
+                return None          # the safe form, deliberately allowed
+            if "--force" in longs or "f" in shorts:
+                return "force push (git push --force)"
+        elif sub == "reset" and "--hard" in longs:
+            return "git reset --hard discards uncommitted work"
+        elif sub == "clean" and "f" in shorts:
+            return "git clean -f deletes untracked files"
+        elif sub == "branch" and "D" in shorts:
+            return "git branch -D force-deletes a branch"
+        elif sub in ("checkout", "restore"):
+            if "." in args:
+                return "%s . discards all local modifications" % sub
+    return None
+
+
+for segment in SEGMENT_SPLIT.split(command_text):
+    reason = verdict(segment)
+    if reason:
+        sys.stderr.write("BLOCKED by AGENT-11 destructive-command guard: %s\n" % reason)
+        sys.stderr.write("Command: %s\n" % command_text)
+        sys.stderr.write(
+            "This is destructive and hard to reverse. Ask the user to confirm "
+            "explicitly, then run it only if they agree.\n")
+        sys.exit(2)
+
+sys.exit(0)
+PYGUARD

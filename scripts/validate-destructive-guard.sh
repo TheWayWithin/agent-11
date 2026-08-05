@@ -58,6 +58,31 @@ must_block 'for d in a b c; do
   rm -rf node_modules
 done'
 
+# --- bypasses a cold review found in the first implementation --------------
+# It matched literal substrings, so every spelling below walked straight past
+# a header claiming to block "recursive force delete". Each is functionally
+# identical to `rm -rf`.
+must_block 'rm -Rf /tmp/x'                    # capital R is valid
+must_block 'rm -irf /tmp/x'                   # -f overrides the -i
+must_block 'rm --recursive --force /tmp/x'    # long-form flags
+must_block 'rm -r -f /tmp/x'                  # separated
+must_block 'sudo rm -rf /tmp/x'               # behind sudo
+must_block 'FOO=bar rm -rf /tmp/x'            # behind an env assignment
+must_block 'git push -fu origin main'         # clustered short flags
+must_block 'git clean -xfd'                   # clustered, f present
+must_block 'git restore .'
+
+# --- false positives the same review found ---------------------------------
+# A destructive string inside an argument to another program is not a
+# destructive command. The first implementation blocked all of these, and
+# blocked the very command being used to test it.
+must_allow 'grep -rn "rm -rf" .'
+must_allow 'echo "never run rm -rf in prod"'
+must_allow 'cat notes.md | grep "git reset --hard"'
+must_allow 'python3 -c "print(\"rm -rf\")"'
+# Not valid git, so it cannot delete anything; blocking it would be theatre.
+must_allow 'git reset --Hard HEAD'
+
 # --- ordinary work: must allow ---------------------------------------------
 # Every one of these was refused in a real session on 2026-08-04.
 must_allow 'chmod +x scripts/fleet-versions.py'
