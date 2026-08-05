@@ -58,7 +58,7 @@ for line in open(REGISTRY, encoding="utf-8"):
         entries.append(cur)
         continue
     if cur is not None:
-        m2 = re.match(r'^\s+(path|tier):\s*(.+?)\s*$', line)
+        m2 = re.match(r'^\s+(path|tier|branch):\s*(.+?)\s*$', line)
         if m2:
             cur[m2.group(1)] = m2.group(2).strip().strip('"')
 
@@ -98,9 +98,20 @@ for e in entries:
     r["app_dirty"] = sorted(c for c in changed if not FRAMEWORK.match(c))
     r["fw_dirty"] = len(changed) - len(r["app_dirty"])
 
-    # Default branch: prefer origin/HEAD, fall back to main then master.
-    head = git(path, "symbolic-ref", "--quiet", "refs/remotes/origin/HEAD")
-    default = head.rsplit("/", 1)[-1] if head else ""
+    # Default branch: the REGISTRY wins, because origin/HEAD lies here.
+    #
+    # aimpactmonitor, PlebTest and modeloptix all work on `develop` while GitHub's
+    # origin/HEAD still points at `main`. Trusting origin/HEAD made this script report
+    # develop as a stranded branch carrying 14, 86 and 6 unmerged commits — three false
+    # alarms out of twelve, in a report whose whole job is telling Jamie what is genuinely
+    # unshipped. The registry already records the real working branch, with a note saying
+    # so, and it is maintained for the bulk-ops scripts anyway.
+    default = e.get("branch", "").strip()
+    if default and not git(path, "rev-parse", "--verify", "--quiet", f"refs/heads/{default}"):
+        default = ""          # registry names a branch this checkout does not have
+    if not default:
+        head = git(path, "symbolic-ref", "--quiet", "refs/remotes/origin/HEAD")
+        default = head.rsplit("/", 1)[-1] if head else ""
     if not default:
         for cand in ("main", "master"):
             if git(path, "rev-parse", "--verify", "--quiet", f"refs/heads/{cand}"):
