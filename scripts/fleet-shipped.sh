@@ -75,13 +75,32 @@ def git(path, *args, timeout=60):
 # Framework files are separated from application code. An upgrade of the agent-11
 # framework leaves ~40 modified files under .claude/ and friends in every repo; lumping
 # those in with real work makes every repo look alarming and hides the code that matters.
-FRAMEWORK = re.compile(r'^(\.claude/|missions/|templates/|field-manual/|schemas/|'
-                       r'gates/|stack-profiles/|docs/|\.mcp\.json|\.env\.mcp|mcp-setup\.sh)')
+#
+# `docs/` is NOT a blanket prefix, and that was a real defect: a cold review found that
+# aisearcharena keeps 18 tracked product documents under docs/ (PRD sections, positioning,
+# foundation docs), and an uncommitted edit to any of them was invisible to the tool whose
+# entire job is answering "is the work actually shipped". Only the five files install.sh
+# actually writes there are treated as framework.
+FRAMEWORK = re.compile(
+    r'^(\.claude/|missions/|templates/|field-manual/|schemas/|gates/|stack-profiles/'
+    r'|docs/(MCP-GUIDE|MCP-MIGRATION-GUIDE|MCP-PROFILES|MCP-TROUBLESHOOTING|UPGRADE)\.md$'
+    r'|\.mcp\.json|\.mcp\.json\.template|\.env\.mcp|\.env\.mcp\.template|mcp-setup\.sh)')
 
-rows = []
+# Untracked build output. These are genuinely not worth reporting as unshipped work, and
+# they are excluded by NAME rather than by living under a convenient prefix.
+ARTEFACT = re.compile(r'(^|/)(\.DS_Store|node_modules/|\.next/|dist/|build/|coverage/'
+                      r'|test-results/|playwright-report/|Logs/|\.temp/|__pycache__/)'
+                      r'|\.(log|pyc)$')
+
+rows, missing = [], []
 for e in entries:
     path = os.path.expanduser(e.get("path", ""))
     if not path or not os.path.isdir(path) or not os.path.isdir(os.path.join(path, ".git")):
+        # Silently skipping made a repo that has vanished from disk indistinguishable
+        # from one that is perfectly clean. ASMGE, mcp-7 and mcp-11 are registered and
+        # absent; that is registry drift worth seeing, not an all-clear.
+        if e.get("tier") not in ("skip", "different-framework"):
+            missing.append((e["name"], e.get("tier", "?"), path or "<no path>"))
         continue
     if e.get("tier") in ("skip", "different-framework"):
         continue
@@ -97,6 +116,13 @@ for e in entries:
     changed = {c for c in changed if c.strip()}
     r["app_dirty"] = sorted(c for c in changed if not FRAMEWORK.match(c))
     r["fw_dirty"] = len(changed) - len(r["app_dirty"])
+
+    # UNTRACKED files. Previously not checked at all, which meant a brand-new file — the
+    # single most common shape of unshipped work — was invisible in a clean repo. Build
+    # output and framework files are filtered out so this reports work, not noise.
+    untracked = [u for u in git(path, "ls-files", "--others", "--exclude-standard").splitlines()
+                 if u.strip() and not ARTEFACT.search(u) and not FRAMEWORK.match(u)]
+    r["untracked"] = sorted(untracked)
 
     # Default branch: the REGISTRY wins, because origin/HEAD lies here.
     #
@@ -156,12 +182,13 @@ for e in entries:
     rows.append(r)
 
 def outstanding(r):
-    return (bool(r["app_dirty"]) or r["unpushed"] or r["unmerged"] or r["behind"]
-            or r.get("no_upstream"))
+    return (bool(r["app_dirty"]) or bool(r.get("untracked")) or r["unpushed"]
+            or r["unmerged"] or r["behind"] or r.get("no_upstream"))
 
 shown = [r for r in rows if outstanding(r)] if DIRTY_ONLY else rows
 
-hdr = f"{'repo':<22}{'branch':<16}{'app dirty':<11}{'state':<26}{'unmerged branches'}"
+hdr = (f"{'repo':<22}{'branch':<14}{'dirty':<8}{'new':<7}{'state':<24}"
+       f"{'unmerged'}")
 print(hdr); print("-" * len(hdr))
 for r in shown:
     if not r["has_remote"]:
@@ -174,12 +201,16 @@ for r in shown:
         state = f"{r['behind']} behind"
     else:
         state = "in sync"
-    print(f"{r['name']:<22}{r['branch'][:15]:<16}{len(r['app_dirty']) or '-':<11}"
-          f"{state:<26}{len(r['unmerged']) or '-'}")
+    print(f"{r['name']:<22}{r['branch'][:13]:<14}{len(r['app_dirty']) or '-':<8}"
+          f"{len(r.get('untracked') or []) or '-':<7}{state:<24}{len(r['unmerged']) or '-'}")
 
 need = [r for r in rows if outstanding(r)]
 print()
 print(f"{len(rows)} repo(s) checked · {len(need)} with something outstanding")
+if missing:
+    print(f"{len(missing)} registered repo(s) NOT ON THIS MACHINE — state unknown, not clean:")
+    for n, t, pth in missing:
+        print(f"    {n} [{t}] {pth}")
 if not DO_FETCH:
     print("(remote state may be stale — re-run with --fetch for accurate 'unpushed'/'behind')")
 
@@ -191,6 +222,12 @@ for r in need:
             print(f"      {f}")
         if len(r["app_dirty"]) > 12:
             print(f"      … and {len(r['app_dirty']) - 12} more")
+    if r.get("untracked"):
+        print(f"  UNTRACKED, never added to git ({len(r['untracked'])}):")
+        for f in r["untracked"][:10]:
+            print(f"      {f}")
+        if len(r["untracked"]) > 10:
+            print(f"      … and {len(r['untracked']) - 10} more")
     if r["fw_dirty"]:
         print(f"  ({r['fw_dirty']} agent-11 framework file(s) also modified — from the "
               f"install, review and commit separately)")
