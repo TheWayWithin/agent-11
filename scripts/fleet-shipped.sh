@@ -88,9 +88,17 @@ FRAMEWORK = re.compile(
 
 # Untracked build output. These are genuinely not worth reporting as unshipped work, and
 # they are excluded by NAME rather than by living under a convenient prefix.
-ARTEFACT = re.compile(r'(^|/)(\.DS_Store|node_modules/|\.next/|dist/|build/|coverage/'
-                      r'|test-results/|playwright-report/|Logs/|\.temp/|__pycache__/)'
-                      r'|\.(log|pyc)$')
+# Build output and tool leftovers. Matched by NAME, and the -staging variants are named
+# explicitly: playwright-report-staging/ and test-results-staging/ exist in solomarket and
+# were reported as unshipped work on the first run with untracked detection enabled.
+# CLAUDE.md.backup-* and settings.json.backup-* are agent-11 install artefacts — install.sh
+# writes backups outside the repo as of 2026-08-05, but historic ones are still on disk in
+# most repos and are not work anyone needs to ship.
+ARTEFACT = re.compile(
+    r'(^|/)(\.DS_Store|node_modules/|\.next/|dist/|build/|coverage/|__pycache__/'
+    r'|test-results(-\w+)?/|playwright-report(-\w+)?/|Logs/|\.temp/)'
+    r'|(^|/)(CLAUDE\.md|settings(\.local)?\.json)\.backup-\d'
+    r'|\.(log|pyc)$')
 
 rows, missing = [], []
 for e in entries:
