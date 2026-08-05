@@ -598,16 +598,18 @@ print_dry_run_plan() {
     # A dry run that silently omits the most invasive step is worse than no dry run.
     echo "  MCP configuration:"
     if [[ -f "$(pwd)/.env.mcp" ]]; then
-        echo "    !! .env.mcp IS PRESENT — a real run would AUTO-EXECUTE mcp-setup.sh."
-        echo "       That script, without prompting:"
-        echo "         - runs 'npm install -g' for up to 7 packages (GLOBAL, outside this project)"
-        echo "         - runs 'claude mcp remove <name> -s project' for 10 servers,"
-        echo "           removing existing project MCP registrations before re-adding"
-        echo "         - re-registers whichever servers it finds credentials for"
-        echo "         - writes .mcp-status.md at the project root"
-        echo "       install.sh also OVERWRITES ./mcp-setup.sh with a freshly downloaded copy"
-        echo "       before running it. Your existing .env.mcp is not modified."
-        echo "       Tracked as A11-ISS-23. Review before upgrading this repo."
+        if $WITH_MCP; then
+            echo "    !! --with-mcp GIVEN and .env.mcp is present: mcp-setup.sh WOULD RUN."
+            echo "         - 'npm install -g' for up to 7 packages (GLOBAL, outside this project)"
+            echo "         - 'claude mcp remove <name> -s project' for 10 servers, then re-add"
+            echo "         - writes .mcp-status.md at the project root"
+        else
+            echo "    .env.mcp is present, but mcp-setup.sh would NOT run (A11-ISS-23:"
+            echo "    it is opt-in since 2026-08-05; pass --with-mcp to run it)."
+            echo "    Your .env.mcp and your registered MCP servers are left alone."
+        fi
+        echo "    ./mcp-setup.sh itself IS overwritten with a freshly downloaded copy."
+        echo "    An existing .mcp.json is preserved."
     else
         echo "    No .env.mcp — mcp-setup.sh would be deployed but NOT executed."
         echo "    Templates (.mcp.json.template, .env.mcp.template) would be written."
@@ -1944,7 +1946,13 @@ setup_mcp_configuration() {
     # this URL 404s on a fresh install — that is expected; .mcp.json is created
     # from .mcp.json.template below instead. Before A11-ISS-3 the 404 body was
     # written into .mcp.json, which also defeated the template fallback.
-    if download_mcp_file "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/.mcp.json" "$TARGET_DIR/.mcp.json"; then
+    # A11-ISS-23: never overwrite an existing .mcp.json. It holds the user's server
+    # registry. This download only no-ops today because the URL 404s (the file is
+    # gitignored upstream); the moment that changes, an unconditional write would
+    # clobber a customised registry with no backup. Guarded rather than left to luck.
+    if [[ -f "$TARGET_DIR/.mcp.json" ]]; then
+        log "Existing .mcp.json preserved (your MCP server registry)"
+    elif download_mcp_file "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/.mcp.json" "$TARGET_DIR/.mcp.json"; then
         success "Downloaded .mcp.json"
     else
         warn "Skipping .mcp.json download (not published in the repo) - will create it from .mcp.json.template"
@@ -1987,16 +1995,29 @@ setup_mcp_configuration() {
     echo ""
     echo "📌 MCP Setup Instructions:"
     if [[ -f "$TARGET_DIR/.env.mcp" ]]; then
-        success "Found .env.mcp - running automatic MCP configuration..."
-        if [[ -f "$TARGET_DIR/mcp-setup.sh" ]]; then
-            # Run full setup (not just --verify) to actually register MCPs
-            if "$TARGET_DIR/mcp-setup.sh"; then
-                success "MCP servers configured - restart Claude Code to activate"
+        # A11-ISS-23: this used to run automatically whenever .env.mcp existed.
+        # mcp-setup.sh is not a file-copying step — it runs `npm install -g` for up
+        # to seven packages, which writes outside the project entirely, and
+        # `claude mcp remove -s project` for ten servers before re-adding whichever
+        # it has credentials for. An install command should not reach outside the
+        # project or tear down existing registrations because a file happened to be
+        # present. It is opt-in now, and the invitation says what it would do.
+        if $WITH_MCP; then
+            if [[ -f "$TARGET_DIR/mcp-setup.sh" ]]; then
+                log "--with-mcp given - running MCP configuration..."
+                if "$TARGET_DIR/mcp-setup.sh"; then
+                    success "MCP servers configured - restart Claude Code to activate"
+                else
+                    warn "Some MCPs could not be configured - check your API keys"
+                fi
             else
-                warn "Some MCPs could not be configured - check your API keys"
+                warn "mcp-setup.sh not found - skipping MCP configuration"
             fi
         else
-            warn "mcp-setup.sh not found - skipping MCP configuration"
+            success "Found .env.mcp - MCP servers left untouched"
+            echo "  To (re)register MCP servers, run it deliberately:"
+            echo "     ./mcp-setup.sh          (or re-run the installer with --with-mcp)"
+            echo "  It installs npm packages globally and re-registers project MCP servers."
         fi
     else
         echo "  To enable MCP integration (optional but recommended):"
@@ -2089,6 +2110,7 @@ main() {
     UPGRADE_MODE=false
     DRY_RUN=false
     NON_INTERACTIVE=false
+    WITH_MCP=false
     SETTINGS_HAS_V6_FEATURES=false  # set by install_settings_template
     local legacy_arg=""
 
@@ -2104,6 +2126,9 @@ main() {
             --non-interactive|--batch-safe)
                 NON_INTERACTIVE=true
                 ;;
+            --with-mcp)
+                WITH_MCP=true
+                ;;
             --help|-h)
                 cat <<HELP
 Usage: $0 [flags] [core|full|minimal (deprecated)]
@@ -2113,6 +2138,10 @@ Flags:
   --dry-run            Print the plan, make zero changes, exit 0
   --non-interactive    Promise no prompts; fail fast on conditions that
   (or --batch-safe)    would require human input. (Composable with the others.)
+  --with-mcp           Run mcp-setup.sh after installing. OFF by default: it
+                       installs npm packages GLOBALLY and re-registers MCP
+                       servers, which is not something an install should do
+                       without being asked (A11-ISS-23).
   --help, -h           Show this help
 
 Examples:
