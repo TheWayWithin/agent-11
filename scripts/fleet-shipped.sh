@@ -113,9 +113,17 @@ for e in entries:
     r["unpushed"] = 0
     r["behind"] = 0
     r["forked"] = ""
+    r["no_upstream"] = False
     if has_remote:
-        ahead = git(path, "rev-list", "--count", "@{u}..HEAD")
-        behind = git(path, "rev-list", "--count", "HEAD..@{u}")
+        # A branch with a remote but NO upstream makes `@{u}` fail, which returned ""
+        # and was read as zero — so SEOAgent and mastery-ai Framework reported "in sync"
+        # while carrying unpushed commits nobody could see. Fall back to origin/<default>
+        # and say so, because silently reading as clean is the worst answer available.
+        upstream = git(path, "rev-parse", "--abbrev-ref", "@{u}")
+        ref = upstream or (f"origin/{default}" if default else "")
+        r["no_upstream"] = not upstream and bool(ref)
+        ahead = git(path, "rev-list", "--count", f"{ref}..HEAD") if ref else ""
+        behind = git(path, "rev-list", "--count", f"HEAD..{ref}") if ref else ''
         r["unpushed"] = int(ahead) if ahead.isdigit() else 0
         r["behind"] = int(behind) if behind.isdigit() else 0
         r["forked"] = ""
@@ -137,7 +145,8 @@ for e in entries:
     rows.append(r)
 
 def outstanding(r):
-    return bool(r["app_dirty"]) or r["unpushed"] or r["unmerged"] or r["behind"]
+    return (bool(r["app_dirty"]) or r["unpushed"] or r["unmerged"] or r["behind"]
+            or r.get("no_upstream"))
 
 shown = [r for r in rows if outstanding(r)] if DIRTY_ONLY else rows
 
@@ -186,8 +195,9 @@ for r in need:
         print(f"     `git push` will refuse this. Needs a merge or rebase decision per repo —")
         print(f"     NEVER a force-push, which would discard the {r['behind']} on the remote.")
     elif r["unpushed"]:
+        extra = " (no upstream set — `git push -u origin <branch>`)" if r.get("no_upstream") else ""
         print(f"  UNPUSHED: {r['unpushed']} commit(s) on {r['branch']} exist only on this "
-              f"machine — a plain `git push` ships them")
+              f"machine — a plain `git push` ships them{extra}")
     elif r["behind"]:
         print(f"  BEHIND: {r['behind']} commit(s) on the remote are not here — `git pull`")
     for b, ahead, when in r["unmerged"]:
