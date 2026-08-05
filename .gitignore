@@ -65,3 +65,4 @@ project/validation/baseline-runs/
 
 # Runtime state written by agent-11 tooling (approvals, audit log). Not source.
 data/*.db
+data/*.db-*
