@@ -1,0 +1,47 @@
+# Merged local branches deleted during the fleet tidy, 2026-08-05.
+# Every one was fully merged into its repo's default branch (git branch -d refuses
+# otherwise), so each SHA is still reachable from that branch. To restore any:
+#   git -C ~/DevProjects/<repo> branch <name> <sha>
+# Remote branches were NOT touched.
+
+## llm-txt-mastery
+d71945e71b56db39a949e18a4c3f704c5aaddd99  feature/cancellation-flow-fix
+25e5e7a8835b9c957e7e89bf1d0d2f5d980d45fc  feature/landing-page-update
+debbd070e1757b931f7c689730baaaee3a8f6f2c  ltm-iss10-schema-dates
+ec116c2a77c07080ac6a85e96be684e8b3f47345  ltm-iss11-perf-robots
+c79b04806963ae543748af4032fe9b516bcae775  ltm-iss12-canonical
+1e6980234cff417e2d4674e5aa89c66af928a43a  ltm-iss13-lcp
+3605bd5f0ba00465c98af0007a37cea585eac699  ltm-iss17-stripe-sdk-22
+9878bd68d9cc30b116840fe86f8708f1b2e03954  ltm-iss18-admin-auth-hardening
+34b01c6e61729652c17357c59a8efe467e277b0b  ltm-iss7-payment-linkage
+bae434da23c741bf31a5c3094a52def7cc1a5bf6  ltm-iss8-stripe-api-migration
+7cf915a0c37e99ca18673258643fbb66cfd4407d  ltm-iss9-prerender
+## aimpactscanner-mvp
+68b5b1765c0cb9500f4f6e85db00cde5f11eec44  t256-scanner-accuracy
+## solomarket
+## Trader-7
+5b1de4eeeb2ca2bd2dad7fbffe3be9fa21fe7a3f  sprint-154-pr-b
+## llm-txt-mastery (second pass: -d refused on the upstream technicality;
+## both local AND origin/<branch> verified 0 commits ahead of main by content)
+52e83b2a7b8eae2e40639148ee78b2627838dd23  feature/ltm-iss4-verify-email-fastpath
+5a664c080cfaedbd19e531e4c8452c7dbc896c98  feature/phase1-image-optimization
+fd788199aacc7105a7ac58d23b3f55608aa68def  feature/sprint-1-csr-improvements
+2b14def624a9b5b6f829f3e3ebd70f76d3caea30  feature/sprint-15-generation-quality
+da4efa80c37379040819df974fe5db8709687e35  feature/sprint-2-coffee-auth-fix
+50b905762d15bb546769a7329a70cdfd26612de2  feature/sprint1-spa-detection-phase1
+
+## llm-txt-mastery REMOTE branches deleted on GitHub, 2026-08-05.
+## Each verified twice: 0 commits ahead of main AND `git diff main...origin/<b>`
+## empty. Restore: git push origin <sha>:refs/heads/<name>
+de8f1d09a4a6ba61ee3c99c5144bedbc7b07291f  feature/landing-page-update
+e16d5528eaa127532f0997060fa62504ac3ecb75  feature/ltm-iss4-verify-email-fastpath
+7b65884eb4612241104412fcadd77d11859ce0e9  feature/phase1-image-optimization
+d7624ab0d772ae9c312bb78ed611899756091e96  feature/sprint-1-csr-improvements
+522703f8d0127149798f27bbf4bd915cf5710234  feature/sprint-15-generation-quality
+faf54e9eca11d6e087a0b509652686e0b3fcbd41  feature/sprint-2-coffee-auth-fix
+c070c87abb2119229b37144e3d81d545b791c0b2  feature/sprint1-spa-detection-phase1
+59c65628704c802af58a56d61dc497b97b19a2e4  develop (remote; 0 file difference from main, 7 behind, 2 empty merge commits)
+
+## Other repos' merged REMOTE branches, 2026-08-05 (same double check).
+PlebTest  3b57d992b7a81b78071ee08e3066370ed20927e2  og-image-hotfix (remote)
+freecalchub  cd4c392b64b419472fc71b6c9f5dea68531862fa  seo-tooling (remote)
