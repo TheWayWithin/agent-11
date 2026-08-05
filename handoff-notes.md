@@ -1,5 +1,26 @@
 # Handoff Notes — Agent-11 (list cleared 2026-08-04; A11-ISS-16/17, T-362, T-363 all closed)
 
+## 2026-08-04 (evening) — T-245 part one: three repos upgraded
+
+`llm-txt-mastery`, `aisearcharena` and `aimpactscanner-mvp` now run 6.2.0+unreleased with all four
+gate deny rules live. `bash scripts/fleet-version.sh --in-scope` is the one command that shows fleet
+state. Backups now land in `~/.agent-11/backups/`, never in the repo.
+
+**Four repos remain, and each needs a decision rather than a re-run:**
+- `SEOAgent`, `aisearchmastery`: one committed file, `.claude/backups/agent-11/latest`, is modified in
+  each. It is agent-11's own litter. `git checkout -- .claude/backups/agent-11/latest` in each, then
+  re-run the upgrade. Deliberately not done for you.
+- `JamieWatters`: another session was committing in it during the sweep. Upgrade when it is idle.
+- `Trader-7`: **do not upgrade until A11-ISS-23 is resolved.** It is the only repo with `.env.mcp`, so
+  the installer auto-runs `mcp-setup.sh` — global npm installs and `claude mcp remove` for ten servers,
+  on a repo running live on Railway.
+
+**Open issues raised today**: A11-ISS-20 (stale installer checksum, fixed), A11-ISS-21 (handoff-notes.md
+false-triggered a v5 migration that deletes it, fixed), A11-ISS-22 (destructive-guard, open),
+A11-ISS-23 (MCP auto-execution, open).
+
+---
+
 ## 2026-08-04 — the four open items are closed
 
 `main` now carries the routing fix, the guard hardening, the coordinator's fan-out delegation and

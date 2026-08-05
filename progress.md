@@ -1241,3 +1241,47 @@ decision. The check now fails on any tier that claims a deployment the filesyste
 **The honest limit.** Passing this check does not mean a gate is enforced anywhere. It means nothing
 is neutralising it. **The four deny rules are still absent from every reachable repo** except archived
 `digital-estate`. That is T-245's sweep. This run removed what would have made that sweep pointless.
+
+---
+
+### [2026-08-04c] — T-245: three repos upgraded, four deliberately skipped
+
+**Approved by Jamie after reading the dry-run report.** Executed one repo at a time with a
+12-criterion verification between each, every criterion default-fail and flipped only on evidence.
+
+**Upgraded, 12/12 passing each**: `llm-txt-mastery`, `aisearcharena`, `aimpactscanner-mvp`. All three
+now carry `6.2.0+unreleased`, all four gate deny rules, `gate-guard.sh` wired as a PreToolUse hook on
+Bash, `mission-state.py`, the orientation protocol in 11 specialists, all 20 agent-11 missions, and a
+`/coord` routing table covering all 18 executable ones. **Sprint 6's read-only gates are enforced
+somewhere for the first time** — probed live in `llm-txt-mastery`: a redirect to
+`.quality-gates.json`, a redirect to `project/gates/foo.json` and `/bin/rm -f gates/run-gates.py` are
+all refused, while `npm test` passes.
+
+**Backups landed outside the repos** — 4.2 MB under `~/.agent-11/backups/`, keyed by project path.
+Zero new in-repo backup artefacts across the three, against the dozen-plus each previous install left.
+
+**Nothing of Jamie's was touched**: no commits made, no branch changed, and every pre-existing
+tracked-modified file byte-identical afterwards. All three had zero tracked-modified `.claude/` files
+before the upgrade, which is why nothing customised could be overwritten — that is precisely what the
+blocking rule was for. `llm-txt-mastery`'s own `competitor-analysis-mission.md` and
+`aimpactscanner-mvp`'s two repo-owned missions survived untouched.
+
+**Skipped, with reasons**:
+- `SEOAgent`, `aisearchmastery` — blocked by a tracked-and-modified `.claude/backups/agent-11/latest`,
+  which is agent-11's own committed litter rather than Jamie's work. Resolving it means committing or
+  discarding a file in his repo, which this run must not do.
+- `JamieWatters` — a second Claude Code session was actively committing in it during the run
+  (checked out `fix/no-explicit-any` at 16:53, committed JW-ISS-21 at 17:13). Upgrading a repo mid-session
+  mixes framework files into someone else's work in progress.
+- `Trader-7` — the only in-scope repo with `.env.mcp`, so an upgrade auto-executes `mcp-setup.sh`:
+  global `npm install -g` for seven packages, `claude mcp remove -s project` for ten servers, and a new
+  `.mcp-status.md`. That is A11-ISS-23 and it is unresolved. Not a repo to learn that on, given it runs
+  live on Railway.
+
+**One verifier correction worth recording.** The first verification reported two failures on
+`llm-txt-mastery` — 21 missions instead of 20, and one mission unrouted. Both were the repo's own
+committed `competitor-analysis-mission.md`. The check was counting the directory instead of comparing
+against agent-11's mission set. A check that reports a false failure gets ignored the third time, so
+it was fixed to compare sets before continuing.
+
+**T-245 stays open**: 3 of 7 done.
