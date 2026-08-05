@@ -7,7 +7,7 @@
 [![Claude Code Compatible](https://img.shields.io/badge/Claude%20Code-Native-blue?style=for-the-badge)](https://claude.ai)
 [![Agents](https://img.shields.io/badge/Agents-11%20Specialists-red?style=for-the-badge)](project/agents/specialists/)
 [![Missions](https://img.shields.io/badge/Missions-18%20Workflows-purple?style=for-the-badge)](project/missions/)
-[![Version](https://img.shields.io/badge/Version-v6.2.0-green?style=for-the-badge)](docs/RELEASE-HISTORY.md)
+[![Version](https://img.shields.io/badge/Version-v6.3.0-green?style=for-the-badge)](docs/RELEASE-HISTORY.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
 [![GitHub stars](https://img.shields.io/github/stars/TheWayWithin/agent-11?style=social)](https://github.com/TheWayWithin/agent-11/stargazers)

@@ -4,6 +4,34 @@ Complete history of AGENT-11 development sprints and releases.
 
 ---
 
+## v6.3.0: Map-First Orientation & Honest Enforcement
+**Released**: 2026-08-05
+
+Two themes, and the second is the reason for the release. Orientation — the expensive part of a session — became a stated instruction rather than an implied habit. And every claim the library made about what protects your quality gates was measured against what the shipped rules actually refuse, then rewritten where it overclaimed.
+
+### Headline Changes
+
+- **Map-first orientation, everywhere.** All 11 specialists and all 18 executable missions carry an `## ORIENTATION PROTOCOL` section, and `library/CLAUDE.md` states the rule globally: Glob/Grep to locate before you Read, read only the lines you need, never read a whole file to find one symbol, never re-read. Picked up automatically on upgrade; no configuration.
+- **Enforcement claims scoped to what is enforced.** Eleven places previously said or implied that the deny rules also made an acceptance test, a benchmark, a metric command, or "anything outside the named surface" read-only. The shipped set is four rules covering `.quality-gates.json`, `**/*.quality-gates.json`, `gates/**` and `.gates/**` — nothing else. Every site now separates what the tool layer refuses from what an agent is merely instructed not to do. **The deny rules are byte-identical; behaviour is unchanged. What changed is that the documentation is now true.**
+- **The Bash gate guard: 5 inline forms → 13 detection branches.** Added across the release: `rm`/`truncate`/`shred`/`unlink`, `dd of=`, `ln -s`, in-place `perl`/`ruby`, then for A11-ISS-16 interpreter one-liners naming a gate path literally beside a write verb, gate paths held in a shell variable, `patch`/`git apply`, `git checkout`/`restore`/`rm`/`mv`, and a write verb fed through `xargs`. Deleting or reverting a gate defeats it as effectively as lowering it, and neither was covered before. Two cold reviews found 9 then 15 bypasses in drafts of this guard; all are closed.
+- **It is a speed bump, and now says so.** Three surviving instances of "closes the Bash route" were removed. A path assembled at runtime, an interpreter reaching the path indirectly, anything eval'd or base64-decoded, and any write by a program the command launches all pass straight through — no shell hook can catch those. `validate-bash-route-claims.sh` fails on both the return of the false claim and the deletion of the honest one, because an absence-only check passes on an empty file.
+- **`/coord` routes all 18 missions.** `architecture`, `product-description`, `operation-genesis`, `connect-mcp` and `operation-recon` installed correctly then hard-errored on invocation: the routing table listed 13 of 18 (A11-ISS-17). The table gained an explicit **File** column, so the command no longer guesses a filename — `build` → `mission-build.md` but `dev-setup` → `dev-setup.md` was never derivable.
+- **Coordinator phase counters live on disk** (`.claude/scripts/mission-state.py` → `.claude/state/mission-state.json`). `cycle` exits 3 when the error budget is spent, so escalation no longer depends on the model having counted correctly; `clean-round` refuses a round with no `--evidence`; `resume` prints the last gate that passed on evidence. It is bookkeeping, not enforcement — `.claude/state/` is not a gate path and the script cannot tell real evidence from invented evidence.
+- **Fan-out by delegation, not by rewrite.** The coordinator can CALL a dynamic workflow for a genuine fan-out phase. It was not rewritten as one, and the reasons are in `sprints/sprint-6-workflows-decision.md`. On the shipped evidence 2 of 18 missions have a fan-out-shaped phase and neither is fan-out-shaped whole, so the honest default is that a phase is not eligible.
+- **Version stamping.** Every install writes `.claude/agent-11-version`. Installs from a tree with entries under `[Unreleased]` are stamped `X.Y.Z+unreleased` rather than being made indistinguishable from the released version.
+- **Backups moved outside the repo** (`~/.agent-11/backups/`). In-repo backups had accumulated to 471 stale files in one repo and were being swept into commits.
+- **Six repo checks**, each silent and exit 0 when compliant: `validate-sprint6-closeout.sh`, `validate-enforcement-claims.sh`, `validate-deployment-coverage.sh`, `validate-bash-route-claims.sh`, `validate-installer-checksum.sh`, `validate-installer-backup-path.sh`.
+
+### Honest framing
+
+The guard narrows the Bash route; the enforceable guarantee remains the `Edit()` deny rules, which apply in every permission mode including `bypassPermissions`. Most of this release is documentation catching up to code — which is worth a version because an operator who believes the tool layer is watching stops watching themselves, and that is precisely how reward-hacking survives a review.
+
+### Why v6.3.0 (minor) not v6.2.1 (patch)
+
+New capability on deployed agents (orientation protocol, on-disk phase state, fan-out delegation, five newly-routable missions) and materially wider Bash refusal. Additive and backwards-compatible, so minor rather than major.
+
+---
+
 ## v6.2.0: Loop Discipline & Read-Only Verification
 **Released**: 2026-06-20
 
