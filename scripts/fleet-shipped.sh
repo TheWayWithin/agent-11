@@ -100,6 +100,13 @@ ARTEFACT = re.compile(
     r'|(^|/)(CLAUDE\.md|settings(\.local)?\.json)\.backup-\d'
     r'|\.(log|pyc)$')
 
+# Tiers that are not "work in flight" and so cannot have unshipped work worth reporting.
+# `archived` joined this on 2026-08-05 (A11-ISS-26): it was documented as a real tier in
+# registry.yaml the same day, and digital-estate — retired, GitHub read-only, folder moved
+# to Archive/ — still has .git on disk, so without it the repo reports as UNCOMMITTED noise
+# in every run, forever. A report that always contains known noise stops being read.
+EXCLUDED_TIERS = ("skip", "different-framework", "archived")
+
 rows, missing = [], []
 for e in entries:
     path = os.path.expanduser(e.get("path", ""))
@@ -107,10 +114,10 @@ for e in entries:
         # Silently skipping made a repo that has vanished from disk indistinguishable
         # from one that is perfectly clean. ASMGE, mcp-7 and mcp-11 are registered and
         # absent; that is registry drift worth seeing, not an all-clear.
-        if e.get("tier") not in ("skip", "different-framework"):
+        if e.get("tier") not in EXCLUDED_TIERS:
             missing.append((e["name"], e.get("tier", "?"), path or "<no path>"))
         continue
-    if e.get("tier") in ("skip", "different-framework"):
+    if e.get("tier") in EXCLUDED_TIERS:
         continue
 
     if DO_FETCH:

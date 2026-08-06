@@ -78,6 +78,10 @@ def is_blanket(rule):
 BYPASS = {"bypasspermissions", "bypass"}
 REPLACEMENT_MODE = "acceptEdits"
 
+# Tiers that actually carry an agent-11 deployment, so are legitimate targets for a sweep
+# that WRITES. Same set validate-fleet-permissions.sh uses, deliberately.
+DEPLOYED_TIERS = {"active", "local-only", "dormant"}
+
 
 def registry_entries(path):
     entries, cur = [], None
@@ -140,10 +144,19 @@ def main():
         return 1
 
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    touched = skipped = 0
+    touched = skipped = out_of_scope = 0
 
     for e in registry_entries(REGISTRY):
         if args.repo and e["name"] not in args.repo:
+            continue
+        # Tier ALLOWLIST, matching bulk/lib/parse-registry.py. Until 2026-08-05
+        # (A11-ISS-26) this script parsed `tier:` and then never filtered on it, so
+        # `--apply` would rewrite .claude/settings.json in EVERY registry entry — including
+        # `different-framework`, which registry.yaml states bulk ops must never touch, and
+        # `archived`, which is retired. An explicit --repo still overrides, because naming a
+        # repo by hand is a deliberate act; the sweep is not.
+        if not args.repo and e.get("tier") not in DEPLOYED_TIERS:
+            out_of_scope += 1
             continue
         path = os.path.expanduser(e.get("path", ""))
         if not path or not os.path.isdir(path):
@@ -189,7 +202,8 @@ def main():
             touched += 1
 
     print(f"\n{'changed' if args.apply else 'would change'}: {touched} file(s); "
-          f"skipped (unparseable): {skipped}")
+          f"skipped (unparseable): {skipped}; "
+          f"out of scope (tier not in {'/'.join(sorted(DEPLOYED_TIERS))}): {out_of_scope}")
     if not args.apply and touched:
         print("dry run — re-run with --apply to write")
     return 0
