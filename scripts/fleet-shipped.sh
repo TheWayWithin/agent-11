@@ -10,9 +10,14 @@
 #
 #   UNCOMMITTED  tracked files changed but not committed. Invisible to everyone else,
 #                lost if the machine dies, and impossible to review.
-#   UNPUSHED     commits on the current branch that no remote has. Exists on one laptop.
+#   UNPUSHED     commits reachable from HEAD and from NO remote-tracking ref. Exists on
+#                one laptop. Measured against every remote, not against this branch's own
+#                upstream — a commit already sitting on origin/main is shipped, however
+#                stale the feature branch pointing at it (A11-ISS-28).
 #   BRANCHES     local branches not merged into the default branch, with their age and
 #                whether they are ahead of it. This is where finished work goes to die.
+#                Branches a repo declares as `parallel_branches` in the registry are
+#                skipped: they are divergent by design and merging them would be wrong.
 #   BEHIND       the default branch is behind its remote, i.e. someone else pushed and
 #                this checkout has not caught up.
 #
@@ -58,7 +63,7 @@ for line in open(REGISTRY, encoding="utf-8"):
         entries.append(cur)
         continue
     if cur is not None:
-        m2 = re.match(r'^\s+(path|tier|branch):\s*(.+?)\s*$', line)
+        m2 = re.match(r'^\s+(path|tier|branch|parallel_branches):\s*(.+?)\s*$', line)
         if m2:
             cur[m2.group(1)] = m2.group(2).strip().strip('"')
 
@@ -174,21 +179,48 @@ for e in entries:
         upstream = git(path, "rev-parse", "--abbrev-ref", "@{u}")
         ref = upstream or (f"origin/{default}" if default else "")
         r["no_upstream"] = not upstream and bool(ref)
-        ahead = git(path, "rev-list", "--count", f"{ref}..HEAD") if ref else ""
         behind = git(path, "rev-list", "--count", f"HEAD..{ref}") if ref else ''
-        r["unpushed"] = int(ahead) if ahead.isdigit() else 0
         r["behind"] = int(behind) if behind.isdigit() else 0
+
+        # UNPUSHED means "on this laptop and nowhere else". That is a question about
+        # EVERY remote ref, not about this branch's own tracking ref, and measuring it
+        # as `<upstream>..HEAD` overstated the risk badly (A11-ISS-28): agent-11-website
+        # reported 4 commits "only on this machine" while HEAD, main and origin/main were
+        # all the same commit and all four were sitting on origin/main. Its tracking ref
+        # was a feature branch nobody had pushed to since. A stale branch pointer is not
+        # unshipped work, and sending Jamie to push one wastes the trip.
+        #
+        # `HEAD --not --remotes` asks the real question: reachable from HEAD, reachable
+        # from no remote-tracking ref. Nothing published anywhere can survive it.
+        ahead = git(path, "rev-list", "--count", "HEAD", "--not", "--remotes")
+        r["unpushed"] = int(ahead) if ahead.isdigit() else 0
+
+        # `--not --remotes` is only as fresh as the last fetch. Without --fetch a commit
+        # someone else already pushed still looks laptop-only, so the footer's staleness
+        # warning matters more for this number than it did for the old one.
         r["forked"] = ""
         if r["unpushed"] and r["behind"]:
             base = git(path, "merge-base", "HEAD", "@{u}")
             r["forked"] = git(path, "log", "-1", "--format=%cr", base) if base else "unknown"
 
     # Local branches carrying work the default branch does not have.
+    #
+    # Some branches are divergent BY DESIGN and must never be reported (A11-ISS-28).
+    # PlebTest and modeloptix build the app on `develop` while `main` serves the
+    # production landing page that promotes it during the build. `main` is not stalled
+    # work waiting to be merged; merging it into develop would be wrong. Left unhandled
+    # it was a permanent UNMERGED BRANCH line in every run, and a report that always
+    # carries known noise stops being read — the same reasoning that put `archived` in
+    # EXCLUDED_TIERS. Declared per repo in the registry as `parallel_branches: main`
+    # (comma-separated for more than one), so the exception is data with a note beside
+    # it rather than repo names buried in this script.
+    parallel = {p.strip() for p in e.get("parallel_branches", "").split(",") if p.strip()}
+    r["parallel"] = sorted(parallel)
     r["unmerged"] = []
     if default:
         for b in git(path, "branch", "--format=%(refname:short)").splitlines():
             b = b.strip()
-            if not b or b == default:
+            if not b or b == default or b in parallel:
                 continue
             ahead = git(path, "rev-list", "--count", f"{default}..{b}")
             if ahead.isdigit() and int(ahead) > 0:
