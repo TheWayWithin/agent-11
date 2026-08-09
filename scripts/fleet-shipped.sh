@@ -107,7 +107,7 @@ FRAMEWORK = re.compile(
 # most repos and are not work anyone needs to ship.
 ARTEFACT = re.compile(
     r'(^|/)(\.DS_Store|node_modules/|\.next/|dist/|build/|coverage/|__pycache__/'
-    r'|test-results(-\w+)?/|playwright-report(-\w+)?/|Logs/|\.temp/)'
+    r'|test-results(-\w+)?/|playwright-report(-\w+)?/|\.playwright-mcp/|Logs/|\.temp/)'
     r'|(^|/)(CLAUDE\.md|settings(\.local)?\.json)\.backup-\d'
     r'|\.(log|pyc)$')
 

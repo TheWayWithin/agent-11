@@ -66,3 +66,8 @@ project/validation/baseline-runs/
 # Runtime state written by agent-11 tooling (approvals, audit log). Not source.
 data/*.db
 data/*.db-*
+
+# Playwright MCP debug output — console logs, page snapshots and screenshots written
+# wherever a browser session happens to run. Tool leftovers, never work. llm-txt-mastery
+# has 49 of these committed to a public repo because nothing ignored them there.
+.playwright-mcp/
