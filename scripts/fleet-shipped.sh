@@ -13,7 +13,10 @@
 #   UNPUSHED     commits reachable from HEAD and from NO remote-tracking ref. Exists on
 #                one laptop. Measured against every remote, not against this branch's own
 #                upstream — a commit already sitting on origin/main is shipped, however
-#                stale the feature branch pointing at it (A11-ISS-28).
+#                stale the feature branch pointing at it (A11-ISS-28). Repos flagged
+#                `remote_readonly` in the registry report UNPUSHABLE instead and are not
+#                counted as outstanding — their GitHub repo is archived, so pushing is
+#                not an action anyone can take (2026-08-09).
 #   BRANCHES     local branches not merged into the default branch, with their age and
 #                whether they are ahead of it. This is where finished work goes to die.
 #                Branches a repo declares as `parallel_branches` in the registry are
@@ -40,7 +43,10 @@ for a in "$@"; do
   case "$a" in
     --dirty) DIRTY_ONLY=1 ;;
     --fetch) DO_FETCH=1 ;;
-    -h|--help) sed -n '2,30p' "$0"; exit 0 ;;
+    # Range ends at the blank comment line before `set -u`. Re-check it when the header
+    # grows: on 2026-08-09 a four-line addition pushed Usage past a hard-coded 30 and
+    # --help silently stopped printing how to run the thing.
+    -h|--help) sed -n '2,36p' "$0"; exit 0 ;;
   esac
 done
 
@@ -63,7 +69,7 @@ for line in open(REGISTRY, encoding="utf-8"):
         entries.append(cur)
         continue
     if cur is not None:
-        m2 = re.match(r'^\s+(path|tier|branch|parallel_branches):\s*(.+?)\s*$', line)
+        m2 = re.match(r'^\s+(path|tier|branch|parallel_branches|remote_readonly):\s*(.+?)\s*$', line)
         if m2:
             cur[m2.group(1)] = m2.group(2).strip().strip('"')
 
@@ -167,6 +173,16 @@ for e in entries:
 
     has_remote = bool(git(path, "remote"))
     r["has_remote"] = has_remote
+
+    # A remote whose GitHub repo is ARCHIVED accepts no pushes — every attempt is a 403.
+    # Commits here are not "waiting to be pushed", they are permanently stranded, and
+    # reporting them as UNPUSHED sends Jamie to run a command that cannot succeed. Read
+    # from the registry (see the field note there) rather than probed over the network:
+    # this script must stay useful offline, and one `gh` call per repo would make the
+    # common case slow to spare the rare one. First token only — the value carries an
+    # inline comment.
+    _ro = e.get("remote_readonly", "").split("#")[0].strip().strip('"').lower()
+    r["readonly"] = _ro in ("true", "yes", "1")
     r["unpushed"] = 0
     r["behind"] = 0
     r["forked"] = ""
@@ -229,8 +245,15 @@ for e in entries:
     rows.append(r)
 
 def outstanding(r):
-    return (bool(r["app_dirty"]) or bool(r.get("untracked")) or r["unpushed"]
-            or r["unmerged"] or r["behind"] or r.get("no_upstream"))
+    # "Outstanding" means Jamie can DO something about it. On a read-only remote the
+    # unpushed count is not an action, so it must not drag the repo into the report —
+    # that is the whole nag. Uncommitted and untracked files still count: those are
+    # real, reviewable work that a read-only remote does not make less real.
+    unpushed = 0 if r.get("readonly") else r["unpushed"]
+    behind = 0 if r.get("readonly") else r["behind"]
+    no_upstream = False if r.get("readonly") else r.get("no_upstream")
+    return (bool(r["app_dirty"]) or bool(r.get("untracked")) or unpushed
+            or r["unmerged"] or behind or no_upstream)
 
 shown = [r for r in rows if outstanding(r)] if DIRTY_ONLY else rows
 
@@ -240,6 +263,8 @@ print(hdr); print("-" * len(hdr))
 for r in shown:
     if not r["has_remote"]:
         state = "no remote"
+    elif r.get("readonly"):
+        state = f"UNPUSHABLE {r['unpushed']}" if r["unpushed"] else "archived remote"
     elif r["unpushed"] and r["behind"]:
         state = f"DIVERGED {r['unpushed']}/{r['behind']}"
     elif r["unpushed"]:
@@ -280,6 +305,12 @@ for r in need:
               f"install, review and commit separately)")
     if not r["has_remote"]:
         print("  NO REMOTE — nothing here can ever be pushed")
+    elif r.get("readonly"):
+        if r["unpushed"]:
+            print(f"  UNPUSHABLE: {r['unpushed']} commit(s) exist only here and always will "
+                  f"— the GitHub remote is archived and returns 403 on push.")
+            print(f"     Not an action. Unarchive the repo on GitHub first if you want them "
+                  f"shipped, or leave them; they are safe on disk either way.")
     elif r["unpushed"] and r["behind"]:
         # Both directions means the histories forked; this is NOT work waiting to be
         # pushed and `git push` will refuse it. Calling it "unpushed" would send someone
