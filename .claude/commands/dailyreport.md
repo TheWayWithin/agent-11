@@ -104,8 +104,9 @@ order (first hit wins):
 6. **Bundled fallback** — `.claude/data/voice-guide-default.md` (ships with AGENT-11)
 
 The `jamie-voice` skill describes itself as the voice authority and the other content
-skills call it rather than carrying their own rules. Step 5 is that skill's own reference
-guide, and it is reachable from every machine because `~/shared/` syncs. Step 6 is a copy
+skills call it rather than carrying their own rules. The fifth entry above is that skill's
+own reference guide, reachable from every machine because `~/shared/` syncs. The sixth is a
+copy
 that ships inside AGENT-11: copies drift silently, so it is the fallback for installs that
 cannot reach `~/shared/`, not a peer. Say which one was loaded, and when the fallback is
 used, say that it is a copy.
@@ -113,7 +114,8 @@ used, say that it is a copy.
 (The original of that guide lives in the site repo at
 `~/DevProjects/JamieWatters/Documents/Foundation/jamie-watters-voice-guide.md`. The vault
 copy in step 5 is checked byte-identical to it by `~/shared/scripts/sync-audit.sh`, and
-`~/DevProjects/` does not sync between machines, so step 5 is the one to resolve against.)
+`~/DevProjects/` does not sync between machines, so the fifth entry is the one to resolve
+against.)
 
 Whichever guide loads, it enforces:
 
@@ -558,14 +560,15 @@ Print a summary:
 
 📋 Publish the post:
 
-  jpub ~/shared/content/drafts/YYYY-MM-DD-slug.md --blog
+  jpub <staging-dir>/YYYY-MM-DD-slug.md --blog
 
 Then open <base-url>/journey/<slug> and read it. When it's right, say "ship the social"
 and I'll give you that command.
 ```
 
-Always the absolute path, never a relative one, so the command works from any terminal tab.
-Then show the first tweet inline as a preview:
+`<staging-dir>` is the directory resolved in Step 1.5, written out in full — normally
+`~/shared/content/drafts/`. Always the absolute path, never a relative one, so the command
+works from any terminal tab. Then show the first tweet inline as a preview:
 
 ```
 X thread, tweet 1:
@@ -596,7 +599,7 @@ command should hand over one invocation that publishes everything. The same rule
 Only after the user has read the live page and asked for it, in a message of its own:
 
 ```
-  jpub ~/shared/content/drafts/YYYY-MM-DD-slug.md --x --linkedin --wip
+  jpub <staging-dir>/YYYY-MM-DD-slug.md --x --linkedin --wip
 ```
 
 Add `--dry-run` first if the user wants a preview. Never print this block in the same

@@ -25,8 +25,8 @@ FILES = ("blog.md", "dailyreport.md")
 # (label, file, find, replace) — each undoes one fix from A11-ISS-29.
 MUTATIONS = [
     ("all-platforms flag restored in the handoff", "blog.md",
-     "  jpub ~/shared/content/drafts/YYYY-MM-DD-slug.md --blog",
-     "  jpub ~/shared/content/drafts/YYYY-MM-DD-slug --all --dry-run"),
+     "  jpub <staging-dir>/YYYY-MM-DD-slug.md --blog",
+     "  jpub <staging-dir>/YYYY-MM-DD-slug --all --dry-run"),
     ("social handoff no longer gated to a second message", "blog.md",
      "### Step 13: The social handoff — SECOND MESSAGE ONLY",
      "### Step 13: The social handoff"),
