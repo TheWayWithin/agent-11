@@ -164,6 +164,35 @@ check_wip_hashtag() {
   must_contain "$f" "product tag must be gated on the post's subject" "genuinely is about"
 }
 
+# ── 8. What two independent reads found after the first pass ────────────────
+# Each of these was a real gap between the commands and the standard, found by
+# critics that were given the standard and the files and nothing else.
+check_second_pass() {
+  local f="$1"
+  # The standard puts no condition on the post URL in any social output.
+  must_contain "$f" "post URL must be mandatory in the social outputs" \
+    "The post URL is mandatory in all three social outputs"
+  must_contain "$f" "WIP line must carry the post URL" "carries the post URL"
+  # A repo-derived tag is the exact misfiling vector the ordering exists to fix.
+  must_contain "$f" "repo-name hashtag derivation must be banned outright" \
+    "Never derive the tag from the repo or directory name"
+  # jpub's image directory is hardcoded, so the repo-local fallback cannot
+  # produce a working hero and must say so rather than publish text-only.
+  must_contain "$f" "no-vault image case must be reported" "the hero will not upload from here"
+  # Fields the standard and the skills allow, which an "exactly these" list bars.
+  must_contain "$f" "imageCaption is a real field" "imageCaption"
+  must_contain "$f" "draft is a real field" "draft: true"
+  # Output 5's palette requirement applies to every route, not just prompts.
+  must_contain "$f" "brand palette must be stated per image" "one warm accent, one cool accent"
+  must_contain "$f" "the SVG renderer must be named" "svg-to-png.sh"
+  # A canonical body rule that was not carried across.
+  must_contain "$f" "framing guard missing" "Report observed behaviour, not intent"
+  # --wip with no file makes jpub invent a public todo.
+  must_contain "$f" "social handoff must drop --wip when no file was written" "Drop \`--wip\`"
+  # The two commands must not give different limits for the same output.
+  must_contain "$f" "WIP length must match across both commands" "under 200 characters"
+}
+
 for name in "${COMMANDS[@]}"; do
   lib="${LIB_DIR}/${name}.md"
   work="${WORK_DIR}/${name}.md"
@@ -180,6 +209,7 @@ for name in "${COMMANDS[@]}"; do
     check_single_source "$f"
     check_social_shape "$f"
     check_wip_hashtag "$f"
+    check_second_pass "$f"
   done
 
   # ── 8. The two copies must not drift apart ────────────────────────────────

@@ -49,6 +49,23 @@ MUTATIONS = [
      ".claude/data/voice-guide-default.md"),
     ("WIP tag derived from the repo name", "blog.md",
      "#jamiewatters", "#derivedfromrepo"),
+    # Found by two independent reads after the first pass.
+    ("post URL made conditional again", "dailyreport.md",
+     "The post URL is mandatory in all three social outputs",
+     "The post URL is written when a base URL is configured"),
+    ("repo-name hashtag derivation allowed back in", "blog.md",
+     "Never derive the tag from the repo or directory name",
+     "Otherwise derive the tag from the repo name"),
+    ("no-vault image case left silent", "dailyreport.md",
+     "the hero will not upload from here", "the images are handled elsewhere"),
+    ("brand palette requirement dropped", "blog.md",
+     "one warm accent, one cool accent", "an accent or two"),
+    ("SVG renderer left unnamed", "dailyreport.md",
+     "svg-to-png.sh", "some renderer"),
+    ("framing guard dropped", "blog.md",
+     "Report observed behaviour, not intent", "Report what the tool does"),
+    ("--wip left in the handoff with no file", "dailyreport.md",
+     "Drop `--wip`", "Keep the command as it is"),
 ]
 
 

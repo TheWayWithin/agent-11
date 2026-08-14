@@ -92,9 +92,10 @@ Why the vault path is the default: `~/DevProjects/` does not sync between machin
 anything scheduled elsewhere cannot publish it. On 2026-08-13 a package written to a repo
 had to be hand-copied into the vault before a scheduled social post could see it.
 
-**DIVERGENCE (deliberate):** step 3, the repo-local fallback, is not in the standard. It
-exists because this command deploys to projects that have no `~/shared/` at all. When it
-fires, say so in the report — a repo-local package is not reachable from another machine.
+**DIVERGENCE (deliberate):** entries 1 and 3, the env override and the repo-local fallback,
+are not in the standard, which stages to the vault path and nowhere else. Both exist because
+this command deploys to projects that have no `~/shared/` at all. When the fallback fires,
+say so in the report — a repo-local package is not reachable from another machine.
 
 ## VOICE ALIGNMENT
 
@@ -105,46 +106,58 @@ wins):
 2. `./voice-guide.md`
 3. `./.claude/voice-guide.md`
 4. `./docs/voice-guide.md`
-5. **The voice authority** — `~/shared/skills/user/jamie-voice/references/jamie-watters-voice-guide.md`
-6. **Bundled fallback** — `.claude/data/voice-guide-default.md` (ships with AGENT-11)
+5. **The canonical guide** — `~/DevProjects/JamieWatters/Documents/Foundation/jamie-watters-voice-guide.md`
+6. **Its synced mirror** — `~/shared/skills/user/jamie-voice/references/jamie-watters-voice-guide.md`
+7. **Bundled fallback** — `.claude/data/voice-guide-default.md` (ships with AGENT-11)
 
 The `jamie-voice` skill describes itself as the voice authority and the other content
-skills call it rather than carrying their own rules. The fifth entry above is that skill's
-own reference guide, reachable from every machine because `~/shared/` syncs. The sixth is a
-copy
-that ships inside AGENT-11: copies drift silently, so it is the fallback for installs that
-cannot reach `~/shared/`, not a peer. Say which one was loaded, and when the fallback is
-used, say that it is a copy.
+skills call it rather than carrying their own rules. Entry 5 is the canonical file that
+skill was built from, which is what `jamie-content` reads in Claude Code. Entry 6 is the
+skill's own copy of it, checked byte-identical by `~/shared/scripts/sync-audit.sh` and
+reachable from every machine because `~/shared/` syncs where `~/DevProjects/` does not — so
+on a machine without the site repo, entry 6 is the one that resolves. Entry 7 is a copy that
+ships inside AGENT-11: copies drift silently, so it is the fallback for installs that reach
+neither of the others, not a peer. Say which one was loaded, and when the bundled fallback
+is used, say that it is a copy.
 
-(The original of that guide lives in the site repo at
-`~/DevProjects/JamieWatters/Documents/Foundation/jamie-watters-voice-guide.md`. The vault
-copy in step 5 is checked byte-identical to it by `~/shared/scripts/sync-audit.sh`, and
-`~/DevProjects/` does not sync between machines, so the fifth entry is the one to resolve
-against.)
+**DIVERGENCE (deliberate):** entries 1 to 4 outrank the authority. The standard simply says
+to apply `jamie-voice`. A project-level override exists because this command deploys to
+other people's repos, which have their own voice. On a machine where the authority is
+reachable, a stray `voice-guide.md` in the repo silently wins, so say which file loaded
+every time.
 
 Custom voice guides written for `/dailyreport` work for `/blog` without any changes. One
 guide, both commands.
 
 ## SOCIAL LINK STRUCTURE
 
-**X thread:** the last tweet ends with the post URL, `<base-url>/journey/<slug>`. No label,
-no hashtags.
+**The post URL is mandatory in all three social outputs.** The standard gives it no
+condition, and a tweet with no route back to the post is the irreversible half of the
+package going out for nothing.
+
+**X thread:** the last tweet **ends** with the post URL, `<base-url>/journey/<slug>`. No
+label, no hashtags.
 
 **LinkedIn:** the post ends with `Full piece: <base-url>/journey/<slug>` on its own line,
 then a final line of exactly three PascalCase hashtags.
 
-**DIVERGENCE (deliberate):** both may carry an optional `Try it: <product-url>` line, which
-the standard does not have. This command deploys into product repos where the post is about
-a live thing the reader can use. It is written only when `PRODUCT_URL` is set — on the
-final tweet for X, mid-post for LinkedIn — and omitted entirely otherwise.
+**WIP:** the line carries the post URL.
 
-Both URLs are resolved from env vars at write time:
-- Product URL → `PRODUCT_URL`. If unset, the "Try it:" line is omitted.
-- Base URL → `DAILYREPORT_BASE_URL`. If unset, the post URL is omitted. The path is
-  `/journey/<slug>`, which is where `jpub` publishes.
+The base URL comes from `DAILYREPORT_BASE_URL` at write time and must include the scheme.
+If the value has none, write `https://` in front of it: `jamiewatters.work/journey/x` is
+not the form the standard specifies and is not reliably a link.
 
-If an env var is missing, the corresponding line is **omitted entirely** — never guessed,
-never left as a placeholder.
+**If `DAILYREPORT_BASE_URL` is unset, do not guess a domain.** Write the social files
+without the URL, say so at the top of the report, and **do not offer the social handoff at
+all** until it is set. An unlinked social package is not publishable, so the second message
+in Step 13 does not happen.
+
+**DIVERGENCE (deliberate):** the social outputs may carry an optional `Try it:
+<product-url>` line, which the standard does not have. This command deploys into product
+repos where the post is about a live thing the reader can use. It is written only when
+`PRODUCT_URL` is set — on the final tweet for X, mid-post for LinkedIn — and omitted
+entirely otherwise. On X it goes **before** the post URL: the tweet still ends with the
+URL.
 
 ## AGENT INSTRUCTIONS
 
@@ -172,12 +185,13 @@ and check whether `~/shared/content/` exists before falling back.
 
 **Never guess or hallucinate a URL.** If an env var is unset, the line is simply not
 written. The reader sees a clean post without the link rather than a broken link to a
-made-up domain.
+made-up domain. For the post URL, see the mandatory-link rule above: an unlinked social
+package is written but never handed to the publish step.
 
 ### Step 2: Load the voice guide
 
-Walk the six-step resolution order in the Voice Alignment section above and read the first
-file that exists. Announce which guide was loaded and its path:
+Walk the resolution order in the Voice Alignment section above and read the first file that
+exists. Announce which guide was loaded and its path:
 
 ```
 🎙️  Voice guide: <source description> → <path>
@@ -187,12 +201,14 @@ Examples:
 ```
 🎙️  Voice guide: env DAILYREPORT_VOICE_GUIDE → /home/alice/my-voice.md
 🎙️  Voice guide: project file → ./voice-guide.md
-🎙️  Voice guide: voice authority (jamie-voice skill) → ~/shared/skills/user/jamie-voice/references/jamie-watters-voice-guide.md
+🎙️  Voice guide: canonical → ~/DevProjects/JamieWatters/Documents/Foundation/jamie-watters-voice-guide.md
+🎙️  Voice guide: synced mirror (jamie-voice skill) → ~/shared/skills/user/jamie-voice/references/jamie-watters-voice-guide.md
 🎙️  Voice guide: bundled fallback copy → .claude/data/voice-guide-default.md
 ```
 
-If nothing resolves, print a warning and use the voice rules documented in this file. Do
-not invent a voice — the rules are specific and must come from the guide.
+If nothing resolves at all, print a warning saying so and fall back to the scrub rules in
+Step 11, which are an echo of the guide's own lists. Do not invent a voice — the rules are
+specific and belong to the guide.
 
 ### Step 3: Gather context
 
@@ -260,6 +276,9 @@ Structural requirements:
 - **Never invent a relative time reference.** If a date is in the source, use the date.
   "A few weeks ago" fabricated to smooth a sentence is the same failure as an invented
   number.
+- **Report observed behaviour, not intent.** When writing up what a tool actually does, say
+  what was observed and under what conditions. Do not impute malice to a default. This
+  applies to all tool-testing and privacy content.
 
 ### Step 6: Derive the X thread
 
@@ -271,8 +290,9 @@ Derive it from the post. Do not chop the post up.
 - The first tweet is a standalone hook. Every tweet stands alone — someone seeing the
   fourth in isolation must get something from it.
 - No `1/9` numbering. No hashtags unless riding a specific trending tag.
-- The last tweet ends with the post URL, `<base-url>/journey/<slug>`.
-- Optional `Try it: <product-url>` on that last tweet when `PRODUCT_URL` is set.
+- The last tweet **ends** with the post URL, `<base-url>/journey/<slug>`, scheme included.
+- Optional `Try it: <product-url>` on that last tweet when `PRODUCT_URL` is set, placed
+  before the post URL so the tweet still ends with it.
 - **No templates**: no "Shipped X today 🚀", no "Learned Y the hard way". Write fresh.
 
 ### Step 7: Derive the LinkedIn post
@@ -298,28 +318,33 @@ login bug #myapp" not "Working on auth later".
 For `/blog`, generate **one** line. Choose the framing that fits the topic:
 
 - **Process/work topics**: frame as a completed action —
-  `Deleted 600 lines of Python from /dailyreport`
+  `Deleted 600 lines of Python from /dailyreport https://<base-url>/journey/<slug> #tag`
 - **Opinion/thinking topics**: frame as a publication —
-  `Published "Why I stopped using feature flags"` followed by the post URL
+  `Published "Why I stopped using feature flags" https://<base-url>/journey/<slug> #tag`
 
-The line must be under 200 characters (aim 50-150), start with a past-tense action verb
-where possible, include the post URL, carry the hashtag at the end, and follow the voice
-guide for spelling and banned vocabulary.
+The line must be under 200 characters (aim 40-150), start with a past-tense action verb
+where possible, **include the post URL**, carry the hashtag at the end, and follow the voice
+guide for spelling and banned vocabulary. The URL is not optional: the standard's Output 4
+requires it, and a WIP todo with no link is a claim with nothing behind it.
 
 **Hashtag resolution** (first hit wins):
 
 1. `WIP_PROJECT_HASHTAG` env var
-2. The product tag for this repo (`#aimpactscanner`, `#plebtest`, `#modeloptix`,
-   `#isotracker`, `#llmtrader7`, `#llmtxtmastery`, `#aisearchmastery` — or the repo name
-   lowercased with non-alphanumerics stripped) **only when the post genuinely is about
-   that product**
+2. A tag from the known product list (`#aimpactscanner`, `#plebtest`, `#modeloptix`,
+   `#isotracker`, `#llmtrader7`, `#llmtxtmastery`, `#aisearchmastery`) **only when the post
+   genuinely is about that product**
 3. `#jamiewatters` when publishing to `jamiewatters.work` — the writing project (blog,
    videos, books), and the default for a post that is not about a product
 4. `#buildinpublic` otherwise
 
-On WIP the hashtag is what files the todo under a project, so a wrong tag misfiles it. A
+On WIP the hashtag is what files the todo under a project, so a wrong tag misfiles it and no
+tag merely leaves it unattached. **Never derive the tag from the repo or directory name.** A
 post that merely happens to be written inside a product's repo is not a post about that
-product: deriving the tag from the repo name is the inversion this ordering fixes.
+product, and that derivation is the inversion this ordering fixes.
+
+**DIVERGENCE (deliberate):** entries 1 and 4 are not in the standard, which gives the
+closed product list and `#jamiewatters`. They exist because this command deploys to other
+people's repos, where neither the product list nor Jamie's writing tag means anything.
 
 ### Step 9: Write the image specs
 
@@ -336,13 +361,20 @@ Per image, supply:
 **Routing rule, decided per image before any prompt is written.** Does the image contain a
 count, a label, or a specific relationship between parts?
 
-- **Yes → build it as SVG**, then render to PNG. Image models cannot hold exact counts,
-  labels or arrow directions; they approximate, and an approximated diagram is a wrong
-  diagram. Keep the `.svg` source beside the drafts so labels stay editable.
+- **Yes → build it as SVG**, then render to PNG with `~/shared/scripts/svg-to-png.sh` where
+  that exists (Chrome headless at 2x, downsampled, pngquant), otherwise say which renderer
+  to use. Image models cannot hold exact counts, labels or arrow directions; they
+  approximate, and an approximated diagram is a wrong diagram. Keep the `.svg` source beside
+  the drafts so labels stay editable.
 - **No, it is a mood or metaphor with no exact content → image model.** Write the
   generation prompt: brand style block plus the post's metaphor.
 - **It is a real thing that exists → screenshot or data viz.** Supply a source pointer,
   not a prompt.
+
+**Brand style block, required on every route, not just the image-model one.** State the
+palette explicitly in the spec — background, ink, muted text, rules,
+one warm accent, one cool accent — and say what each accent *means* in that image. There is no single recorded
+palette yet, so each post decides and records its own.
 
 **How many:** hero + `floor(section_count / 2)`, clamped to 1-5, where sections are major
 breaks after the intro. **The gate, per image: does it teach something?** The formula is a
@@ -360,6 +392,12 @@ hardcoded in `jpub`, so it applies wherever the markdown lives. On publish, `jpu
 the hero and every inline body image to R2 and rewrites the body paths. A file missing from
 that folder prints a warning and 404s on the live page; publishing still succeeds. R2
 caching is immutable: a regenerated image needs a NEW filename (`post-slug-v2.png`).
+
+**On a machine with no `~/shared/`** — the same case that triggers the repo-local staging
+fallback — there is nowhere for `jpub` to find an image, because that path is hardcoded and
+this command cannot change it. Write the specs anyway, keep any produced files beside the
+package, and say plainly in the report that the hero will not upload from here. A silent
+text-only publish is the failure this avoids.
 
 ### Step 10: Write the five files
 
@@ -392,10 +430,14 @@ imageAlt: "A scheduled job deleting mail faster than the alert can fire"
   hundred others. 1-3 sentences, under ~320 characters. Test: reading only the title and
   the dek, does a stranger know what they GET?
 - **`tags`** — free-form, lowercase, hyphenated if multi-word.
-- **`image` / `imageAlt`** — the hero, whenever there is one.
-- Do **not** write `date`, `project`, `author`, `coverImage` or `readTime`. `jpub` ignores
-  the first four; the publish date comes from the filename and the publish run, and
-  `readTime` is computed from the body more accurately than it can be guessed.
+- **`image` / `imageAlt`** — the hero, whenever there is one. **`imageCaption`** is optional
+  and has its own database column; prefer it to an italic caption in the body.
+- **`draft: true`** is optional and hides the post. Use it to stage something that must not
+  appear yet.
+- **`readTime`** — omit it. `jpub` computes it from the body, which beats a guess. Write it
+  only as a deliberate override, knowing it silently wins.
+- Do **not** write `date`, `project`, `author` or `coverImage`. `jpub` ignores all four, and
+  the publish date comes from the filename and the publish run.
 
 **The three social files** — plain text, exactly what gets published and nothing else:
 
@@ -409,7 +451,9 @@ imageAlt: "A scheduled job deleting mail faster than the alert can fire"
 a social file one of two ways. A file whose first line is a `# Twitter/X`-style heading is
 read as "everything between the first and second `---`" — which silently truncates a thread
 to its first tweet, because the separators between tweets are those same `---` lines. A
-file with no heading is read whole and split on `---` into the full thread. So: no heading,
+file with no heading is read whole and split on `---` into the full thread. Confirmed by dry
+run on 2026-08-14: the same three-tweet content reports `X/Twitter: 1 tweet` with a heading
+and `X/Twitter: 3 tweets` without one. So: no heading,
 no metadata, nothing before the first tweet. Character counts go in the report to the user,
 never into the file. Anything you put in the file, `jpub` publishes.
 
@@ -417,6 +461,11 @@ never into the file. Anything you put in the file, `jpub` publishes.
 in the Step 9 shape. `jpub` ignores this file; it is for whoever makes the images.
 
 ### Step 11: Voice scrub and checks
+
+The loaded voice guide is binding, and its blacklist is the live one. The list below is an
+echo of it, kept here so an install that resolves nothing still has something to scrub
+against — where the two differ, **the guide wins**. This is the one place the file repeats a
+rubric it does not own, and it is a fallback rather than a second authority.
 
 After drafting, scan all four written outputs for any word on the AI-tell blacklist:
 
@@ -467,7 +516,7 @@ frontmatter. Never emit a `/blog/<slug>` URL: that route is retired.
 - **LinkedIn**: 200-400 words, under 3000 characters. The first 140 characters must be a
   complete thought; if the hook is cut mid-sentence, rewrite the opening. Exactly three
   hashtags on the final line.
-- **WIP**: under 200 characters.
+- **WIP**: under 200 characters, and it carries the post URL.
 
 If any limit is breached, rewrite and recount before writing the file.
 
@@ -522,6 +571,12 @@ Only after the user has read the live page and asked for it, in a message of its
 
 Add `--dry-run` first if the user wants a preview. Never print this block in the same
 message as Step 12.
+
+Two cases where this step does not happen:
+- **No base URL was configured**, so the social files carry no link to the post. Say the
+  package is not shippable until `DAILYREPORT_BASE_URL` is set, and stop.
+- **No WIP file was written.** Drop `--wip` from the command. `jpub` auto-generates a todo
+  when the flag is passed with no file, which posts publicly something nobody wrote.
 
 ## CONFIGURATION
 
