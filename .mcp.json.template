@@ -11,7 +11,8 @@
       "args": [
         "-y",
         "@supabase/mcp-server-supabase@latest",
-        "--project-ref=${SUPABASE_PROJECT_REF}"
+        "--project-ref=${SUPABASE_PROJECT_REF}",
+        "--read-only"
       ],
       "env": {
         "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_TOKEN}"
@@ -46,7 +47,7 @@
       "command": "npx",
       "args": [
         "@modelcontextprotocol/server-filesystem",
-        "${HOME}/DevProjects"
+        "."
       ]
     },
     "railway": {

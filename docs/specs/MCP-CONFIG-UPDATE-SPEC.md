@@ -73,7 +73,8 @@ Users following AGENT-11 documentation will encounter connection failures.
     "-y",
     "@supabase/mcp-server-supabase@latest",
     "--access-token", "${SUPABASE_ACCESS_TOKEN}",
-    "--project-ref", "${SUPABASE_PROJECT_REF}"
+    "--project-ref", "${SUPABASE_PROJECT_REF}",
+    "--read-only"
   ]
 }
 ```
