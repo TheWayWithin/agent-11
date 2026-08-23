@@ -55,7 +55,7 @@ AGENT-11 provides 7 specialized MCP profiles optimized for different development
     },
     "filesystem": {
       "command": "npx",
-      "args": ["@modelcontextprotocol/server-filesystem", "${HOME}/DevProjects"]
+      "args": ["@modelcontextprotocol/server-filesystem", "."]
     }
   }
 }
@@ -249,7 +249,8 @@ ln -sf .mcp-profiles/testing.json .mcp.json
       "args": [
         "@supabase/mcp-server",
         "--access-token", "${SUPABASE_STAGING_TOKEN}",
-        "--project-ref", "${SUPABASE_STAGING_REF}"
+        "--project-ref", "${SUPABASE_STAGING_REF}",
+        "--read-only"
       ]
     }
   }
