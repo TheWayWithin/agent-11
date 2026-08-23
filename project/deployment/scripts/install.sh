@@ -566,8 +566,10 @@ validate_downloaded_payload() {
     # all. So: take the first 256 bytes, flatten newlines, strip leading space,
     # lowercase, and match the opening token.
     local head_bytes lead size
+    # A UTF-8 BOM sits in front of the first character and defeats any leading
+    # token match, so it is stripped along with leading whitespace.
     head_bytes="$(head -c 256 "$tmp" | tr -d '\r' | tr '\n' ' ')" || head_bytes=""
-    lead="$(printf '%s' "$head_bytes" | sed 's/^[[:space:]]*//' | tr '[:upper:]' '[:lower:]')"
+    lead="$(printf '%s' "$head_bytes" | sed $'s/^\xef\xbb\xbf//' | sed 's/^[[:space:]]*//' | tr '[:upper:]' '[:lower:]')"
     if [[ -z "$lead" ]]; then
         error "Rejected $label: payload is blank"
         return 1
@@ -579,8 +581,13 @@ validate_downloaded_payload() {
             error "Rejected $label: server returned \"${lead:0:60}\""
             return 1
             ;;
-        "<!doctype"*|"<html"*|"<head"*|"<?xml"*|"<meta"*)
-            error "Rejected $label: server returned an HTML/XML page, not a file"
+        # Nothing this installer ships starts with an angle bracket - verified
+        # across the whole manifest - while every HTML and XML error document
+        # does: GitHub's page, Apache's, nginx's 502, an S3 <Error><Code>, a
+        # captive portal's <meta refresh>. Matching the family beats chasing
+        # each vendor's wording.
+        "<"*)
+            error "Rejected $label: server returned an HTML/XML document, not a file"
             return 1
             ;;
     esac

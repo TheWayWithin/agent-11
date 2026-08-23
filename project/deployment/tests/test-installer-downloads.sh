@@ -204,6 +204,13 @@ check_payload_rejected "captive-portal meta refresh" "guide.md" \
     '<meta http-equiv="refresh" content="0; url=https://portal.example/login">'
 check_payload_rejected "proxy text error" "guide.md" 'Error 403: forbidden by policy'
 check_payload_rejected "404 body with a leading space" "guide.md" ' 404: Not Found'
+check_payload_rejected "404 body after a tab" "guide.md" '	404: Not Found'
+check_payload_rejected "UTF-8 BOM then a doctype" "guide.md" \
+    "$(printf '\xef\xbb\xbf<!DOCTYPE html><html>404</html>')"
+check_payload_rejected "S3-style XML error" "profile.yaml" \
+    '<Error><Code>NoSuchKey</Code></Error>'
+check_payload_rejected "nginx 502 in caps" "guide.md" \
+    '<HTML><HEAD><TITLE>502 Bad Gateway</TITLE></HEAD></HTML>'
 check_payload_rejected "whitespace-only body" "guide.md" '   
   '
 
@@ -237,6 +244,22 @@ else
     else
         fail "directory destination rejected but the directory was damaged"
     fi
+fi
+
+# Nothing the installer ships starts with an angle bracket, and the guard relies
+# on that to reject the whole HTML/XML error family. If a shipped file ever
+# does start with one, this check fails before the guard silently drops it.
+angle=0
+while IFS= read -r mpath; do
+    [[ -f "$REPO_ROOT/$mpath" ]] || continue
+    firstch="$(sed -e 's/^[[:space:]]*//' "$REPO_ROOT/$mpath" | grep -m1 . | cut -c1)"
+    if [[ "$firstch" == "<" ]]; then
+        fail "shipped file starts with '<' and would be rejected as an error page: $mpath"
+        angle=$((angle + 1))
+    fi
+done < <( (cd "$REPO_ROOT" && bash "$INSTALLER" --print-manifest) 2>/dev/null )
+if [[ $angle -eq 0 ]]; then
+    pass "no shipped file starts with an angle bracket"
 fi
 
 # The no-parser fallback must still catch truncation. This is the original bug
