@@ -94,6 +94,15 @@ pass "fetch_url_to_file loaded"
 
 SENTINEL='ORIGINAL CONTENT MUST SURVIVE'
 
+# A PATH with the shell utilities but deliberately no python3 and no jq, used to
+# prove the JSON fallback still catches truncation on a minimal container.
+mkdir -p "$WORK/nobin"
+for _b in awk sed tr cut head wc cat mktemp mv rm chmod stat dirname basename bash printf; do
+    _src="$(command -v "$_b" 2>/dev/null || true)"
+    [[ -n "$_src" ]] && ln -sf "$_src" "$WORK/nobin/$_b"
+done
+printf '%s' '{"mcpServers":{}}' > "$WORK/good.json"
+
 # 1a. A real 404 from raw.githubusercontent.com must not touch the destination.
 if $OFFLINE; then
     info "skipping live 404 check (--offline)"
@@ -178,11 +187,110 @@ check_payload_typed_by_label "temp-dest broken bash (migrate script)" \
 check_payload_typed_by_label "temp-dest broken python (merge-settings)" \
     "project/deployment/scripts/merge-settings.py" 'def x(:' reject
 
+# Error pages a first-line literal match walks straight past. These reach .md
+# and .yaml destinations, which get no type parse at all, so the error-body
+# screen is the only thing standing between them and the user's project.
+check_payload_rejected "HTML 2.0 doctype (Apache stock page)" "guide.md" \
+    '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head><title>404 Not Found</title></head></html>'
+check_payload_rejected "HTML after a blank line" "guide.md" '
+<!DOCTYPE html>
+<html><body>nope</body></html>'
+check_payload_rejected "HTML after a leading space" "guide.md" ' <!DOCTYPE html>
+<html></html>'
+check_payload_rejected "XML prolog error doc" "profile.yaml" '<?xml version="1.0"?>
+<Error><Code>NoSuchKey</Code></Error>'
+check_payload_rejected "captive-portal meta refresh" "guide.md" \
+    '<meta http-equiv="refresh" content="0; url=https://portal.example/login">'
+check_payload_rejected "proxy text error" "guide.md" 'Error 403: forbidden by policy'
+check_payload_rejected "404 body with a leading space" "guide.md" ' 404: Not Found'
+check_payload_rejected "whitespace-only body" "guide.md" '   
+  '
+
+# A document that merely talks about error codes must still install.
+check_payload_accepted "prose mentioning an error code" "guide.md" \
+    '# Troubleshooting
+
+Error 403: forbidden usually means your token lacks the scope. Read on for the
+full list of causes, the checks to run, and what to change in .env.mcp before
+you retry the install. This file is deliberately longer than the 1024-byte
+threshold the error-body screen uses, so that a genuine document discussing
+HTTP failures is never mistaken for one. Padding follows to clear that bar.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
+fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde
+omnis iste natus error sit voluptatem accusantium doloremque laudantium.'
+
+# The destination must never be a directory: `mv file dir/` succeeds by moving
+# INTO it, and the chmod that follows would strip its x bit.
+dir_dest="$WORK/dest-as-dir"
+mkdir -p "$dir_dest"
+if fetch_url_to_file "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/CHANGELOG.md" \
+     "$dir_dest" "dir-dest" >/dev/null 2>&1; then
+    fail "a directory destination was accepted"
+else
+    if [[ -d "$dir_dest" && -x "$dir_dest" ]]; then
+        pass "directory destination rejected, directory left traversable"
+    else
+        fail "directory destination rejected but the directory was damaged"
+    fi
+fi
+
+# The no-parser fallback must still catch truncation. This is the original bug
+# on a box with neither python3 nor jq, so it is tested with both hidden.
+truncated="$WORK/truncated.json"
+printf '%s' '{ "mcpServers": ' > "$truncated"
+if PATH="$WORK/nobin" bash -c '
+      set -uo pipefail
+      export GUARD_ERR_LOG="$1"
+      error() { :; }; log() { :; }; success() { :; }; warn() { :; }
+      . "$2"
+      payload_is_valid_json "$3"
+   ' _ "$GUARD_ERR_LOG" "$GUARD" "$truncated" 2>/dev/null; then
+    fail "truncated JSON accepted when no python3/jq is available"
+else
+    pass "truncated JSON rejected with no python3/jq on PATH"
+fi
+if PATH="$WORK/nobin" bash -c '
+      set -uo pipefail
+      error() { :; }; log() { :; }; success() { :; }; warn() { :; }
+      . "$2"
+      payload_is_valid_json "$3"
+   ' _ "$GUARD_ERR_LOG" "$GUARD" "$WORK/good.json" 2>/dev/null; then
+    pass "valid JSON accepted with no python3/jq on PATH"
+else
+    fail "valid JSON rejected when no python3/jq is available"
+fi
+
+# --print-manifest is a read-only query. It must work from any directory and
+# must not take the install lock, or a stale lock turns the release gate red.
+manifest_probe="$WORK/not-a-project"
+mkdir -p "$manifest_probe"
+if (cd "$manifest_probe" && bash "$INSTALLER" --print-manifest) > "$WORK/probe.txt" 2>"$WORK/probe.err"; then
+    if [[ "$(grep -c . "$WORK/probe.txt")" -gt 100 ]]; then
+        pass "--print-manifest works outside a project directory"
+    else
+        fail "--print-manifest printed only $(grep -c . "$WORK/probe.txt") lines outside a project"
+    fi
+else
+    fail "--print-manifest failed outside a project directory: $(head -1 "$WORK/probe.err")"
+fi
+if [[ -d /tmp/agent11-install.lock ]]; then
+    fail "--print-manifest left /tmp/agent11-install.lock behind (it must not take the lock)"
+else
+    pass "--print-manifest takes no install lock"
+fi
+
 # 1f. No unguarded writer left anywhere in install.sh: every curl/wget that
 #     writes to a file must be inside the guard block.
-strays="$(grep -n -E '(curl|wget)[^|]*(-o |-O |--output )' "$INSTALLER" \
+# Any curl/wget that can put bytes in a file: -o/-O/--output (with or without a
+# space), -qO, --remote-name, a > redirect, or a pipe into tee.
+strays="$(grep -n -E '(curl|wget)([^#]*)(-o ?"|-O ?"|-qO ?[^-]|--output|--remote-name|> *"|\| *tee)' "$INSTALLER" \
          | grep -v 'fetch_url_to_file' \
-         | grep -v -E '^\s*[0-9]+:\s*#' || true)"
+         | grep -v -E '^[0-9]+:[[:space:]]*#' || true)"
 guard_start="$(grep -n 'A11-ISS-31 DOWNLOAD GUARD BEGIN' "$INSTALLER" | cut -d: -f1)"
 guard_end="$(grep -n 'A11-ISS-31 DOWNLOAD GUARD END' "$INSTALLER" | cut -d: -f1)"
 outside=""

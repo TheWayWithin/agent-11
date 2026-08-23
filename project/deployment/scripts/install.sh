@@ -159,8 +159,17 @@ show_no_project_guidance() {
     fi
 }
 
+# A11-ISS-31: --print-manifest is a read-only query used by the release test.
+# It must not demand a project context or take the install lock, or a stale
+# lock and an unlucky working directory turn the release gate red for no reason.
+A11_MANIFEST_ONLY=false
+for _a11_arg in "$@"; do
+    [[ "$_a11_arg" == "--print-manifest" ]] && A11_MANIFEST_ONLY=true
+done
+unset _a11_arg
+
 # Detect project context and require project-local installation
-if ! detect_project_context; then
+if ! $A11_MANIFEST_ONLY && ! detect_project_context; then
     show_no_project_guidance
     fatal "Installation requires a project context. Please navigate to a project directory first."
 fi
@@ -188,14 +197,18 @@ validate_installation_paths() {
     fi
 }
 
-validate_installation_paths
+$A11_MANIFEST_ONLY || validate_installation_paths
 
 # Prevent concurrent installations
 LOCKDIR="/tmp/agent11-install.lock"
-if ! mkdir "$LOCKDIR" 2>/dev/null; then
-    fatal "Another AGENT-11 installation is already running. If this is a stale lock, remove: $LOCKDIR"
+if ! $A11_MANIFEST_ONLY; then
+    if ! mkdir "$LOCKDIR" 2>/dev/null; then
+        fatal "Another AGENT-11 installation is already running. If this is a stale lock, remove: $LOCKDIR"
+    fi
 fi
-trap 'rmdir "$LOCKDIR" 2>/dev/null' EXIT
+# A11-ISS-31: also sweep the in-flight download temp file, so an interrupt
+# mid-fetch does not leave a half-written agent11-download.* beside the target.
+trap 'if [[ -n "${A11_ACTIVE_TMP:-}" ]]; then rm -f "$A11_ACTIVE_TMP" 2>/dev/null; fi; if ! $A11_MANIFEST_ONLY; then rmdir "$LOCKDIR" 2>/dev/null; fi; true' EXIT
 
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
@@ -501,11 +514,39 @@ payload_is_valid_json() {
         jq empty "$file" >/dev/null 2>&1
         return $?
     fi
-    # No JSON parser on this box: fall back to a structural check so an error
-    # page still cannot pass, rather than waving the payload through.
-    local first
-    first="$(tr -d '[:space:]' < "$file" | cut -c1)" || true
-    [[ "$first" == "{" || "$first" == "[" ]]
+    # No python3 and no jq. A first-character check is NOT enough: a truncated
+    # body like `{ "mcpServers":` starts with { and would sail through, which is
+    # A11-ISS-31 reproduced on a minimal container. Balance the delimiters with
+    # awk instead - present on every POSIX box - so truncation is caught.
+    if command -v awk >/dev/null 2>&1; then
+        awk '
+            BEGIN { instr = 0; esc = 0; depth = 0; started = 0; bad = 0 }
+            {
+                line = $0
+                L = length(line)
+                for (i = 1; i <= L; i++) {
+                    c = substr(line, i, 1)
+                    if (instr) {
+                        if (esc)            { esc = 0 }
+                        else if (c == "\\") { esc = 1 }
+                        else if (c == "\"") { instr = 0 }
+                        continue
+                    }
+                    if (c == "\"") { instr = 1; continue }
+                    if (c == "{" || c == "[") { depth++; started = 1 }
+                    else if (c == "}" || c == "]") {
+                        depth--
+                        if (depth < 0) bad = 1
+                    }
+                }
+                esc = 0
+            }
+            END { if (bad || instr || depth != 0 || started == 0) exit 1; exit 0 }
+        ' "$file"
+        return $?
+    fi
+    error "Cannot validate JSON: no python3, jq or awk on this system"
+    return 1
 }
 
 # Reject an HTTP error body, an empty file, or a payload that does not parse
@@ -518,19 +559,42 @@ validate_downloaded_payload() {
         return 1
     fi
 
-    local first_line
-    first_line="$(head -n 1 "$tmp" | tr -d '\r' | cut -c1-80)" || true
-    case "$first_line" in
-        # raw.githubusercontent.com serves exactly this for a missing path.
-        4[0-9][0-9]:*|5[0-9][0-9]:*)
-            error "Rejected $label: server returned \"$first_line\""
+    # Error-page detection. Matching the raw first line is not enough: a proxy or
+    # captive portal answers 200 with `<!DOCTYPE HTML PUBLIC ...`, a leading blank
+    # line, or an XML prolog, and every one of those walked past the original
+    # four-pattern check into the 120 .md/.yaml files that get no type parse at
+    # all. So: take the first 256 bytes, flatten newlines, strip leading space,
+    # lowercase, and match the opening token.
+    local head_bytes lead size
+    head_bytes="$(head -c 256 "$tmp" | tr -d '\r' | tr '\n' ' ')" || head_bytes=""
+    lead="$(printf '%s' "$head_bytes" | sed 's/^[[:space:]]*//' | tr '[:upper:]' '[:lower:]')"
+    if [[ -z "$lead" ]]; then
+        error "Rejected $label: payload is blank"
+        return 1
+    fi
+    case "$lead" in
+        # raw.githubusercontent.com serves exactly "404: Not Found" for a missing
+        # path; other tiers answer "403: ...", "500: ..." and so on.
+        [45][0-9][0-9]:*)
+            error "Rejected $label: server returned \"${lead:0:60}\""
             return 1
             ;;
-        "<!DOCTYPE html"*|"<!doctype html"*|"<html"*|"<HTML"*)
-            error "Rejected $label: server returned an HTML page, not a file"
+        "<!doctype"*|"<html"*|"<head"*|"<?xml"*|"<meta"*)
+            error "Rejected $label: server returned an HTML/XML page, not a file"
             return 1
             ;;
     esac
+    # Short bodies that read like a proxy error ("Error 403: blocked by policy").
+    # Length-bounded so a document that happens to discuss error codes is safe.
+    size="$(wc -c < "$tmp" | tr -d ' ')"
+    if [[ "$size" -lt 1024 ]]; then
+        case "$lead" in
+            "error "[45][0-9][0-9]*|"error: "*|"forbidden"*|"access denied"*)
+                error "Rejected $label: server returned \"${lead:0:60}\""
+                return 1
+                ;;
+        esac
+    fi
 
     # Type is read from the destination name, falling back to the label (the
     # source path) when the destination is an extensionless temp file - the
@@ -572,12 +636,29 @@ validate_downloaded_payload() {
 # fetch_url_to_file <url> <dest> [label]
 fetch_url_to_file() {
     local url="$1" dest="$2" label="${3:-$2}"
-    local tmp status
+    local tmp status dest_dir
 
-    tmp="$(mktemp "${TMPDIR:-/tmp}/agent11-download.XXXXXX")" || {
-        error "Could not create a temp file while downloading $label"
+    if [[ -d "$dest" ]]; then
+        # `mv file dir/` succeeds by moving the file INTO the directory and the
+        # chmod below would then strip its x bit. Refuse instead.
+        error "Rejected $label: destination $dest is a directory"
         return 1
-    }
+    fi
+
+    # Temp file lives beside the destination, not in $TMPDIR: the final `mv` is
+    # then a same-filesystem rename, which is atomic. A cross-device mv is a
+    # copy, and an interrupted copy leaves the truncated destination this guard
+    # exists to prevent. Falls back to $TMPDIR only if the target dir is not
+    # writable, in which case the mv would fail anyway.
+    dest_dir="$(dirname "$dest")"
+    mkdir -p "$dest_dir" 2>/dev/null || true
+    tmp="$(mktemp "$dest_dir/.agent11-download.XXXXXX" 2>/dev/null)" \
+        || tmp="$(mktemp "${TMPDIR:-/tmp}/agent11-download.XXXXXX")" \
+        || {
+            error "Could not create a temp file while downloading $label"
+            return 1
+        }
+    A11_ACTIVE_TMP="$tmp"   # swept by the EXIT trap if we are interrupted
 
     if command -v curl >/dev/null 2>&1; then
         status="$(curl -sSL --retry 2 --max-time 120 -w '%{http_code}' -o "$tmp" "$url" 2>/dev/null)" || status="000"
@@ -587,28 +668,39 @@ fetch_url_to_file() {
     else
         error "Neither curl nor wget available for downloading files"
         rm -f "$tmp"
+        A11_ACTIVE_TMP=""
         return 1
     fi
 
     if [[ "$status" != "200" ]]; then
         error "Download failed for $label (HTTP ${status:-unknown}): $url"
         rm -f "$tmp"
+        A11_ACTIVE_TMP=""
         return 1
     fi
 
     if ! validate_downloaded_payload "$tmp" "$dest" "$label"; then
-        error "Left $dest untouched"
+        [[ -e "$dest" ]] && error "Left $dest untouched"
         rm -f "$tmp"
+        A11_ACTIVE_TMP=""
         return 1
     fi
 
-    mkdir -p "$(dirname "$dest")" || { rm -f "$tmp"; return 1; }
+    # Keep an existing destination's permissions; mktemp creates 600, and curl -o
+    # used to leave whatever the file already had.
+    local mode=""
+    if [[ -f "$dest" ]]; then
+        mode="$(stat -f '%Lp' "$dest" 2>/dev/null || stat -c '%a' "$dest" 2>/dev/null || true)"
+    fi
+    chmod "${mode:-644}" "$tmp" 2>/dev/null || chmod 644 "$tmp"
+
     if ! mv "$tmp" "$dest"; then
         error "Could not write $label to $dest"
         rm -f "$tmp"
+        A11_ACTIVE_TMP=""
         return 1
     fi
-    chmod 644 "$dest"   # mktemp creates 600; match curl -o's umask default
+    A11_ACTIVE_TMP=""
     return 0
 }
 # --- A11-ISS-31 DOWNLOAD GUARD END -----------------------------------------
@@ -2166,8 +2258,20 @@ setup_mcp_configuration() {
     # ignore failures. Removed. .mcp.json is created from the validated template
     # below, and an existing one is never touched (A11-ISS-23: it holds the
     # user's MCP server registry).
+    # A11-ISS-31: "existing" is not the same as "good". The repos damaged by the
+    # original bug hold a 14-byte .mcp.json reading "404: Not Found", and simply
+    # preserving it re-runs the damage forever while calling the junk "your MCP
+    # server registry". An existing file that does not parse as JSON is backed up
+    # and rebuilt from the template below.
+    MCP_JSON_INVALID=false
     if [[ -f "$TARGET_DIR/.mcp.json" ]]; then
-        log "Existing .mcp.json preserved (your MCP server registry)"
+        if payload_is_valid_json "$TARGET_DIR/.mcp.json"; then
+            log "Existing .mcp.json preserved (your MCP server registry)"
+        else
+            MCP_JSON_INVALID=true
+            warn "Existing .mcp.json is not valid JSON (first bytes: $(head -c 40 "$TARGET_DIR/.mcp.json" | tr -d '\n'))"
+            warn "It will be backed up and rebuilt from .mcp.json.template"
+        fi
     fi
 
     # Download .env.mcp.template
@@ -2180,10 +2284,15 @@ setup_mcp_configuration() {
     # Download .mcp.json.template with correct package names
     if download_mcp_file "$GITHUB_REPO_BASE/project/deployment/templates/.mcp.json.template" "$TARGET_DIR/.mcp.json.template"; then
         success "Downloaded .mcp.json.template (correct package names)"
-        # Create .mcp.json from template if it doesn't exist
+        # Create .mcp.json from the template when there is none, or when the one
+        # that is there is junk (A11-ISS-31). A valid registry is never touched.
         if [[ ! -f "$TARGET_DIR/.mcp.json" ]]; then
             cp "$TARGET_DIR/.mcp.json.template" "$TARGET_DIR/.mcp.json"
             success "Created .mcp.json with correct MCP package names"
+        elif $MCP_JSON_INVALID; then
+            mv "$TARGET_DIR/.mcp.json" "$TARGET_DIR/.mcp.json.invalid-$TIMESTAMP"
+            cp "$TARGET_DIR/.mcp.json.template" "$TARGET_DIR/.mcp.json"
+            success "Repaired .mcp.json from the template (old file kept as .mcp.json.invalid-$TIMESTAMP)"
         fi
     else
         # A11-ISS-31: this is the file the whole issue was about. If it does not
@@ -2382,6 +2491,13 @@ Examples:
   bash $0 --dry-run                  Show what would happen without changing anything
   bash $0 --upgrade --dry-run        Preview a v5→v6 upgrade run
   bash $0 --upgrade --non-interactive  Bulk-mode: never prompts, exits non-zero on input demand
+
+Exit codes:
+  0  Installed.
+  1  Failed; rolled back to the previous state.
+  2  Squad and mission system installed, but .mcp.json.template could not be
+     downloaded, so the project has NO MCP configuration. Nothing was
+     overwritten. Re-run when the network is available (A11-ISS-31).
 HELP
                 exit 0
                 ;;
@@ -2481,6 +2597,16 @@ HELP
 
     # Show success message and instructions
     show_post_install_instructions
+
+    # A11-ISS-31: exit code must not claim success the terminal contradicts. The
+    # squad and mission system are installed either way, so this is not a hard
+    # failure (1) or a rollback - it is a distinct code that says "installed, but
+    # you have no MCP configuration". A human reads the red line in the banner; a
+    # fleet script, CI job or && chain only ever reads this.
+    if [[ "${MCP_TEMPLATE_MISSING:-false}" == "true" ]]; then
+        error "Exiting 2: install completed but .mcp.json.template could not be fetched"
+        return 2
+    fi
 }
 
 # Handle script interruption
