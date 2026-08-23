@@ -221,7 +221,7 @@ configure_mcps() {
         # Use official Supabase MCP package with correct syntax
         elif claude mcp add supabase \
             -e "SUPABASE_ACCESS_TOKEN=${SUPABASE_ACCESS_TOKEN}" \
-            -- npx -y @supabase/mcp-server-supabase@latest --project-ref="${SUPABASE_PROJECT_REF}" -s project 2>/dev/null; then
+            -- npx -y @supabase/mcp-server-supabase@latest --project-ref="${SUPABASE_PROJECT_REF}" --read-only -s project 2>/dev/null; then
             success "✓ Supabase configured"
             ((configured++))
         else
@@ -237,7 +237,7 @@ configure_mcps() {
     if echo "$existing_mcps" | grep -q "filesystem:"; then
         success "✓ Filesystem already configured"
         ((already_configured++))
-    elif claude mcp add filesystem -- npx @modelcontextprotocol/server-filesystem "${HOME}/DevProjects" -s project 2>/dev/null; then
+    elif claude mcp add filesystem -- npx @modelcontextprotocol/server-filesystem "$(pwd)" -s project 2>/dev/null; then
         success "✓ Filesystem configured"
         ((configured++))
     else

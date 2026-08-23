@@ -145,7 +145,7 @@ configure_mcps() {
     
     # 6. Filesystem MCP
     log "Configuring Filesystem..."
-    if claude mcp add filesystem "npx" "@modelcontextprotocol/server-filesystem" "${HOME}/DevProjects" \
+    if claude mcp add filesystem "npx" "@modelcontextprotocol/server-filesystem" "$(pwd)" \
         -s project 2>/dev/null; then
         success "✓ Filesystem configured"
         ((configured++))
@@ -178,12 +178,13 @@ add_supabase_manually() {
       "command": "npx",
       "args": [
         "@supabase/mcp-server",
-        "--access-token",
-        "${SUPABASE_ACCESS_TOKEN}",
         "--project-ref",
-        "${SUPABASE_PROJECT_REF}"
+        "${SUPABASE_PROJECT_REF}",
+        "--read-only"
       ],
-      "env": {}
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "\${SUPABASE_ACCESS_TOKEN}"
+      }
     }
   }
 }

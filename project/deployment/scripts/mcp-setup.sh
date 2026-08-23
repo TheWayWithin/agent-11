@@ -223,7 +223,7 @@ configure_mcps() {
                 if [[ -n "${SUPABASE_ACCESS_TOKEN:-}" ]] && [[ -n "${SUPABASE_PROJECT_REF:-}" ]]; then
                     claude mcp add supabase --transport stdio \
                         --command "npx" \
-                        --args "@supabase/mcp-server" "--access-token" "$SUPABASE_ACCESS_TOKEN" "--project-ref" "$SUPABASE_PROJECT_REF" \
+                        --args "@supabase/mcp-server" "--access-token" "$SUPABASE_ACCESS_TOKEN" "--project-ref" "$SUPABASE_PROJECT_REF" "--read-only" \
                         --scope project 2>/dev/null && {
                         success "✓ Supabase MCP configured"
                         ((configured++))
@@ -252,7 +252,7 @@ configure_mcps() {
             filesystem)
                 claude mcp add filesystem --transport stdio \
                     --command "npx" \
-                    --args "@modelcontextprotocol/server-filesystem" "$HOME/DevProjects" \
+                    --args "@modelcontextprotocol/server-filesystem" "$(pwd)" \
                     --scope project 2>/dev/null && {
                     success "✓ Filesystem MCP configured"
                     ((configured++))

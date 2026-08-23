@@ -179,6 +179,27 @@ MCP Delegation:
 
 ## Best Practices
 
+### Least-Privilege Credentials (read this before minting any key)
+
+Most AGENT-11 setups combine a browser MCP (Playwright) with MCPs that read
+private data. Playwright can navigate, click, and submit forms on the open
+web, so anything another MCP can read, a prompt-injected agent can exfiltrate
+by pasting it into a form or URL. Scope every credential as if this will
+happen:
+
+1. **Supabase**: never use a service-role or full-access key for agent work.
+   The MCP server runs with `--read-only` and `--project-ref` in AGENT-11
+   configs; keep both flags, and prefer a database role or key limited to the
+   tables the project actually needs.
+2. **Filesystem**: pin the root to the current project directory (AGENT-11
+   configs use `.` / the project root). Never point it at `$HOME` or `/` — a
+   wide root exposes SSH keys, other repos, and personal files.
+3. **Figma**: use a token scoped to the one file or project being built,
+   read-only. A team-wide token exposes unreleased product designs.
+4. **Everything else**: narrowest scope, shortest expiry the provider
+   supports, read-only unless the mission needs writes. Real values live only
+   in a gitignored `.env.mcp` — placeholders everywhere else.
+
 ### MCP-First Development
 1. **Always check first**: Before manual implementation
 2. **Document usage**: Track in project-plan.md
