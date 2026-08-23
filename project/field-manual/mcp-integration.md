@@ -196,7 +196,13 @@ happen:
    wide root exposes SSH keys, other repos, and personal files.
 3. **Figma**: use a token scoped to the one file or project being built,
    read-only. A team-wide token exposes unreleased product designs.
-4. **Everything else**: narrowest scope, shortest expiry the provider
+4. **GitHub**: use a fine-grained PAT scoped to the one repository this
+   project uses, with only the permissions the mission needs. A classic
+   `repo`-scope PAT reads every private repo on the account.
+5. **Stripe**: test-mode keys for agent work; if live data is unavoidable,
+   a restricted read-only key. A full-access `sk_live_` key exposes customer
+   PII and payment history.
+6. **Everything else**: narrowest scope, shortest expiry the provider
    supports, read-only unless the mission needs writes. Real values live only
    in a gitignored `.env.mcp` — placeholders everywhere else.
 
