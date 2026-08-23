@@ -2264,7 +2264,13 @@ setup_mcp_configuration() {
     # server registry". An existing file that does not parse as JSON is backed up
     # and rebuilt from the template below.
     MCP_JSON_INVALID=false
-    if [[ -f "$TARGET_DIR/.mcp.json" ]]; then
+    if [[ -d "$TARGET_DIR/.mcp.json" ]]; then
+        # `cp template .mcp.json` would copy INTO the directory and leave the
+        # project with no registry and no complaint.
+        error ".mcp.json exists as a DIRECTORY - cannot create the MCP registry"
+        error "  Move or remove $TARGET_DIR/.mcp.json and re-run the installer"
+        MCP_TEMPLATE_MISSING=true
+    elif [[ -f "$TARGET_DIR/.mcp.json" ]]; then
         if payload_is_valid_json "$TARGET_DIR/.mcp.json"; then
             log "Existing .mcp.json preserved (your MCP server registry)"
         else
@@ -2286,7 +2292,9 @@ setup_mcp_configuration() {
         success "Downloaded .mcp.json.template (correct package names)"
         # Create .mcp.json from the template when there is none, or when the one
         # that is there is junk (A11-ISS-31). A valid registry is never touched.
-        if [[ ! -f "$TARGET_DIR/.mcp.json" ]]; then
+        if [[ -d "$TARGET_DIR/.mcp.json" ]]; then
+            : # already reported above; never cp into a directory
+        elif [[ ! -f "$TARGET_DIR/.mcp.json" ]]; then
             cp "$TARGET_DIR/.mcp.json.template" "$TARGET_DIR/.mcp.json"
             success "Created .mcp.json with correct MCP package names"
         elif $MCP_JSON_INVALID; then
