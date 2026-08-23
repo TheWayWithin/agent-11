@@ -223,8 +223,8 @@ if ! (cd "$REPO_ROOT" && bash "$INSTALLER" --print-manifest) > "$MANIFEST" 2>"$W
     echo; echo "$PASS passed, $FAIL failed"; exit 1
 fi
 count="$(grep -c . "$MANIFEST")"
-if [[ "$count" -lt 100 ]]; then
-    fail "manifest has only $count entries - expected the full install set"
+if [[ "$count" -lt 130 ]]; then
+    fail "manifest has only $count entries - expected the full install set (~136)"
 else
     pass "manifest lists $count downloadable paths"
 fi

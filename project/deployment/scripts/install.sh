@@ -369,7 +369,10 @@ A11_GATE_TEMPLATES=("nodejs-saas.json" "python-api.json" "minimal.json" "saas-sk
 
 A11_STACK_PROFILES=("nextjs-supabase.yaml" "remix-railway.yaml" "sveltekit-supabase.yaml" "README.md")
 
-# Everything else fetched by literal path from a single call site.
+# Everything else the installer reaches for by literal path: files fetched from
+# a single call site, plus the two URLs it only prints for the user to run and
+# the changelog it reads into a variable. All of them must resolve - a rollback
+# command that 404s is as useless as a template that does.
 A11_SINGLE_FILES=(
     "library/CLAUDE.md"
     "library/settings.json.template"
@@ -392,6 +395,10 @@ A11_SINGLE_FILES=(
     "docs/MCP-TROUBLESHOOTING.md"
     "docs/MCP-MIGRATION-GUIDE.md"
     "docs/UPGRADE.md"
+    # Read into a variable for the release-notes display, not written to a file.
+    "CHANGELOG.md"
+    # Printed for the user to run via bash <(curl ...); never fetched here.
+    "project/deployment/scripts/restore-pre-upgrade.sh"
 )
 
 # Is $1 present in the remaining arguments?
