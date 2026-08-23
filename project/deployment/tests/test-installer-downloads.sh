@@ -288,6 +288,49 @@ else
     fail "valid JSON rejected when no python3/jq is available"
 fi
 
+# Balancing brackets is not validating JSON. With no parser installed these must
+# still be rejected, and real config must still be accepted.
+json_nobin() {
+    local body="$1" want="$2" name="$3"
+    printf '%s' "$body" > "$WORK/case.json"
+    if PATH="$WORK/nobin" bash -c '
+          set -uo pipefail
+          error() { :; }; log() { :; }; success() { :; }; warn() { :; }
+          . "$1"
+          payload_is_valid_json "$2"
+       ' _ "$GUARD" "$WORK/case.json" 2>/dev/null; then
+        [[ "$want" == "accept" ]] && pass "no-parser: $name accepted" || fail "no-parser: $name was accepted (must be rejected)"
+    else
+        [[ "$want" == "reject" ]] && pass "no-parser: $name rejected" || fail "no-parser: $name was rejected (must be accepted)"
+    fi
+}
+json_nobin '{"a": }'                    reject "value missing after colon"
+json_nobin '{"a" "b"}'                  reject "key with no colon"
+json_nobin '{,,,}'                      reject "commas only"
+json_nobin '{"a":1,}'                   reject "trailing comma"
+json_nobin '# heading {code} [x](y)'    reject "prose with balanced braces"
+json_nobin '{"a":1} trailing'           reject "trailing garbage"
+json_nobin '{"mcpServers":{"p":{"args":["a","b"],"n":-1.5e3,"t":true,"z":null}}}' accept "real config shape"
+json_nobin '{"a":"}"}'                  accept "brace inside a string"
+json_nobin '[]'                         accept "empty array"
+
+# The shipped JSON must pass the no-parser path too, or a minimal container
+# would reject a perfectly good template.
+for shipped in "project/deployment/templates/.mcp.json.template" "library/settings.json.template"; do
+    if [[ -f "$REPO_ROOT/$shipped" ]]; then
+        if PATH="$WORK/nobin" bash -c '
+              set -uo pipefail
+              error() { :; }; log() { :; }; success() { :; }; warn() { :; }
+              . "$1"
+              payload_is_valid_json "$2"
+           ' _ "$GUARD" "$REPO_ROOT/$shipped" 2>/dev/null; then
+            pass "no-parser: shipped $shipped validates"
+        else
+            fail "no-parser: shipped $shipped is REJECTED by the awk validator"
+        fi
+    fi
+done
+
 # --print-manifest is a read-only query. It must work from any directory and
 # must not take the install lock, or a stale lock turns the release gate red.
 manifest_probe="$WORK/not-a-project"
@@ -307,11 +350,34 @@ else
     pass "--print-manifest takes no install lock"
 fi
 
+# Coverage: every literal path the installer can hand to a download call must be
+# in the manifest, so a newly added fetch cannot escape this test. Two shapes:
+# the path written at the call site, and the `local source_path="..."` variables
+# that install_settings_template and install_constitution pass through.
+cover_manifest="$WORK/manifest-offline.txt"
+(cd "$REPO_ROOT" && bash "$INSTALLER" --print-manifest) > "$cover_manifest" 2>/dev/null
+missing_cover=0
+while IFS= read -r cpath; do
+    [[ -z "$cpath" ]] && continue
+    grep -Fxq "$cpath" "$cover_manifest" || { fail "download call site not in manifest: $cpath"; missing_cover=$((missing_cover + 1)); }
+done < <(
+    {
+        grep -oE 'download_file_from_github "[^"$]+"' "$INSTALLER" | sed 's/.*"\(.*\)"/\1/'
+        grep -oE '(download_mcp_file|fetch_url_to_file) "\$GITHUB_REPO_BASE/[^"]+"' "$INSTALLER" \
+            | sed 's|.*\$GITHUB_REPO_BASE/||; s/"$//'
+        # local source_path="library/settings.json.template" and friends
+        grep -oE 'local source_path="[^"$]+"' "$INSTALLER" | sed 's/.*"\(.*\)"/\1/'
+    } | grep -v '[$]' | sort -u
+)
+if [[ $missing_cover -eq 0 ]]; then
+    pass "every literal download call site is covered by the manifest"
+fi
+
 # 1f. No unguarded writer left anywhere in install.sh: every curl/wget that
 #     writes to a file must be inside the guard block.
 # Any curl/wget that can put bytes in a file: -o/-O/--output (with or without a
 # space), -qO, --remote-name, a > redirect, or a pipe into tee.
-strays="$(grep -n -E '(curl|wget)([^#]*)(-o ?"|-O ?"|-qO ?[^-]|--output|--remote-name|> *"|\| *tee)' "$INSTALLER" \
+strays="$(grep -n -E '(curl|wget)([^#]*)(-o ?[^ -]|-O ?[^ -]|-qO ?[^-]|--output|--remote-name|> *["$]|\| *tee)' "$INSTALLER" \
          | grep -v 'fetch_url_to_file' \
          | grep -v -E '^[0-9]+:[[:space:]]*#' || true)"
 guard_start="$(grep -n 'A11-ISS-31 DOWNLOAD GUARD BEGIN' "$INSTALLER" | cut -d: -f1)"
@@ -450,22 +516,6 @@ if [[ -f "$tmpl_local" && -f "$tmpl_remote" ]]; then
     fi
 fi
 
-# Coverage: every literal path passed to a download call site must be in the
-# manifest, so a newly added fetch cannot escape this test.
-missing_cover=0
-while IFS= read -r path; do
-    [[ -z "$path" ]] && continue
-    grep -Fxq "$path" "$MANIFEST" || { fail "download call site not in manifest: $path"; missing_cover=$((missing_cover + 1)); }
-done < <(
-    {
-        grep -oE 'download_file_from_github "[^"$]+"' "$INSTALLER" | sed 's/.*"\(.*\)"/\1/'
-        grep -oE '(download_mcp_file|fetch_url_to_file) "\$GITHUB_REPO_BASE/[^"]+"' "$INSTALLER" \
-            | sed 's|.*\$GITHUB_REPO_BASE/||; s/"$//'
-    } | grep -v '[$]' | sort -u
-)
-if [[ $missing_cover -eq 0 ]]; then
-    pass "every literal download call site is covered by the manifest"
-fi
 
 echo
 echo "$PASS passed, $FAIL failed"

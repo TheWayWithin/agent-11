@@ -516,32 +516,97 @@ payload_is_valid_json() {
     fi
     # No python3 and no jq. A first-character check is NOT enough: a truncated
     # body like `{ "mcpServers":` starts with { and would sail through, which is
-    # A11-ISS-31 reproduced on a minimal container. Balance the delimiters with
-    # awk instead - present on every POSIX box - so truncation is caught.
+    # A11-ISS-31 reproduced on a minimal container. Nor is balancing brackets
+    # enough - that accepts `{"a": }`, `{,,,}` and any prose containing balanced
+    # braces. So this is a real (if minimal) JSON walk in awk, which is present
+    # on every POSIX box. It validates structure, not semantics.
     if command -v awk >/dev/null 2>&1; then
         awk '
-            BEGIN { instr = 0; esc = 0; depth = 0; started = 0; bad = 0 }
-            {
-                line = $0
-                L = length(line)
-                for (i = 1; i <= L; i++) {
-                    c = substr(line, i, 1)
-                    if (instr) {
-                        if (esc)            { esc = 0 }
-                        else if (c == "\\") { esc = 1 }
-                        else if (c == "\"") { instr = 0 }
-                        continue
-                    }
-                    if (c == "\"") { instr = 1; continue }
-                    if (c == "{" || c == "[") { depth++; started = 1 }
-                    else if (c == "}" || c == "]") {
-                        depth--
-                        if (depth < 0) bad = 1
-                    }
+        # Real (if minimal) JSON validation: tokenise and walk with an explicit stack.
+        # Deliberately not a bracket balancer - it must reject {"a": }, {"a" "b"},
+        # {,,,} and ordinary prose that happens to contain balanced braces.
+        { buf = buf $0 "\n" }
+        END {
+            n = length(buf); i = 1
+            # 0 value | 1 key-or-close-object | 2 colon | 3 comma-or-close
+            # 5 value-or-close-array | 6 key required (after a comma) | 4 done
+            state = 0; depth = 0; ok = 1
+            while (i <= n) {
+                c = substr(buf, i, 1)
+                if (c == " " || c == "\t" || c == "\n" || c == "\r") { i++; continue }
+                if (state == 4) { ok = 0; break }
+
+                if (state == 2) {
+                    if (c != ":") { ok = 0; break }
+                    i++; state = 0; continue
                 }
-                esc = 0
+                if (state == 3) {
+                    if (c == ",") {
+                        i++; state = (stack[depth] == "o") ? 6 : 0; continue
+                    }
+                    if ((c == "}" && stack[depth] == "o") || (c == "]" && stack[depth] == "a")) {
+                        depth--; i++; state = (depth == 0) ? 4 : 3; continue
+                    }
+                    ok = 0; break
+                }
+                if (state == 1 || state == 6) {
+                    # 1 allows the empty object; 6 is after a comma, where a key is required
+                    if (c == "}" && state == 1) { depth--; i++; state = (depth == 0) ? 4 : 3; continue }
+                    if (c != "\"") { ok = 0; break }
+                    j = scanstring(buf, i, n); if (j < 0) { ok = 0; break }
+                    i = j; state = 2; continue
+                }
+                if (state == 5 && c == "]") {
+                    depth--; i++; state = (depth == 0) ? 4 : 3; continue
+                }
+
+                # value position (state 0 or 5)
+                if (c == "{")      { depth++; stack[depth] = "o"; i++; state = 1; continue }
+                if (c == "[")      { depth++; stack[depth] = "a"; i++; state = 5; continue }
+                if (c == "\"")     { j = scanstring(buf, i, n); if (j < 0) { ok = 0; break }
+                                     i = j; state = (depth == 0) ? 4 : 3; continue }
+                if (c == "-" || (c >= "0" && c <= "9")) {
+                                     j = scannumber(buf, i, n); if (j < 0) { ok = 0; break }
+                                     i = j; state = (depth == 0) ? 4 : 3; continue }
+                if (substr(buf, i, 4) == "true" || substr(buf, i, 4) == "null") {
+                                     i += 4; state = (depth == 0) ? 4 : 3; continue }
+                if (substr(buf, i, 5) == "false") {
+                                     i += 5; state = (depth == 0) ? 4 : 3; continue }
+                ok = 0; break
             }
-            END { if (bad || instr || depth != 0 || started == 0) exit 1; exit 0 }
+            if (ok && (state != 4 || depth != 0)) ok = 0
+            exit ok ? 0 : 1
+        }
+        function scanstring(s, p, n,   k, ch) {
+            k = p + 1
+            while (k <= n) {
+                ch = substr(s, k, 1)
+                if (ch == "\\") { k += 2; continue }
+                if (ch == "\"") { return k + 1 }
+                if (ch == "\n") { return -1 }
+                k++
+            }
+            return -1
+        }
+        function scannumber(s, p, n,   k, ch, seen) {
+            k = p; seen = 0
+            if (substr(s, k, 1) == "-") k++
+            while (k <= n) { ch = substr(s, k, 1); if (ch >= "0" && ch <= "9") { seen = 1; k++ } else break }
+            if (!seen) return -1
+            if (substr(s, k, 1) == ".") {
+                k++; seen = 0
+                while (k <= n) { ch = substr(s, k, 1); if (ch >= "0" && ch <= "9") { seen = 1; k++ } else break }
+                if (!seen) return -1
+            }
+            ch = substr(s, k, 1)
+            if (ch == "e" || ch == "E") {
+                k++; ch = substr(s, k, 1); if (ch == "+" || ch == "-") k++
+                seen = 0
+                while (k <= n) { ch = substr(s, k, 1); if (ch >= "0" && ch <= "9") { seen = 1; k++ } else break }
+                if (!seen) return -1
+            }
+            return k
+        }
         ' "$file"
         return $?
     fi
@@ -687,7 +752,9 @@ fetch_url_to_file() {
     fi
 
     if ! validate_downloaded_payload "$tmp" "$dest" "$label"; then
-        [[ -e "$dest" ]] && error "Left $dest untouched"
+        if [[ -e "$dest" ]]; then
+            error "Left $dest untouched"
+        fi
         rm -f "$tmp"
         A11_ACTIVE_TMP=""
         return 1
@@ -695,9 +762,28 @@ fetch_url_to_file() {
 
     # Keep an existing destination's permissions; mktemp creates 600, and curl -o
     # used to leave whatever the file already had.
+    #
+    # Two traps here, both found by review. GNU `stat -f` means --file-system and
+    # takes no format, so it prints filesystem info to stdout AND exits 1 - put
+    # BSD's form first and both outputs concatenate into $mode on Linux. GNU's
+    # -c form is tried first for that reason. And BSD stat does not follow
+    # symlinks without -L, so a symlinked destination yields the LINK's mode
+    # (0755) and every such file came out world-executable.
     local mode=""
     if [[ -f "$dest" ]]; then
-        mode="$(stat -f '%Lp' "$dest" 2>/dev/null || stat -c '%a' "$dest" 2>/dev/null || true)"
+        mode="$(stat -L -c '%a' "$dest" 2>/dev/null || true)"
+        [[ -n "$mode" ]] || mode="$(stat -L -f '%Lp' "$dest" 2>/dev/null || true)"
+        # Anything that is not three or four octal digits came from a stat that
+        # did not mean what we asked; fall back rather than chmod garbage.
+        case "$mode" in
+            [0-7][0-7][0-7]|[0-7][0-7][0-7][0-7]) ;;
+            *) mode="" ;;
+        esac
+    fi
+    if [[ -L "$dest" ]]; then
+        # The link is replaced by a real file rather than written through, so a
+        # download can never escape the project via a symlinked destination.
+        warn "$dest was a symlink; replacing it with a regular file"
     fi
     chmod "${mode:-644}" "$tmp" 2>/dev/null || chmod 644 "$tmp"
 
@@ -2271,14 +2357,34 @@ setup_mcp_configuration() {
     # server registry". An existing file that does not parse as JSON is backed up
     # and rebuilt from the template below.
     MCP_JSON_INVALID=false
+    MCP_REGISTRY_BLOCKED=false
     if [[ -d "$TARGET_DIR/.mcp.json" ]]; then
         # `cp template .mcp.json` would copy INTO the directory and leave the
         # project with no registry and no complaint.
         error ".mcp.json exists as a DIRECTORY - cannot create the MCP registry"
         error "  Move or remove $TARGET_DIR/.mcp.json and re-run the installer"
-        MCP_TEMPLATE_MISSING=true
+        MCP_REGISTRY_BLOCKED=true
+    elif [[ -L "$TARGET_DIR/.mcp.json" ]]; then
+        # A symlink is deliberate configuration, and `cp` writes THROUGH it -
+        # to wherever it points, including outside the project. A dangling link
+        # is worse: -f is false, so without this branch the installer would take
+        # the "there is no .mcp.json" path and create the file at the link's
+        # target, outside the repo, while reporting success.
+        if payload_is_valid_json "$TARGET_DIR/.mcp.json" 2>/dev/null; then
+            log "Existing .mcp.json is a symlink to valid JSON - left alone"
+        else
+            error ".mcp.json is a symlink to $(readlink "$TARGET_DIR/.mcp.json"), which is missing or not valid JSON"
+            error "  Refusing to write through it. Remove the symlink and re-run the installer"
+            MCP_REGISTRY_BLOCKED=true
+        fi
     elif [[ -f "$TARGET_DIR/.mcp.json" ]]; then
-        if payload_is_valid_json "$TARGET_DIR/.mcp.json"; then
+        if [[ ! -r "$TARGET_DIR/.mcp.json" ]]; then
+            # Unreadable is not the same as invalid. Never replace a file whose
+            # contents nobody has seen.
+            error "Existing .mcp.json is not readable - refusing to touch it"
+            error "  Fix its permissions or move it, then re-run the installer"
+            MCP_REGISTRY_BLOCKED=true
+        elif payload_is_valid_json "$TARGET_DIR/.mcp.json"; then
             log "Existing .mcp.json preserved (your MCP server registry)"
         else
             MCP_JSON_INVALID=true
@@ -2299,15 +2405,27 @@ setup_mcp_configuration() {
         success "Downloaded .mcp.json.template (correct package names)"
         # Create .mcp.json from the template when there is none, or when the one
         # that is there is junk (A11-ISS-31). A valid registry is never touched.
-        if [[ -d "$TARGET_DIR/.mcp.json" ]]; then
-            : # already reported above; never cp into a directory
-        elif [[ ! -f "$TARGET_DIR/.mcp.json" ]]; then
+        if $MCP_REGISTRY_BLOCKED; then
+            : # already reported above - never cp into a directory or through a symlink
+        elif [[ ! -e "$TARGET_DIR/.mcp.json" ]]; then
             cp "$TARGET_DIR/.mcp.json.template" "$TARGET_DIR/.mcp.json"
             success "Created .mcp.json with correct MCP package names"
         elif $MCP_JSON_INVALID; then
-            mv "$TARGET_DIR/.mcp.json" "$TARGET_DIR/.mcp.json.invalid-$TIMESTAMP"
-            cp "$TARGET_DIR/.mcp.json.template" "$TARGET_DIR/.mcp.json"
-            success "Repaired .mcp.json from the template (old file kept as .mcp.json.invalid-$TIMESTAMP)"
+            # Never overwrite an existing backup: the timestamp is fixed for the
+            # whole run, so a second repair in the same second would eat the first.
+            local backup="$TARGET_DIR/.mcp.json.invalid-$TIMESTAMP"
+            local n=1
+            while [[ -e "$backup" ]]; do
+                backup="$TARGET_DIR/.mcp.json.invalid-$TIMESTAMP-$n"
+                n=$((n + 1))
+            done
+            if mv "$TARGET_DIR/.mcp.json" "$backup"; then
+                cp "$TARGET_DIR/.mcp.json.template" "$TARGET_DIR/.mcp.json"
+                success "Repaired .mcp.json from the template (old file kept as $(basename "$backup"))"
+            else
+                error "Could not move the invalid .mcp.json aside - leaving it in place"
+                MCP_REGISTRY_BLOCKED=true
+            fi
         fi
     else
         # A11-ISS-31: this is the file the whole issue was about. If it does not
@@ -2428,6 +2546,10 @@ show_post_install_instructions() {
     if [[ "${MCP_TEMPLATE_MISSING:-false}" == "true" ]]; then
         echo -e "  ${RED}✗ .mcp.json.template MISSING${NC} — the download failed, so this project has NO MCP config."
         echo "    Nothing was overwritten. Re-run the installer once you have network access."
+    fi
+    if [[ "${MCP_REGISTRY_BLOCKED:-false}" == "true" ]]; then
+        echo -e "  ${RED}✗ .mcp.json NOT written${NC} — an existing .mcp.json is a directory, a symlink, or unreadable."
+        echo "    Nothing was overwritten. See the error above, clear it, and re-run the installer."
     fi
     echo
     echo "  📝 Setup MCP servers in 2 steps:"
@@ -2620,6 +2742,10 @@ HELP
     # fleet script, CI job or && chain only ever reads this.
     if [[ "${MCP_TEMPLATE_MISSING:-false}" == "true" ]]; then
         error "Exiting 2: install completed but .mcp.json.template could not be fetched"
+        return 2
+    fi
+    if [[ "${MCP_REGISTRY_BLOCKED:-false}" == "true" ]]; then
+        error "Exiting 2: install completed but .mcp.json could not be written (see the message above)"
         return 2
     fi
 }
