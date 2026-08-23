@@ -8,6 +8,26 @@ This file tracks the v6.0 evolution only. Per the v6.0 plan (`project-plan.md` �
 
 ## 📦 Recent Deliverables
 
+### [2026-08-23] — A11-ISS-31: the installer can no longer write a 404 into your project ✅
+
+**Summary**: `install.sh` wrote HTTP error bodies straight into destination files. Every download now goes through one guarded primitive that fetches to a temp file, requires HTTP 200, parses the payload for its file type, and only then moves it into place. A new test proves it, offline and against live GitHub.
+
+**Root cause, corrected.** The issue was filed against `.mcp.json.template`; the file that actually broke was **`.mcp.json`**. `https://raw.githubusercontent.com/TheWayWithin/agent-11/main/.mcp.json` has never existed — the file is gitignored upstream — and the fetch used `curl -sSL -o "$dest"`. Without `-f`, curl exits 0 on a 404 and writes the **body**, so the server's 14-byte `404: Not Found` page landed in `.mcp.json`. The damage compounded: the repair path below it is `if [[ ! -f .mcp.json ]]; then cp .mcp.json.template .mcp.json; fi`, and the junk file made that condition false, so the project ended with no MCP configuration and no warning. Verified in git history across the fleet — 16 repos carry a committed 14-byte `.mcp.json` reading `404: Not Found`, all 19 such commits dated 2026-05-10, the v5→v6 upgrade sweep. A11-ISS-3 (2026-07-23) added `-f` to the four MCP downloads but left the dead URL in place, so the class of failure survived everywhere else.
+
+**What changed** (`project/deployment/scripts/install.sh`):
+- **One hardened primitive**, `fetch_url_to_file`, bracketed by `A11-ISS-31 DOWNLOAD GUARD BEGIN/END` markers. Temp file → HTTP 200 required (curl `%{http_code}`, wget exit status) → payload validated → atomic `mv`. A rejected download leaves the destination byte-for-byte as it was and says why. `download_agent_from_github`, `download_file_from_github` and `download_mcp_file` are now thin wrappers; nothing else fetches to a file.
+- **Payload validation**: empty responses, bodies starting `4xx:`/`5xx:`, and HTML error pages are rejected regardless of status; `.json`/`.json.template` must parse as JSON, `.sh` must pass `bash -n`, `.py` must parse as Python. The type is read from the destination name and falls back to the source path, so the extensionless mktemp destinations (the `settings.json` merge path, the migration scripts) are validated too.
+- **The dead URL is gone.** `.mcp.json` is no longer downloaded at all; it is created from the validated template, and an existing one is never touched (A11-ISS-23). A download expected to fail is not a download, it is training to ignore failures.
+- **Failure is loud.** If `.mcp.json.template` cannot be fetched, the installer says the project has NO MCP config, says nothing was overwritten, and repeats it in the closing banner instead of a one-word warning.
+- **The four MCP URLs** were hardcoded to `TheWayWithin/agent-11/main`; they now use `$GITHUB_REPO_BASE` like every other fetch, so a fork or branch install stops silently pulling from upstream main.
+- **A single download manifest.** The mission / command / template / field-manual / skill / schema / gate / stack-profile lists moved out of function bodies into top-level `A11_*` arrays, and `--print-manifest` prints all 134 expandable paths. A path only a function body knows about is a path no test can check — which is exactly how the dead URL survived for months.
+
+**The guard** (`project/deployment/tests/test-installer-downloads.sh`, 26 checks, exit 0): extracts the download block from `install.sh` and exercises the real functions against a genuine 404 (destination must survive), an HTML error page, an empty response, malformed JSON, unparseable bash and unparseable Python; asserts no `curl`/`wget` file write exists anywhere outside the guard; then, live, fetches all 134 manifest URLs, requires HTTP 200 for each, parses every payload by type, diffs the fetched `.mcp.json.template` against the working tree, and checks every literal call site appears in the manifest so a new download cannot be added without becoming testable. `--offline` runs the guard suite alone.
+
+**Verification**: `bash -n` clean; test suite exit 0 twice; three local-mode installs into scratch directories produced a `.mcp.json.template` that `python3 -m json.tool` accepts and that `diff`s identical to the shipped template, with zero `[ERROR]` lines and no `404: Not Found` anywhere in the tree. The refactor was proved behaviour-neutral by running the pre-change installer and the new one into separate scratch projects and diffing the trees: identical but for the install timestamp and the backup path. `install.sh.sha256` regenerated (`secure-install.sh` verifies it).
+
+---
+
 ### [2026-08-03] — Sprint 6 shipped: true safety claims, complete deployment, fan-out scoped ✅
 
 **Summary**: Committed the close-out work in logical commits, fixed every place the library claimed protection it does not have, closed A11-ISS-11..15, and scoped the coordinator's first fan-out. Pushed to `main` once at the end.

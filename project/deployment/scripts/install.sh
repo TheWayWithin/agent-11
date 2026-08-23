@@ -261,6 +261,180 @@ GITHUB_REPO_BASE="https://raw.githubusercontent.com/$GITHUB_REPO/$GITHUB_BRANCH"
 #  all 11 available costs almost nothing at session start.)
 SQUAD_FULL=("strategist" "developer" "tester" "operator" "architect" "designer" "documenter" "support" "analyst" "marketer" "coordinator")
 
+# ---------------------------------------------------------------------------
+# Remote download manifest (A11-ISS-31)
+#
+# Every repo-relative path this installer can fetch from GitHub is declared
+# here, once. The install functions read these arrays and `--print-manifest`
+# prints the fully expanded list, so project/deployment/tests/
+# test-installer-downloads.sh can prove every URL still resolves before a
+# release. A path that only exists inside a function body is a path no test
+# can see - that is how the dead .mcp.json URL survived for months.
+# ---------------------------------------------------------------------------
+
+A11_MISSION_FILES=(
+    "project/missions/library.md"
+    "project/missions/mission-build.md"
+    "project/missions/mission-fix.md"
+    "project/missions/mission-mvp.md"
+    "project/missions/mission-refactor.md"
+    "project/missions/mission-deploy.md"
+    "project/missions/mission-document.md"
+    "project/missions/mission-optimize.md"
+    "project/missions/mission-integrate.md"
+    "project/missions/mission-migrate.md"
+    "project/missions/mission-security.md"
+    "project/missions/mission-release.md"
+    "project/missions/mission-architecture.md"
+    "project/missions/mission-product-description.md"
+    "project/missions/operation-genesis.md"
+    "project/missions/dev-setup.md"
+    "project/missions/dev-alignment.md"
+    "project/missions/connect-mcp.md"
+    "project/missions/operation-recon.md"
+    "project/missions/README.md"
+)
+
+A11_COMMAND_FILES=(
+    "project/commands/coord.md"
+    "project/commands/meeting.md"
+    "project/commands/design-review.md"
+    "project/commands/recon.md"
+    "project/commands/report.md"
+    "project/commands/pmd.md"
+    "project/commands/dailyreport.md"
+    "project/commands/blog.md"
+    "project/commands/planarchive.md"
+    # Sprint 9: Plan-Driven Development commands
+    "project/commands/foundations.md"
+    "project/commands/bootstrap.md"
+    "project/commands/plan.md"
+    "project/commands/skills.md"
+    "project/commands/architect.md"
+)
+
+A11_TEMPLATE_FILES=(
+    "project/templates/mission-template.md"
+    "project/templates/agent-creation-mastery.md"
+    "templates/architecture-template.md"
+    "templates/product-description-template.md"
+    "templates/agent-context-template.md"
+    "templates/evidence-repository-template.md"
+    "templates/project-plan-template.md"
+    "templates/progress-template.md"
+    "templates/lessons-index-template.md"
+    "templates/lesson-template.md"
+    "templates/cleanup-checklist.md"
+    "templates/claude-template.md"
+    "templates/file-operation-delegation.md"
+    "templates/file-verification-checklist.md"
+    # Sprint 9: Foundation and Plan templates
+    "templates/foundation-prd.md"
+    "templates/foundation-vision.md"
+    "templates/plan-saas-mvp.yaml"
+    "templates/plan-saas-full.yaml"
+    "templates/plan-api.yaml"
+    # A11-ISS-8: tool project type (A11-ISS-6) plan counterpart
+    "templates/plan-tool.yaml"
+    # Sprint 6b: ratchet loop input template
+    "templates/mission-optimize-input-template.md"
+)
+
+A11_FIELD_MANUAL_FILES=(
+    "project/field-manual/architecture-sop.md"
+    "project/field-manual/project-lifecycle-guide.md"
+    "project/field-manual/model-selection-guide.md"
+    "project/field-manual/mcp-integration.md"
+    "project/field-manual/file-operation-quickref.md"
+    # Sprint 9: Plan-Driven Development guides
+    "project/field-manual/plan-driven-development.md"
+    "project/field-manual/quality-gates-guide.md"
+    "project/field-manual/skills-guide.md"
+    "project/field-manual/architectural-principles.md"
+    # Sprint 6b: loop discipline (ratchet + scored review loop)
+    "project/field-manual/loop-discipline-guide.md"
+    # PRJ-14: BOS-AI handoff (two tiers + ownership-transfer rule)
+    "project/field-manual/bos-ai-handoff.md"
+)
+
+A11_SKILL_DIRS=("saas-auth" "saas-payments" "saas-multitenancy" "saas-billing" "saas-email" "saas-onboarding" "saas-analytics" "code-review-loop")
+
+# Skills that ship stack-specific references/ alongside SKILL.md
+A11_SKILLS_WITH_REFERENCES=("saas-payments" "saas-auth")
+A11_SKILL_REFERENCES=("nextjs-supabase.md" "remix-railway.md")
+
+A11_SCHEMA_FILES=("skill.schema.yaml" "stack-profile.schema.yaml" "skill-loading.schema.yaml" "quality-gate.schema.yaml" "project-plan.schema.yaml" "phase-context.schema.yaml" "handoff-manifest.schema.yaml" "foundation-prd.schema.yaml" "foundation-vision.schema.yaml" "foundation-roadmap.schema.yaml" "foundation-icp.schema.yaml" "foundation-research.schema.yaml" "foundation-brand.schema.yaml" "foundation-positioning.schema.yaml" "foundation-marketing.schema.yaml" "foundation-pricing.schema.yaml")
+
+A11_GATE_TEMPLATES=("nodejs-saas.json" "python-api.json" "minimal.json" "saas-skills-advisory.json")
+
+A11_STACK_PROFILES=("nextjs-supabase.yaml" "remix-railway.yaml" "sveltekit-supabase.yaml" "README.md")
+
+# Everything else fetched by literal path from a single call site.
+A11_SINGLE_FILES=(
+    "library/CLAUDE.md"
+    "library/settings.json.template"
+    "library/hooks/gate-guard.sh"
+    "library/hooks/destructive-guard.sh"
+    "library/scripts/mission-state.py"
+    "project/constitution/karpathy-constitution.md"
+    "project/data/voice-guide-default.md"
+    "project/deployment/scripts/migrate-v5-to-v6.sh"
+    "project/deployment/scripts/merge-settings.py"
+    "project/deployment/scripts/mcp-setup-v2.sh"
+    "project/deployment/scripts/mcp-setup.sh"
+    "project/deployment/templates/.mcp.json.template"
+    ".env.mcp.template"
+    "project/gates/run-gates.py"
+    "project/gates/gate-types.yaml"
+    "project/gates/README.md"
+    "docs/MCP-GUIDE.md"
+    "docs/MCP-PROFILES.md"
+    "docs/MCP-TROUBLESHOOTING.md"
+    "docs/MCP-MIGRATION-GUIDE.md"
+    "docs/UPGRADE.md"
+)
+
+# Is $1 present in the remaining arguments?
+a11_list_contains() {
+    local needle="$1"; shift
+    local item
+    for item in "$@"; do
+        [[ "$item" == "$needle" ]] && return 0
+    done
+    return 1
+}
+
+# Print every repo-relative path this installer can download, one per line.
+# Consumed by project/deployment/tests/test-installer-downloads.sh.
+print_download_manifest() {
+    local item skill ref
+    for item in "${SQUAD_FULL[@]}"; do
+        echo "$GITHUB_AGENTS_PATH/$item.md"
+    done
+    for item in "${A11_MISSION_FILES[@]}" "${A11_COMMAND_FILES[@]}" \
+                "${A11_TEMPLATE_FILES[@]}" "${A11_FIELD_MANUAL_FILES[@]}" \
+                "${A11_SINGLE_FILES[@]}"; do
+        echo "$item"
+    done
+    for skill in "${A11_SKILL_DIRS[@]}"; do
+        echo "project/skills/$skill/SKILL.md"
+    done
+    for skill in "${A11_SKILLS_WITH_REFERENCES[@]}"; do
+        for ref in "${A11_SKILL_REFERENCES[@]}"; do
+            echo "project/skills/$skill/references/$ref"
+        done
+    done
+    for item in "${A11_SCHEMA_FILES[@]}"; do
+        echo "project/schemas/$item"
+    done
+    for item in "${A11_GATE_TEMPLATES[@]}"; do
+        echo "project/gates/templates/$item"
+    done
+    for item in "${A11_STACK_PROFILES[@]}"; do
+        echo "templates/stack-profiles/$item"
+    done
+}
+
 
 # Progress tracking
 show_progress() {
@@ -281,67 +455,185 @@ detect_platform() {
     esac
 }
 
+# --- A11-ISS-31 DOWNLOAD GUARD BEGIN ---------------------------------------
+# Hardened download primitive. Everything this installer fetches goes through
+# fetch_url_to_file.
+#
+# Root cause of A11-ISS-31: downloads wrote straight to their destination with
+# `curl -sSL -o "$dest"`. curl WITHOUT -f exits 0 on an HTTP error and writes
+# the error BODY, so raw.githubusercontent.com's 14-byte "404: Not Found" page
+# landed in .mcp.json across 16 repos. Worse, the file then existed, so the
+# `[[ ! -f .mcp.json ]]` template fallback that would have repaired it never
+# ran, and nothing said a word. A11-ISS-3 put -f on the MCP downloads in July;
+# this generalises the guard to every download and adds content validation,
+# because -f alone still trusts a 200 response to contain what we asked for.
+#
+# fetch_url_to_file:
+#   1. writes to a temp file, never to the destination;
+#   2. requires HTTP 200 (curl) or a clean exit (wget);
+#   3. rejects empty payloads and known HTTP error bodies;
+#   4. parses the payload for the file type implied by the destination name
+#      (JSON / bash / python);
+#   5. only then moves it into place.
+# A rejected download leaves the destination byte-for-byte as it was and
+# returns 1, loudly. Nothing partial, nothing silent.
+#
+# The BEGIN/END markers are load-bearing: the test at
+# project/deployment/tests/test-installer-downloads.sh extracts this block and
+# exercises it directly against a real 404.
+# ---------------------------------------------------------------------------
+
+# Is $1 valid JSON?
+payload_is_valid_json() {
+    local file="$1"
+    if command -v python3 >/dev/null 2>&1; then
+        python3 -c 'import json,sys; json.load(open(sys.argv[1]))' "$file" >/dev/null 2>&1
+        return $?
+    fi
+    if command -v jq >/dev/null 2>&1; then
+        jq empty "$file" >/dev/null 2>&1
+        return $?
+    fi
+    # No JSON parser on this box: fall back to a structural check so an error
+    # page still cannot pass, rather than waving the payload through.
+    local first
+    first="$(tr -d '[:space:]' < "$file" | cut -c1)" || true
+    [[ "$first" == "{" || "$first" == "[" ]]
+}
+
+# Reject an HTTP error body, an empty file, or a payload that does not parse
+# for its file type. Returns 0 only if the payload is plausibly the real thing.
+validate_downloaded_payload() {
+    local tmp="$1" dest="$2" label="$3"
+
+    if [[ ! -s "$tmp" ]]; then
+        error "Rejected $label: server returned an empty file"
+        return 1
+    fi
+
+    local first_line
+    first_line="$(head -n 1 "$tmp" | tr -d '\r' | cut -c1-80)" || true
+    case "$first_line" in
+        # raw.githubusercontent.com serves exactly this for a missing path.
+        4[0-9][0-9]:*|5[0-9][0-9]:*)
+            error "Rejected $label: server returned \"$first_line\""
+            return 1
+            ;;
+        "<!DOCTYPE html"*|"<!doctype html"*|"<html"*|"<HTML"*)
+            error "Rejected $label: server returned an HTML page, not a file"
+            return 1
+            ;;
+    esac
+
+    # Type is read from the destination name, falling back to the label (the
+    # source path) when the destination is an extensionless temp file - the
+    # settings.json merge path and the migration scripts download into mktemp
+    # files, and those payloads need validating just as much.
+    local type_name
+    type_name="$(basename "$dest")"
+    case "$type_name" in
+        *.json|*.json.template|*.sh|*.py) : ;;
+        *) type_name="$(basename "$label")" ;;
+    esac
+
+    case "$type_name" in
+        *.json|*.json.template)
+            if ! payload_is_valid_json "$tmp"; then
+                error "Rejected $label: payload is not valid JSON"
+                return 1
+            fi
+            ;;
+        *.sh)
+            if ! bash -n "$tmp" >/dev/null 2>&1; then
+                error "Rejected $label: payload is not valid bash"
+                return 1
+            fi
+            ;;
+        *.py)
+            if command -v python3 >/dev/null 2>&1; then
+                if ! python3 -c 'import ast,sys; ast.parse(open(sys.argv[1]).read())' "$tmp" >/dev/null 2>&1; then
+                    error "Rejected $label: payload is not valid python"
+                    return 1
+                fi
+            fi
+            ;;
+    esac
+
+    return 0
+}
+
+# fetch_url_to_file <url> <dest> [label]
+fetch_url_to_file() {
+    local url="$1" dest="$2" label="${3:-$2}"
+    local tmp status
+
+    tmp="$(mktemp "${TMPDIR:-/tmp}/agent11-download.XXXXXX")" || {
+        error "Could not create a temp file while downloading $label"
+        return 1
+    }
+
+    if command -v curl >/dev/null 2>&1; then
+        status="$(curl -sSL --retry 2 --max-time 120 -w '%{http_code}' -o "$tmp" "$url" 2>/dev/null)" || status="000"
+    elif command -v wget >/dev/null 2>&1; then
+        # wget exits non-zero on 4xx/5xx and we never reuse its output file.
+        if wget -q -O "$tmp" "$url"; then status="200"; else status="000"; fi
+    else
+        error "Neither curl nor wget available for downloading files"
+        rm -f "$tmp"
+        return 1
+    fi
+
+    if [[ "$status" != "200" ]]; then
+        error "Download failed for $label (HTTP ${status:-unknown}): $url"
+        rm -f "$tmp"
+        return 1
+    fi
+
+    if ! validate_downloaded_payload "$tmp" "$dest" "$label"; then
+        error "Left $dest untouched"
+        rm -f "$tmp"
+        return 1
+    fi
+
+    mkdir -p "$(dirname "$dest")" || { rm -f "$tmp"; return 1; }
+    if ! mv "$tmp" "$dest"; then
+        error "Could not write $label to $dest"
+        rm -f "$tmp"
+        return 1
+    fi
+    chmod 644 "$dest"   # mktemp creates 600; match curl -o's umask default
+    return 0
+}
+# --- A11-ISS-31 DOWNLOAD GUARD END -----------------------------------------
+
 # Download agent file from GitHub
 download_agent_from_github() {
     local agent_name="$1"
     local dest_file="$2"
-    local url="$GITHUB_RAW_BASE/$agent_name.md"
-    
+
     log "Downloading $agent_name from GitHub..."
-    
-    if command -v curl >/dev/null 2>&1; then
-        if curl -fsSL "$url" -o "$dest_file"; then
-            log "Downloaded: $agent_name"
-            return 0
-        else
-            error "Failed to download $agent_name from $url"
-            return 1
-        fi
-    elif command -v wget >/dev/null 2>&1; then
-        if wget -q "$url" -O "$dest_file"; then
-            log "Downloaded: $agent_name"
-            return 0
-        else
-            error "Failed to download $agent_name from $url"
-            return 1
-        fi
-    else
-        error "Neither curl nor wget available for downloading agents"
-        return 1
+
+    if fetch_url_to_file "$GITHUB_RAW_BASE/$agent_name.md" "$dest_file" "$agent_name.md"; then
+        log "Downloaded: $agent_name"
+        return 0
     fi
+    error "Failed to download $agent_name from $GITHUB_RAW_BASE/$agent_name.md"
+    return 1
 }
 
 # Download file from GitHub repository
 download_file_from_github() {
     local relative_path="$1"
     local dest_file="$2"
-    local url="$GITHUB_REPO_BASE/$relative_path"
-    
+
     log "Downloading $relative_path from GitHub..."
-    
-    # Create destination directory if it doesn't exist
-    mkdir -p "$(dirname "$dest_file")"
-    
-    if command -v curl >/dev/null 2>&1; then
-        if curl -fsSL "$url" -o "$dest_file"; then
-            log "Downloaded: $relative_path"
-            return 0
-        else
-            error "Failed to download $relative_path from $url"
-            return 1
-        fi
-    elif command -v wget >/dev/null 2>&1; then
-        if wget -q "$url" -O "$dest_file"; then
-            log "Downloaded: $relative_path"
-            return 0
-        else
-            error "Failed to download $relative_path from $url"
-            return 1
-        fi
-    else
-        error "Neither curl nor wget available for downloading files"
-        return 1
+
+    if fetch_url_to_file "$GITHUB_REPO_BASE/$relative_path" "$dest_file" "$relative_path"; then
+        log "Downloaded: $relative_path"
+        return 0
     fi
+    error "Failed to download $relative_path from $GITHUB_REPO_BASE/$relative_path"
+    return 1
 }
 
 # Check if we're running from a local repository or remote execution
@@ -1204,93 +1496,16 @@ install_mission_system() {
     log "Installing mission system files..."
     
     # Define mission files to install
-    local mission_files=(
-        "project/missions/library.md"
-        "project/missions/mission-build.md"
-        "project/missions/mission-fix.md"
-        "project/missions/mission-mvp.md"
-        "project/missions/mission-refactor.md"
-        "project/missions/mission-deploy.md"
-        "project/missions/mission-document.md"
-        "project/missions/mission-optimize.md"
-        "project/missions/mission-integrate.md"
-        "project/missions/mission-migrate.md"
-        "project/missions/mission-security.md"
-        "project/missions/mission-release.md"
-        "project/missions/mission-architecture.md"
-        "project/missions/mission-product-description.md"
-        "project/missions/operation-genesis.md"
-        "project/missions/dev-setup.md"
-        "project/missions/dev-alignment.md"
-        "project/missions/connect-mcp.md"
-        "project/missions/operation-recon.md"
-        "project/missions/README.md"
-    )
+    local mission_files=("${A11_MISSION_FILES[@]}")
     
     # Define command files to install
-    local command_files=(
-        "project/commands/coord.md"
-        "project/commands/meeting.md"
-        "project/commands/design-review.md"
-        "project/commands/recon.md"
-        "project/commands/report.md"
-        "project/commands/pmd.md"
-        "project/commands/dailyreport.md"
-        "project/commands/blog.md"
-        "project/commands/planarchive.md"
-        # Sprint 9: Plan-Driven Development commands
-        "project/commands/foundations.md"
-        "project/commands/bootstrap.md"
-        "project/commands/plan.md"
-        "project/commands/skills.md"
-        "project/commands/architect.md"
-    )
+    local command_files=("${A11_COMMAND_FILES[@]}")
     
     # Define template files to install
-    local template_files=(
-        "project/templates/mission-template.md"
-        "project/templates/agent-creation-mastery.md"
-        "templates/architecture-template.md"
-        "templates/product-description-template.md"
-        "templates/agent-context-template.md"
-        "templates/evidence-repository-template.md"
-        "templates/project-plan-template.md"
-        "templates/progress-template.md"
-        "templates/lessons-index-template.md"
-        "templates/lesson-template.md"
-        "templates/cleanup-checklist.md"
-        "templates/claude-template.md"
-        "templates/file-operation-delegation.md"
-        "templates/file-verification-checklist.md"
-        # Sprint 9: Foundation and Plan templates
-        "templates/foundation-prd.md"
-        "templates/foundation-vision.md"
-        "templates/plan-saas-mvp.yaml"
-        "templates/plan-saas-full.yaml"
-        "templates/plan-api.yaml"
-        # A11-ISS-8: tool project type (A11-ISS-6) plan counterpart
-        "templates/plan-tool.yaml"
-        # Sprint 6b: ratchet loop input template
-        "templates/mission-optimize-input-template.md"
-    )
+    local template_files=("${A11_TEMPLATE_FILES[@]}")
     
     # Define field manual files to install
-    local field_manual_files=(
-        "project/field-manual/architecture-sop.md"
-        "project/field-manual/project-lifecycle-guide.md"
-        "project/field-manual/model-selection-guide.md"
-        "project/field-manual/mcp-integration.md"
-        "project/field-manual/file-operation-quickref.md"
-        # Sprint 9: Plan-Driven Development guides
-        "project/field-manual/plan-driven-development.md"
-        "project/field-manual/quality-gates-guide.md"
-        "project/field-manual/skills-guide.md"
-        "project/field-manual/architectural-principles.md"
-        # Sprint 6b: loop discipline (ratchet + scored review loop)
-        "project/field-manual/loop-discipline-guide.md"
-        # PRJ-14: BOS-AI handoff (two tiers + ownership-transfer rule)
-        "project/field-manual/bos-ai-handoff.md"
-    )
+    local field_manual_files=("${A11_FIELD_MANUAL_FILES[@]}")
     
     local total_files=$((${#mission_files[@]} + ${#command_files[@]} + ${#template_files[@]} + ${#field_manual_files[@]}))
     local current=0
@@ -1450,7 +1665,7 @@ install_mission_system() {
     local SKILLS_DIR="$CLAUDE_DIR/skills"
     mkdir -p "$SKILLS_DIR"
 
-    local skill_dirs=("saas-auth" "saas-payments" "saas-multitenancy" "saas-billing" "saas-email" "saas-onboarding" "saas-analytics" "code-review-loop")
+    local skill_dirs=("${A11_SKILL_DIRS[@]}")
     for skill in "${skill_dirs[@]}"; do
         if [[ "$execution_mode" == "local" ]]; then
             if [[ -d "$PROJECT_ROOT/project/skills/$skill" ]]; then
@@ -1468,9 +1683,9 @@ install_mission_system() {
                 log "Installed skill: $skill"
                 # Stack-specific references for skills that ship them.
                 # Not every skill has references/; failure here is non-fatal.
-                if [[ "$skill" == "saas-payments" || "$skill" == "saas-auth" ]]; then
+                if a11_list_contains "$skill" "${A11_SKILLS_WITH_REFERENCES[@]}"; then
                     mkdir -p "$SKILLS_DIR/$skill/references"
-                    for ref in "nextjs-supabase.md" "remix-railway.md"; do
+                    for ref in "${A11_SKILL_REFERENCES[@]}"; do
                         download_file_from_github "project/skills/$skill/references/$ref" "$SKILLS_DIR/$skill/references/$ref" 2>/dev/null \
                             && log "Installed reference: $skill/references/$ref" \
                             || warn "Could not download reference: $skill/references/$ref"
@@ -1487,7 +1702,7 @@ install_mission_system() {
     local SCHEMAS_DIR="$(pwd)/schemas"
     mkdir -p "$SCHEMAS_DIR"
 
-    local schema_files=("skill.schema.yaml" "stack-profile.schema.yaml" "skill-loading.schema.yaml" "quality-gate.schema.yaml" "project-plan.schema.yaml" "phase-context.schema.yaml" "handoff-manifest.schema.yaml" "foundation-prd.schema.yaml" "foundation-vision.schema.yaml" "foundation-roadmap.schema.yaml" "foundation-icp.schema.yaml" "foundation-research.schema.yaml" "foundation-brand.schema.yaml" "foundation-positioning.schema.yaml" "foundation-marketing.schema.yaml" "foundation-pricing.schema.yaml")
+    local schema_files=("${A11_SCHEMA_FILES[@]}")
     for schema in "${schema_files[@]}"; do
         if [[ "$execution_mode" == "local" ]]; then
             if [[ -f "$PROJECT_ROOT/project/schemas/$schema" ]]; then
@@ -1522,7 +1737,7 @@ install_mission_system() {
             log "Installed: gates README.md"
         fi
         # Gate templates
-        for template in "nodejs-saas.json" "python-api.json" "minimal.json" "saas-skills-advisory.json"; do
+        for template in "${A11_GATE_TEMPLATES[@]}"; do
             if [[ -f "$PROJECT_ROOT/project/gates/templates/$template" ]]; then
                 cp "$PROJECT_ROOT/project/gates/templates/$template" "$GATES_DIR/templates/"
                 log "Installed gate template: $template"
@@ -1532,7 +1747,7 @@ install_mission_system() {
         download_file_from_github "project/gates/run-gates.py" "$GATES_DIR/run-gates.py" && chmod +x "$GATES_DIR/run-gates.py"
         download_file_from_github "project/gates/gate-types.yaml" "$GATES_DIR/gate-types.yaml"
         download_file_from_github "project/gates/README.md" "$GATES_DIR/README.md"
-        for template in "nodejs-saas.json" "python-api.json" "minimal.json" "saas-skills-advisory.json"; do
+        for template in "${A11_GATE_TEMPLATES[@]}"; do
             download_file_from_github "project/gates/templates/$template" "$GATES_DIR/templates/$template"
         done
     fi
@@ -1542,7 +1757,7 @@ install_mission_system() {
     local STACK_PROFILES_DIR="$(pwd)/stack-profiles"
     mkdir -p "$STACK_PROFILES_DIR"
 
-    local stack_profiles=("nextjs-supabase.yaml" "remix-railway.yaml" "sveltekit-supabase.yaml" "README.md")
+    local stack_profiles=("${A11_STACK_PROFILES[@]}")
     for profile in "${stack_profiles[@]}"; do
         if [[ "$execution_mode" == "local" ]]; then
             if [[ -f "$PROJECT_ROOT/templates/stack-profiles/$profile" ]]; then
@@ -1916,25 +2131,18 @@ install_mcp_system() {
     return 0  # Always succeed - MCPs are enhancement
 }
 
-# A11-ISS-3: download an MCP file to a temp file with -f so an HTTP error body
-# (e.g. a GitHub 404 page) is never written into the destination. On failure the
-# destination — including any existing user file — is left untouched.
+# A11-ISS-3 / A11-ISS-31: MCP downloads use the same hardened primitive as
+# everything else - temp file, HTTP 200 required, payload validated for its
+# file type, destination untouched on any failure.
 download_mcp_file() {
     local url="$1" dest="$2"
-    local tmp
-    tmp="$(mktemp -t agent11-mcp.XXXXXX)" || return 1
-    if curl -fsSL -o "$tmp" "$url" 2>/dev/null; then
-        mv "$tmp" "$dest"
-        chmod 644 "$dest"  # mktemp creates 600; match curl -o's umask default
-        return 0
-    fi
-    rm -f "$tmp"
-    return 1
+    fetch_url_to_file "$url" "$dest" "$(basename "$dest")"
 }
 
 # Setup MCP configuration
 setup_mcp_configuration() {
     log "Setting up MCP integration..."
+    MCP_TEMPLATE_MISSING=false
 
     # Use current directory as target for MCP files
     local TARGET_DIR="$(pwd)"
@@ -1942,31 +2150,28 @@ setup_mcp_configuration() {
     # Always download MCP files to ensure latest version
     log "Downloading MCP configuration files..."
 
-    # Download .mcp.json. NOTE: .mcp.json is gitignored in the source repo, so
-    # this URL 404s on a fresh install — that is expected; .mcp.json is created
-    # from .mcp.json.template below instead. Before A11-ISS-3 the 404 body was
-    # written into .mcp.json, which also defeated the template fallback.
-    # A11-ISS-23: never overwrite an existing .mcp.json. It holds the user's server
-    # registry. This download only no-ops today because the URL 404s (the file is
-    # gitignored upstream); the moment that changes, an unconditional write would
-    # clobber a customised registry with no backup. Guarded rather than left to luck.
+    # A11-ISS-31: there is no .mcp.json to download. It is gitignored upstream,
+    # so https://raw.githubusercontent.com/.../main/.mcp.json has always 404ed,
+    # and before A11-ISS-3 the 404 BODY was written here - 16 repos ended up with
+    # a committed 14-byte ".mcp.json" reading "404: Not Found", which then blocked
+    # the template fallback below because the file existed. A download that is
+    # expected to fail is not a download; it is noise that teaches everyone to
+    # ignore failures. Removed. .mcp.json is created from the validated template
+    # below, and an existing one is never touched (A11-ISS-23: it holds the
+    # user's MCP server registry).
     if [[ -f "$TARGET_DIR/.mcp.json" ]]; then
         log "Existing .mcp.json preserved (your MCP server registry)"
-    elif download_mcp_file "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/.mcp.json" "$TARGET_DIR/.mcp.json"; then
-        success "Downloaded .mcp.json"
-    else
-        warn "Skipping .mcp.json download (not published in the repo) - will create it from .mcp.json.template"
     fi
 
     # Download .env.mcp.template
-    if download_mcp_file "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/.env.mcp.template" "$TARGET_DIR/.env.mcp.template"; then
+    if download_mcp_file "$GITHUB_REPO_BASE/.env.mcp.template" "$TARGET_DIR/.env.mcp.template"; then
         success "Downloaded .env.mcp.template"
     else
         warn "Could not download .env.mcp.template - skipped (existing file, if any, untouched)"
     fi
 
     # Download .mcp.json.template with correct package names
-    if download_mcp_file "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/templates/.mcp.json.template" "$TARGET_DIR/.mcp.json.template"; then
+    if download_mcp_file "$GITHUB_REPO_BASE/project/deployment/templates/.mcp.json.template" "$TARGET_DIR/.mcp.json.template"; then
         success "Downloaded .mcp.json.template (correct package names)"
         # Create .mcp.json from template if it doesn't exist
         if [[ ! -f "$TARGET_DIR/.mcp.json" ]]; then
@@ -1974,16 +2179,22 @@ setup_mcp_configuration() {
             success "Created .mcp.json with correct MCP package names"
         fi
     else
-        warn "Could not download .mcp.json.template - skipped (existing file, if any, untouched)"
+        # A11-ISS-31: this is the file the whole issue was about. If it does not
+        # arrive, the project has no MCP configuration at all - say so in plain
+        # words rather than leaving a one-word warning nobody reads.
+        error "No MCP configuration installed: .mcp.json.template could not be downloaded"
+        error "  Existing files were left untouched. Re-run the installer, or copy the template by hand from:"
+        error "  $GITHUB_REPO_BASE/project/deployment/templates/.mcp.json.template"
+        MCP_TEMPLATE_MISSING=true
     fi
 
     # Download mcp-setup-v2.sh (the fixed version)
-    if download_mcp_file "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/mcp-setup-v2.sh" "$TARGET_DIR/mcp-setup.sh"; then
+    if download_mcp_file "$GITHUB_REPO_BASE/project/deployment/scripts/mcp-setup-v2.sh" "$TARGET_DIR/mcp-setup.sh"; then
         chmod +x "$TARGET_DIR/mcp-setup.sh"
         success "Downloaded mcp-setup.sh (v2 with correct package names)"
     else
         # Fallback to original if v2 doesn't exist
-        if download_mcp_file "https://raw.githubusercontent.com/TheWayWithin/agent-11/main/project/deployment/scripts/mcp-setup.sh" "$TARGET_DIR/mcp-setup.sh"; then
+        if download_mcp_file "$GITHUB_REPO_BASE/project/deployment/scripts/mcp-setup.sh" "$TARGET_DIR/mcp-setup.sh"; then
             chmod +x "$TARGET_DIR/mcp-setup.sh"
             warn "Downloaded original mcp-setup.sh (may have issues)"
         else
@@ -2082,6 +2293,11 @@ show_post_install_instructions() {
     fi
     echo "  ✓ MCP documentation in docs/"
     echo "  ✓ Environment template: .env.mcp.template"
+    # A11-ISS-31: never let a missing MCP config hide behind a success banner.
+    if [[ "${MCP_TEMPLATE_MISSING:-false}" == "true" ]]; then
+        echo -e "  ${RED}✗ .mcp.json.template MISSING${NC} — the download failed, so this project has NO MCP config."
+        echo "    Nothing was overwritten. Re-run the installer once you have network access."
+    fi
     echo
     echo "  📝 Setup MCP servers in 2 steps:"
     echo "     1. cp .env.mcp.template .env.mcp"
@@ -2129,6 +2345,13 @@ main() {
             --with-mcp)
                 WITH_MCP=true
                 ;;
+            --print-manifest)
+                # A11-ISS-31: emit every repo-relative path this installer can
+                # fetch, so project/deployment/tests/test-installer-downloads.sh
+                # can prove each URL still resolves before a release.
+                print_download_manifest
+                exit 0
+                ;;
             --help|-h)
                 cat <<HELP
 Usage: $0 [flags] [core|full|minimal (deprecated)]
@@ -2142,6 +2365,8 @@ Flags:
                        installs npm packages GLOBALLY and re-registers MCP
                        servers, which is not something an install should do
                        without being asked (A11-ISS-23).
+  --print-manifest     List every repo path the installer downloads, then exit.
+                       Used by project/deployment/tests/ to verify each URL.
   --help, -h           Show this help
 
 Examples:

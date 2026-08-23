@@ -36,9 +36,24 @@ deployment/
 │   ├── installation.yaml      # Main installation settings
 │   ├── squad-definitions.yaml # Squad compositions
 │   └── core-squad.yaml       # Core squad specific config
+├── tests/             # Pre-release guards
+│   └── test-installer-downloads.sh # Every download URL resolves and parses
 └── templates/         # Deployment templates
+    ├── .mcp.json.template    # MCP server registry shipped to projects
     └── one-line-install.sh   # Remote installation commands
 ```
+
+### Run before releasing install.sh
+
+```bash
+bash project/deployment/tests/test-installer-downloads.sh            # guard + live URLs
+bash project/deployment/tests/test-installer-downloads.sh --offline  # guard only, no network
+```
+
+Exit 0 means every path `install.sh --print-manifest` lists returns HTTP 200 on the
+configured branch, every payload parses for its file type, and no HTTP error body
+can reach a destination file. Anything else means do not ship the installer: this is
+the guard for A11-ISS-31, where a 404 body was written into users' `.mcp.json`.
 
 ## 🛠 Core Scripts
 
