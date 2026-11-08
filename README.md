@@ -1,8 +1,10 @@
+> **Moved on (November 2026).** I no longer build with AGENT-11. I now use Claude Code directly, with `/goal` prompts: a written completion condition that names a check Claude can run. In my own comparison on one small task, that approach matched AGENT-11 on correctness with less effort and less clutter in the repo. I have not typed `/coord` since July 2026, so AGENT-11 is retired as an installable framework. The code stays here, open and unmaintained, for you to inspect or fork. I am keeping the few pieces that proved useful (default-fail evidence, the read-only test guard, the cross-model review loop and the PRD handoff check) and will publish them as a small plugin and a repo template. When that is out, I will link it here and archive this repository.
+
 <div align="center">
 
 # AGENT-11™
 
-### The development squad I actually build with. Open to inspect, fork, and use.
+### A development squad for Claude Code, built and used by me until mid-2026. Open to inspect, fork, and use.
 
 [![Claude Code Compatible](https://img.shields.io/badge/Claude%20Code-Native-blue?style=for-the-badge)](https://claude.ai)
 [![Agents](https://img.shields.io/badge/Agents-11%20Specialists-red?style=for-the-badge)](project/agents/specialists/)
@@ -13,7 +15,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/TheWayWithin/agent-11?style=social)](https://github.com/TheWayWithin/agent-11/stargazers)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Support-yellow?logo=buy-me-a-coffee&style=flat)](https://buymeacoffee.com/jamiewatters)
 
-**Build to learn, not to sell. The code is open. If I recommend it, I'm using it.**
+**Build to learn, not to sell. The code is open.**
 
 [Install](#install) · [First mission](#your-first-mission) · [What you get](#what-you-get) · [How it works](#how-it-works) · [Commands](#command-reference) · [Docs](#documentation)
 
@@ -27,7 +29,7 @@ AGENT-11 deploys 11 specialist AI agents into your project and coordinates them 
 
 It installs into an existing repo in one command and adds no runtime dependency: everything is markdown instructions, a settings file and a few shell scripts that Claude Code reads.
 
-**Why it's open:** I build to learn, not to sell, and I give the code away. The value is the knowledge, the judgement and the trust, not the tool. If it is here, I am using it; if it broke, you will hear why. This is the squad behind my own builds (Trader-7 and the AI Search Mastery tools); the build story lives at [jamiewatters.work](https://jamiewatters.work).
+**Why it's open:** I build to learn, not to sell, and I give the code away. The value is the knowledge, the judgement and the trust, not the tool. If it broke, you will hear why. This is the squad behind my earlier builds (Trader-7 and the AI Search Mastery tools), until I moved to goal-first Claude Code in mid-2026; the build story lives at [jamiewatters.work](https://jamiewatters.work).
 
 **Honest positioning.** There are no benchmark numbers in this README because I do not have any I would stand behind. What I can tell you is what it does, how it is built, and where it breaks: see [Where it struggles](#where-it-struggles).
 
@@ -250,7 +252,7 @@ Managing several repos? The bulk-ops toolkit under `project/deployment/bulk/` ap
 
 **Design and discipline:** [Quality gates](project/field-manual/quality-gates-guide.md) · [Loop discipline](project/field-manual/loop-discipline-guide.md) · [CLAUDE.md architecture](CLAUDE-MD-INTEGRATION-GUIDE.md)
 
-**Using it with BOS-AI:** AGENT-11 is the technical execution arm of the BOS-AI ecosystem: BOS-AI plans the business, AGENT-11 builds the software. It works standalone. [Handoff guide →](project/field-manual/bos-ai-handoff.md)
+**Using it with BOS-AI:** AGENT-11 was the technical execution arm of the BOS-AI ecosystem: BOS-AI plans the business, AGENT-11 built the software. It worked standalone. I now hand over a BOS-AI plan by copying the PRD into the build repo and pointing the repo's CLAUDE.md at it. [Handoff guide →](project/field-manual/bos-ai-handoff.md)
 
 ---
 
@@ -268,6 +270,6 @@ MIT. See [LICENSE](LICENSE).
 
 <div align="center">
 
-**Built by [Jamie Watters](https://jamiewatters.work). Used daily on real products.**
+**Built by [Jamie Watters](https://jamiewatters.work). Used on real products until mid-2026; now retired.**
 
 </div>
